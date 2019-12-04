@@ -4,3 +4,6 @@
 [submodule "garnet"]
 	path = garnet
 	url = git@github.com:stanfordaha/garnet.git
+[submodule "halide-to-hardware"]
+	path = halide-to-hardware
+	url = git@github.com:stanfordaha/halide-to-hardware.git
