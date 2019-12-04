@@ -1,3 +1,6 @@
 [submodule "coreir"]
 	path = coreir
 	url = git@github.com:rdaly525/coreir.git
+[submodule "garnet"]
+	path = garnet
+	url = git@github.com:stanfordaha/garnet.git
