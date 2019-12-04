@@ -1,0 +1,3 @@
+[submodule "coreir"]
+	path = coreir
+	url = git@github.com:rdaly525/coreir.git
