@@ -1,9 +1,9 @@
 [submodule "coreir"]
 	path = coreir
-	url = git@github.com:rdaly525/coreir.git
+	url = ../../rdaly525/coreir.git
 [submodule "garnet"]
 	path = garnet
-	url = git@github.com:stanfordaha/garnet.git
+	url = ../../stanfordaha/garnet.git
 [submodule "halide-to-hardware"]
 	path = halide-to-hardware
-	url = git@github.com:stanfordaha/halide-to-hardware.git
+	url = ../../stanfordaha/halide-to-hardware.git
