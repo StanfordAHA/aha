@@ -19,10 +19,14 @@ RUN cd /coreir/build && cmake .. && make && make install
 # TODO: switch with following after RPATH fixes land in master
 # RUN cd /coreir/build && cmake .. && make && make install && rm -rf *
 
+# CoreIR - Halide-to-Hardware
+COPY coreir-apps /coreir-apps
+RUN cd /coreir-apps/build && cmake .. && make
+
 # Lake
 COPY BufferMapping /BufferMapping
-RUN export COREIR_DIR=/usr/local && cd /BufferMapping/cfunc && make lib
+RUN export COREIR_DIR=/coreir-apps && cd /BufferMapping/cfunc && make lib
 
 # Halide-to-Hardware
 COPY halide-to-hardware /halide-to-hardware
-RUN cd /halide-to-hardware && make
+RUN export COREIR_DIR=/coreir-apps && cd /halide-to-hardware && make

@@ -10,3 +10,9 @@
 [submodule "BufferMapping"]
 	path = BufferMapping
 	url = ../../joyliu37/BufferMapping
+[submodule "coreir-apps"]
+	path = coreir-apps
+	url = ../../rdaly525/coreir.git
+[submodule "tapeout"]
+	path = tapeout
+	url = ../../stanfordaha/garnet.git
