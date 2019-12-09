@@ -1,18 +1,24 @@
 [submodule "coreir"]
 	path = coreir
 	url = ../../rdaly525/coreir.git
+    branch = master
 [submodule "garnet"]
 	path = garnet
 	url = ../../stanfordaha/garnet.git
+    branch = master
 [submodule "halide-to-hardware"]
 	path = halide-to-hardware
 	url = ../../stanfordaha/halide-to-hardware.git
+    branch = master
 [submodule "BufferMapping"]
 	path = BufferMapping
 	url = ../../joyliu37/BufferMapping
+    branch = master
 [submodule "coreir-apps"]
 	path = coreir-apps
 	url = ../../rdaly525/coreir.git
+    branch = ubuffer
 [submodule "tapeout"]
 	path = tapeout
 	url = ../../stanfordaha/garnet.git
+    branch = tapeout
