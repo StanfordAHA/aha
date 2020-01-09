@@ -14,3 +14,9 @@ jobs:
         submodules: recursive
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag aha:$(date +%s)
+#     - name: Publish Docker image
+#       uses: elgohr/Publish-Docker-Github-Action@v2.11
+#       with:
+#         name: stanfordaha/garnet
+#         username: ${{ secrets.DOCKER_USERNAME }}
+#         password: ${{ secrets.DOCKER_PASSWORD }}
