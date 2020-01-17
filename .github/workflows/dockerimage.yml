@@ -1,6 +1,11 @@
 name: Docker Image CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 2 * * 0'
 
 jobs:
 
@@ -21,3 +26,4 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         tags: "latest"
+        cache: ${{ github.event_name != 'schedule' }}
