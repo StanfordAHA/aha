@@ -1,6 +1,16 @@
 version: 1
 update_configs:
   - package_manager: "submodules"
+    target_branch: "master"
+    directory: "/"
+    update_schedule: "daily"
+    automerged_updates:
+      - match:
+          dependency_type: "all"
+          update_type: "all"
+          
+  - package_manager: "submodules"
+    target_branch: "coreir-dev"
     directory: "/"
     update_schedule: "daily"
     automerged_updates:
