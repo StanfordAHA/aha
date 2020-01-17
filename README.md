@@ -20,6 +20,8 @@ Clean up all unused docker things:
 
 # Configuring a branch
 
+## Changing the tracked branches of submodules
+
 To set up a new branch to track a different branch of a dependency
 (e.g. `coreir` tracking `dev` instead of `master`), create a new
 branch of this repo and modify the `.gitmodules` with the modified
@@ -72,7 +74,4 @@ so](https://gist.github.com/0xjac/85097472043b697ab57ba1b1c7530274).
 TODO: Document
 
 ## Enabling Dependabot Updates
-TODO: Document
-
-## Changing the tracked branches of submodules
 TODO: Document
