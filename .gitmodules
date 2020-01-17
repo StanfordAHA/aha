@@ -44,7 +44,7 @@
     branch = master
 [submodule "canal"]
     path = canal
-    url = https://github.com/kuree/stanfordaha/canal
+    url = https://github.com/stanfordaha/canal
     branch = master
 [submodule "fault"]
     path = fault
