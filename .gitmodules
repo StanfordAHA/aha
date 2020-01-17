@@ -1,7 +1,7 @@
 [submodule "coreir"]
     path = coreir
     url = https://github.com/rdaly525/coreir
-    branch = master
+    branch = dev
 [submodule "pycoreir"]
     path = pycoreir
     url = https://github.com/leonardt/pycoreir
