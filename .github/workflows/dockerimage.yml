@@ -20,7 +20,7 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag aha:$(date +%s)
     - name: Publish Docker image
-      uses: elgohr/Publish-Docker-Github-Action@v2.11
+      uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
