@@ -6,6 +6,10 @@ RUN apt update && \
         python3 python3-pip \
         # Halide-to-Hardware
         clang-7 llvm-7 \
+        # hwtypes
+        libgmp-dev libmpfr-dev libmpc-dev \
+        # cgra_pnr
+        libigraph-dev \
         && \
     apt clean && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 100 \
@@ -13,20 +17,20 @@ RUN apt update && \
     update-alternatives --install /usr/bin/clang       clang       /usr/bin/clang-7 100 && \
     update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-7 100
 
+COPY . /aha
+
 # CoreIR
-COPY coreir /coreir
-RUN cd /coreir/build && cmake .. && make && make install
+RUN cd /aha/coreir/build && cmake .. && make && make install
 # TODO: switch with following after RPATH fixes land in master
-# RUN cd /coreir/build && cmake .. && make && make install && rm -rf *
+# RUN cd /aha/coreir/build && cmake .. && make && make install && rm -rf *
 
 # CoreIR - Halide-to-Hardware
-COPY coreir-apps /coreir-apps
-RUN cd /coreir-apps/build && cmake .. && make
+RUN cd /aha/coreir-apps/build && cmake .. && make
 
 # Lake
-COPY BufferMapping /BufferMapping
-RUN export COREIR_DIR=/coreir-apps && cd /BufferMapping/cfunc && make lib
+RUN export COREIR_DIR=/aha/coreir-apps && cd /aha/BufferMapping/cfunc && make lib
 
 # Halide-to-Hardware
-COPY halide-to-hardware /halide-to-hardware
-RUN export COREIR_DIR=/coreir-apps && cd /halide-to-hardware && make
+RUN export COREIR_DIR=/aha/coreir-apps && cd /aha/halide-to-hardware && make
+
+RUN cd /aha && pip install -e .

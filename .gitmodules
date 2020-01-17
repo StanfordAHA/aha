@@ -1,24 +1,77 @@
 [submodule "coreir"]
-	path = coreir
-	url = https://github.com/rdaly525/coreir
+    path = coreir
+    url = https://github.com/rdaly525/coreir
+    branch = master
+[submodule "pycoreir"]
+    path = pycoreir
+    url = https://github.com/leonardt/pycoreir
     branch = master
 [submodule "garnet"]
-	path = garnet
-	url = https://github.com/stanfordaha/garnet
+    path = garnet
+    url = https://github.com/stanfordaha/garnet
     branch = master
 [submodule "halide-to-hardware"]
-	path = halide-to-hardware
-	url = https://github.com/stanfordaha/halide-to-hardware
+    path = halide-to-hardware
+    url = https://github.com/stanfordaha/halide-to-hardware
     branch = master
 [submodule "BufferMapping"]
-	path = BufferMapping
-	url = https://github.com/joyliu37/BufferMapping
+    path = BufferMapping
+    url = https://github.com/joyliu37/BufferMapping
     branch = master
 [submodule "coreir-apps"]
-	path = coreir-apps
-	url = https://github.com/rdaly525/coreir
+    path = coreir-apps
+    url = https://github.com/rdaly525/coreir
     branch = ubuffer
 [submodule "tapeout"]
-	path = tapeout
-	url = https://github.com/stanfordaha/garnet
+    path = tapeout
+    url = https://github.com/stanfordaha/garnet
     branch = tapeout
+[submodule "hwtypes"]
+    path = hwtypes
+    url = https://github.com/leonardt/hwtypes
+    branch = master
+[submodule "magma"]
+    path = magma
+    url = https://github.com/phanrahan/magma
+    branch = master
+[submodule "mantle"]
+    path = mantle
+    url = https://github.com/phanrahan/mantle
+    branch = master
+[submodule "kratos"]
+    path = kratos
+    url = https://github.com/kuree/kratos
+    branch = master
+[submodule "canal"]
+    path = canal
+    url = https://github.com/kuree/stanfordaha/canal
+    branch = master
+[submodule "fault"]
+    path = fault
+    url = https://github.com/leonardt/fault
+    branch = master
+[submodule "cosa"]
+    path = cosa
+    url = https://github.com/cristian-mattarei/cosa
+    branch = master
+[submodule "gemstone"]
+    path = gemstone
+    url = https://github.com/stanfordaha/gemstone
+    branch = master
+[submodule "lassen"]
+    path = lassen
+    url = https://github.com/stanfordaha/lassen
+    branch = master
+[submodule "peak"]
+    path = peak
+    url = https://github.com/cdonovick/peak
+    branch = master
+[submodule "archipelago"]
+	path = archipelago
+	url = https://github.com/kuree/archipelago
+[submodule "cgra_pnr"]
+	path = cgra_pnr
+	url = https://github.com/kuree/cgra_pnr
+[submodule "ast_tools"]
+	path = ast_tools
+	url = https://github.com/leonardt/ast_tools
