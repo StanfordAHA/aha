@@ -17,13 +17,11 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag aha:$(date +%s)
     - name: Publish Docker image
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@2.12
       with:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest"
         cache: ${{ github.event_name != 'schedule' }}
+        snapshot: true
