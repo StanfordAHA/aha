@@ -9,7 +9,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -17,4 +16,9 @@ jobs:
       with:
         submodules: recursive
     - name: Build Docker Image
-      run: docker build .
+      run: docker build . -t testing
+    - name: Run Integration Tests
+      run: |
+        docker run --name test --rm -it -d testing bash
+        docker exec test aha garnet --width 4 --height 2 --verilog
+        docker exec test test -e /aha/garnet/garnet.v

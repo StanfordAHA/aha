@@ -27,7 +27,7 @@ def main():
     if args.command == 'garnet':
         subprocess.call(
             [sys.executable, 'garnet.py'] + extra_args,
-            cwd=Path(os.getcwd()) / 'garnet',
+            cwd=Path(os.path.dirname(os.path.abspath(__file__))) / 'garnet',
         )
 
 
