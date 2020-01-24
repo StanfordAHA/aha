@@ -30,9 +30,6 @@ modules = {
     'pythunder': 'cgra_pnr/thunder',
 }
 
-deps.draw_deps(modules)
-assert False
-
 for dep in deps.order_deps(modules):
     install(os.path.join(os.getcwd(), modules[dep]))
 
