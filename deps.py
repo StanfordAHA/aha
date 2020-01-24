@@ -6,14 +6,31 @@ from packaging.version import Version
 from pathlib import Path
 from pip._internal.req import parse_requirements
 from pip._internal.download import PipSession
+import astor
+
+
+# handle discrepancies between python 3.7/3.8
+def parse_install_requires(elts):
+    if len(elts) == 0:
+        return []
+
+    # python 3.8
+    if isinstance(elts[0], ast.Constant):
+        return list(map(lambda x: Requirement(x.value), elts))
+    # python 3.7
+    elif isinstance(elts[0], ast.Str):
+        return list(map(lambda x: Requirement(x.s), elts))
+    else:
+        raise NotImplementedError(f"Couldn't parse install_requires. {elts}")
 
 
 # looks for the `install_requires` kwarg in an ast.Expr corresponding
 # to a call to `setuptools.setup`
 def get_install_requires(expr):
+    print(astor.dump_tree(expr))
     for keyword in expr.value.keywords:
         if keyword.arg == 'install_requires':
-            return list(map(lambda x: Requirement(x.value), keyword.value.elts))
+            return parse_install_requires(keyword.value.elts)
     return []
 
 
@@ -56,8 +73,6 @@ def get_reqs(module):
         raise NotImplementedError(f"Can't get requirements of `{filename}`")
 
     return {req.name: req.specifier for req in reqs}
-
-print(get_reqs('garnet'))
 
 
 def build_dependency_graph(deps):
