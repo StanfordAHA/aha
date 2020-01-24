@@ -3,6 +3,8 @@ import subprocess
 import sys
 import os
 
+subprocess.check_call([sys.executable, "-m", "pip", "install", "networkx"])
+
 setup(
     name='aha',
     author='Teguh Hofstee',
@@ -11,7 +13,7 @@ setup(
     python_requires='>=3.7',
     install_requires = [
         'genesis2',
-        'networkx',
+        # 'networkx',
         'packaging',
         'pydot',
     ],
