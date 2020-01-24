@@ -18,7 +18,99 @@ Delete stopped containers:
 Clean up all unused docker things:
 - `docker system prune -a`
 
+# Managing Grouped Dependency Updates
+
+It is inevitable that upstream dependencies change their APIs and
+break compatibility. Before we get into how to manage mass upgrades of
+dependencies, we'll outline a few steps that, when possible, avoid
+this problem.
+
+- Upstream module adds new API features and marks the old ones as
+  deprecated.
+
+- Downstream module updates to use the new API.
+
+- Upstream module makes breaking API change and removes compatibility
+  with old API.
+
+By doing this, CI builds will always remain successful and you avoid
+the problem of having to update multiple dependencies simultaneously,
+assuming the downstream modules are brought up-to-date in a timely
+manner.
+
+Of course, this isn't always how things end up happening so here's
+what to do when needed:
+
+## Manually updating a branch
+
+To manually handle the mass upgrades, we need to do a few
+things. First we'll set up a branch for the upgrades. If this is an
+upgrade expected to take a long time (e.g. weeks), you might want to
+set up Dependabot as explained in the later sections and name the
+branch starting with `dev/`.
+
+By setting the branch name as `dev/` we allow the GitHub Actions CI to
+automate Dependabot merges into the branch when at least the same
+number of checks pass (you might want this behavior because it's
+likely that most of the checks will be failing, and as dependencies
+update more checks should pass. Without this, you would have to
+manually merge in Dependabot pull requests to the branch which gets
+tedious very fast).
+
+Once we have the branch set up, the plan is to have it continually
+fail CI checks as updates are merged in, and once the CI checks
+successfully complete it can be merged back into `master` or whichever
+branch was the original target.
+
+## Modifying Dependabot's Pull Requests
+
+When Dependabot makes a pull request, it makes one pull request per
+dependency. When multiple dependencies need to be updated
+simultaneously, one way of managing this is to edit the pull request
+and change the base.
+
+For example:
+
+- `magma` is updated on `dependabot/submodules/master/magma` and
+  failing due to `mantle` lagging behind.
+
+- `mantle` is updated on `dependabot/submodules/master/mantle` and is
+  failing due to `magma` lagging behind.
+
+In this case we actually want `mantle` to be a pull request onto the
+`magma` pull request rather than `master`. We can change the base of
+the `mantle` pull request to `dependabot/submodules/master/magma` and
+then re-run checks by pushing a commit to the branch (e.g. `git commit
+--allow-empty -m "re-run checks"`). **Re-running checks through the
+GitHub Actions CI panel will not work as intended in this case.**
+
+Once the checks succeed, `mantle` should be automatically merged into
+`dependabot/submodules/master/magma`, which will trigger checks in
+that pull request to be re-run, which will eventually merge into
+`master`.
+
+One downside is that this means the checks will be run twice before it
+merges into `master`. Because of this, it can be desirable to do the
+manual updates instead.
+
 # Configuring a branch
+
+Branches represent different sets of dependencies of the full
+flow. While the `master` branch is intended to always be the latest
+working versions of everything, branches have a few different uses. A
+branch that doesn't have automatic updates can be useful for freezing
+a set of dependencies entirely, like when you need to get consistent
+and repeatable results for a paper. Another use is to track different
+branches of modules with many dependencies - CoreIR does this in the
+`coreir-dev` branch to see if/how changes on the dev branch break
+downstream dependencies. Lastly branches can be used for coordinating
+grouped updates, such as when APIs break compatibility in heavily
+depended modules.
+
+Each branch is by default set to build a Docker image and publish it
+to DockerHub, so one benefit of creating a branch is that others
+needing to use the same setup can easily replicate it by cloning the
+image.
 
 ## Changing the tracked branches of submodules
 
@@ -68,7 +160,8 @@ might want to use a fork rather than a branch for things like papers
 so it doesn't clutter the main repo with additional noise. If you want
 the fork to be private rather than public, [here is a guide explaining
 how to do
-so](https://gist.github.com/0xjac/85097472043b697ab57ba1b1c7530274).
+so](https://gist.github.com/0xjac/85097472043b697ab57ba1b1c7530274). Forks
+will not publish images to DockerHub unless you set them up to.
 
 ## Enabling GitHub Actions CI
 TODO: Document
