@@ -6,7 +6,6 @@ from packaging.version import Version
 from pathlib import Path
 from pip._internal.req import parse_requirements
 from pip._internal.download import PipSession
-import astor
 
 
 # handle discrepancies between python 3.7/3.8
