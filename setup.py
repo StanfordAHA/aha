@@ -1,4 +1,3 @@
-import deps
 from setuptools import setup
 import subprocess
 import sys
@@ -22,9 +21,11 @@ setup(
     },
 )
 
+
 def install(package):
     if os.path.exists(os.path.join('package', 'setup.py')):
         subprocess.check_call([sys.executable, "-m", "pip", "install", "-e", package])
+
 
 # TODO: only install these if they're not present in `pip list`
 
@@ -48,6 +49,8 @@ modules = {
     'pythunder': 'cgra_pnr/thunder',
 }
 
+
+import deps
 for dep in deps.order_deps(modules):
     install(os.path.join(os.getcwd(), modules[dep]))
 
