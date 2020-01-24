@@ -62,37 +62,6 @@ fail CI checks as updates are merged in, and once the CI checks
 successfully complete it can be merged back into `master` or whichever
 branch was the original target.
 
-## Modifying Dependabot's Pull Requests
-
-When Dependabot makes a pull request, it makes one pull request per
-dependency. When multiple dependencies need to be updated
-simultaneously, one way of managing this is to edit the pull request
-and change the base.
-
-For example:
-
-- `magma` is updated on `dependabot/submodules/master/magma` and
-  failing due to `mantle` lagging behind.
-
-- `mantle` is updated on `dependabot/submodules/master/mantle` and is
-  failing due to `magma` lagging behind.
-
-In this case we actually want `mantle` to be a pull request onto the
-`magma` pull request rather than `master`. We can change the base of
-the `mantle` pull request to `dependabot/submodules/master/magma` and
-then re-run checks by pushing a commit to the branch (e.g. `git commit
---allow-empty -m "re-run checks"`). **Re-running checks through the
-GitHub Actions CI panel will not work as intended in this case.**
-
-Once the checks succeed, `mantle` should be automatically merged into
-`dependabot/submodules/master/magma`, which will trigger checks in
-that pull request to be re-run, which will eventually merge into
-`master`.
-
-One downside is that this means the checks will be run twice before it
-merges into `master`. Because of this, it can be desirable to do the
-manual updates instead.
-
 # Configuring a branch
 
 Branches represent different sets of dependencies of the full
