@@ -26,7 +26,6 @@ def parse_install_requires(elts):
 # looks for the `install_requires` kwarg in an ast.Expr corresponding
 # to a call to `setuptools.setup`
 def get_install_requires(expr):
-    print(astor.dump_tree(expr))
     for keyword in expr.value.keywords:
         if keyword.arg == 'install_requires':
             return parse_install_requires(keyword.value.elts)
