@@ -31,6 +31,6 @@ RUN cd /aha/coreir-apps/build && cmake .. && make
 RUN export COREIR_DIR=/aha/coreir-apps && cd /aha/BufferMapping/cfunc && make lib
 
 # Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir-apps && cd /aha/halide-to-hardware && make
+RUN export COREIR_DIR=/aha/coreir-apps && cd /aha/halide-to-hardware && make && make distrib
 
 RUN cd /aha && pip install -e .
