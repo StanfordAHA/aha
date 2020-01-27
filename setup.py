@@ -5,21 +5,6 @@ import os
 
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
 
-setup(
-    name='aha',
-    author='Teguh Hofstee',
-    url='https://github.com/hofstee/aha',
-
-    python_requires='>=3.7',
-    install_requires = [
-        'genesis2',
-    ],
-
-    entry_points = {
-        'console_scripts': ['aha=aha:main'],
-    },
-)
-
 
 def install(package):
     if os.path.exists(os.path.join('package', 'setup.py')):
@@ -55,3 +40,17 @@ for dep in deps.order_deps(modules):
 
 # TODO: `pip list` and ensure that all the above are pointing to sources
 
+setup(
+    name='aha',
+    author='Teguh Hofstee',
+    url='https://github.com/hofstee/aha',
+
+    python_requires='>=3.7',
+    install_requires = [
+        'genesis2',
+    ],
+
+    entry_points = {
+        'console_scripts': ['aha=aha:main'],
+    },
+)
