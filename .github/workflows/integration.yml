@@ -20,5 +20,6 @@ jobs:
     - name: Run Integration Tests
       run: |
         docker run --name test --rm -it -d testing bash
+        docker run test pip freeze
         docker exec test aha garnet --width 4 --height 2 --verilog
         docker exec test test -e /aha/garnet/garnet.v
