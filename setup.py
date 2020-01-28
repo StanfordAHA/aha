@@ -5,7 +5,7 @@ import os
 
 
 def install(package):
-    if os.path.exists(os.path.join('package', 'setup.py')):
+    if os.path.exists(os.path.join(package, 'setup.py')):
         subprocess.check_call([sys.executable, "-m", "pip", "install", "-e", package])
 
 
