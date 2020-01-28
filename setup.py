@@ -68,6 +68,7 @@ setup(
     install_requires = [
         'docker',
         'genesis2',
+        'gitpython',
         'networkx',
         'packaging',
         'pydot',
