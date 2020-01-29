@@ -2,7 +2,7 @@ FROM ubuntu:rolling
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         git make cmake gcc g++ \
-        python3 python3-pip \
+        python3 python3-pip python3-setuptools \
         # Halide-to-Hardware
         clang-7 llvm-7 llvm-7-dev libz-dev \
         # hwtypes
