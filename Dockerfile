@@ -4,7 +4,7 @@ RUN apt-get update && \
         git make cmake gcc g++ \
         python3 python3-pip \
         # Halide-to-Hardware
-        clang-7 llvm-7 llvm-7-dev \
+        clang-7 llvm-7 llvm-7-dev libz-dev \
         # hwtypes
         libgmp-dev libmpfr-dev libmpc-dev \
         # cgra_pnr
