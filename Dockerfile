@@ -17,26 +17,29 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/clang       clang       /usr/bin/clang-7 100 && \
     update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-7 100
 
-COPY . /aha
+# CoreIR - Halide-to-Hardware
+COPY ./coreir-apps /aha/coreir-apps
+WORKDIR /aha/coreir-apps/build
+RUN cmake .. && make
+
+# Lake
+COPY ./BufferMapping /aha/BufferMapping
+WORKDIR /aha/BufferMapping/cfunc
+RUN export COREIR_DIR=/aha/coreir-apps && make lib
+
+# Halide-to-Hardware
+COPY ./halide-to-hardware /aha/halide-to-hardware
+WORKDIR /aha/halide-to-hardware
+RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
 
 # CoreIR
+COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
 RUN cmake .. && make && make install
 # TODO: switch with following after RPATH fixes land in master
 # RUN cd /aha/coreir/build && cmake .. && make && make install && rm -rf *
 
-# CoreIR - Halide-to-Hardware
-WORKDIR /aha/coreir-apps/build
-RUN cmake .. && make
-
-# Lake
-WORKDIR /aha/BufferMapping/cfunc
-RUN export COREIR_DIR=/aha/coreir-apps && make lib
-
-# Halide-to-Hardware
-WORKDIR /aha/halide-to-hardware
-RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
-
 # Install AHA Tools
+COPY . /aha
 WORKDIR /aha
 RUN pip install -e .
