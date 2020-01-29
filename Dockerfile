@@ -1,7 +1,6 @@
 FROM ubuntu:rolling
-RUN apt update && \
-    # apt install -y --no-install-recommends \
-    apt install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
         git make cmake gcc g++ \
         python3 python3-pip \
         # Halide-to-Hardware
@@ -11,7 +10,8 @@ RUN apt update && \
         # cgra_pnr
         libigraph-dev \
         && \
-    apt clean && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 100 \
                         --slave   /usr/bin/pip    pip    /usr/bin/pip3 && \
     update-alternatives --install /usr/bin/clang       clang       /usr/bin/clang-7 100 && \
@@ -20,17 +20,23 @@ RUN apt update && \
 COPY . /aha
 
 # CoreIR
-RUN cd /aha/coreir/build && cmake .. && make && make install
+WORKDIR /aha/coreir/build
+RUN cmake .. && make && make install
 # TODO: switch with following after RPATH fixes land in master
 # RUN cd /aha/coreir/build && cmake .. && make && make install && rm -rf *
 
 # CoreIR - Halide-to-Hardware
-RUN cd /aha/coreir-apps/build && cmake .. && make
+WORKDIR /aha/coreir-apps/build
+RUN cmake .. && make
 
 # Lake
-RUN export COREIR_DIR=/aha/coreir-apps && cd /aha/BufferMapping/cfunc && make lib
+WORKDIR /aha/BufferMapping/cfunc
+RUN export COREIR_DIR=/aha/coreir-apps && make lib
 
 # Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir-apps && cd /aha/halide-to-hardware && make && make distrib
+WORKDIR /aha/halide-to-hardware
+RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
 
-RUN cd /aha && pip install -e .
+# Install AHA Tools
+WORKDIR /aha
+RUN pip install -e .
