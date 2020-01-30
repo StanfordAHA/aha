@@ -4,6 +4,9 @@ on:
   push:
     branches-ignore: 
       - master
+  pull_request:
+    branches:
+      - master
   schedule:
     - cron: '0 11 * * *'
 
@@ -24,7 +27,7 @@ jobs:
 #         docker exec test aha garnet --width 4 --height 2 --verilog
 #         docker exec test test -e /aha/garnet/garnet.v
     - name: Notify Owners
-#       if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request'
       uses: actions/github-script@0.4.0
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
