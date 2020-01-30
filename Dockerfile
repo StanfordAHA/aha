@@ -9,6 +9,8 @@ RUN apt-get update && \
         libgmp-dev libmpfr-dev libmpc-dev \
         # cgra_pnr
         libigraph-dev \
+        # kratos
+        libpython3-dev  \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
