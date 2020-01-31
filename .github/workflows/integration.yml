@@ -38,7 +38,7 @@ jobs:
           const result = await github.repos.getContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              path: OWNERS.yml
+              path: "OWNERS.yml"
             })
           console.log(result)
           
