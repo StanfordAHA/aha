@@ -20,23 +20,22 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-#     - name: Build Docker Image
-#       run: docker build . -t testing
-#     - name: Run Integration Tests
-#       run: |
-#         docker run --name test --rm -it -d testing bash
-#         docker exec test pip freeze
-#         docker exec test aha garnet --width 4 --height 2 --verilog
-#         docker exec test test -e /aha/garnet/garnet.v
-    - run: /bin/false
-    - name: Notify Owners
+    - name: Build Docker Image
+      run: docker build . -t testing
+    - name: Run Integration Tests
+      run: |
+        docker run --name test --rm -it -d testing bash
+        docker exec test pip freeze
+        docker exec test aha garnet --width 4 --height 2 --verilog
+        docker exec test test -e /aha/garnet/garnet.v
+    - name: Notify Owners on Failure
       if: github.event_name == 'pull_request' && failure()
       uses: actions/github-script@0.4.0
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
           if (!context.payload.sender.login.includes("dependabot")) {
-            // return
+            return
           }
           
           const updated_repo = context.payload.pull_request.title.match(/Bump ([^\s]+)/)[1]
@@ -54,11 +53,4 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               assignees: owners[updated_repo]
-            })
-          
-          await github.pulls.createReviewRequest({
-              pull_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              reviewers: owners[updated_repo]
             })
