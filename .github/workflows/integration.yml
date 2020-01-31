@@ -40,7 +40,7 @@ jobs:
               repo: context.repo.repo,
               path: "OWNERS.yml"
             })
-          let temp = atob(result.data.content)
+          let temp = Buffer.from(result.data.content, result.data.encoding).toString()
           console.log(temp)
           
           await github.issues.createComment({
