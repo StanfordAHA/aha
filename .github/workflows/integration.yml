@@ -35,6 +35,10 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
+          const diff_url = context.payload.pull_request.diff_url
+          const result = await github.request(diff_url)
+          console.log(result)
+          
           await github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
