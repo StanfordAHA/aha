@@ -59,7 +59,8 @@ modules = {
 
 import deps
 for dep in deps.order_deps(modules):
-    print(modules[dep])
     install(os.path.join(os.getcwd(), modules[dep]))
+
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'jmapper'])
 
 # TODO: `pip list` and ensure that all the above are pointing to sources
