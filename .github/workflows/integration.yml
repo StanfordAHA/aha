@@ -41,6 +41,7 @@ jobs:
           }
           
           const updated_repo = context.payload.pull_request.title.match(/Bump ([^\s]+)/)[0]
+          console.log(updated_repo)
           
           const result = await github.repos.getContents({
               owner: context.repo.owner,
@@ -56,5 +57,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Oops!' + assignees
+              body: 'Oops! ' + assignees
             })
