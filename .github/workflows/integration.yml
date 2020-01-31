@@ -20,16 +20,16 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-    - name: Build Docker Image
-      run: docker build . -t testing
-    - name: Run Integration Tests
-      run: |
-        docker run --name test --rm -it -d testing bash
-        docker exec test pip freeze
-        docker exec test aha garnet --width 4 --height 2 --verilog
-        docker exec test test -e /aha/garnet/garnet.v
+#     - name: Build Docker Image
+#       run: docker build . -t testing
+#     - name: Run Integration Tests
+#       run: |
+#         docker run --name test --rm -it -d testing bash
+#         docker exec test pip freeze
+#         docker exec test aha garnet --width 4 --height 2 --verilog
+#         docker exec test test -e /aha/garnet/garnet.v
     - name: Notify Owners
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && failure()
       uses: actions/github-script@0.4.0
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
@@ -38,5 +38,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Test!'
+              body: 'Oops!'
             })
