@@ -40,7 +40,7 @@ jobs:
             // return
           }
           
-          const updated_repo = context.payload.pull_request.title.match(/Bump ([^\s]+)/)[0]
+          const updated_repo = context.payload.pull_request.title.match(/Bump ([^\s]+)/)[1]
           console.log(updated_repo)
           
           const result = await github.repos.getContents({
