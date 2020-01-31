@@ -40,8 +40,10 @@ jobs:
               repo: context.repo.repo,
               path: "OWNERS.json"
             })
-          let temp = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
-          console.log(temp)
+          let owners = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
+          
+          let assignees = owners["kratos"].map(x => "@" + x).join(" ")
+          console.log(assignees)
           
           await github.issues.createComment({
               issue_number: context.issue.number,
