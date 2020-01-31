@@ -35,7 +35,7 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          const result = await github.resos.getContents({
+          const result = await github.repos.getContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: OWNERS.yml
