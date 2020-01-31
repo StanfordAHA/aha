@@ -45,6 +45,15 @@ jobs:
           let assignees = owners["kratos"].map(x => "@" + x).join(" ")
           console.log(assignees)
           
+          let pr = await github.pulls.get({
+              pull_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+          
+          console.log(pr)
+          console.log(context)
+          
           await github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
