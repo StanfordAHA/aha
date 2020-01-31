@@ -33,7 +33,7 @@ jobs:
       if: github.event_name == 'pull_request' && failure()
       uses: actions/github-script@0.4.0
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
+        github-token: ${{secrets.ASSIGN_TOKEN}}
         script: |
           if (!context.payload.sender.login.includes("dependabot")) {
             // return
