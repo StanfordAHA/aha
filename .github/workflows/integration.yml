@@ -35,14 +35,11 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          const creator = context.payload.sender.login
-          if (!creator.includes("dependabot")) {
+          if (!context.payload.sender.login.includes("dependabot")) {
             // return
           }
           
           const updated_repo = context.payload.pull_request.title.match(/Bump ([^\s]+)/)[1]
-          console.log(updated_repo)
-          
           const result = await github.repos.getContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -50,12 +47,9 @@ jobs:
             })
           const owners = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
           
-          const assignees = owners[updated_repo].map(x => "@" + x).join(" ")
-          console.log(assignees)
-          
-          await github.issues.createComment({
+          await github.issues.addAssignees({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Oops! ' + assignees
+              assignees: owners[updated_repo]
             })
