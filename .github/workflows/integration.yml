@@ -38,7 +38,7 @@ jobs:
           const result = await github.repos.getContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              path: "OWNERS.yml"
+              path: "OWNERS.json"
             })
           let temp = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
           console.log(temp)
