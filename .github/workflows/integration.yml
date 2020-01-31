@@ -53,3 +53,10 @@ jobs:
               repo: context.repo.repo,
               assignees: owners[updated_repo]
             })
+          
+          await github.issues.createReviewRequest({
+              pull: context.pulls.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              reviewers: owners[updated_repo]
+            })
