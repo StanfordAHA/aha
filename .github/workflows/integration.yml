@@ -33,7 +33,7 @@ jobs:
       if: github.event_name == 'pull_request' && failure()
       uses: actions/github-script@0.4.0
       with:
-        github-token: ${{secrets.ASSIGN_TOKEN}}
+        github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
           if (!context.payload.sender.login.includes("dependabot")) {
             // return
@@ -47,6 +47,8 @@ jobs:
             })
           const owners = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
           
+          console.log(owners[updated_repo])
+          
           await github.issues.addAssignees({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -55,7 +57,7 @@ jobs:
             })
           
           await github.issues.createReviewRequest({
-              pull: context.pulls.number,
+              pull_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               reviewers: owners[updated_repo]
