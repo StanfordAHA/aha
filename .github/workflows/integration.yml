@@ -40,7 +40,8 @@ jobs:
               repo: context.repo.repo,
               path: "OWNERS.yml"
             })
-          console.log(result)
+          let temp = atob(result.data.content)
+          console.log(temp)
           
           await github.issues.createComment({
               issue_number: context.issue.number,
