@@ -35,28 +35,26 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
+          const creator = context.payload.sender.login
+          if (!creator.includes("dependabot")) {
+            // return
+          }
+          
+          const updated_repo = context.payload.pull_request.title.match(/Bump ([^\s]+)/)[0]
+          
           const result = await github.repos.getContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: "OWNERS.json"
             })
-          let owners = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
+          const owners = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
           
-          let assignees = owners["kratos"].map(x => "@" + x).join(" ")
+          const assignees = owners[updated_repo].map(x => "@" + x).join(" ")
           console.log(assignees)
-          
-          let pr = await github.pulls.get({
-              pull_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-          
-          console.log(pr)
-          console.log(context)
           
           await github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Oops!'
+              body: 'Oops!' + assignees
             })
