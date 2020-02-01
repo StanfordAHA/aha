@@ -12,6 +12,8 @@ RUN apt-get update && \
         libigraph-dev \
         # kratos
         libpython3-dev  \
+        # EDA Tools
+        tclsh \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
