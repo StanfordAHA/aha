@@ -52,4 +52,4 @@ RUN cmake .. && make && make install
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN pip install -e .
+RUN pip install wheel && pip install -e .
