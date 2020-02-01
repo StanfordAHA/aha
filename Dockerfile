@@ -1,4 +1,7 @@
 FROM ubuntu:rolling
+
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         git make cmake gcc g++ \
@@ -13,8 +16,10 @@ RUN apt-get update && \
         # kratos
         libpython3-dev  \
         # EDA Tools
-        tclsh \
+        tclsh tcl \
         && \
+    ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 100 \
