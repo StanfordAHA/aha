@@ -131,7 +131,7 @@ def main():
             '--input-app', app_dir/'bin/design_top.json',
             '--input-file', app_dir/'bin/input.raw',
             '--output-file', app_dir/f'bin/{args.app}.bs',
-            '--gold-file', app_dir/'gold.raw',
+            '--gold-file', app_dir/'bin/gold.raw',
         ]
 
         subprocess.call(
