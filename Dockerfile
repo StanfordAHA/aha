@@ -1,4 +1,5 @@
 FROM ubuntu:rolling
+LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
