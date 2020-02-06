@@ -1,11 +1,12 @@
 env:
-  TEST: "BAR"
+  TEST1: "BAR"
   
 steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
   commands:
-  - export TEST=FOO
+  - export TEST1=FOO
+  - export TEST2=FOO
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT"
   - echo "--- Pruning Docker Images"
@@ -17,6 +18,8 @@ steps:
   key: "integration-tests"
   depends_on: "docker-build"
   commands:
+  - echo $TEST1
+  - echo $TEST2
   - source /cad/modules/tcl/init/sh
   - module load base incisive
   - ls /aha
