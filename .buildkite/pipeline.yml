@@ -2,6 +2,7 @@ steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
   commands:
+  - export TEST=FOO
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT"
   - echo "--- Pruning Docker Images"
