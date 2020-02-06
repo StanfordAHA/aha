@@ -1,3 +1,6 @@
+env:
+  TEST: "BAR"
+  
 steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
