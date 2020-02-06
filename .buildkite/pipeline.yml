@@ -3,7 +3,7 @@ steps:
   key: "docker-build"
   commands:
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet"
+  - docker build . -t "garnet:$BUILDKITE_COMMIT"
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=24h" --filter=label='description=garnet'
   agents:
@@ -27,7 +27,7 @@ steps:
   - rm -rf /aha/*
   plugins:
     - docker#v3.2.0:
-        image: garnet
+        image: garnet:$BUILDKITE_COMMIT
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
