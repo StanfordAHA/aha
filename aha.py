@@ -86,7 +86,7 @@ def main():
         env = copy.deepcopy(os.environ)
         env['COREIR_DIR'] = str(AHA_DIR/'coreir-apps')
         halide_dir = AHA_DIR/'halide-to-hardware'
-        app_dir = halide_dir/Path('apps/hardware_benchmarks/tests')/args.app
+        app_dir = halide_dir/Path('apps/hardware_benchmarks')/args.app
 
         # CoreIR Output
         subprocess.call(
@@ -123,7 +123,7 @@ def main():
             cwd=AHA_DIR/'garnet',
         )
     elif args.command == 'map':
-        app_dir = Path(f'{AHA_DIR}/halide-to-hardware/apps/hardware_benchmarks/tests/{args.app}')
+        app_dir = Path(f'{AHA_DIR}/halide-to-hardware/apps/hardware_benchmarks/{args.app}')
 
         map_args = [
             '--no-pd',
@@ -139,7 +139,7 @@ def main():
             cwd=AHA_DIR/'garnet',
         )
     elif args.command == 'test':
-        app_dir = Path(f'{AHA_DIR}/halide-to-hardware/apps/hardware_benchmarks/tests/{args.app}')
+        app_dir = Path(f'{AHA_DIR}/halide-to-hardware/apps/hardware_benchmarks/{args.app}')
 
         subprocess.call(
             [sys.executable, 'tbg.py', 'garnet.v', 'garnet_stub.v', app_dir/f'bin/{args.app}.bs.json'],
