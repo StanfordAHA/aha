@@ -90,13 +90,13 @@ def main():
         app_dir = halide_dir/Path('apps/hardware_benchmarks')/args.app
 
         # CoreIR Output
-        subprocess.call(
+        subprocess.check_call(
             ['make', '-C', app_dir, 'design-coreir'],
             cwd=AHA_DIR/'halide-to-hardware',
             env=env,
         )
 
-        subprocess.call(
+        subprocess.check_call(
             [sys.executable, 'coreir_gen.py', app_dir/'bin/design_top.json'],
             cwd=AHA_DIR/'BufferMapping/script/',
             env=env,
@@ -108,7 +108,7 @@ def main():
         )
 
         # Raw Images
-        subprocess.call(
+        subprocess.check_call(
             ['make', '-C', app_dir, 'bin/input.raw', 'bin/output_cpu.raw'],
             cwd=AHA_DIR/'halide-to-hardware',
             env=env,
@@ -119,7 +119,7 @@ def main():
             app_dir/'bin/gold.raw',
         )
     elif args.command == 'garnet':
-        subprocess.call(
+        subprocess.check_call(
             [sys.executable, 'garnet.py'] + extra_args,
             cwd=AHA_DIR/'garnet',
         )
@@ -136,7 +136,7 @@ def main():
             '--gold-file', app_dir/'bin/gold.raw',
         ]
 
-        subprocess.call(
+        subprocess.check_call(
             [sys.executable, 'garnet.py'] + map_args + extra_args,
             cwd=AHA_DIR/'garnet',
         )
@@ -144,7 +144,7 @@ def main():
         args.app = Path(args.app)
         app_dir = Path(f'{AHA_DIR}/halide-to-hardware/apps/hardware_benchmarks/{args.app}')
 
-        subprocess.call(
+        subprocess.check_call(
             [sys.executable, 'tbg.py', 'garnet.v', 'garnet_stub.v', app_dir/f'bin/{args.app.name}.bs.json'],
             cwd=AHA_DIR/'garnet',
         )
