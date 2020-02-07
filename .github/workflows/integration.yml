@@ -2,7 +2,12 @@ name: Integration Tests
 
 on:
   push:
-    branches-ignore: 
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches:
       - master
   schedule:
     - cron: '0 11 * * *'
@@ -23,3 +28,27 @@ jobs:
         docker exec test pip freeze
         docker exec test aha garnet --width 4 --height 2 --verilog
         docker exec test test -e /aha/garnet/garnet.v
+    - name: Notify Owners on Failure
+      if: github.event_name == 'pull_request' && failure()
+      uses: actions/github-script@0.4.0
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          if (!context.payload.sender.login.includes("dependabot")) {
+            return
+          }
+          
+          const updated_repo = context.payload.pull_request.title.match(/Bump ([^\s]+)/)[1]
+          const result = await github.repos.getContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: "OWNERS.json"
+            })
+          const owners = JSON.parse(Buffer.from(result.data.content, result.data.encoding))
+          
+          await github.issues.addAssignees({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              assignees: owners[updated_repo]
+            })
