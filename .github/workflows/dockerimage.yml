@@ -5,6 +5,7 @@ on:
     branches-ignore: 
       - dependabot/**
       - '*-patch-*'
+      - dev/**
   schedule:
     - cron: '0 11 * * 0'
 

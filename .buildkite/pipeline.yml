@@ -1,16 +1,11 @@
-env:
-  TEST1: "BAR"
-  
 steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
   commands:
-  - export TEST1=FOO
-  - export TEST2=FOO
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:$BUILDKITE_COMMIT"
+  - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
   - echo "--- Pruning Docker Images"
-  - yes | docker image prune -a --filter "until=24h" --filter=label='description=garnet'
+  - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet'
   agents:
     docker: true
   
@@ -27,14 +22,14 @@ steps:
   - aha halide tests/conv_1_2
   - aha map tests/conv_1_2 --width 16 --height 16
   - aha test tests/conv_1_2
-  # We need to clean out the docker workdir because files in docker 
-  # have root permissions, and the workdir is a mapped volume so
-  # the next buildkite job in that directory will fail because it
-  # couldn't remove the existing files.
+  # We need to clean out the docker workdir because files in docker
+  # have root permissions, and the workdir is a mapped volume so the
+  # next buildkite job in that directory will fail because it couldn't
+  # remove the existing files.
   - rm -rf /aha/*
   plugins:
     - docker#v3.2.0:
-        image: garnet:$BUILDKITE_COMMIT
+        image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
@@ -43,8 +38,11 @@ steps:
   agents:
     docker: true
 
-# - label: "Delete Docker Image"
-#   depends_on: "integration-tests"
-#   commands:
-#   # --no-prune so it doesn't prune dangling images, we want to use them for the Docker cache.
-#   - docker image rm "garnet" --no-prune
+- label: ":skull_and_crossbones: Delete Docker Image"
+  depends_on: "integration-tests"
+  commands:
+  # '--no-prune' so it doesn't prune dangling images, we want to use
+  # them for the Docker cache.
+  - docker image rm "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA" --no-prune
+  agents:
+    docker: true
