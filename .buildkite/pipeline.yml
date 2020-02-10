@@ -1,14 +1,9 @@
-env:
-  TEST1: "BAR"
-  
 steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
   commands:
-  - export TEST1=FOO
-  - export TEST2=FOO
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:$BUILDKITE_COMMIT"
+  - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet'
   agents:
@@ -34,7 +29,7 @@ steps:
   - rm -rf /aha/*
   plugins:
     - docker#v3.2.0:
-        image: garnet:$BUILDKITE_COMMIT
+        image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
@@ -48,6 +43,6 @@ steps:
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use
   # them for the Docker cache.
-  - docker image rm "garnet:$BUILDKITE_COMMIT" --no-prune
+  - docker image rm "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA" --no-prune
   agents:
     docker: true
