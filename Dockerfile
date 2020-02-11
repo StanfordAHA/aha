@@ -37,7 +37,7 @@ RUN apt-get update && \
                         --slave   /usr/bin/pip    pip    /root/miniconda/bin/pip && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
-    pip install cmake && \
+    pip install cmake==3.15.3 && \
     update-alternatives --install /usr/bin/cmake cmake /root/miniconda/bin/cmake 100 && \
     wget -nv https://github.com/llvm/llvm-project/releases/download/llvmorg-7.1.0/clang+llvm-7.1.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
     tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
@@ -56,7 +56,7 @@ RUN export COREIR_DIR=/aha/coreir-apps && make lib
 # Halide-to-Hardware
 COPY ./halide-to-hardware /aha/halide-to-hardware
 WORKDIR /aha/halide-to-hardware
-RUN export COREIR_DIR=/aha/coreir-apps && export LLVM_OK=y && make && make distrib
+RUN export COREIR_DIR=/aha/coreir-apps && export LLVM_OK=y && export CLANG_OK=y && make && make distrib
 
 # CoreIR
 COPY ./coreir /aha/coreir
