@@ -39,8 +39,12 @@ RUN apt-get update && \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake && \
     update-alternatives --install /usr/bin/cmake cmake /root/miniconda/bin/cmake 100 && \
-    wget https://github.com/llvm/llvm-project/releases/download/llvmorg-7.1.0/clang+llvm-7.1.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
-    tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
+    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" && \
+    wget https://apt.llvm.org/llvm.sh && \
+    chmod +x llvm.sh && \
+    ./llvm.sh 7
+#     wget https://github.com/llvm/llvm-project/releases/download/llvmorg-7.1.0/clang+llvm-7.1.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
+#     tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
 
 
 # CoreIR - Halide-to-Hardware
