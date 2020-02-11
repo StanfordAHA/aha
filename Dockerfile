@@ -56,7 +56,7 @@ RUN export COREIR_DIR=/aha/coreir-apps && make lib
 # Halide-to-Hardware
 COPY ./halide-to-hardware /aha/halide-to-hardware
 WORKDIR /aha/halide-to-hardware
-RUN export COREIR_DIR=/aha/coreir-apps && export CLANG=/usr/bin/clang && export LLVM_CONFIG=/usr/bin/llvm-config && make && make distrib
+RUN export COREIR_DIR=/aha/coreir-apps && export LLVM_OK=y && make && make distrib
 
 # CoreIR
 COPY ./coreir /aha/coreir
