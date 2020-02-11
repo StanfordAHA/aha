@@ -14,6 +14,7 @@ RUN apt-get update && \
         # Halide-to-Hardware
         imagemagick csh \
         libz-dev libpng-dev libjpeg-dev \
+        libtinfo-dev \
         # hwtypes
         libgmp-dev libmpfr-dev libmpc-dev \
         # cgra_pnr
