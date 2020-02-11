@@ -31,7 +31,7 @@ RUN apt-get update && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     bash ~/miniconda.sh -b -p $HOME/miniconda && \
     update-alternatives --install /usr/bin/python python /root/miniconda/bin/python 100 \
                         --slave   /usr/bin/pip    pip    /root/miniconda/bin/pip && \
@@ -39,12 +39,8 @@ RUN apt-get update && \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake && \
     update-alternatives --install /usr/bin/cmake cmake /root/miniconda/bin/cmake 100 && \
-    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" && \
-    wget https://apt.llvm.org/llvm.sh && \
-    chmod +x llvm.sh && \
-    ./llvm.sh 7
-#     wget https://github.com/llvm/llvm-project/releases/download/llvmorg-7.1.0/clang+llvm-7.1.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
-#     tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
+    wget -nv https://github.com/llvm/llvm-project/releases/download/llvmorg-7.1.0/clang+llvm-7.1.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
+    tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
 
 
 # CoreIR - Halide-to-Hardware
@@ -60,7 +56,7 @@ RUN export COREIR_DIR=/aha/coreir-apps && make lib
 # Halide-to-Hardware
 COPY ./halide-to-hardware /aha/halide-to-hardware
 WORKDIR /aha/halide-to-hardware
-RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
+RUN export COREIR_DIR=/aha/coreir-apps && export CLANG=/usr/bin/clang && export LLVM_CONFIG=/usr/lib/llvm-config && make && make distrib
 
 # CoreIR
 COPY ./coreir /aha/coreir
