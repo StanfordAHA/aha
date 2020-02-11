@@ -35,6 +35,8 @@ RUN apt-get update && \
     bash ~/miniconda.sh -b -p $HOME/miniconda && \
     update-alternatives --install /usr/bin/python python /root/miniconda/bin/python 100 \
                         --slave   /usr/bin/pip    pip    /root/miniconda/bin/pip && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake && \
     update-alternatives --install /usr/bin/cmake cmake /root/miniconda/bin/cmake 100 && \
     wget https://github.com/llvm/llvm-project/releases/download/llvmorg-7.1.0/clang+llvm-7.1.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
