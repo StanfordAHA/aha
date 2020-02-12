@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -7,10 +7,12 @@ RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
         wget \
         git make gcc-9 g++-9 \
+        python3.7 python3.7-dev python3.7-venv \
         # Halide-to-Hardware
         imagemagick csh \
         libz-dev libpng-dev libjpeg-dev \
@@ -20,7 +22,7 @@ RUN apt-get update && \
         # cgra_pnr
         libigraph-dev \
         # kratos
-        libpython3-dev \
+        libpython3.7-dev \
         # clang
         xz-utils \
         # EDA Tools
@@ -32,15 +34,14 @@ RUN apt-get update && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    bash ~/miniconda.sh -b -p $HOME/miniconda && \
-    update-alternatives --install /usr/bin/python python /root/miniconda/bin/python 100 \
-                        --slave   /usr/bin/pip    pip    /root/miniconda/bin/pip && \
+    wget -O - https://bootstrap.pypa.io/get-pip.py | python3.7 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 100 \
+                        --slave   /usr/bin/pip    pip    /usr/bin/pip3.7 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake==3.15.3 && \
     update-alternatives --install /usr/bin/cmake cmake /root/miniconda/bin/cmake 100 && \
-    wget -nv http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
+    wget -nv -O ~/clang7.tar.xz http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz && \
     tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
 
 
