@@ -19,8 +19,6 @@ RUN apt-get update && \
         libgmp-dev libmpfr-dev libmpc-dev \
         # cgra_pnr
         libigraph-dev \
-        # kratos
-        libpython3-dev \
         # clang
         xz-utils \
         # EDA Tools
