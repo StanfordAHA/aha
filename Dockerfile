@@ -69,3 +69,7 @@ RUN cmake .. && make && make install
 COPY . /aha
 WORKDIR /aha
 RUN pip install wheel && pip install -e .
+
+ENV PATH="/root/miniconda/bin:${PATH}"
+ENV OA_UNSUPPORTED_PLAT=linux_rhel60
+ENV USER=docker
