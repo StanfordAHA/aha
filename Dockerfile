@@ -35,8 +35,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     wget -O - https://bootstrap.pypa.io/get-pip.py | python3.7 && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 100 \
-                        --slave   /usr/bin/pip    pip    /usr/bin/pip3.7 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake==3.15.3 && \
