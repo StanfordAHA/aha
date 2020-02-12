@@ -40,7 +40,7 @@ RUN apt-get update && \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake==3.15.3 && \
     update-alternatives --install /usr/bin/cmake cmake /root/miniconda/bin/cmake 100 && \
-    wget -nv http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz \
+    wget -nv http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ~/clang7.tar.xz && \
     tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
 
 
