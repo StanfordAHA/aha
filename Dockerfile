@@ -15,7 +15,9 @@ RUN yum install -y \
     ## Innovus
     libpng12 libjpeg libXft libXp libXmu libGLU libXScrnSaver \
     && \
-    pip install cmake==3.15.3
+    mkdir aha && \
+    /opt/python/cp37-cp37m/bin/python -m venv . && \
+    pip install cmake==3.15.3 autoenv
 
 # CoreIR - Halide-to-Hardware
 COPY ./coreir-apps /aha/coreir-apps
