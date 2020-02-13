@@ -3,7 +3,7 @@ LABEL description="garnet"
 
 RUN yum install -y \
     # Halide-to-Hardware
-    llvm7.0-7.0.1-4.el7.x86_64 llvm7.0-devel-7.0.1-4.el7.x86_64 \
+    llvm7.0 llvm-toolset-7.0 \
     ImageMagick csh \
     zlib-devel libpng-devel libjpeg-devel ncurses-devel \
     # hwtypes
@@ -33,7 +33,7 @@ RUN source /aha/bin/activate && export COREIR_DIR=/aha/coreir-apps && make lib
 # Halide-to-Hardware
 COPY ./halide-to-hardware /aha/halide-to-hardware
 WORKDIR /aha/halide-to-hardware
-RUN source /aha/bin/activate && export COREIR_DIR=/aha/coreir-apps && make && make distrib
+RUN source scl_source enable llvm-toolset-7.0 && source /aha/bin/activate && export COREIR_DIR=/aha/coreir-apps && make && make distrib
 
 # CoreIR
 COPY ./coreir /aha/coreir
