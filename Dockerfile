@@ -3,7 +3,7 @@ LABEL description="garnet"
 
 RUN yum install -y \
     # Halide-to-Hardware
-    llvm7.0 llvm-toolset-7.0 \
+    llvm-toolset-7.0 llvm-toolset-7.0-llvm-devel \
     ImageMagick csh \
     zlib-devel libpng-devel libjpeg-devel ncurses-devel \
     # hwtypes
