@@ -15,7 +15,7 @@ RUN yum install -y \
     ## Innovus
     libpng12 libjpeg libXft libXp libXmu libGLU libXScrnSaver \
     && \
-    mkdir aha && \
+    mkdir -p aha && cd aha && \
     /opt/python/cp37-cp37m/bin/python -m venv . && \
     source bin/activate && \
     pip install cmake==3.15.3 autoenv
