@@ -18,7 +18,9 @@ RUN yum install -y \
     mkdir -p aha && cd aha && \
     /opt/python/cp37-cp37m/bin/python -m venv . && \
     source bin/activate && \
-    pip install cmake==3.15.3
+    pip install cmake==3.15.3 && \
+    echo "source /aha/bin/activate" >> ~/.bashrc && \
+    echo "source scl_source enable llvm-toolset-7.0" >> ~/.bashrc
 
 # CoreIR - Halide-to-Hardware
 COPY ./coreir-apps /aha/coreir-apps
