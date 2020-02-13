@@ -9,7 +9,7 @@ RUN yum install -y \
     # hwtypes
     gmp-devel mpfr-devel libmpc-devel \
     # cgra_pnr
-    igraph-devel
+    igraph-devel \
     # EDA Tools
     ksh tcsh tcl \
     ## Innovus
