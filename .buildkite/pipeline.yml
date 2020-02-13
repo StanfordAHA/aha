@@ -13,8 +13,6 @@ steps:
   key: "integration-tests"
   depends_on: "docker-build"
   commands:
-  - echo $$TEST1
-  - echo $$TEST2
   - source /cad/modules/tcl/init/sh
   - module load base incisive
   - ls /aha
