@@ -18,7 +18,8 @@ RUN yum install -y \
     mkdir -p aha && cd aha && \
     /opt/python/cp37-cp37m/bin/python -m venv . && \
     source bin/activate && \
-    pip install cmake==3.15.3 autoenv
+    pip install cmake==3.15.3 autoenv && \
+    echo "source bin/activate" > .env
 
 # CoreIR - Halide-to-Hardware
 COPY ./coreir-apps /aha/coreir-apps
