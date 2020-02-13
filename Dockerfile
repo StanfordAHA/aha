@@ -18,35 +18,34 @@ RUN yum install -y \
     mkdir -p aha && cd aha && \
     /opt/python/cp37-cp37m/bin/python -m venv . && \
     source bin/activate && \
-    pip install cmake==3.15.3 autoenv && \
-    echo "source bin/activate" > .env
+    pip install cmake==3.15.3
 
 # CoreIR - Halide-to-Hardware
 COPY ./coreir-apps /aha/coreir-apps
 WORKDIR /aha/coreir-apps/build
-RUN cmake .. && make
+RUN source /aha/bin/activate && cmake .. && make
 
 # Lake
 COPY ./BufferMapping /aha/BufferMapping
 WORKDIR /aha/BufferMapping/cfunc
-RUN export COREIR_DIR=/aha/coreir-apps && make lib
+RUN source /aha/bin/activate && export COREIR_DIR=/aha/coreir-apps && make lib
 
 # Halide-to-Hardware
 COPY ./halide-to-hardware /aha/halide-to-hardware
 WORKDIR /aha/halide-to-hardware
-RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
+RUN source /aha/bin/activate && export COREIR_DIR=/aha/coreir-apps && make && make distrib
 
 # CoreIR
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
-RUN cmake .. && make && make install
+RUN source /aha/bin/activate && cmake .. && make && make install
 # TODO: switch with following after RPATH fixes land in master
 # RUN cd /aha/coreir/build && cmake .. && make && make install && rm -rf *
 
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN pip install wheel && pip install -e .
+RUN source /aha/bin/activate && pip install wheel && pip install -e .
 
 ENV PATH="/root/miniconda/bin:${PATH}"
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
