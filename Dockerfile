@@ -4,7 +4,7 @@ LABEL description="garnet"
 RUN yum install -y \
     # Halide-to-Hardware
     llvm7.0-7.0.1-4.el7.x86_64 llvm7.0-devel-7.0.1-4.el7.x86_64 \
-    imagemagick csh \
+    ImageMagick csh \
     zlib-devel libpng-devel libjpeg-devel ncurses-devel \
     # hwtypes
     gmp-devel mpfr-devel libmpc-devel \
