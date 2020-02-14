@@ -35,7 +35,7 @@ RUN source /aha/bin/activate && export COREIR_DIR=/aha/coreir-apps && make lib
 # Halide-to-Hardware
 COPY ./halide-to-hardware /aha/halide-to-hardware
 WORKDIR /aha/halide-to-hardware
-RUN source scl_source enable llvm-toolset-7.0 && source /aha/bin/activate && export COREIR_DIR=/aha/coreir-apps && make && make distrib
+RUN source scl_source enable llvm-toolset-7.0 && source /aha/bin/activate && export CXXFLAGS=-Wno-maybe-uninitialized && export COREIR_DIR=/aha/coreir-apps && make && make distrib
 
 # CoreIR
 COPY ./coreir /aha/coreir
