@@ -17,6 +17,7 @@ steps:
   - echo $$TEST2
   - source /cad/modules/tcl/init/sh
   - module load base incisive
+  - irun
   - ls /aha
   - aha garnet --width 16 --height 16 --verilog --interconnect-only
   - aha halide tests/conv_1_2
