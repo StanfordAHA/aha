@@ -15,6 +15,7 @@ steps:
   commands:
   - echo $$TEST1
   - echo $$TEST2
+  - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive
   - ls /aha
