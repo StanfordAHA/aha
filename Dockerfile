@@ -30,7 +30,7 @@ RUN apt-get update && \
         ksh tcsh tcl \
         libjpeg62 libxft2 libxmu6 libglu1-mesa libxss1 \
         libxcb-render0 libglib2.0-0 \
-        ilbc6-i386 \
+        libc6-i386 \
         && \
     ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
