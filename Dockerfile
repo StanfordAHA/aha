@@ -8,6 +8,7 @@ RUN apt-get update && \
         build-essential software-properties-common && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
+    add-apt-repository -y ppa:zeehio/libxp && \
     dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y \
@@ -28,7 +29,7 @@ RUN apt-get update && \
         xz-utils \
         # EDA Tools
         ksh tcsh tcl \
-        libjpeg62 libxft2 libxmu6 libglu1-mesa libxss1 \
+        libjpeg62 libxft2 libxmu6 libxp6 libglu1-mesa libxss1 \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
         && \
