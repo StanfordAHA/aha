@@ -29,10 +29,13 @@ RUN apt-get update && \
         xz-utils \
         # EDA Tools
         ksh tcsh tcl \
-        libjpeg62 libxft2 libxmu6 libxp6 libglu1-mesa libxss1 \
+        libxp6 libxi6 libxrandr2 libtiff5 libmng2 libpng12-0 \
+        libjpeg62 libxft2 libxmu6 libglu1-mesa libxss1 \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
         && \
+    ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
+    ln -s /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.1 && \
     ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     apt-get clean && \
