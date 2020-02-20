@@ -63,7 +63,7 @@ RUN export COREIR_DIR=/aha/coreir-apps && make lib
 # Halide-to-Hardware
 COPY ./halide-to-hardware /aha/halide-to-hardware
 WORKDIR /aha/halide-to-hardware
-RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
+RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib && make clean
 
 # CoreIR
 COPY ./coreir /aha/coreir
