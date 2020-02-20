@@ -17,9 +17,13 @@ steps:
   - module load base incisive
   - irun
   - ls /aha
+  - echo "--- Generating Garnet"
   - aha garnet --width 16 --height 16 --verilog --interconnect-only
+  - echo "--- Compiling App"
   - aha halide tests/conv_1_2
+  - echo "--- Mapping App"
   - aha map tests/conv_1_2 --width 16 --height 16
+  - echo "--- Running Test"
   - aha test tests/conv_1_2
   # We need to clean out the docker workdir because files in docker
   # have root permissions, and the workdir is a mapped volume so the
