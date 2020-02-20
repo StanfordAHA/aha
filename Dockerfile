@@ -29,6 +29,7 @@ RUN apt-get update && \
         xz-utils \
         # EDA Tools
         ksh tcsh tcl \
+        dc libelf1 binutils \
         libxp6 libxi6 libxrandr2 libtiff5 libmng2 libpng12-0 \
         libjpeg62 libxft2 libxmu6 libglu1-mesa libxss1 \
         libxcb-render0 libglib2.0-0 \
