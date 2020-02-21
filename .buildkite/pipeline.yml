@@ -4,7 +4,7 @@ steps:
   commands:
   - echo "--- Handle PR"
   - if [[ $$FLOW_REPO ]]; then
-      cd $FLOW_REPO && git checkout $FLOW_HEAD_SHA $$ cd -
+      cd $FLOW_REPO && git checkout $FLOW_HEAD_SHA $$ cd - ;
     fi
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
