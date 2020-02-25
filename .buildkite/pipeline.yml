@@ -2,6 +2,10 @@ steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
   commands:
+  - echo "--- Handle PR"
+  - if [[ $$FLOW_REPO ]]; then
+      cd $FLOW_REPO && git checkout $FLOW_HEAD_SHA $$ cd - ;
+    fi
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
   - echo "--- Pruning Docker Images"
@@ -13,14 +17,17 @@ steps:
   key: "integration-tests"
   depends_on: "docker-build"
   commands:
-  - echo $$TEST1
-  - echo $$TEST2
   - source /cad/modules/tcl/init/sh
   - module load base incisive
+  - irun
   - ls /aha
+  - echo "--- Generating Garnet"
   - aha garnet --width 16 --height 16 --verilog --interconnect-only
+  - echo "--- Compiling App"
   - aha halide tests/conv_1_2
+  - echo "--- Mapping App"
   - aha map tests/conv_1_2 --width 16 --height 16
+  - echo "--- Running Test"
   - aha test tests/conv_1_2
   # We need to clean out the docker workdir because files in docker
   # have root permissions, and the workdir is a mapped volume so the
