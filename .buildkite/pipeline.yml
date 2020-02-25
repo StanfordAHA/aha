@@ -1,10 +1,14 @@
+env:
+  WIDTH: 16
+  HEIGHT: 16
+
 steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
   commands:
   - echo "--- Handle PR"
   - if [[ $$FLOW_REPO ]]; then
-      cd $FLOW_REPO && git checkout $FLOW_HEAD_SHA $$ cd - ;
+      cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA $$ cd - ;
     fi
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
@@ -19,14 +23,13 @@ steps:
   commands:
   - source /cad/modules/tcl/init/sh
   - module load base incisive
-  - irun
   - ls /aha
   - echo "--- Generating Garnet"
-  - aha garnet --width 16 --height 16 --verilog --interconnect-only
+  - aha garnet --width $WIDTH --height $HEIGHT --verilog --interconnect-only
   - echo "--- Compiling App"
   - aha halide tests/conv_1_2
   - echo "--- Mapping App"
-  - aha map tests/conv_1_2 --width 16 --height 16
+  - aha map tests/conv_1_2 --width $WIDTH --height $HEIGHT
   - echo "--- Running Test"
   - aha test tests/conv_1_2
   # We need to clean out the docker workdir because files in docker
