@@ -1,6 +1,6 @@
 env:
-- WIDTH: 16
-- HEIGHT: 16
+  - WIDTH: 16
+  - HEIGHT: 16
 
 steps:
 - label: ":wrench: Build Docker Image"
