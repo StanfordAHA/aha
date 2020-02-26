@@ -1,5 +1,12 @@
 # Docker
+.buildkite
+.dependabot
+.github
 Dockerfile
+.dockerignore
+.gitignore
+*.md
+*.json
 
 
 # Created by https://www.gitignore.io/api/c++,python
