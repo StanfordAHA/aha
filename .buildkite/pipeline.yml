@@ -1,7 +1,3 @@
-env:
-  WIDTH: 16
-  HEIGHT: 16
-
 steps:
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
@@ -44,6 +40,9 @@ steps:
           - "/cad/:/cad"
         mount-checkout: false
         propagate-environment: true
+        environment:
+          - WIDTH: 16
+          - HEIGHT: 16
         shell: ["/bin/bash", "-e", "-c"]
   agents:
     docker: true
