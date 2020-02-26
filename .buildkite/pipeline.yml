@@ -25,11 +25,11 @@ steps:
   - module load base incisive
   - ls /aha
   - echo "--- Generating Garnet"
-  - aha garnet --width $WIDTH --height $HEIGHT --verilog --interconnect-only
+  - aha garnet --width $$WIDTH --height $$HEIGHT --verilog --interconnect-only
   - echo "--- Compiling App"
   - aha halide tests/conv_1_2
   - echo "--- Mapping App"
-  - aha map tests/conv_1_2 --width $WIDTH --height $HEIGHT
+  - aha map tests/conv_1_2 --width $$WIDTH --height $$HEIGHT
   - echo "--- Running Test"
   - aha test tests/conv_1_2
   # We need to clean out the docker workdir because files in docker
