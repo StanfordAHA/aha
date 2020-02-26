@@ -41,8 +41,8 @@ steps:
         mount-checkout: false
         propagate-environment: true
         environment:
-          - WIDTH: 16
-          - HEIGHT: 16
+          - WIDTH=16
+          - HEIGHT=16
         shell: ["/bin/bash", "-e", "-c"]
   agents:
     docker: true
