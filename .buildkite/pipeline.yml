@@ -7,9 +7,9 @@ steps:
   key: "docker-build"
   commands:
   - echo "--- Handle PR"
-  - if [[ $$FLOW_REPO ]]; then
-      cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA && cd - ;
-    fi
+  - if [[ $$FLOW_REPO ]]; then (
+      cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
+    ) fi
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
   - echo "--- Pruning Docker Images"
