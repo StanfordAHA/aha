@@ -4,8 +4,13 @@ from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 from pathlib import Path
+import pip
 from pip._internal.req import parse_requirements
-from pip._internal.download import PipSession
+
+if Version(pip.__version__) >= Version('20'):
+    from pip._internal.network.session import PipSession
+else:
+    from pip._internal.download import PipSession
 
 
 # handle discrepancies between python 3.7/3.8
