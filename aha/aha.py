@@ -30,7 +30,7 @@ def main():
         "--dir",
         dest="aha_dir",
         type=Path,
-        default=Path(os.path.dirname(os.path.abspath(__file__))),
+        default=Path(os.path.dirname(os.path.abspath(__file__))).parent,
     )
 
     # Subcommands
