@@ -26,14 +26,12 @@ def dispatch(args, extra_args=None):
         import subprocess
         import sys
 
+        print(os.getcwd())
+
         def install(package):
             if os.path.exists(os.path.join(package, "setup.py")):
                 subprocess.check_call(
                     [sys.executable, "-m", "pip", "install", "-e", package],
-                    cwd=package,
-                    env={
-                        "PYTHONPATH": package,
-                    },
                 )
 
         # TODO: only install these if they're not present in `pip list`
