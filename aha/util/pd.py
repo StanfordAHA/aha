@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from util.docker import in_docker
+from aha.util.docker import in_docker
 
 
 def add_subparser(subparser):

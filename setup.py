@@ -24,6 +24,6 @@ setup(
     ],
 
     entry_points = {
-        'console_scripts': ['aha=aha:main'],
+        'console_scripts': ['aha=aha.aha:main'],
     },
 )

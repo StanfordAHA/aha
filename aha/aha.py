@@ -3,7 +3,7 @@ import logging
 import os
 from pathlib import Path
 import pkgutil
-import util
+import aha.util
 
 
 def main():
@@ -37,9 +37,9 @@ def main():
     subparser = parser.add_subparsers()
 
     # Automatically create a command named after each submodule in our
-    # `util` module
-    for importer, modname, ispkg in pkgutil.iter_modules(util.__path__):
-        getattr(util, modname).add_subparser(subparser)
+    # `aha.util` module
+    for importer, modname, ispkg in pkgutil.iter_modules(aha.util.__path__):
+        getattr(aha.util, modname).add_subparser(subparser)
 
     args, extra_args = parser.parse_known_args()
 
