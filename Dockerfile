@@ -72,6 +72,12 @@ RUN cmake .. && make && make install
 # TODO: switch with following after RPATH fixes land in master
 # RUN cd /aha/coreir/build && cmake .. && make && make install && rm -rf *
 
+# mflowgen
+WORKDIR /aha
+RUN git clone https://github.com/cornell-brg/mflowgen.git
+env GARNET_HOME=/aha/garnet
+env MFLOWGEN=/aha/mflowgen
+
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
