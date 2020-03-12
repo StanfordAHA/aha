@@ -81,7 +81,7 @@ env MFLOWGEN=/aha/mflowgen
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN pip install wheel && pip install -e .
+RUN pip install wheel && pip install -e . && aha deps install
 
 ENV PATH="/root/miniconda/bin:${PATH}"
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
