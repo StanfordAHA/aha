@@ -10,9 +10,9 @@
     path = garnet
     url = https://github.com/stanfordaha/garnet
     branch = master
-[submodule "halide-to-hardware"]
-    path = halide-to-hardware
-    url = https://github.com/stanfordaha/halide-to-hardware
+[submodule "Halide-to-Hardware"]
+	path = Halide-to-Hardware
+    url = https://github.com/stanfordaha/Halide-to-Hardware
     branch = master
 [submodule "BufferMapping"]
     path = BufferMapping
