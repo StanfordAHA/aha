@@ -86,13 +86,13 @@ def main():
         args.app = Path(args.app)
         env = copy.deepcopy(os.environ)
         env['COREIR_DIR'] = str(AHA_DIR/'coreir-apps')
-        halide_dir = AHA_DIR/'halide-to-hardware'
+        halide_dir = AHA_DIR/'Halide-to-Hardware'
         app_dir = halide_dir/Path('apps/hardware_benchmarks')/args.app
 
         # CoreIR Output
         subprocess.check_call(
             ['make', '-C', app_dir, 'design-coreir'],
-            cwd=AHA_DIR/'halide-to-hardware',
+            cwd=AHA_DIR/'Halide-to-Hardware',
             env=env,
         )
 
@@ -110,7 +110,7 @@ def main():
         # Raw Images
         subprocess.check_call(
             ['make', '-C', app_dir, 'bin/input.raw', 'bin/output_cpu.raw'],
-            cwd=AHA_DIR/'halide-to-hardware',
+            cwd=AHA_DIR/'Halide-to-Hardware',
             env=env,
         )
 
@@ -125,7 +125,7 @@ def main():
         )
     elif args.command == 'map':
         args.app = Path(args.app)
-        app_dir = Path(f'{AHA_DIR}/halide-to-hardware/apps/hardware_benchmarks/{args.app}')
+        app_dir = Path(f'{AHA_DIR}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}')
 
         map_args = [
             '--no-pd',
@@ -142,7 +142,7 @@ def main():
         )
     elif args.command == 'test':
         args.app = Path(args.app)
-        app_dir = Path(f'{AHA_DIR}/halide-to-hardware/apps/hardware_benchmarks/{args.app}')
+        app_dir = Path(f'{AHA_DIR}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}')
 
         subprocess.check_call(
             [sys.executable, 'tbg.py', 'garnet.v', 'garnet_stub.v', app_dir/f'bin/{args.app.name}.bs.json'],
