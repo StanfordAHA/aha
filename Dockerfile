@@ -81,10 +81,10 @@ env MFLOWGEN=/aha/mflowgen
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN pip install wheel && pip install -e . && aha deps install
+RUN python -m venv . && source bin/activate && pip install wheel && pip install -e . && aha deps install
 
-ENV PATH="/root/miniconda/bin:${PATH}"
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
 
-RUN echo "source /cad/modules/tcl/init/sh" > /root/.bashrc
+RUN echo "source /aha/bin/activate" >> /root/.bashrc && \
+    echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc
