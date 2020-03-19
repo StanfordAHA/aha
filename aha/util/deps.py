@@ -26,8 +26,6 @@ def dispatch(args, extra_args=None):
         import subprocess
         import sys
 
-        print(os.getcwd())
-
         def install(package):
             if os.path.exists(os.path.join(package, "setup.py")):
                 subprocess.check_call(
@@ -57,7 +55,7 @@ def dispatch(args, extra_args=None):
         }
 
         for dep in order_deps(modules):
-            install(os.path.join(os.getcwd(), modules[dep]))
+            install(os.path.join(args.aha_dir, modules[dep]))
 
         subprocess.check_call([sys.executable, "-m", "pip", "install", "jmapper"])
 
