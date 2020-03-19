@@ -63,7 +63,7 @@ steps:
   # We report success to the aha-flow app by removing the .TEMP file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
-  - ls /buildkite
+  - ls -al /buildkite
   - rm -rf /buildkite/.TEMP
   plugins:
     - docker#v3.2.0:
