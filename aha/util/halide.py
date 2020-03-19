@@ -14,13 +14,13 @@ def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     env = copy.deepcopy(os.environ)
     env["COREIR_DIR"] = str(args.aha_dir / "coreir-apps")
-    halide_dir = args.aha_dir / "halide-to-hardware"
+    halide_dir = args.aha_dir / "Halide-to-Hardware"
     app_dir = halide_dir / Path("apps/hardware_benchmarks") / args.app
 
     # CoreIR Output
     subprocess.check_call(
         ["make", "-C", app_dir, "design-coreir"],
-        cwd=args.aha_dir / "halide-to-hardware",
+        cwd=args.aha_dir / "Halide-to-Hardware",
         env=env,
     )
 
@@ -38,7 +38,7 @@ def dispatch(args, extra_args=None):
     # Raw Images
     subprocess.check_call(
         ["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
-        cwd=args.aha_dir / "halide-to-hardware",
+        cwd=args.aha_dir / "Halide-to-Hardware",
         env=env,
     )
 
