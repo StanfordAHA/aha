@@ -1,0 +1,23 @@
+#!/bin/bash -e
+if [[ ! -f "`(pwd)`/temp/.TEST" ]]; then
+    status="success"
+else
+    status="failure"
+fi
+rm -rf `(pwd)`/temp/.TEST
+
+if [[ -n ${FLOW_ORG} ]]; then
+
+curl -X POST ${FLOW_URL}/aha-flow-app/hook \
+    -H "Authorization: ${AHA_FLOW_TOKEN}" \
+    -H "content-type: application/json" \
+    -d '{
+    "org": "'${FLOW_ORG}'",
+    "repo": "'${FLOW_REPO}'",
+    "head_sha": "'${FLOW_HEAD_SHA}'",
+    "status": "'completed'",
+    "conclusion": "'${status}'",
+    "id": "'${FLOW_ID}'",
+    "url": "'${BUILDKITE_BUILD_URL}'"
+    }'
+fi

@@ -1,0 +1,4 @@
+#!/bin/bash -e
+mkdir -p `(pwd)`/temp
+rm -rf `(pwd)`/temp/.TEST
+touch `(pwd)`/temp/.TEST

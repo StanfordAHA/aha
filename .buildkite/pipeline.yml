@@ -65,11 +65,14 @@ steps:
   # next buildkite job in that directory will fail because it couldn't
   # remove the existing files.
   - rm -rf /aha/*
+  - ls /buildkite
+  - rm -rf /buildkite/.TEMP
   plugins:
     - docker#v3.2.0:
         image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
         volumes:
           - "/cad/:/cad"
+          - "temp:/buildkite:rw"
         mount-checkout: false
         propagate-environment: true
         environment:
