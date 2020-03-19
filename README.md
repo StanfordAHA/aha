@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/aha/badge/?version=latest)](https://aha.readthedocs.io/en/latest/?badge=latest)
+
 # Docker crash course
 
 Create a new image:

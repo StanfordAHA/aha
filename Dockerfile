@@ -61,8 +61,8 @@ WORKDIR /aha/BufferMapping/cfunc
 RUN export COREIR_DIR=/aha/coreir-apps && make lib
 
 # Halide-to-Hardware
-COPY ./halide-to-hardware /aha/halide-to-hardware
-WORKDIR /aha/halide-to-hardware
+COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
+WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
 
 # CoreIR
