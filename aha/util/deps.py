@@ -7,10 +7,59 @@ from pathlib import Path
 import pip
 from pip._internal.req import parse_requirements
 
-if Version(pip.__version__) >= Version('20'):
+if Version(pip.__version__) >= Version("20"):
     from pip._internal.network.session import PipSession
 else:
     from pip._internal.download import PipSession
+
+
+def add_subparser(subparser):
+    parser = subparser.add_parser(Path(__file__).stem)
+    dep_subparser = parser.add_subparsers(dest="dep_command")
+    dep_install_parser = dep_subparser.add_parser("install")
+    parser.set_defaults(dispatch=dispatch)
+
+
+def dispatch(args, extra_args=None):
+    if args.dep_command == "install":
+        import os
+        import subprocess
+        import sys
+
+        def install(package):
+            if os.path.exists(os.path.join(package, "setup.py")):
+                subprocess.check_call(
+                    [sys.executable, "-m", "pip", "install", "-e", package],
+                )
+
+        # TODO: only install these if they're not present in `pip list`
+
+        modules = {
+            "archipelago": "archipelago",
+            "ast_tools": "ast_tools",
+            "buffer-mapping": "BufferMapping",
+            "canal": "canal",
+            "coreir": "pycoreir",
+            "cosa": "cosa",
+            "fault": "fault",
+            "garnet": "garnet",
+            "gemstone": "gemstone",
+            "hwtypes": "hwtypes",
+            "kratos": "kratos",
+            "lassen": "lassen",
+            "magma-lang": "magma",
+            "mantle": "mantle",
+            "peak": "peak",
+            "pycyclone": "cgra_pnr/cyclone",
+            "pythunder": "cgra_pnr/thunder",
+        }
+
+        for dep in order_deps(modules):
+            install(os.path.join(args.aha_dir, modules[dep]))
+
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "jmapper"])
+
+        # TODO: `pip list` and ensure that all the above are pointing to sources
 
 
 # handle discrepancies between python 3.7/3.8
@@ -32,7 +81,7 @@ def parse_install_requires(elts):
 # to a call to `setuptools.setup`
 def get_install_requires(expr):
     for keyword in expr.value.keywords:
-        if keyword.arg == 'install_requires':
+        if keyword.arg == "install_requires":
             return parse_install_requires(keyword.value.elts)
     return []
 
@@ -51,7 +100,7 @@ def parse_setup(filename):
             if not isinstance(expr.value.func, ast.Name):
                 continue
 
-            if not expr.value.func.id == 'setup':
+            if not expr.value.func.id == "setup":
                 continue
 
             return get_install_requires(expr)
@@ -64,12 +113,14 @@ def get_reqs(module):
     reqs, reqs_found = [], False
     filename = Path(module)
 
-    if (filename/'setup.py').exists():
-        reqs += parse_setup(filename/'setup.py')
+    if (filename / "setup.py").exists():
+        reqs += parse_setup(filename / "setup.py")
         reqs_found = True
 
-    if (filename/'requirements.txt').exists():
-        reqs += parse_requirements(str(filename/'requirements.txt'), session=PipSession())
+    if (filename / "requirements.txt").exists():
+        reqs += parse_requirements(
+            str(filename / "requirements.txt"), session=PipSession()
+        )
         reqs_found = True
 
     if not reqs_found:
@@ -95,4 +146,4 @@ def order_deps(deps):
 
 # outputs a dependency graph of the python modules to `./deps.dot`
 def draw_deps(deps):
-    nx.drawing.nx_pydot.write_dot(build_dependency_graph(deps), 'deps.dot')
+    nx.drawing.nx_pydot.write_dot(build_dependency_graph(deps), "deps.dot")

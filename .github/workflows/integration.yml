@@ -26,7 +26,7 @@ jobs:
       run: |
         docker run --name test --rm -it -d testing bash
         docker exec test pip freeze
-        docker exec test aha garnet --width 4 --height 2 --verilog
+        docker exec test bash -c "source /aha/bin/activate && aha garnet --width 4 --height 2 --verilog"
         docker exec test test -e /aha/garnet/garnet.v
     - name: Notify Owners on Failure
       if: github.event_name == 'pull_request' && failure()

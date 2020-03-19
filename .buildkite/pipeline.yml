@@ -21,6 +21,7 @@ steps:
   key: "integration-tests"
   depends_on: "docker-build"
   commands:
+  - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive
   - ls /aha

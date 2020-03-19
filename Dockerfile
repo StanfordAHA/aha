@@ -49,6 +49,8 @@ RUN apt-get update && \
     wget -nv -O ~/clang7.tar.xz http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz && \
     tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
 
+# Switch shell to bash
+SHELL ["/bin/bash", "--login", "-c"]
 
 # CoreIR - Halide-to-Hardware
 COPY ./coreir-apps /aha/coreir-apps
@@ -81,10 +83,10 @@ env MFLOWGEN=/aha/mflowgen
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN pip install wheel && pip install -e .
+RUN python -m venv . && source bin/activate && pip install wheel && pip install -e . && aha deps install
 
-ENV PATH="/root/miniconda/bin:${PATH}"
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
 
-RUN echo "source /cad/modules/tcl/init/sh" > /root/.bashrc
+RUN echo "source /aha/bin/activate" >> /root/.bashrc && \
+    echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc
