@@ -25,41 +25,41 @@ steps:
   - source /cad/modules/tcl/init/sh
   - module load base incisive
   - ls /aha
-  - echo "--- Generating Garnet"
-  - aha garnet --width $$WIDTH --height $$HEIGHT --verilog --interconnect-only
-  - echo "--- Compiling App"
-  - aha halide tests/ushift
-  - aha halide tests/arith
-  - aha halide tests/absolute
-  - aha halide apps/pointwise
-  - aha halide tests/scomp
-  - aha halide tests/ucomp
-  - aha halide tests/uminmax
-  - aha halide tests/rom
-  - aha halide tests/conv_1_2
-  - aha halide tests/conv_2_1
-  - echo "--- Mapping App"
-  - aha map tests/ushift --width $$WIDTH --height $$HEIGHT
-  - aha map tests/arith --width $$WIDTH --height $$HEIGHT
-  - aha map tests/absolute --width $$WIDTH --height $$HEIGHT
-  - aha map apps/pointwise --width $$WIDTH --height $$HEIGHT
-  - aha map tests/scomp --width $$WIDTH --height $$HEIGHT
-  - aha map tests/ucomp --width $$WIDTH --height $$HEIGHT
-  - aha map tests/uminmax --width $$WIDTH --height $$HEIGHT
-  - aha map tests/rom --width $$WIDTH --height $$HEIGHT
-  - aha map tests/conv_1_2 --width $$WIDTH --height $$HEIGHT
-  - aha map tests/conv_2_1 --width $$WIDTH --height $$HEIGHT
-  - echo "--- Running Test"
-  - aha test tests/ushift
-  - aha test tests/arith
-  - aha test tests/absolute
-  - aha test apps/pointwise
-  - aha test tests/scomp
-  - aha test tests/ucomp
-  - aha test tests/uminmax
-  - aha test tests/rom
-  - aha test tests/conv_1_2
-  - aha test tests/conv_2_1
+  # - echo "--- Generating Garnet"
+  # - aha garnet --width $$WIDTH --height $$HEIGHT --verilog --interconnect-only
+  # - echo "--- Compiling App"
+  # - aha halide tests/ushift
+  # - aha halide tests/arith
+  # - aha halide tests/absolute
+  # - aha halide apps/pointwise
+  # - aha halide tests/scomp
+  # - aha halide tests/ucomp
+  # - aha halide tests/uminmax
+  # - aha halide tests/rom
+  # - aha halide tests/conv_1_2
+  # - aha halide tests/conv_2_1
+  # - echo "--- Mapping App"
+  # - aha map tests/ushift --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/arith --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/absolute --width $$WIDTH --height $$HEIGHT
+  # - aha map apps/pointwise --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/scomp --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/ucomp --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/uminmax --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/rom --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/conv_1_2 --width $$WIDTH --height $$HEIGHT
+  # - aha map tests/conv_2_1 --width $$WIDTH --height $$HEIGHT
+  # - echo "--- Running Test"
+  # - aha test tests/ushift
+  # - aha test tests/arith
+  # - aha test tests/absolute
+  # - aha test apps/pointwise
+  # - aha test tests/scomp
+  # - aha test tests/ucomp
+  # - aha test tests/uminmax
+  # - aha test tests/rom
+  # - aha test tests/conv_1_2
+  # - aha test tests/conv_2_1
   # We report success to the aha-flow app by removing the .TEMP file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
