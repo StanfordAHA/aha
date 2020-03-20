@@ -1,0 +1,24 @@
+#!/bin/bash -e
+if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
+    if [[ ! -f "$BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST" ]]; then
+        status="success"
+    else
+        status="failure"
+    fi
+    rm -rf $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST
+
+    if [[ -n ${FLOW_ORG} ]]; then
+        curl -X POST ${FLOW_URL}/aha-flow-app/hook \
+            -H "Authorization: ${AHA_FLOW_TOKEN}" \
+            -H "content-type: application/json" \
+            -d '{
+            "org": "'${FLOW_ORG}'",
+            "repo": "'${FLOW_REPO}'",
+            "head_sha": "'${FLOW_HEAD_SHA}'",
+            "status": "'completed'",
+            "conclusion": "'${status}'",
+            "id": "'${FLOW_ID}'",
+            "url": "'${BUILDKITE_BUILD_URL}'"
+            }'
+    fi
+fi

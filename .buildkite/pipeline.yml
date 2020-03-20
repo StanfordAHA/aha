@@ -60,16 +60,16 @@ steps:
   - aha test tests/rom
   - aha test tests/conv_1_2
   - aha test tests/conv_2_1
-  # We need to clean out the docker workdir because files in docker
-  # have root permissions, and the workdir is a mapped volume so the
-  # next buildkite job in that directory will fail because it couldn't
-  # remove the existing files.
-  - rm -rf /aha/*
+  # We report success to the aha-flow app by removing the .TEMP file,
+  # which is created in the post-checkout hook and checked for in the
+  # pre-exit hook.
+  - rm -rf /buildkite/.TEMP
   plugins:
     - docker#v3.2.0:
         image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
         volumes:
           - "/cad/:/cad"
+          - "$BUILDKITE_BUILD_CHECKOUT_PATH/temp:/buildkite:rw"
         mount-checkout: false
         propagate-environment: true
         environment:
