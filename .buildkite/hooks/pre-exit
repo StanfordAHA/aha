@@ -1,11 +1,11 @@
 #!/bin/bash -e
 if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
-    if [[ ! -f "`(pwd)`/temp/.TEST" ]]; then
+    if [[ ! -f "$BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST" ]]; then
         status="success"
     else
         status="failure"
     fi
-    rm -rf `(pwd)`/temp/.TEST
+    rm -rf $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST
 
     if [[ -n ${FLOW_ORG} ]]; then
         curl -X POST ${FLOW_URL}/aha-flow-app/hook \
