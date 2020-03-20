@@ -1,4 +1,6 @@
 #!/bin/bash -e
-mkdir -p `(pwd)`/temp
-rm -rf `(pwd)`/temp/.TEST
-touch `(pwd)`/temp/.TEST
+if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
+    mkdir -p `(pwd)`/temp
+    rm -rf `(pwd)`/temp/.TEST
+    touch `(pwd)`/temp/.TEST
+fi
