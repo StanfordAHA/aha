@@ -1,8 +1,15 @@
 #!/bin/bash -e
 if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
+    echo "pre-exit hook is running logic!"
+    pwd
+    ls -al temp
+    ls -al $BUILDKITE_BUILD_CHECKOUT_PATH/temp
+
     if [[ ! -f "$BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST" ]]; then
+        echo "Tests passed!"
         status="success"
     else
+        echo "Tests failed."
         status="failure"
     fi
     rm -rf $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST

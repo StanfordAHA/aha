@@ -1,6 +1,12 @@
 #!/bin/bash -e
 if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
+    echo "post-checkout hook is running logic!"
+
     mkdir -p $BUILDKITE_BUILD_CHECKOUT_PATH/temp
     rm -rf $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST
     touch $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST
+
+    pwd
+    ls -al temp
+    ls -al $BUILDKITE_BUILD_CHECKOUT_PATH/temp
 fi

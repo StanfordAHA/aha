@@ -63,7 +63,10 @@ steps:
   # We report success to the aha-flow app by removing the .TEMP file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
+  - echo "--- Removing Failure Canary"
+  - ls -al /buildkite
   - rm -rf /buildkite/.TEMP
+  - ls -al /buildkite
   plugins:
     - docker#v3.2.0:
         image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
