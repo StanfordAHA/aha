@@ -1,5 +1,9 @@
 #!/bin/bash -e
 if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
+    pwd
+    ls -al temp
+    ls -al $BUILDKITE_BUILD_CHECKOUT_PATH/temp
+
     if [[ ! -f "$BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST" ]]; then
         echo "--- Tests passed!"
         status="success"
