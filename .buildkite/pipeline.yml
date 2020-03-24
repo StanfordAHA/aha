@@ -65,7 +65,7 @@ steps:
   # pre-exit hook.
   - echo "--- Removing Failure Canary"
   - ls -al /buildkite
-  - rm -rf /buildkite/.TEMP
+  - rm -rf /buildkite/.TEST
   - ls -al /buildkite
   plugins:
     - docker#v3.2.0:
