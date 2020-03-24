@@ -50,16 +50,16 @@ steps:
   - aha map tests/conv_1_2 --width $$WIDTH --height $$HEIGHT
   - aha map tests/conv_2_1 --width $$WIDTH --height $$HEIGHT
   - echo "--- Running Test"
-  # - aha test tests/ushift
-  # - aha test tests/arith
-  # - aha test tests/absolute
+  - aha test tests/ushift
+  - aha test tests/arith
+  - aha test tests/absolute
   - aha test apps/pointwise
-  # - aha test tests/scomp
-  # - aha test tests/ucomp
-  # - aha test tests/uminmax
-  # - aha test tests/rom
-  # - aha test tests/conv_1_2
-  # - aha test tests/conv_2_1
+  - aha test tests/scomp
+  - aha test tests/ucomp
+  - aha test tests/uminmax
+  - aha test tests/rom
+  - aha test tests/conv_1_2
+  - aha test tests/conv_2_1
   # We report success to the aha-flow app by removing the .TEMP file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
