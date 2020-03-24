@@ -72,7 +72,7 @@ steps:
         image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
         volumes:
           - "/cad/:/cad"
-          - "$BUILDKITE_BUILD_CHECKOUT_PATH/temp:/buildkite:rw"
+          - "./temp:/buildkite:rw"
         mount-checkout: false
         propagate-environment: true
         environment:

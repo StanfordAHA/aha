@@ -1,12 +1,6 @@
 #!/bin/bash -e
 if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
-    mkdir -p $BUILDKITE_BUILD_CHECKOUT_PATH/temp
-    rm -rf $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST
-    touch $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST
-
-    pwd
-    echo $BUILDKITE_BUILD_CHECKOUT_PATH/temp
-    pwd `$BUILDKITE_BUILD_CHECKOUT_PATH/temp`
-    ls -al temp
-    ls -al $BUILDKITE_BUILD_CHECKOUT_PATH/temp
+    mkdir -p temp
+    rm -rf temp/.TEST
+    touch temp/.TEST
 fi
