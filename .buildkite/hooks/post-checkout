@@ -5,6 +5,8 @@ if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
     touch $BUILDKITE_BUILD_CHECKOUT_PATH/temp/.TEST
 
     pwd
+    echo $BUILDKITE_BUILD_CHECKOUT_PATH/temp
+    pwd `$BUILDKITE_BUILD_CHECKOUT_PATH/temp`
     ls -al temp
     ls -al $BUILDKITE_BUILD_CHECKOUT_PATH/temp
 fi
