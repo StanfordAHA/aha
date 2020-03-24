@@ -1,4 +1,5 @@
 import docker
+import logging
 import os
 from pathlib import Path
 
@@ -8,6 +9,7 @@ def add_subparser(subparser):
     parser.add_argument("--tag", default="latest")
     parser.add_argument("--tsmc-adk", default=None)
     parser.add_argument("--mc", default=None)
+    parser.add_argument("-q, --quiet", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -42,7 +44,7 @@ def dispatch(args, extra_args=None):
     client = docker.from_env()
     # image = client.images.get(f'stanfordaha/garnet:{args.tag}')
 
-    print("Starting container...")
+    logging.info("Starting container...")
     container = client.containers.run(
         f"stanfordaha/garnet:{args.tag}",
         "bash",
@@ -53,9 +55,11 @@ def dispatch(args, extra_args=None):
         volumes=volumes,
     )
 
-    print("Container started! The container will be automatically deleted once exited.")
+    logging.info("Container started!")
+    logging.warning("The container will be automatically deleted once exited.")
 
-    print(f"Run `docker attach {container.name}` to use it.")
+    logging.info(f"Run `docker attach {container.name}` to use it.")
+    print(container.name)
 
 
 def test():
