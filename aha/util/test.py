@@ -22,6 +22,6 @@ def dispatch(args, extra_args=None):
             "garnet.v",
             "garnet_stub.v",
             app_dir / f"bin/{args.app.name}.bs.json",
-        ],
+        ] + extra_args,
         cwd=args.aha_dir / "garnet",
     )

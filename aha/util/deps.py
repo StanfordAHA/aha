@@ -58,6 +58,7 @@ def dispatch(args, extra_args=None):
             install(os.path.join(args.aha_dir, modules[dep]))
 
         subprocess.check_call([sys.executable, "-m", "pip", "install", "jmapper"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-e", "/aha/mflowgen"])
 
         # TODO: `pip list` and ensure that all the above are pointing to sources
 
