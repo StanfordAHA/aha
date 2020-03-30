@@ -9,7 +9,8 @@ def add_subparser(subparser):
     parser.add_argument("--tag", default="latest")
     parser.add_argument("--tsmc-adk", default=None)
     parser.add_argument("--mc", default=None)
-    parser.add_argument("-q, --quiet", action="store_true")
+    parser.add_argument("-p", "--persistent", action="store_true")
+    parser.add_argument("-q", "--quiet", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -48,7 +49,7 @@ def dispatch(args, extra_args=None):
     container = client.containers.run(
         f"stanfordaha/garnet:{args.tag}",
         "bash",
-        auto_remove=True,
+        auto_remove=not args.persistent,
         detach=True,
         stdin_open=True,
         tty=True,
