@@ -19,13 +19,14 @@ def buildkite_filter(s):
 
 def buildkite_call(command):
     try:
-        subprocess.run(
+        app = subprocess.run(
             command,
             check=True,
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
+        print(app.stdout)
     except subprocess.CalledProcessError as err:
         print("ERROR", file=sys.stderr)
         print("=== stdout ===", file=sys.stderr)
