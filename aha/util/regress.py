@@ -135,10 +135,10 @@ def dispatch(args, extra_args=None):
     print(f"--- Running regression: {args.config}")
     info = []
     t = gen_garnet(width, height)
-    info.append("garnet", t)
+    info.append(["garnet", t])
     for test in tests:
         t0, t1, t2 = run_test(test, width, height)
-        info.append(test, t0 + t1 + t2, t0, t1, t2)
+        info.append([test, t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
 
 
