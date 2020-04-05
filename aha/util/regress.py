@@ -26,7 +26,7 @@ def buildkite_call(command):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        print(app.stdout)
+        print(buildkite_filter(app.stdout))
     except subprocess.CalledProcessError as err:
         print("ERROR", file=sys.stderr)
         print("=== stdout ===", file=sys.stderr)
