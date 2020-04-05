@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import subprocess
 import sys
 from tabulate import tabulate
@@ -12,21 +13,40 @@ def add_subparser(subparser):
     parser.set_defaults(dispatch=dispatch)
 
 
+def buildkite_filter(s):
+    return re.sub("^---", " ---", s)
+
+
+def buildkite_call(command):
+    try:
+        subprocess.run(
+            command,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except subprocess.CalledProcessError as err:
+        print("ERROR", file=sys.stderr)
+        print("=== stdout ===", file=sys.stderr)
+        print(buildkite_filter(err.stdout), file=sys.stderr)
+        print("=== stderr ===", file=sys.stderr)
+        print(buildkite_filter(err.stderr), file=sys.stderr)
+
+
 def gen_garnet(width, height):
     print("--- Generating Garnet")
     start = time.time()
-    subprocess.check_output(
-        [
-            "aha",
-            "garnet",
-            "--width",
-            str(width),
-            "--height",
-            str(height),
-            "--verilog",
-            "--interconnect-only",
-        ]
-    )
+    buildkite_call([
+        "aha",
+        "garnet",
+        "--width",
+        str(width),
+        "--height",
+        str(height),
+        "--verilog",
+        "--interconnect-only",
+    ])
     return time.time() - start
 
 
@@ -34,19 +54,19 @@ def run_test(testname, width, height):
     print(f"--- {testname}")
     print(f"--- {testname} - compiling")
     start = time.time()
-    subprocess.check_output(["aha", "halide", testname])
+    buildkite_call(["aha", "halide", testname])
     time_compile = time.time() - start
 
     print(f"--- {testname} - mapping")
     start = time.time()
-    subprocess.check_output(
+    buildkite_call(
         ["aha", "map", testname, "--width", str(width), "--height", str(height)]
     )
     time_map = time.time() - start
 
     print(f"--- {testname} - testing")
     start = time.time()
-    subprocess.check_output(["aha", "test", testname])
+    buildkite_call(["aha", "test", testname])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
