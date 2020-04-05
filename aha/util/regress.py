@@ -33,6 +33,7 @@ def buildkite_call(command):
         print(buildkite_filter(err.stdout), file=sys.stderr)
         print("=== stderr ===", file=sys.stderr)
         print(buildkite_filter(err.stderr), file=sys.stderr)
+        sys.exit(1)
 
 
 def gen_garnet(width, height):
