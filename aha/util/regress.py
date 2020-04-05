@@ -111,6 +111,7 @@ def dispatch(args, extra_args=None):
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
 
+    print(f"--- Running regression: {args.config}")
     info = []
     t = gen_garnet(width, height)
     info.append("garnet", t)
