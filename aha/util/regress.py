@@ -107,7 +107,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
             "apps/cascade",
-            # "apps/harris",
+            "apps/harris",
             "apps/gaussian",
             "tests/conv_3_3",
         ]
