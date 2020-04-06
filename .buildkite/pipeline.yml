@@ -25,9 +25,9 @@ steps:
   - module load base incisive
   - ls /aha
   # Run regression tests
-  - if [[ $$FLOW_REPO ]]; then (
+  - if [[ $$FLOW_REPO ]]; then
       export CONFIG=pr;
-    ) fi
+    fi
   - aha regress $$CONFIG
   # We report success to the aha-flow app by removing the .TEMP file,
   # which is created in the post-checkout hook and checked for in the
