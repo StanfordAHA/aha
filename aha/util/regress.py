@@ -14,7 +14,7 @@ def add_subparser(subparser):
 
 
 def buildkite_filter(s):
-    return re.sub("^---", "=--", s)
+    return re.sub("^---", " ---", s, flags=re.MULTILINE)
 
 
 def buildkite_call(command):
@@ -23,8 +23,7 @@ def buildkite_call(command):
             command,
             check=True,
             text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
         )
         print(buildkite_filter(app.stdout))
     except subprocess.CalledProcessError as err:
