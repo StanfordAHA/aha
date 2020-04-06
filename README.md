@@ -1,24 +1,32 @@
 [![Documentation Status](https://readthedocs.org/projects/aha/badge/?version=latest)](https://aha.readthedocs.io/en/latest/?badge=latest)
 
-# Docker crash course
+# How to run locally
+You need to have docker installed on your local machine. Please follow
+[this guide](https://docs.docker.com/install/) to install Docker CE version.
 
-Create a new image:
-- `docker build .`
+After installing docker, please follow the commands below
+```Bash
+# install the aha wrapper script
+pip install -e .
 
-List images:
-- `docker images`
+# pull docker image from docker hub (this takes a while!)
+docker pull stanfordaha/garnet:latest
 
-Start and enter an image:
-- `docker run -it <image-id>`
+# run the container in the background and delete it when it exits
+# (this will print out the name of the container to attach to)
+aha docker
 
-List containers:
-- `docker container ls`
+# you can also do the following instead, but using the wrapper shim is
+# suggested as it will do things like mount /cad automatically when 
+# detected
+# docker run -d -it --rm stanfordaha/garnet bash
 
-Delete stopped containers:
-- `docker container prune`
+# attach to the container name printed out above
+docker attach <container-name>
 
-Clean up all unused docker things:
-- `docker system prune -a`
+# run a small regression suite
+aha regress pr
+```
 
 # Managing Grouped Dependency Updates
 
@@ -139,3 +147,23 @@ TODO: Document
 
 ## Enabling Dependabot Updates
 TODO: Document
+
+# Docker crash course
+
+Create a new image:
+- `docker build .`
+
+List images:
+- `docker images`
+
+Start and enter an image:
+- `docker run -it <image-id>`
+
+List containers:
+- `docker container ls`
+
+Delete stopped containers:
+- `docker container prune`
+
+Clean up all unused docker things:
+- `docker system prune -a`
