@@ -14,7 +14,7 @@ def add_subparser(subparser):
 
 
 def buildkite_filter(s):
-    return re.sub("^---", " ---", s)
+    return re.sub("^---", "=--", s)
 
 
 def buildkite_call(command):
@@ -108,7 +108,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
             "apps/cascade",
-            "apps/harris",
+            # "apps/harris",
             "apps/gaussian",
             "tests/conv_3_3",
         ]
