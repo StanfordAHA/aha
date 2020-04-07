@@ -70,9 +70,7 @@ RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
 # CoreIR
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
-RUN cmake .. && make && make install
-# TODO: switch with following after RPATH fixes land in master
-# RUN cd /aha/coreir/build && cmake .. && make && make install && rm -rf *
+RUN cmake .. && make && make install && rm -rf *
 
 # mflowgen
 WORKDIR /aha
