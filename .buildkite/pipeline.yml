@@ -24,6 +24,8 @@ steps:
   - source /cad/modules/tcl/init/sh
   - module load base incisive
   - ls /aha
+  - pip freeze
+  - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
   # Run regression tests
   - if [[ $$FLOW_REPO ]]; then
       export CONFIG=pr;
