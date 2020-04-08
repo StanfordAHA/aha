@@ -24,6 +24,7 @@ steps:
   - source /cad/modules/tcl/init/sh
   - module load base incisive
   - ls /aha
+  - pip freeze
   # Run regression tests
   - if [[ $$FLOW_REPO ]]; then
       export CONFIG=pr;
