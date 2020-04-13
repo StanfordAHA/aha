@@ -21,7 +21,7 @@
 [submodule "coreir-apps"]
     path = coreir-apps
     url = https://github.com/rdaly525/coreir
-    branch = dev
+    branch = master 
 [submodule "tapeout"]
     path = tapeout
     url = https://github.com/stanfordaha/garnet
