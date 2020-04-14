@@ -14,7 +14,7 @@ def add_subparser(subparser):
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     env = copy.deepcopy(os.environ)
-    env["COREIR_DIR"] = str(args.aha_dir / "coreir-apps")
+    env["COREIR_DIR"] = str(args.aha_dir / "coreir")
     halide_dir = args.aha_dir / "Halide-to-Hardware"
     app_dir = halide_dir / Path("apps/hardware_benchmarks") / args.app
 
