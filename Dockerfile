@@ -52,27 +52,20 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# CoreIR - Halide-to-Hardware
-COPY ./coreir-apps /aha/coreir-apps
-WORKDIR /aha/coreir-apps/build
-RUN cmake .. && make
-
-# Lake
-COPY ./BufferMapping /aha/BufferMapping
-WORKDIR /aha/BufferMapping/cfunc
-RUN export COREIR_DIR=/aha/coreir-apps && make lib
-
-# Halide-to-Hardware
-COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
-WORKDIR /aha/Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir-apps && make && make distrib
-
 # CoreIR
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
 RUN cmake .. && make && make install
-# TODO: switch with following after RPATH fixes land in master
-# RUN cd /aha/coreir/build && cmake .. && make && make install && rm -rf *
+
+# Lake
+COPY ./BufferMapping /aha/BufferMapping
+WORKDIR /aha/BufferMapping/cfunc
+RUN export COREIR_DIR=/aha/coreir && make lib
+
+# Halide-to-Hardware
+COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
+WORKDIR /aha/Halide-to-Hardware
+RUN export COREIR_DIR=/aha/coreir && make && make distrib
 
 # mflowgen
 WORKDIR /aha

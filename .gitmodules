@@ -18,10 +18,6 @@
     path = BufferMapping
     url = https://github.com/joyliu37/BufferMapping
     branch = master
-[submodule "coreir-apps"]
-    path = coreir-apps
-    url = https://github.com/rdaly525/coreir
-    branch = master
 [submodule "tapeout"]
     path = tapeout
     url = https://github.com/stanfordaha/garnet
