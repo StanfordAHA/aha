@@ -11,6 +11,9 @@ steps:
     ) fi
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
+  # Docker image successfully built, clear out .TEST file to avoid
+  # reporting failure to aha-flow-app.
+  - rm -rf temp/.TEST
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet'
   agents:
@@ -31,7 +34,7 @@ steps:
       export CONFIG=pr;
     fi
   - aha regress $$CONFIG
-  # We report success to the aha-flow app by removing the .TEMP file,
+  # We report success to the aha-flow app by removing the .TEST file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
   - echo "--- Removing Failure Canary"

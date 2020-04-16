@@ -1,26 +1,31 @@
 #!/bin/bash -e
-if [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
-    if [[ ! -f "temp/.TEST" ]]; then
-        echo "--- Tests passed!"
-        status="success"
-    else
+if [[ ${BUILDKITE_STEP_KEY} =~ ^(docker-build|integration-tests)$ ]]; then
+    if [[ -f "temp/.TEST" ]]; then
         echo "--- Tests failed."
         status="failure"
+    elif [[ ${BUILDKITE_STEP_KEY} = "integration-tests" ]]; then
+        echo "--- Tests passed!"
+        status="success"
     fi
     rm -rf temp/.TEST
 
     if [[ -n ${FLOW_ORG} ]]; then
-        curl -X POST ${FLOW_URL}/aha-flow-app/hook \
-            -H "Authorization: ${AHA_FLOW_TOKEN}" \
-            -H "content-type: application/json" \
-            -d '{
-            "org": "'${FLOW_ORG}'",
-            "repo": "'${FLOW_REPO}'",
-            "head_sha": "'${FLOW_HEAD_SHA}'",
-            "status": "'completed'",
-            "conclusion": "'${status}'",
-            "id": "'${FLOW_ID}'",
-            "url": "'${BUILDKITE_BUILD_URL}'"
-            }'
+        case "$status,${BUILDKITE_STEP_KEY}" in
+            failure,*) ;&
+            success,integration-tests)
+                curl -X POST ${FLOW_URL}/aha-flow-app/hook \
+                    -H "Authorization: ${AHA_FLOW_TOKEN}" \
+                    -H "content-type: application/json" \
+                    -d '{
+                    "org": "'${FLOW_ORG}'",
+                    "repo": "'${FLOW_REPO}'",
+                    "head_sha": "'${FLOW_HEAD_SHA}'",
+                    "status": "'completed'",
+                    "conclusion": "'${status}'",
+                    "id": "'${FLOW_ID}'",
+                    "url": "'${BUILDKITE_BUILD_URL}'"
+                    }'
+            ;;
+        esac
     fi
 fi
