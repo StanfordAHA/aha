@@ -40,6 +40,9 @@ libraries.
 Afterwards, you can connect to the container using ``docker attach
 <container name>`` and perform any of the remaining steps there.
 
+.. attention:: It will look like the ``docker attach`` command is
+               hanging. It's not. Just press enter.
+
 If you additionally need the ADK and MemoryCompiler, then you will
 want to first clone the ``tsmc-adk`` locally, and pass the paths to
 both of those in ``--tsmc-adk`` and ``--mc``.
