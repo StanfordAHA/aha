@@ -57,7 +57,11 @@ def dispatch(args, extra_args=None):
     )
 
     logging.info("Container started!")
-    logging.warning("The container will be automatically deleted once exited.")
+
+    if not args.persistent:
+        logging.warning("The container will be automatically deleted once exited.")
+    else:
+        logging.warning("This container won't be deleted when you exit. Please clean it up manually when you're done.")
 
     logging.info(f"Run `docker attach {container.name}` to use it.")
     print(container.name)
