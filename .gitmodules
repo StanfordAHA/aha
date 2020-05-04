@@ -18,10 +18,6 @@
     path = BufferMapping
     url = https://github.com/joyliu37/BufferMapping
     branch = master
-[submodule "tapeout"]
-    path = tapeout
-    url = https://github.com/stanfordaha/garnet
-    branch = tapeout
 [submodule "hwtypes"]
     path = hwtypes
     url = https://github.com/leonardt/hwtypes
