@@ -70,3 +70,4 @@
 [submodule "lake"]
 	path = lake
 	url = https://github.com/StanfordAHA/lake
+    branch = ch4stencil
