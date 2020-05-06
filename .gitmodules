@@ -67,3 +67,6 @@
 [submodule "ast_tools"]
 	path = ast_tools
 	url = https://github.com/leonardt/ast_tools
+[submodule "lake"]
+	path = lake
+	url = https://github.com/StanfordAHA/lake
