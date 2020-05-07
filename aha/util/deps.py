@@ -46,6 +46,7 @@ def dispatch(args, extra_args=None):
             "gemstone": "gemstone",
             "hwtypes": "hwtypes",
             "kratos": "kratos",
+            "lake": "lake",
             "lassen": "lassen",
             "magma-lang": "magma",
             "mantle": "mantle",
