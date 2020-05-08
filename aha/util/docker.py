@@ -1,4 +1,5 @@
 import docker
+import getpass
 import logging
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ def add_subparser(subparser):
     parser.add_argument("--mc", default=None)
     parser.add_argument("-p", "--persistent", action="store_true")
     parser.add_argument("-q", "--quiet", action="store_true")
+    parser.add_argument("-n", "--name", default=None, type=str)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -51,10 +53,14 @@ def dispatch(args, extra_args=None):
         "bash",
         auto_remove=not args.persistent,
         detach=True,
+        name=args.name,
         stdin_open=True,
         tty=True,
         volumes=volumes,
     )
+
+    container_id = f"{getpass.getuser()}-{container.name}"
+    container.rename(container_id)
 
     logging.info("Container started!")
 
@@ -63,8 +69,8 @@ def dispatch(args, extra_args=None):
     else:
         logging.warning("This container won't be deleted when you exit. Please clean it up manually when you're done.")
 
-    logging.info(f"Run `docker attach {container.name}` to use it.")
-    print(container.name)
+    logging.info(f"Run `docker attach {container_id}` to use it.")
+    print(container_id)
 
 
 def test():
