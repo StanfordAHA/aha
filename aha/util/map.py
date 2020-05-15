@@ -6,14 +6,19 @@ import sys
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app")
+    parser.add_argument("--base", default=None, type=str)
     parser.set_defaults(dispatch=dispatch)
 
 
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
-    app_dir = Path(
-        f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
-    )
+
+    if args.base is None:
+        app_dir = Path(
+            f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
+        )
+    else:
+        app_dir = (Path(args.base) / args.app).resolve()
 
     map_args = [
         "--no-pd",
