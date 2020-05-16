@@ -5,7 +5,7 @@ from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 from pathlib import Path
 import pip
-from pip._internal.req import parse_requirements
+import requirements
 
 if Version(pip.__version__) >= Version("20"):
     from pip._internal.network.session import PipSession
@@ -120,9 +120,8 @@ def get_reqs(module):
         reqs_found = True
 
     if (filename / "requirements.txt").exists():
-        reqs += parse_requirements(
-            str(filename / "requirements.txt"), session=PipSession()
-        )
+        with open(filename / "requirements.txt", "r") as f:
+            reqs += requirements.parse(f)
         reqs_found = True
 
     if not reqs_found:
