@@ -17,6 +17,7 @@ setup(
         'networkx',
         'packaging',
         'pydot',
+        'requirements-parser',
         'tabulate',
     ],
     setup_requires = [
