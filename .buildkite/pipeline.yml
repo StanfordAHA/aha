@@ -15,7 +15,7 @@ steps:
   # reporting failure to aha-flow-app.
   - rm -rf temp/.TEST
   - echo "--- Pruning Docker Images"
-  - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet'
+  - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
   agents:
     docker: true
   
