@@ -11,7 +11,7 @@
     url = https://github.com/stanfordaha/garnet
     branch = master
 [submodule "Halide-to-Hardware"]
-	path = Halide-to-Hardware
+    path = Halide-to-Hardware
     url = https://github.com/stanfordaha/Halide-to-Hardware
     branch = master
 [submodule "BufferMapping"]
@@ -59,15 +59,15 @@
     url = https://github.com/cdonovick/peak
     branch = master
 [submodule "archipelago"]
-	path = archipelago
-	url = https://github.com/kuree/archipelago
+    path = archipelago
+    url = https://github.com/kuree/archipelago
 [submodule "cgra_pnr"]
-	path = cgra_pnr
-	url = https://github.com/kuree/cgra_pnr
+    path = cgra_pnr
+    url = https://github.com/kuree/cgra_pnr
 [submodule "ast_tools"]
-	path = ast_tools
-	url = https://github.com/leonardt/ast_tools
+    path = ast_tools
+    url = https://github.com/leonardt/ast_tools
 [submodule "lake"]
-	path = lake
-	url = https://github.com/StanfordAHA/lake
-    branch = ch4stencil
+    path = lake
+    url = https://github.com/StanfordAHA/lake
+    branch = master
