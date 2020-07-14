@@ -60,6 +60,12 @@ system once it's installed. The arguments are the same as calling
    # e.g. aha garnet --width 16 --height 4 --verilog
    aha garnet <args>
 
+If you don't need global buffer and are only interested in application-level
+tests, you can simply do.
+
+::
+
+  aha garnet --width [width] --height [height] --verilog --interconnect-only --no-pd
 
 generate CoreIR from Halide
 ===========================
