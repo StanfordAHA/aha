@@ -24,6 +24,9 @@ aha docker
 # attach to the container name printed out above
 docker attach <container-name>
 
+# load required simulator (ncsim)
+module load incisive
+
 # run a small regression suite
 aha regress pr
 ```
