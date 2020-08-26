@@ -70,10 +70,8 @@ WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir && make && make distrib
 
 # mflowgen
-WORKDIR /aha
-RUN git clone https://github.com/cornell-brg/mflowgen.git
-env GARNET_HOME=/aha/garnet
-env MFLOWGEN=/aha/mflowgen
+ENV GARNET_HOME=/aha/garnet
+ENV MFLOWGEN=/aha/mflowgen
 
 # Install AHA Tools
 COPY . /aha
