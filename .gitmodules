@@ -71,3 +71,6 @@
     path = lake
     url = https://github.com/StanfordAHA/lake
     branch = master
+[submodule "mflowgen"]
+	path = mflowgen
+	url = https://github.com/cornell-brg/mflowgen
