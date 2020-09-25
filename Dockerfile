@@ -59,11 +59,6 @@ COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
 RUN cmake .. && make && make install
 
-# Lake
-COPY ./BufferMapping /aha/BufferMapping
-WORKDIR /aha/BufferMapping/cfunc
-RUN export COREIR_DIR=/aha/coreir && make lib
-
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
