@@ -25,17 +25,6 @@ def dispatch(args, extra_args=None):
         env=env,
     )
 
-    subprocess.check_call(
-        [sys.executable, "coreir_gen.py", app_dir / "bin/design_top.json"],
-        cwd=args.aha_dir / "BufferMapping/script/",
-        env=env,
-    )
-
-    os.rename(
-        args.aha_dir / "BufferMapping/script/output/design_top_rewrite.json",
-        app_dir / "bin/design_top.json",
-    )
-
     # Raw Images
     subprocess.check_call(
         ["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],

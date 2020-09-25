@@ -14,10 +14,6 @@
     path = Halide-to-Hardware
     url = https://github.com/stanfordaha/Halide-to-Hardware
     branch = master
-[submodule "BufferMapping"]
-    path = BufferMapping
-    url = https://github.com/joyliu37/BufferMapping
-    branch = master
 [submodule "hwtypes"]
     path = hwtypes
     url = https://github.com/leonardt/hwtypes
