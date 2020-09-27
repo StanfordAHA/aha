@@ -20,20 +20,9 @@ def dispatch(args, extra_args=None):
 
     # CoreIR Output
     subprocess.check_call(
-        ["make", "-C", app_dir, "design-coreir"],
+        ["make", "-C", app_dir, "bin/design_top.json"],
         cwd=args.aha_dir / "Halide-to-Hardware",
         env=env,
-    )
-
-    subprocess.check_call(
-        [sys.executable, "coreir_gen.py", app_dir / "bin/design_top.json"],
-        cwd=args.aha_dir / "BufferMapping/script/",
-        env=env,
-    )
-
-    os.rename(
-        args.aha_dir / "BufferMapping/script/output/design_top_rewrite.json",
-        app_dir / "bin/design_top.json",
     )
 
     # Raw Images
