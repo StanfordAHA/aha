@@ -113,6 +113,8 @@ def dispatch(args, extra_args=None):
             # "apps/harris",
             "apps/gaussian",
             "tests/conv_3_3",
+            "apps/resnet_layer_gen",
+            "apps/resnet_pond"
         ]
     elif args.config == "full":
         width, height = 32, 16
