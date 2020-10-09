@@ -92,6 +92,8 @@ def dispatch(args, extra_args=None):
             "tests/rom",
             "tests/conv_1_2",
             "tests/conv_2_1",
+            "apps/resnet_layer_gen",
+            "apps/resnet_pond"
         ]
     elif args.config == "daily":
         width, height = 16, 16
