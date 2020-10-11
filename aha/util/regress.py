@@ -47,6 +47,7 @@ def gen_garnet(width, height):
         str(height),
         "--verilog",
         "--interconnect-only",
+        "--add-pond"
     ])
     return time.time() - start
 
@@ -61,7 +62,7 @@ def run_test(testname, width, height):
     print(f"--- {testname} - mapping")
     start = time.time()
     buildkite_call(
-        ["aha", "map", testname, "--width", str(width), "--height", str(height)]
+        ["aha", "map", testname, "--width", str(width), "--height", str(height), "--add-pond"]
     )
     time_map = time.time() - start
 
@@ -92,6 +93,7 @@ def dispatch(args, extra_args=None):
             "tests/rom",
             "tests/conv_1_2",
             "tests/conv_2_1",
+            "apps/resnet_pond"
         ]
     elif args.config == "daily":
         width, height = 16, 16
@@ -110,6 +112,8 @@ def dispatch(args, extra_args=None):
             # "apps/harris",
             "apps/gaussian",
             "tests/conv_3_3",
+            "apps/resnet_layer_gen",
+            "apps/resnet_pond"
         ]
     elif args.config == "full":
         width, height = 32, 16
@@ -128,6 +132,8 @@ def dispatch(args, extra_args=None):
             "apps/harris",
             "apps/gaussian",
             "tests/conv_3_3",
+            "apps/resnet_layer_gen",
+            "apps/resnet_pond"
         ]
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
