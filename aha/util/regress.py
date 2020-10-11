@@ -93,7 +93,6 @@ def dispatch(args, extra_args=None):
             "tests/rom",
             "tests/conv_1_2",
             "tests/conv_2_1",
-            "apps/resnet_layer_gen",
             "apps/resnet_pond"
         ]
     elif args.config == "daily":
@@ -133,6 +132,8 @@ def dispatch(args, extra_args=None):
             "apps/harris",
             "apps/gaussian",
             "tests/conv_3_3",
+            "apps/resnet_layer_gen",
+            "apps/resnet_pond"
         ]
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
