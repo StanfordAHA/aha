@@ -23,7 +23,6 @@ def dispatch(args, extra_args=None):
     map_args = [
         "--no-pd",
         "--interconnect-only",
-        "--unconstrained-io",
         "--input-app",
         app_dir / "bin/design_top.json",
         "--input-file",
