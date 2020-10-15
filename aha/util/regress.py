@@ -47,6 +47,7 @@ def gen_garnet(width, height):
         str(height),
         "--verilog",
         "--interconnect-only",
+        "--use-io-valid",
         "--add-pond"
     ])
     return time.time() - start
