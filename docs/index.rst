@@ -110,7 +110,8 @@ garnet first.
    # e.g. aha test apps/pointwise
    aha test <app>
 
-.. attention:: You'll probably want to ``module load incisive``
+.. attention:: You'll probably want to ``module load incisive`` and 
+               ``module load xcelium``
                first. At the time of writing, the Verilator backend
                doesn't seem to be functioning as intended.
 
