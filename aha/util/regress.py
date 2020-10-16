@@ -46,8 +46,7 @@ def gen_garnet(width, height):
         "--height",
         str(height),
         "--verilog",
-        "--interconnect-only",
-        "--add-pond"
+        "--interconnect-only"
     ])
     return time.time() - start
 
@@ -62,7 +61,7 @@ def run_test(testname, width, height):
     print(f"--- {testname} - mapping")
     start = time.time()
     buildkite_call(
-        ["aha", "map", testname, "--width", str(width), "--height", str(height), "--add-pond"]
+        ["aha", "map", testname, "--width", str(width), "--height", str(height)]
     )
     time_map = time.time() - start
 
