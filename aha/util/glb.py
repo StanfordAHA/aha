@@ -31,6 +31,6 @@ def dispatch(args, extra_args=None):
     # run the GLB simulation
     subprocess.check_call(
         ["make", "sim"] + extra_args,
-        cwd=str(args.aha_dir / "garnet" / "virtualization"),
+        cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
         env=env
     )
