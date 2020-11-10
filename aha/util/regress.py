@@ -97,6 +97,8 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 16, 16
         tests = [
+            "apps/resnet_i1_o1_mem",
+            "apps/resnet_i1_o1_pond",
             "apps/harris_auto",
             "tests/ushift",
             "tests/arith",
