@@ -103,9 +103,9 @@ def dispatch(args, extra_args=None):
         # harris
         # rom
         tests = [
+            "tests/conv_3_3",
             "apps/cascade",
             "tests/conv_1_2",
-            "tests/conv_3_3",
             "apps/harris",
             "tests/rom",
             "tests/ushift",
