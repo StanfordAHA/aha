@@ -102,12 +102,14 @@ def dispatch(args, extra_args=None):
         # conv_3_3
         # harris
         # rom
+        # Jeff has modified resnet_pond to check resnet with newlake
         tests = [
             "tests/conv_3_3",
             "apps/cascade",
             "tests/conv_1_2",
             "apps/harris",
             "tests/rom",
+            "apps/resnet_pond",
             "tests/ushift",
             "tests/arith",
             "tests/absolute",
@@ -118,7 +120,6 @@ def dispatch(args, extra_args=None):
             "tests/conv_2_1",
             #"apps/gaussian",
             #"apps/resnet_layer_gen",
-            #"apps/resnet_pond"
         ]
     elif args.config == "full":
         width, height = 32, 16
