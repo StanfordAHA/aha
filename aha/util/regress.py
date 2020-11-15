@@ -104,12 +104,12 @@ def dispatch(args, extra_args=None):
         # rom
         # Jeff has modified resnet_pond to check resnet with newlake
         tests = [
+            "apps/resnet_pond",
             "tests/conv_3_3",
             "apps/cascade",
             "tests/conv_1_2",
             "apps/harris",
             "tests/rom",
-            "apps/resnet_pond",
             "tests/ushift",
             "tests/arith",
             "tests/absolute",
