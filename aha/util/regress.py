@@ -103,10 +103,10 @@ def dispatch(args, extra_args=None):
         # harris
         # rom
         # Jeff has modified resnet_pond to check resnet with newlake and added
-        # conv_3_3_chain, pond_accum
+        # conv_3_3_chain, pond_accum, resnet_layer_auto
         tests = [
-            "tests/conv_3_3_chain",
             "apps/resnet_layer_auto",
+            "tests/conv_3_3_chain",
             "tests/pond_accum",
             "apps/resnet_pond",
             "tests/conv_3_3",
