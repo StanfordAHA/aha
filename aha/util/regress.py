@@ -105,8 +105,8 @@ def dispatch(args, extra_args=None):
         # Jeff has modified resnet_pond to check resnet with newlake and added
         # conv_3_3_chain, pond_accum, resnet_layer_auto
         tests = [
-            "apps/resnet_layer_auto",
             "tests/conv_3_3_chain",
+            "apps/resnet_layer_auto",
             "tests/pond_accum",
             "apps/resnet_pond",
             "tests/conv_3_3",
