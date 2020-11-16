@@ -119,7 +119,7 @@ def dispatch(args, extra_args=None):
             "tests/scomp",
             "tests/ucomp",
             "tests/uminmax",
-            "tests/conv_2_1",
+            #"tests/conv_2_1",
             #"apps/gaussian",
             #"apps/resnet_layer_gen",
         ]
