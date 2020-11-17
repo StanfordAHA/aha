@@ -106,7 +106,7 @@ def dispatch(args, extra_args=None):
         # conv_3_3_chain, pond_accum, resnet_layer_auto
         tests = [
             "tests/conv_3_3_chain",
-            "apps/resnet_layer_auto",
+            #"apps/resnet_layer_auto",
             "tests/pond_accum",
             "apps/resnet_pond",
             "tests/conv_3_3",
