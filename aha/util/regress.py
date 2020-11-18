@@ -96,8 +96,24 @@ def dispatch(args, extra_args=None):
         ]
     elif args.config == "daily":
         width, height = 16, 16
+        # Joey currently has configs for updated lake on following apps:
+        # cascade
+        # conv_1_2
+        # conv_3_3
+        # harris
+        # rom
+        # Jeff has modified resnet_pond to check resnet with newlake and added
+        # conv_3_3_chain, pond_accum, resnet_layer_auto
         tests = [
-            "apps/harris_auto",
+            "tests/conv_3_3_chain",
+            #"apps/resnet_layer_auto",
+            "tests/pond_accum",
+            "apps/resnet_pond",
+            "tests/conv_3_3",
+            "apps/cascade",
+            "tests/conv_1_2",
+            "apps/harris",
+            "tests/rom",
             "tests/ushift",
             "tests/arith",
             "tests/absolute",
@@ -105,15 +121,9 @@ def dispatch(args, extra_args=None):
             "tests/scomp",
             "tests/ucomp",
             "tests/uminmax",
-            "tests/rom",
-            "tests/conv_1_2",
             "tests/conv_2_1",
-            "apps/cascade",
-            # "apps/harris",
             "apps/gaussian",
-            "tests/conv_3_3",
             "apps/resnet_layer_gen",
-            "apps/resnet_pond"
         ]
     elif args.config == "full":
         width, height = 32, 16
