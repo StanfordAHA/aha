@@ -25,7 +25,7 @@ steps:
   commands:
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
-  - module load base incisive xcelium
+  - module load base incisive xcelium/19.03.003
   - ls /aha
   - pip freeze
   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
