@@ -53,11 +53,11 @@
 [submodule "lassen"]
     path = lassen
     url = https://github.com/stanfordaha/lassen
-    branch = master
+    branch = seq2
 [submodule "peak"]
     path = peak
     url = https://github.com/cdonovick/peak
-    branch = master
+    branch = seq2
 [submodule "archipelago"]
     path = archipelago
     url = https://github.com/kuree/archipelago
