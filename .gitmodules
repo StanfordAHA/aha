@@ -57,7 +57,7 @@
 [submodule "peak"]
     path = peak
     url = https://github.com/cdonovick/peak
-    branch = seq2
+    branch = master
 [submodule "archipelago"]
     path = archipelago
     url = https://github.com/kuree/archipelago
