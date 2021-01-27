@@ -9,7 +9,7 @@
 [submodule "garnet"]
     path = garnet
     url = https://github.com/stanfordaha/garnet
-    branch = leonardt-patch-1
+    branch = master
 [submodule "Halide-to-Hardware"]
     path = Halide-to-Hardware
     url = https://github.com/stanfordaha/Halide-to-Hardware
