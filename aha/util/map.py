@@ -21,7 +21,6 @@ def dispatch(args, extra_args=None):
         app_dir = (Path(args.base) / args.app).resolve()
 
     map_args = [
-        "--no-pd",
         "--interconnect-only",
         "--input-app",
         app_dir / "bin/design_top.json",
