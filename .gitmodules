@@ -25,7 +25,7 @@
 [submodule "magma"]
     path = magma
     url = https://github.com/phanrahan/magma
-    branch = cst
+    branch = master
 [submodule "mantle"]
     path = mantle
     url = https://github.com/phanrahan/mantle
@@ -57,7 +57,7 @@
 [submodule "peak"]
     path = peak
     url = https://github.com/cdonovick/peak
-    branch = cst
+    branch = master
 [submodule "archipelago"]
     path = archipelago
     url = https://github.com/kuree/archipelago
@@ -67,7 +67,7 @@
 [submodule "ast_tools"]
     path = ast_tools
     url = https://github.com/leonardt/ast_tools
-	branch = cst
+	branch = master
 [submodule "lake"]
     path = lake
     url = https://github.com/StanfordAHA/lake
