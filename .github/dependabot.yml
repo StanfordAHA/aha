@@ -1,0 +1,9 @@
+version: 2
+updates:
+- package-ecosystem: gitsubmodule
+  directory: "/"
+  schedule:
+    interval: daily
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 10
+  target-branch: master
