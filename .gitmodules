@@ -78,3 +78,4 @@
 [submodule "clockwork"]
 	path = clockwork
 	url = https://github.com/dillonhuff/clockwork.git
+    branch = aha
