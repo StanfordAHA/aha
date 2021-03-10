@@ -75,3 +75,6 @@
 [submodule "mflowgen"]
 	path = mflowgen
 	url = https://github.com/cornell-brg/mflowgen
+[submodule "clockwork"]
+	path = clockwork
+	url = https://github.com/dillonhuff/clockwork.git
