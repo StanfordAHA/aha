@@ -1,3 +1,6 @@
+import copy
+import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -13,12 +16,31 @@ def add_subparser(subparser):
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
 
+    env = copy.deepcopy(os.environ)
+    env["COREIR_DIR"] = str(args.aha_dir / "coreir")
+    env["LAKE_PATH"] = str(args.aha_dir / "lake")
+    env["CLOCKWORK_PATH"] = str(args.aha_dir / "clockwork")
+
     if args.base is None:
         app_dir = Path(
             f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
         )
     else:
         app_dir = (Path(args.base) / args.app).resolve()
+    env["LAKE_CONTROLLERS"] = str(app_dir / "bin")
+
+    app_name = args.app.name
+
+    subprocess.check_call(
+        ["make", "-C", app_dir, "mem"],
+        cwd=args.aha_dir / "Halide-to-Hardware",
+        env=env,
+    )
+
+    #move to apps/bin
+    clkwrk_design = app_name +"/" + app_name + "_garnet.json"
+    shutil.move(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
+
 
     map_args = [
         "--no-pd",
