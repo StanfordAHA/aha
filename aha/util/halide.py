@@ -20,7 +20,7 @@ def dispatch(args, extra_args=None):
 
     # CoreIR Output
     subprocess.check_call(
-        ["make", "-C", app_dir, "bin/design_top.json"],
+        ["make", "-C", app_dir, "design-clockwork"],
         cwd=args.aha_dir / "Halide-to-Hardware",
         env=env,
     )
