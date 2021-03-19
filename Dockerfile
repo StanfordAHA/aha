@@ -66,16 +66,9 @@ COPY ./BufferMapping /aha/BufferMapping
 WORKDIR /aha/BufferMapping/cfunc
 RUN export COREIR_DIR=/aha/coreir && make lib
 
-
 # mflowgen
 ENV GARNET_HOME=/aha/garnet
 ENV MFLOWGEN=/aha/mflowgen
-
-# Install AHA Tools
-COPY . /aha
-WORKDIR /aha
-RUN python -m venv . && source bin/activate && pip install wheel && pip install -e . && aha deps install
-
 
 # clockwork
 COPY clockwork /aha/clockwork
@@ -90,6 +83,11 @@ RUN ./misc/install_deps_linux.sh && \
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib
+
+# Install AHA Tools
+COPY . /aha
+WORKDIR /aha
+RUN python -m venv . && source bin/activate && pip install wheel && pip install -e . && aha deps install
 
 WORKDIR /aha
 

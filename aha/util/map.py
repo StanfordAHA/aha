@@ -22,6 +22,7 @@ def dispatch(args, extra_args=None):
     env["COREIR_PATH"] = str(args.aha_dir / "coreir")
     env["LAKE_PATH"] = str(args.aha_dir / "lake")
     env["CLOCKWORK_PATH"] = str(args.aha_dir / "clockwork")
+    env["LAKE_CONTROLLERS"] = str(args.aha_dir / "clockwork")
 
     if args.base is None:
         app_dir = Path(
