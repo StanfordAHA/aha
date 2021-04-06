@@ -112,7 +112,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_3_3",
             "apps/cascade",
             "tests/conv_1_2",
-            "apps/harris",
+            #"apps/harris",
             "tests/rom",
             "tests/ushift",
             "tests/arith",
