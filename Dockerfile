@@ -75,7 +75,7 @@ COPY clockwork /aha/clockwork
 WORKDIR /aha/clockwork
 ENV COREIR_PATH=/aha/coreir
 ENV LAKE_PATH=/aha/lake
-RUN ./misc/install_deps_linux.sh && \
+RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
     make all -j
 
