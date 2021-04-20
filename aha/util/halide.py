@@ -45,13 +45,30 @@ def dispatch(args, extra_args=None):
     if os.path.exists(str(app_dir / "bin/map_result"/ clkwrk_design)):
         shutil.move(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
 
-    # Raw Images
-    subprocess.check_call(
-        ["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
-        cwd=args.aha_dir / "Halide-to-Hardware",
-        env=env,
-    )
+    if "resnet_layer_gen" in app_name:
+        # Generate pgm Images
+        subprocess.check_call(
+            ["make", "-C", app_dir, "bin/input_nn.pgm", "bin/output_cpu.pgm"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+        )
 
-    os.rename(
-        app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
-    )
+        os.rename(
+            app_dir / "bin/output_cpu.pgm", app_dir / "bin/gold.pgm",
+        )
+
+        os.rename(
+            app_dir / "bin/input_nn.pgm", app_dir / "bin/input.pgm",
+        )
+    
+    else:
+        # Raw Images
+        subprocess.check_call(
+            ["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+        )
+
+        os.rename(
+            app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
+        )
