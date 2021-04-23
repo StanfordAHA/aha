@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import subprocess
 import sys
 
@@ -20,17 +21,25 @@ def dispatch(args, extra_args=None):
     else:
         app_dir = (Path(args.base) / args.app).resolve()
 
+    #Resnet use pgm 
+    if os.path.exists(str(app_dir / "bin/input.raw")):
+        ext = ".raw"
+    else:
+        ext = ".pgm"
+
+    print (f"Using testbench file extension: {ext}.")
+
     map_args = [
         "--no-pd",
         "--interconnect-only",
         "--input-app",
         app_dir / "bin/design_top.json",
         "--input-file",
-        app_dir / "bin/input.raw",
+        app_dir / f"bin/input{ext}",
         "--output-file",
         app_dir / f"bin/{args.app.name}.bs",
         "--gold-file",
-        app_dir / "bin/gold.raw",
+        app_dir / f"bin/gold{ext}",
     ]
 
     subprocess.check_call(

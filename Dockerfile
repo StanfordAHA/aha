@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM docker.io/ubuntu:16.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,6 +21,8 @@ RUN apt-get update && \
         imagemagick csh \
         libz-dev libpng-dev libjpeg-dev \
         libtinfo-dev libncurses-dev \
+        # clockwork
+        curl \
         # hwtypes
         libgmp-dev libmpfr-dev libmpc-dev \
         # cgra_pnr
@@ -64,19 +66,30 @@ COPY ./BufferMapping /aha/BufferMapping
 WORKDIR /aha/BufferMapping/cfunc
 RUN export COREIR_DIR=/aha/coreir && make lib
 
-# Halide-to-Hardware
-COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
-WORKDIR /aha/Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir && make && make distrib
-
 # mflowgen
 ENV GARNET_HOME=/aha/garnet
 ENV MFLOWGEN=/aha/mflowgen
+
+# clockwork
+COPY clockwork /aha/clockwork
+WORKDIR /aha/clockwork
+ENV COREIR_PATH=/aha/coreir
+ENV LAKE_PATH=/aha/lake
+RUN ./misc/install_deps_ahaflow.sh && \
+    source user_settings/aha_settings.sh && \
+    make all -j
+
+# Halide-to-Hardware
+COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
+WORKDIR /aha/Halide-to-Hardware
+RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib
 
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
 RUN python -m venv . && source bin/activate && pip install wheel && pip install -e . && aha deps install
+
+WORKDIR /aha
 
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
