@@ -27,6 +27,33 @@ def dispatch(args, extra_args=None):
     app_name = args.app.name
     run_sim = args.sim
 
+    if "handcrafted" in str(args.app):
+        # Generate pgm Images
+        subprocess.check_call(
+            ["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+        )
+
+        os.rename(
+            app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
+        )
+    
+    else:
+        # Raw Images
+        subprocess.check_call(
+            ["make", "-C", app_dir, "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+        )
+
+        os.rename(
+            app_dir / "bin/input_cgra.pgm", app_dir / "bin/input.pgm",
+        )
+        os.rename(
+            app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
+        )
+
     if run_sim:
         subprocess.check_call(
             ["make", "-C", app_dir, "test-mem"],
@@ -44,31 +71,3 @@ def dispatch(args, extra_args=None):
     clkwrk_design = app_name +"/" + app_name + "_garnet.json"
     if os.path.exists(str(app_dir / "bin/map_result"/ clkwrk_design)):
         shutil.move(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
-
-    if "resnet_layer_gen" in app_name:
-        # Generate pgm Images
-        subprocess.check_call(
-            ["make", "-C", app_dir, "bin/input_nn.pgm", "bin/output_cpu.pgm"],
-            cwd=args.aha_dir / "Halide-to-Hardware",
-            env=env,
-        )
-
-        os.rename(
-            app_dir / "bin/output_cpu.pgm", app_dir / "bin/gold.pgm",
-        )
-
-        os.rename(
-            app_dir / "bin/input_nn.pgm", app_dir / "bin/input.pgm",
-        )
-    
-    else:
-        # Raw Images
-        subprocess.check_call(
-            ["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
-            cwd=args.aha_dir / "Halide-to-Hardware",
-            env=env,
-        )
-
-        os.rename(
-            app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
-        )

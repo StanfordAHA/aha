@@ -97,19 +97,11 @@ def dispatch(args, extra_args=None):
         ]
     elif args.config == "daily":
         width, height = 16, 16
-        # Joey currently has configs for updated lake on following apps:
-        # cascade
-        # conv_1_2
-        # conv_3_3
-        # harris
-        # rom
-        # Jeff has modified resnet_pond to check resnet with newlake and added
-        # conv_3_3_chain, pond_accum, resnet_layer_auto
         tests = [
-            "tests/conv_3_3_chain",
+            "handcrafted/conv_3_3_chain",
             #"apps/resnet_layer_auto", #will not run
-            "tests/pond_accum", 
-            "apps/resnet_pond",
+            "handcrafted/pond_accum", 
+            "handcrafted/resnet_pond",
             "tests/conv_3_3",
             "apps/cascade",
             "tests/conv_1_2",
@@ -145,6 +137,23 @@ def dispatch(args, extra_args=None):
             "tests/conv_3_3",
             "apps/resnet_layer_gen",
             "apps/resnet_pond"
+        ]
+    elif args.config == "jeff":
+        width, height = 32, 16
+        tests = [
+            "tests/boolean_ops",
+            ###"tests/bitwise", # problems with xor
+            "tests/equal",
+            "tests/ternary",
+            "tests/sminmax",
+            "tests/sshift",
+            ###"tests/conv_5_5",         # KeyError: 'config_21_config_addr'
+            ###"tests/inout_cgraconfig", # doesn't work
+            ###"apps/unsharp",           # no divide
+            "apps/brighten_and_blur"
+            ###"apps/demosaic_complex",
+            ###"apps/resnet",
+            ###"apps/mobilenet",
         ]
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
