@@ -82,68 +82,67 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr":
         width, height = 6, 6
         tests = [
+            "apps/pointwise",
             "tests/ushift",
             "tests/arith",
             "tests/absolute",
-            "apps/pointwise",
             "tests/scomp",
             "tests/ucomp",
             "tests/uminmax",
             "tests/rom",
             "tests/conv_1_2",
             "tests/conv_2_1",
-            "apps/resnet_pond"
+            "handcrafted/resnet_pond"
         ]
     elif args.config == "daily":
         width, height = 32, 16
-        # Joey currently has configs for updated lake on following apps:
-        # cascade
-        # conv_1_2
-        # conv_3_3
-        # harris
-        # rom
-        # Jeff has modified resnet_pond to check resnet with newlake and added
-        # conv_3_3_chain, pond_accum, resnet_layer_auto
         tests = [
-            "apps/resnet_layer_gen",
-            "tests/conv_3_3_chain",
-            #"apps/resnet_layer_auto",
-            "tests/pond_accum",
-            "apps/resnet_pond",
-            "tests/conv_3_3",
-            "apps/cascade",
-            "tests/conv_1_2",
-            "apps/harris",
+            "apps/pointwise",
             "tests/rom",
             "tests/ushift",
             "tests/arith",
             "tests/absolute",
-            "apps/pointwise",
             "tests/scomp",
             "tests/ucomp",
             "tests/uminmax",
+            "tests/conv_1_2",
             "tests/conv_2_1",
+            "tests/conv_3_3",
             "apps/gaussian",
+            "apps/cascade",
+            "apps/harris",
+            "apps/resnet_layer_gen",
+            "handcrafted/conv_3_3_chain",
+            "handcrafted/pond_accum",
+            "handcrafted/resnet_pond",
         ]
     elif args.config == "full":
         width, height = 32, 16
         tests = [
-            "tests/ushift",
+            "apps/pointwise",
+            "tests/rom",
             "tests/arith",
             "tests/absolute",
-            "apps/pointwise",
+            "tests/boolean_ops",
+            "tests/equal",
+            "tests/ternary",
             "tests/scomp",
             "tests/ucomp",
-            "tests/uminmax",
-            "tests/rom",
+            "tests/sminmax",
+            "tests/uminmax",            
+            "tests/sshift",
+            "tests/ushift",
             "tests/conv_1_2",
             "tests/conv_2_1",
+            "tests/conv_3_3",
+            "apps/gaussian",
+            "apps/brighten_and_blur",
             "apps/cascade",
             "apps/harris",
-            "apps/gaussian",
-            "tests/conv_3_3",
             "apps/resnet_layer_gen",
-            "apps/resnet_pond"
+            "handcrafted/conv_3_3_chain",
+            "handcrafted/pond_accum",
+            "handcrafted/resnet_pond",
         ]
     else:
         raise NotImplementedError(f"Unknown test config: {config}")

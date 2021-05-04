@@ -79,3 +79,6 @@
 	path = clockwork
 	url = https://github.com/dillonhuff/clockwork.git
     branch = aha
+[submodule "rdai"]
+	path = rdai
+	url = https://github.com/thenextged/rdai.git
