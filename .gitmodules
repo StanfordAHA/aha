@@ -61,6 +61,7 @@
 [submodule "archipelago"]
     path = archipelago
     url = https://github.com/kuree/archipelago
+    branch = path-fix
 [submodule "cgra_pnr"]
     path = cgra_pnr
     url = https://github.com/kuree/cgra_pnr
