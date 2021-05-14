@@ -113,8 +113,8 @@ def dispatch(args, extra_args=None):
             "apps/harris",
             "apps/resnet_layer_gen",
             "handcrafted/conv_3_3_chain",
-            "handcrafted/pond_accum",
-            "handcrafted/resnet_pond",
+            #"handcrafted/pond_accum",
+            #"handcrafted/resnet_pond",
         ]
     elif args.config == "full":
         width, height = 32, 16
