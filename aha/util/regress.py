@@ -95,7 +95,7 @@ def dispatch(args, extra_args=None):
             "handcrafted/resnet_pond"
         ]
     elif args.config == "daily":
-        width, height = 32, 16
+        width, height = 16, 16
         tests = [
             "apps/pointwise",
             "tests/rom",
@@ -129,7 +129,7 @@ def dispatch(args, extra_args=None):
             "tests/scomp",
             "tests/ucomp",
             "tests/sminmax",
-            "tests/uminmax",            
+            "tests/uminmax",
             "tests/sshift",
             "tests/ushift",
             "tests/conv_1_2",
