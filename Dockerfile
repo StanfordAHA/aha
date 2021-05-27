@@ -51,7 +51,8 @@ RUN apt-get update && \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake==3.15.3 && \
     wget -nv -O ~/clang7.tar.xz http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz && \
-    tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
+    tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ && \
+    rm -rf ~/clang7.tar.xz
 
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
