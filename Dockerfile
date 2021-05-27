@@ -78,12 +78,14 @@ ENV COREIR_PATH=/aha/coreir
 ENV LAKE_PATH=/aha/lake
 RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
-    make all -j
+    make all -j && \
+    rm -rf ntl*
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib
+RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
+    rm -rf lib/*
 
 # Install AHA Tools
 COPY . /aha
