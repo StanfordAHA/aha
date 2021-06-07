@@ -92,7 +92,9 @@ def dispatch(args, extra_args=None):
             "tests/rom",
             "tests/conv_1_2",
             "tests/conv_2_1",
-            "handcrafted/resnet_pond"
+            "handcrafted/resnet_pond",
+            "handcrafted/pond_accum",
+            "handcrafted/pond_to_mem"
         ]
     elif args.config == "daily":
         width, height = 16, 16
@@ -143,6 +145,7 @@ def dispatch(args, extra_args=None):
             "handcrafted/conv_3_3_chain",
             "handcrafted/pond_accum",
             "handcrafted/resnet_pond",
+            "handcrafted/pond_to_mem"
         ]
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
