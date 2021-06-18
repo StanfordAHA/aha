@@ -100,9 +100,9 @@ def dispatch(args, extra_args=None):
         width, height = 16, 16
         tests = [
             "handcrafted/conv_3_3_chain",
-            "handcrafted/pond_to_mem",
             "handcrafted/pond_accum",
             "handcrafted/resnet_pond",
+            "handcrafted/pond_to_mem",
             "apps/pointwise",
             "tests/rom",
             "tests/ushift",
