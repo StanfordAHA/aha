@@ -99,10 +99,6 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 16, 16
         tests = [
-            "handcrafted/conv_3_3_chain",
-            "handcrafted/pond_accum",
-            "handcrafted/resnet_pond",
-            "handcrafted/pond_and_mem",
             "apps/pointwise",
             "tests/rom",
             "tests/ushift",
@@ -118,6 +114,10 @@ def dispatch(args, extra_args=None):
             "apps/cascade",
             "apps/harris",
             "apps/resnet_layer_gen",
+            "handcrafted/conv_3_3_chain",
+            "handcrafted/pond_accum",
+            "handcrafted/resnet_pond",
+            "handcrafted/pond_and_mem",
         ]
     elif args.config == "full":
         width, height = 32, 16
