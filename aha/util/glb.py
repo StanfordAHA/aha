@@ -7,6 +7,7 @@ def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app", nargs="+")
     parser.add_argument("--width", type=int, default=16)
+    parser.add_argument("-r", "--run", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -29,8 +30,15 @@ def dispatch(args, extra_args=None):
     env["CGRA_WIDTH"] = str(args.width)
 
     # run the GLB simulation
-    subprocess.check_call(
-        ["make", "sim"] + extra_args,
-        cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-        env=env
-    )
+    if args.run:
+        subprocess.check_call(
+            ["make", "run"] + extra_args,
+            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+            env=env
+        )
+    else:
+        subprocess.check_call(
+            ["make", "sim"] + extra_args,
+            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+            env=env
+        )
