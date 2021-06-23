@@ -26,7 +26,7 @@ def dispatch(args, extra_args=None):
         # generate meta_data.json file
         subprocess.check_call(
             [sys.executable,
-             f"../../hw_support/parse_design_meta.py",
+             f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
              "bin/design_meta_halide.json",
              "--top", "bin/design_top.json",
              "--place", "bin/design.place"],
