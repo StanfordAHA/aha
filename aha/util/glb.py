@@ -7,7 +7,8 @@ def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app", nargs="+")
     parser.add_argument("--width", type=int, default=16)
-    parser.add_argument("-r", "--run", action="store_true")
+    parser.add_argument("--vcd", action="store_true")
+    parser.add_argument("--vcd-glb", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -28,17 +29,13 @@ def dispatch(args, extra_args=None):
     assert os.path.isfile(garnet_v)
     env["CGRA_FILENAME"] = str(garnet_v)
     env["CGRA_WIDTH"] = str(args.width)
+    if args.vcd:
+        env["RUN_ARGS"] = "-input shm.tcl"
+    elif args.vcd_glb:
+        env["RUN_ARGS"] = "-input shm_glb.tcl"
 
-    # run the GLB simulation
-    if args.run:
-        subprocess.check_call(
-            ["make", "run"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env
-        )
-    else:
-        subprocess.check_call(
-            ["make", "sim"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env
-        )
+    subprocess.check_call(
+        ["make", "sim"] + extra_args,
+        cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+        env=env
+    )
