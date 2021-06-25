@@ -21,6 +21,11 @@ def dispatch(args, extra_args=None):
                 cwd=str(args.aha_dir / "garnet" / "global_buffer"),
                 env=env
             )
+            subprocess.check_call(
+                ["make", "rtl"],
+                cwd=str(args.aha_dir / "garnet" / "global_controller"),
+                env=env
+            )
     subprocess.check_call(
         [sys.executable, "garnet.py"] + extra_args, cwd=args.aha_dir / "garnet",
     )
