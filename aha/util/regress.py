@@ -45,8 +45,8 @@ def gen_garnet(width, height):
         str(width),
         "--height",
         str(height),
-        "--verilog",
-        "--interconnect-only"
+        "--verilog"
+        #"--interconnect-only"
     ])
     return time.time() - start
 
