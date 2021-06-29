@@ -70,4 +70,4 @@ def dispatch(args, extra_args=None):
     #move to apps/bin
     clkwrk_design = app_name +"/" + app_name + "_garnet.json"
     if os.path.exists(str(app_dir / "bin/map_result"/ clkwrk_design)):
-        shutil.move(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
+        shutil.copyfile(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
