@@ -155,24 +155,24 @@ def dispatch(args, extra_args=None):
         tests = [
             "apps/pointwise",
             "tests/rom",
-            "tests/arith",
-            "tests/absolute",
-            "tests/boolean_ops",
-            "tests/equal",
-            "tests/ternary",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/sminmax",
-            "tests/uminmax",
-            "tests/sshift",
-            "tests/ushift",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-            "tests/conv_3_3",
+            #"tests/arith",
+            #"tests/absolute",
+            #"tests/boolean_ops",
+            #"tests/equal",
+            #"tests/ternary",
+            #"tests/scomp",
+            #"tests/ucomp",
+            #"tests/sminmax",
+            #"tests/uminmax",
+            #"tests/sshift",
+            #"tests/ushift",
+            #"tests/conv_1_2",
+            #"tests/conv_2_1",
+            #"tests/conv_3_3",
             "apps/gaussian",
-            "apps/brighten_and_blur",
-            "apps/cascade",
-            "apps/harris",
+            #"apps/brighten_and_blur",
+            #"apps/cascade",
+            #"apps/harris",
             "apps/resnet_layer_gen",
             "handcrafted/conv_3_3_chain",
             "handcrafted/pond_accum",
@@ -197,7 +197,7 @@ def dispatch(args, extra_args=None):
         t0, t1, t2 = run_test(test, width, height)
         info.append([test, t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
-    for test in tests:
+    for test in glb_tests:
         t0, t1, t2 = run_glb(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
