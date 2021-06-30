@@ -182,8 +182,8 @@ def dispatch(args, extra_args=None):
         glb_tests = [
             "apps/gaussian",
             "apps/unsharp",
-            "apps/resnet_layer_gen"
-            #"apps/camera_pipeline"
+            "apps/resnet_layer_gen",
+            "apps/camera_pipeline"
         ]
 
     else:
