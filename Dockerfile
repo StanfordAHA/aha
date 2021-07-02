@@ -78,7 +78,7 @@ ENV COREIR_PATH=/aha/coreir
 ENV LAKE_PATH=/aha/lake
 RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
-    make all -j 2 && \
+    make all -j 4 && \
     rm -rf ntl*
 
 # Halide-to-Hardware
