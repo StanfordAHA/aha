@@ -114,6 +114,7 @@ def dispatch(args, extra_args=None):
             "apps/cascade",
             "apps/harris",
             "apps/resnet_layer_gen",
+            "apps/resnet_pond_layer",
             "handcrafted/conv_3_3_chain",
             "handcrafted/pond_accum",
             "handcrafted/resnet_pond",
