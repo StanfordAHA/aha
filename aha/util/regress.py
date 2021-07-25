@@ -145,11 +145,11 @@ def dispatch(args, extra_args=None):
             "handcrafted/resnet_pond",
             "handcrafted/pond_and_mem",
         ]
-        glb_tests = [
-            "apps/gaussian",
-            "apps/unsharp",
-            "apps/resnet_layer_gen"
-        ]
+        # glb_tests = [
+        #     "apps/gaussian",
+        #     "apps/unsharp",
+        #     "apps/resnet_layer_gen"
+        # ]
     elif args.config == "full":
         width, height = 32, 16
         tests = [
