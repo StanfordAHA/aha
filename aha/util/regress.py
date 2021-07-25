@@ -119,9 +119,9 @@ def dispatch(args, extra_args=None):
             "handcrafted/pond_accum",
             "handcrafted/pond_and_mem"
         ]
-        glb_tests = [
-            "apps/unsharp"
-        ]
+        # glb_tests = [
+        #     "apps/unsharp"
+        # ]
     elif args.config == "daily":
         width, height = 16, 16
         tests = [
