@@ -119,9 +119,10 @@ def dispatch(args, extra_args=None):
             "handcrafted/pond_accum",
             "handcrafted/pond_and_mem"
         ]
-        glb_tests = [
-            "apps/unsharp"
-        ]
+        glb_tests = []
+        # glb_tests = [
+        #    "apps/unsharp"
+        # ]
     elif args.config == "daily":
         width, height = 16, 16
         tests = [
@@ -180,12 +181,13 @@ def dispatch(args, extra_args=None):
             "handcrafted/resnet_pond",
             "handcrafted/pond_and_mem"
         ]
-        glb_tests = [
-            "apps/gaussian",
-            "apps/unsharp",
-            "apps/resnet_layer_gen",
-            "apps/camera_pipeline"
-        ]
+        glb_tests = []
+        # glb_tests = [
+        #     "apps/gaussian",
+        #     "apps/unsharp",
+        #     "apps/resnet_layer_gen",
+        #     "apps/camera_pipeline"
+        # ]
 
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
