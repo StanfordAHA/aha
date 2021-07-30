@@ -45,8 +45,8 @@ def gen_garnet(width, height):
         str(width),
         "--height",
         str(height),
-        "--verilog",
-        "--interconnect-only"
+        "--verilog"
+        #"--interconnect-only"
     ])
     return time.time() - start
 
@@ -73,12 +73,35 @@ def run_test(testname, width, height):
     return time_compile, time_map, time_test
 
 
+def run_glb(testname, width, height):
+    print(f"--- {testname}")
+    print(f"--- {testname} - compiling")
+    start = time.time()
+    buildkite_call(["aha", "halide", testname])
+    time_compile = time.time() - start
+
+    print(f"--- {testname} - mapping")
+    start = time.time()
+    buildkite_call(
+        ["aha", "map", testname, "--width", str(width), "--height", str(height)]
+    )
+    time_map = time.time() - start
+
+    print(f"--- {testname} - glb testing")
+    start = time.time()
+    buildkite_call(["aha", "glb", testname, "--width", str(width)])
+    time_test = time.time() - start
+
+    return time_compile, time_map, time_test
+
+
 def dispatch(args, extra_args=None):
     if args.config == "fast":
         width, height = 4, 2
         tests = [
             "apps/pointwise",
         ]
+        glb_tests = [ ]
     elif args.config == "pr":
         width, height = 6, 6
         tests = [
@@ -96,6 +119,10 @@ def dispatch(args, extra_args=None):
             "handcrafted/pond_accum",
             "handcrafted/pond_and_mem"
         ]
+        glb_tests = []
+        # glb_tests = [
+        #    "apps/unsharp"
+        # ]
     elif args.config == "daily":
         width, height = 16, 16
         tests = [
@@ -119,6 +146,12 @@ def dispatch(args, extra_args=None):
             "handcrafted/resnet_pond",
             "handcrafted/pond_and_mem",
         ]
+        glb_tests = []
+        # glb_tests = [
+        #     "apps/gaussian",
+        #     "apps/unsharp",
+        #     "apps/resnet_layer_gen"
+        # ]
     elif args.config == "full":
         width, height = 32, 16
         tests = [
@@ -148,6 +181,14 @@ def dispatch(args, extra_args=None):
             "handcrafted/resnet_pond",
             "handcrafted/pond_and_mem"
         ]
+        glb_tests = []
+        # glb_tests = [
+        #     "apps/gaussian",
+        #     "apps/unsharp",
+        #     "apps/resnet_layer_gen",
+        #     "apps/camera_pipeline"
+        # ]
+
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
 
@@ -158,6 +199,10 @@ def dispatch(args, extra_args=None):
     for test in tests:
         t0, t1, t2 = run_test(test, width, height)
         info.append([test, t0 + t1 + t2, t0, t1, t2])
+        print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
+    for test in glb_tests:
+        t0, t1, t2 = run_glb(test, width, height)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
 
 
