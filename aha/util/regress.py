@@ -144,6 +144,7 @@ def dispatch(args, extra_args=None):
             "handcrafted/pond_and_mem",
         ]
         glb_tests = [
+            "handcrafted/mobilenet",
             "apps/gaussian",
             "apps/unsharp",
             "apps/resnet_layer_gen"
@@ -191,13 +192,13 @@ def dispatch(args, extra_args=None):
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
-    for test in tests:
-        t0, t1, t2 = run_test(test, width, height)
-        info.append([test, t0 + t1 + t2, t0, t1, t2])
-        print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
     for test in glb_tests:
         t0, t1, t2 = run_glb(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
+    for test in tests:
+        t0, t1, t2 = run_test(test, width, height)
+        info.append([test, t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
 
 
