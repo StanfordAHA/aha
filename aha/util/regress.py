@@ -121,7 +121,7 @@ def dispatch(args, extra_args=None):
         ]
         glb_tests = [ ]
     elif args.config == "daily":
-        width, height = 16, 16
+        width, height = 32, 16
         tests = [
             "apps/pointwise",
             "tests/rom",
