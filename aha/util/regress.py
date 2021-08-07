@@ -124,15 +124,15 @@ def dispatch(args, extra_args=None):
         width, height = 32, 16
         tests = [
             "apps/gaussian",
-            "apps/cascade",
+            "apps/unet/up_sample",
             "apps/harris",
             "apps/resnet_layer_gen",
         ]
         glb_tests = [
             "handcrafted/mobilenet",
             "apps/camera_pipeline",
-            "apps/gaussian",
             "apps/unsharp",
+            "apps/gaussian",
             "apps/resnet_layer_gen"
         ]
     elif args.config == "full":
