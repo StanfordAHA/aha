@@ -123,28 +123,14 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         tests = [
-            "apps/pointwise",
-            "tests/rom",
-            "tests/ushift",
-            "tests/arith",
-            "tests/absolute",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/uminmax",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-            "tests/conv_3_3",
             "apps/gaussian",
             "apps/cascade",
             "apps/harris",
             "apps/resnet_layer_gen",
-            "handcrafted/conv_3_3_chain",
-            "handcrafted/pond_accum",
-            "handcrafted/resnet_pond",
-            "handcrafted/pond_and_mem",
         ]
         glb_tests = [
             "handcrafted/mobilenet",
+            "apps/camera_pipeline",
             "apps/gaussian",
             "apps/unsharp",
             "apps/resnet_layer_gen"
