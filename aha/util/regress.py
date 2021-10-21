@@ -2,6 +2,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import os
 from tabulate import tabulate
 import time
 
@@ -17,13 +18,16 @@ def buildkite_filter(s):
     return re.sub("^---", " ---", s, flags=re.MULTILINE)
 
 
-def buildkite_call(command):
+def buildkite_call(command, env={}):
+    env = {**os.environ.copy(), **env}
+
     try:
         app = subprocess.run(
             command,
             check=True,
             text=True,
             capture_output=True,
+            env=env,
         )
         print(buildkite_filter(app.stdout))
     except subprocess.CalledProcessError as err:
@@ -82,8 +86,12 @@ def run_glb(testname, width, height):
 
     print(f"--- {testname} - mapping")
     start = time.time()
+    my_env = {}
+    if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
+        my_env = {'DISABLE_GP': '1'}
     buildkite_call(
-        ["aha", "map", testname, "--width", str(width), "--height", str(height)]
+        ["aha", "map", testname, "--width", str(width), "--height", str(height)],
+        env=my_env
     )
     time_map = time.time() - start
 
