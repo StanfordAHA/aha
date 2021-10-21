@@ -82,7 +82,6 @@ def run_glb(testname, width, height):
 
     print(f"--- {testname} - mapping")
     start = time.time()
-    breakpoint()
     if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
         buildkite_call(
             ["DISABLE_GP=1", "aha", "map", testname, "--width", str(width), "--height", str(height)]
