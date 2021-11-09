@@ -97,7 +97,7 @@ def run_glb(testname, width, height):
 
     print(f"--- {testname} - glb testing")
     start = time.time()
-    buildkite_call(["aha", "glb", testname, "--width", str(width)])
+    buildkite_call(["aha", "glb", testname])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
