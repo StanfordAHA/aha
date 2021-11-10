@@ -18,11 +18,6 @@ def dispatch(args, extra_args=None):
             env["CGRA_WIDTH"] = str(extra_args[idx+1])
             subprocess.check_call(
                 ["make", "rtl"],
-                cwd=str(args.aha_dir / "garnet" / "global_buffer"),
-                env=env
-            )
-            subprocess.check_call(
-                ["make", "rtl"],
                 cwd=str(args.aha_dir / "garnet" / "global_controller"),
                 env=env
             )
