@@ -10,8 +10,6 @@ def add_subparser(subparser):
     parser.add_argument("--vcd", action="store_true")
     parser.add_argument("--vcd-glb", action="store_true")
     parser.add_argument("--run", action="store_true")
-    parser.add_argument("--shuffle", action="store_true")
-    parser.add_argument("--no-parse", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -25,33 +23,6 @@ def dispatch(args, extra_args=None):
         # get the full path of the app
         arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}"
         app_args.append(f"+{arg_name}={arg_path}")
-        # generate meta_data.json file
-        if not args.no_parse:
-            if args.shuffle:
-                subprocess.check_call(
-                    [sys.executable,
-                     f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/shuffle.py",
-                     "design_top.json"],
-                    cwd=f"{arg_path}/bin"
-                )
-                subprocess.check_call(
-                    [sys.executable,
-                     f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
-                     "bin/design_meta_halide.json",
-                     "--top", "bin/design_top_reorder.json",
-                     "--place", "bin/design.place",
-                     "--shuffle"],
-                    cwd=arg_path
-                )
-            else:
-                subprocess.check_call(
-                    [sys.executable,
-                     f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
-                     "bin/design_meta_halide.json",
-                     "--top", "bin/design_top.json",
-                     "--place", "bin/design.place"],
-                    cwd=arg_path
-                )
 
     app_args = " ".join(app_args)
     env["APP_ARGS"] = app_args
@@ -59,9 +30,6 @@ def dispatch(args, extra_args=None):
         env["RUN_ARGS"] = "-input shm.tcl"
     elif args.vcd_glb:
         env["RUN_ARGS"] = "-input shm_glb.tcl"
-
-    if args.shuffle:
-        env["LIB_ARGS"] = "-DSHUFFLE"
 
     if args.run:
         subprocess.check_call(
