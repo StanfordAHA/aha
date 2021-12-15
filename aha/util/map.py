@@ -50,14 +50,15 @@ def dispatch(args, extra_args=None):
 
     # generate meta_data.json file
     if not args.no_parse:
-        # get the full path of the app
-        arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
-        subprocess.check_call(
-            [sys.executable,
-             f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
-             "bin/design_meta_halide.json",
-             "--top", "bin/design_top.json",
-             "--place", "bin/design.place"],
-            cwd=arg_path
-        )
+        if not str(args.app).startswith("handcrafted"):
+            # get the full path of the app
+            arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
+            subprocess.check_call(
+                [sys.executable,
+                 f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
+                 "bin/design_meta_halide.json",
+                 "--top", "bin/design_top.json",
+                 "--place", "bin/design.place"],
+                cwd=arg_path
+            )
 
