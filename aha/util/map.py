@@ -50,7 +50,7 @@ def dispatch(args, extra_args=None):
 
     # generate meta_data.json file
     if not args.no_parse:
-        if not args.app.startwith("handcrafted"):
+        if not str(args.app).startswith("handcrafted"):
             # get the full path of the app
             arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
             subprocess.check_call(
