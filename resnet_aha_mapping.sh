@@ -15,7 +15,7 @@ for key in "${!conv_layer_args[@]}"; do
     {
         echo "$key ${conv_layer_args[$key]}";
         export HALIDE_GEN_ARGS="${conv_layer_args[$key]}";
-        aha halide apps/resnet_output_stationary > "${log_folder}/${key}.halide.log";;
+        aha halide apps/resnet_output_stationary > "${log_folder}/${key}.halide.log";
         aha map apps/resnet_output_stationary --width 32 --height 16 > "${log_folder}/${key}.map.log";
         cp ./Halide-to-Hardware/apps/hardware_benchmarks/apps/resnet_output_stationary/bin/resnet_output_stationary.bs "${log_folder}/${key}.bs";
     }
