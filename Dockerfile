@@ -35,6 +35,7 @@ RUN apt-get update && \
         libjpeg62 libxft2 libxmu6 libglu1-mesa libxss1 \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
+        libncurses5 libxml2-dev \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
     ln -s /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.1 && \
@@ -53,8 +54,6 @@ RUN apt-get update && \
 
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
-
-RUN apt update && apt install -y libncurses5 libxml2-dev
 
 # CoreIR
 COPY ./coreir /aha/coreir
