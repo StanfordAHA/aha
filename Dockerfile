@@ -1,4 +1,4 @@
-FROM docker.io/ubuntu:16.04
+FROM docker.io/ubuntu:20.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -7,14 +7,13 @@ RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
-    add-apt-repository -y ppa:deadsnakes/ppa && \
     add-apt-repository -y ppa:zeehio/libxp && \
     dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y \
         wget \
         git make gcc-9 g++-9 \
-        python3.7 python3.7-dev python3.7-venv \
+        python3 python3-dev python3-pip python3-venv \
         # Garnet
         default-jre \
         # Halide-to-Hardware
@@ -27,14 +26,12 @@ RUN apt-get update && \
         libgmp-dev libmpfr-dev libmpc-dev \
         # cgra_pnr
         libigraph-dev \
-        # kratos
-        libpython3.7-dev \
         # clang
         xz-utils \
         # EDA Tools
         ksh tcsh tcl \
         dc libelf1 binutils \
-        libxp6 libxi6 libxrandr2 libtiff5 libmng2 libpng12-0 \
+        libxp6 libxi6 libxrandr2 libtiff5 libmng2 \ 
         libjpeg62 libxft2 libxmu6 libglu1-mesa libxss1 \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
@@ -45,17 +42,19 @@ RUN apt-get update && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    wget -O - https://bootstrap.pypa.io/get-pip.py | python3.7 && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 100 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+    update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
-    pip install cmake==3.15.3 && \
-    wget -nv -O ~/clang7.tar.xz http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz && \
+    pip install cmake && \
+    wget -nv -O ~/clang7.tar.xz http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz && \
     tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ && \
     rm -rf ~/clang7.tar.xz
 
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
+
+RUN apt update && apt install -y libncurses5 libxml2-dev
 
 # CoreIR
 COPY ./coreir /aha/coreir
