@@ -41,9 +41,7 @@ def dispatch(args, extra_args=None):
         app_dir / f"bin/{args.app.name}.bs",
         "--gold-file",
         app_dir / f"bin/gold{ext}",
-        "--pipeline-pnr",
-        "--target-frequency",
-        args.target_frequency
+        "--pipeline-pnr"
     ]
 
     subprocess.check_call(
