@@ -9,7 +9,6 @@ def add_subparser(subparser):
     parser.add_argument("app")
     parser.add_argument("--base", default=None, type=str)
     parser.add_argument("--no-parse", action="store_true")
-    parser.add_argument("--target-frequency")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -27,6 +26,10 @@ def dispatch(args, extra_args=None):
         ext = ".raw"
     else:
         ext = ".pgm"
+
+    if not ('PIPELINED' in os.environ and os.environ['PIPELINED'] == '1'):
+        print("Please set environmental variable PIPELINED=1")
+        return
 
     print (f"Using testbench file extension: {ext}.")
 
