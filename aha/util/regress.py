@@ -42,16 +42,16 @@ def buildkite_call(command, env={}):
 def gen_garnet(width, height):
     print("--- Generating Garnet")
     start = time.time()
-    buildkite_call([
-        "aha",
-        "garnet",
-        "--width",
-        str(width),
-        "--height",
-        str(height),
-        "--verilog"
-        #"--interconnect-only"
-    ])
+    #buildkite_call([
+    #    "aha",
+    #    "garnet",
+    #    "--width",
+    #    str(width),
+    #    "--height",
+    #    str(height),
+    #    "--verilog"
+    #    #"--interconnect-only"
+    #])
     return time.time() - start
 
 
@@ -78,6 +78,9 @@ def run_test(testname, width, height):
 
 
 def run_glb(testname, width, height):
+    app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/"+testname
+    print(app_path)
+    subprocess.call(["make", "clean"], cwd=app_path)
     print(f"--- {testname}")
     print(f"--- {testname} - compiling")
     start = time.time()
@@ -87,8 +90,8 @@ def run_glb(testname, width, height):
     print(f"--- {testname} - mapping")
     start = time.time()
     my_env = {}
-    if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
-        my_env = {'DISABLE_GP': '1'}
+    #if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
+    my_env = {'DISABLE_GP': '1'}
     buildkite_call(
         ["aha", "map", testname, "--width", str(width), "--height", str(height)],
         env=my_env
@@ -106,13 +109,13 @@ def run_glb(testname, width, height):
 def dispatch(args, extra_args=None):
     if args.config == "fast":
         width, height = 4, 2
-        tests = [
+        glb_tests = [
             "apps/pointwise",
         ]
-        glb_tests = [ ]
+        tests = [ ]
     elif args.config == "pr":
-        width, height = 6, 6
-        tests = [
+        width, height = 8, 8
+        glb_tests = [
             "apps/pointwise",
             "tests/ushift",
             "tests/arith",
@@ -123,11 +126,11 @@ def dispatch(args, extra_args=None):
             "tests/rom",
             "tests/conv_1_2",
             "tests/conv_2_1",
-            "handcrafted/resnet_pond",
-            "handcrafted/pond_accum",
-            "handcrafted/pond_and_mem"
+            # "handcrafted/resnet_pond",
+            # "handcrafted/pond_accum",
+            # "handcrafted/pond_and_mem"
         ]
-        glb_tests = [ ]
+        tests = [ ]
     elif args.config == "daily":
         width, height = 16, 16
         tests = [
@@ -158,7 +161,8 @@ def dispatch(args, extra_args=None):
         ]
     elif args.config == "full":
         width, height = 32, 16
-        tests = [
+        tests = []
+        glb_tests = [
             "apps/pointwise",
             "tests/rom",
             "tests/arith",
@@ -180,17 +184,15 @@ def dispatch(args, extra_args=None):
             "apps/cascade",
             "apps/harris",
             "apps/resnet_layer_gen",
-            "handcrafted/conv_3_3_chain",
-            "handcrafted/pond_accum",
-            "handcrafted/resnet_pond",
-            "handcrafted/pond_and_mem"
-        ]
-        glb_tests = [
-            "apps/gaussian",
             "apps/unsharp",
-            "apps/resnet_layer_gen",
             "apps/camera_pipeline"
+            #"handcrafted/conv_3_3_chain",
+            #"handcrafted/pond_accum",
+            #"handcrafted/resnet_pond",
+            #"handcrafted/pond_and_mem"
         ]
+        #glb_tests = [
+        #]
 
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
