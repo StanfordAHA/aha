@@ -82,3 +82,6 @@
 [submodule "rdai"]
 	path = rdai
 	url = https://github.com/thenextged/rdai.git
+[submodule "MetaMapper"]
+	path = MetaMapper
+	url = https://github.com/rdaly525/MetaMapper
