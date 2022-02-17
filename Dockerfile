@@ -88,7 +88,7 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN python -m venv . && source bin/activate && pip install wheel six && pip install -e git+git://github.com/jack-melchert/peak_generator#egg=peak_gen && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
+RUN python -m venv . && source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
 
 WORKDIR /aha
 
