@@ -53,13 +53,11 @@ def dispatch(args, extra_args=None):
             "peak": "peak",
             "pycyclone": "cgra_pnr/cyclone",
             "pythunder": "cgra_pnr/thunder",
+            "mflowgen": "mflowgen",
         }
 
         for dep in order_deps(modules):
             install(os.path.join(args.aha_dir, modules[dep]))
-
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "jmapper"])
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-e", "/aha/mflowgen"])
 
         # TODO: `pip list` and ensure that all the above are pointing to sources
 
