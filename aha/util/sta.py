@@ -19,7 +19,7 @@ def dispatch(args, extra_args=None):
     )
 
     subprocess.check_call(
-        [sys.executable, "sta.py", "-a", app_dir]  + extra_args,
+        [sys.executable, "-m", "archipelago.sta", "-a", app_dir]  + extra_args,
         cwd=args.aha_dir / "archipelago/archipelago",
     )
 
