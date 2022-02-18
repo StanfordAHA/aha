@@ -82,3 +82,9 @@
 [submodule "rdai"]
 	path = rdai
 	url = https://github.com/thenextged/rdai.git
+[submodule "peak_gen"]
+	path = peak_gen
+	url = https://github.com/jack-melchert/peak_generator.git
+[submodule "metamapper"]
+	path = metamapper
+	url = https://github.com/rdaly525/MetaMapper
