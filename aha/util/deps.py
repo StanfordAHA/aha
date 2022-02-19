@@ -54,6 +54,8 @@ def dispatch(args, extra_args=None):
             "pycyclone": "cgra_pnr/cyclone",
             "pythunder": "cgra_pnr/thunder",
             "mflowgen": "mflowgen",
+            "metamapper": "metamapper",
+            "peak_gen": "peak_gen",
         }
 
         for dep in order_deps(modules):
