@@ -42,16 +42,16 @@ def buildkite_call(command, env={}):
 def gen_garnet(width, height):
     print("--- Generating Garnet")
     start = time.time()
-    #buildkite_call([
-    #    "aha",
-    #    "garnet",
-    #    "--width",
-    #    str(width),
-    #    "--height",
-    #    str(height),
-    #    "--verilog"
-    #    #"--interconnect-only"
-    #])
+    buildkite_call([
+        "aha",
+        "garnet",
+        "--width",
+        str(width),
+        "--height",
+        str(height),
+        "--verilog"
+        #"--interconnect-only"
+    ])
     return time.time() - start
 
 
