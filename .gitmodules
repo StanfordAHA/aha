@@ -13,7 +13,7 @@
 [submodule "Halide-to-Hardware"]
     path = Halide-to-Hardware
     url = https://github.com/stanfordaha/Halide-to-Hardware
-    branch = master
+    branch = clockwork
 [submodule "BufferMapping"]
     path = BufferMapping
     url = https://github.com/joyliu37/BufferMapping
@@ -60,7 +60,8 @@
     branch = master
 [submodule "archipelago"]
     path = archipelago
-    url = https://github.com/kuree/archipelago
+	url = https://github.com/kuree/archipelago
+	branch = post_pnr_sta
 [submodule "cgra_pnr"]
     path = cgra_pnr
     url = https://github.com/kuree/cgra_pnr
@@ -78,13 +79,13 @@
 [submodule "clockwork"]
 	path = clockwork
 	url = https://github.com/dillonhuff/clockwork.git
-    branch = aha
+    branch = new_lake
 [submodule "rdai"]
 	path = rdai
 	url = https://github.com/thenextged/rdai.git
-[submodule "peak_gen"]
-	path = peak_gen
-	url = https://github.com/jack-melchert/peak_generator.git
-[submodule "metamapper"]
-	path = metamapper
+[submodule "MetaMapper"]
+	path = MetaMapper
 	url = https://github.com/rdaly525/MetaMapper
+[submodule "peak_generator"]
+	path = peak_generator
+	url = https://github.com/jack-melchert/peak_generator
