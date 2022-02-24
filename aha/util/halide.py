@@ -62,7 +62,7 @@ def dispatch(args, extra_args=None):
         )
     else:
         subprocess.check_call(
-            ["make", "-C", app_dir, "mem"],
+            ["make", "-C", app_dir, "map"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
         )
