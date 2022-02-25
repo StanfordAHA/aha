@@ -155,7 +155,7 @@ def dispatch(args, extra_args=None):
             # "handcrafted/pond_and_mem",
         ]
         glb_tests = [
-            "apps/gaussian",
+            #"apps/gaussian",
             "apps/unsharp",
             "apps/resnet_layer_gen"
         ]
@@ -179,7 +179,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
             "tests/conv_3_3",
-            "apps/gaussian",
+            #"apps/gaussian",
             "apps/brighten_and_blur",
             "apps/cascade",
             "apps/harris",
