@@ -200,7 +200,7 @@ def dispatch(args, extra_args=None):
     print(f"--- Running regression: {args.config}")
     info = []
     t = gen_garnet(width, height)
-    info.append(["garnet", t])
+    info.append(["apps/garnet", t])
 
     halide_gen_args = {}
     halide_gen_args["gaussian"] = "mywidth=64 myunroll=14 schedule=1"
