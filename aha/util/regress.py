@@ -155,7 +155,7 @@ def dispatch(args, extra_args=None):
             # "handcrafted/pond_and_mem",
         ]
         glb_tests = [
-            #"apps/gaussian",
+            "apps/gaussian",
             "apps/unsharp",
             "apps/resnet_layer_gen"
         ]
@@ -179,7 +179,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
             "tests/conv_3_3",
-            #"apps/gaussian",
+            "apps/gaussian",
             "apps/brighten_and_blur",
             "apps/cascade",
             "apps/harris",
@@ -201,11 +201,23 @@ def dispatch(args, extra_args=None):
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
+
+    halide_gen_args = {}
+    halide_gen_args["gaussian"] = "mywidth=64 myunroll=14 schedule=1"
+
     for test in tests:
+        if test in halide_gen_args:
+            os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
+        else:
+            os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_test(test, width, height)
         info.append([test, t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
     for test in glb_tests:
+        if test in halide_gen_args:
+            os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
+        else:
+            os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_glb(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
