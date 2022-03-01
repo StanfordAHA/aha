@@ -203,7 +203,7 @@ def dispatch(args, extra_args=None):
     info.append(["garnet", t])
 
     halide_gen_args = {}
-    halide_gen_args["gaussian"] = "mywidth=64 myunroll=14 schedule=1"
+    halide_gen_args["apps/gaussian"] = "mywidth=184 myunroll=8 schedule=9"
 
     for test in tests:
         if test in halide_gen_args:
