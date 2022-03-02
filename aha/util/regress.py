@@ -201,11 +201,23 @@ def dispatch(args, extra_args=None):
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
+    
+    halide_gen_args = {}
+    halide_gen_args["apps/gaussian"] = "mywidth=184 myunroll=8 schedule=3"
+
     for test in tests:
+        if test in halide_gen_args:
+            os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
+        else:
+            os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_test(test, width, height)
         info.append([test, t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
     for test in glb_tests:
+        if test in halide_gen_args:
+            os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
+        else:
+            os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_glb(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
