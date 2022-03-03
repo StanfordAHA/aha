@@ -7,8 +7,8 @@ import os
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app", nargs="+")
-    parser.add_argument("--vcd", action="store_true")
-    parser.add_argument("--vcd-glb", action="store_true")
+    parser.add_argument("--waveform", action="store_true")
+    parser.add_argument("--waveform-glb", action="store_true")
     parser.add_argument("--run", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
@@ -26,10 +26,10 @@ def dispatch(args, extra_args=None):
 
     app_args = " ".join(app_args)
     env["APP_ARGS"] = app_args
-    if args.vcd:
-        env["RUN_ARGS"] = "-input shm.tcl"
-    elif args.vcd_glb:
-        env["RUN_ARGS"] = "-input shm_glb.tcl"
+    if args.waveform:
+        env["WAVEFORM"] = "1"
+    elif args.waveform_glb:
+        env["WAVEFORM_GLB_ONLY"] = "1"
 
     if args.run:
         subprocess.check_call(
