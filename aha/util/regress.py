@@ -80,7 +80,10 @@ def run_test(testname, width, height):
 def run_glb(testname, width, height, test=''):
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/"+testname
     print(app_path)
-    subprocess.call(["make", "clean"], cwd=app_path)
+    try:
+        subprocess.call(["make", "clean"], cwd=app_path)
+    except: 
+        pass
     if test == '':
         test = testname
     print(f"--- {test}")
