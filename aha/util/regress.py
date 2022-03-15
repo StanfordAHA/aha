@@ -88,6 +88,7 @@ def run_glb(testname, width, height, test=''):
         test = testname
     print(f"--- {test}")
     print(f"--- {test} - compiling")
+    os.environ["PIPELINED"] = '1'
     start = time.time()
     buildkite_call(["aha", "halide", testname])
     time_compile = time.time() - start
@@ -96,7 +97,6 @@ def run_glb(testname, width, height, test=''):
     start = time.time()
     my_env = {}
     #if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
-    my_env = {'PIPELINED': '1'}
     my_env = {'DISABLE_GP': '1'}
     buildkite_call(
         ["aha", "map", testname, "--width", str(width), "--height", str(height)],
