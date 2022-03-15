@@ -96,6 +96,7 @@ def run_glb(testname, width, height, test=''):
     start = time.time()
     my_env = {}
     #if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
+    my_env = {'PIPELINED': '1'}
     my_env = {'DISABLE_GP': '1'}
     buildkite_call(
         ["aha", "map", testname, "--width", str(width), "--height", str(height)],
