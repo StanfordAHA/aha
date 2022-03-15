@@ -63,6 +63,7 @@ def run_test(testname, width, height):
     time_compile = time.time() - start
 
     print(f"--- {testname} - mapping")
+    os.environ["PIPELINED"] = '1'
     start = time.time()
     buildkite_call(
         ["aha", "map", testname, "--width", str(width), "--height", str(height)]
