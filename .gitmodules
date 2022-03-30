@@ -61,7 +61,7 @@
 [submodule "archipelago"]
     path = archipelago
 	url = https://github.com/kuree/archipelago
-	branch = post_pnr_sta
+	branch = master 
 [submodule "cgra_pnr"]
     path = cgra_pnr
     url = https://github.com/kuree/cgra_pnr

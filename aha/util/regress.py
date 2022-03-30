@@ -50,7 +50,7 @@ def gen_garnet(width, height):
         "--height",
         str(height),
         "--verilog",
-        "--use_sim_sram"
+	"--use_sim_sram"
         #"--interconnect-only"
     ])
     return time.time() - start
