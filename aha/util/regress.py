@@ -66,7 +66,7 @@ def run_test(testname, width, height):
     os.environ["PIPELINED"] = '1'
     start = time.time()
     buildkite_call(
-        ["aha", "map", testname, "--width", str(width), "--height", str(height)]
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)]
     )
     time_map = time.time() - start
 
@@ -100,7 +100,7 @@ def run_glb(testname, width, height, test=''):
     #if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
     my_env = {'DISABLE_GP': '1'}
     buildkite_call(
-        ["aha", "map", testname, "--width", str(width), "--height", str(height)],
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
         env=my_env
     )
     time_map = time.time() - start
