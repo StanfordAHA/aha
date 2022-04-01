@@ -10,6 +10,7 @@ def add_subparser(subparser):
     parser.add_argument("--waveform", action="store_true")
     parser.add_argument("--waveform-glb", action="store_true")
     parser.add_argument("--run", action="store_true")
+    parser.add_argument("--power", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -34,6 +35,12 @@ def dispatch(args, extra_args=None):
     if args.run:
         subprocess.check_call(
             ["make", "run"] + extra_args,
+            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+            env=env
+        )
+    elif args.power:
+        subprocess.check_call(
+            ["make", "sim-gls"] + extra_args,
             cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
             env=env
         )
