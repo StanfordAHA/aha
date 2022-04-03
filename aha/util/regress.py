@@ -89,7 +89,7 @@ def run_glb(testname, width, height, test=''):
         test = testname
     print(f"--- {test}")
     print(f"--- {test} - compiling")
-    os.environ["PIPELINED"] = '1'
+    # os.environ["PIPELINED"] = '1'
     start = time.time()
     buildkite_call(["aha", "halide", testname])
     time_compile = time.time() - start
@@ -100,7 +100,7 @@ def run_glb(testname, width, height, test=''):
     #if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
     my_env = {'DISABLE_GP': '1'}
     buildkite_call(
-        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+        ["aha", "map", testname, "--width", str(width), "--height", str(height)],
         env=my_env
     )
     time_map = time.time() - start
@@ -164,7 +164,7 @@ def dispatch(args, extra_args=None):
             # "handcrafted/pond_and_mem",
         ]
         glb_tests = [
-            # "apps/gaussian",
+            "apps/gaussian",
             "apps/unsharp",
             "apps/resnet_layer_gen"
         ]
@@ -193,7 +193,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
             "tests/conv_3_3",
-            # "apps/gaussian",
+            #"apps/gaussian",
             "apps/brighten_and_blur",
             "apps/cascade",
             "apps/harris",
@@ -235,8 +235,8 @@ def dispatch(args, extra_args=None):
 
     print(f"--- Running regression: {args.config}")
     info = []
-    t = gen_garnet(width, height)
-    info.append(["garnet", t])
+    #t = gen_garnet(width, height)
+    #info.append(["garnet", t])
     
     halide_gen_args = {}
     halide_gen_args["apps/gaussian"] = "mywidth=184 myunroll=8 schedule=3"
