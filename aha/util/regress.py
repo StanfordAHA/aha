@@ -193,7 +193,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
             "tests/conv_3_3",
-            #"apps/gaussian",
+            "apps/gaussian",
             "apps/brighten_and_blur",
             "apps/cascade",
             "apps/harris",
@@ -235,8 +235,8 @@ def dispatch(args, extra_args=None):
 
     print(f"--- Running regression: {args.config}")
     info = []
-    #t = gen_garnet(width, height)
-    #info.append(["garnet", t])
+    t = gen_garnet(width, height)
+    info.append(["garnet", t])
     
     halide_gen_args = {}
     halide_gen_args["apps/gaussian"] = "mywidth=184 myunroll=8 schedule=3"
