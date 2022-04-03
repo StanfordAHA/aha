@@ -164,7 +164,7 @@ def dispatch(args, extra_args=None):
             # "handcrafted/pond_and_mem",
         ]
         glb_tests = [
-            #"apps/gaussian",
+            "apps/gaussian",
             "apps/unsharp",
             "apps/resnet_layer_gen"
         ]
