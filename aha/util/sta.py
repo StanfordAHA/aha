@@ -18,14 +18,14 @@ def dispatch(args, extra_args=None):
         f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
     )
 
-    subprocess.check_call(
-        [sys.executable, "-m", "archipelago.sta", "-a", app_dir]  + extra_args,
-        cwd=args.aha_dir / "archipelago/archipelago",
-    )
-
-    if args.visualize:
+    if not args.visualize:
         subprocess.check_call(
-            [sys.executable, "visualize.py", "-a", app_dir]  + extra_args,
+            [sys.executable, "-m", "archipelago.sta", "-a", app_dir]  + extra_args,
             cwd=args.aha_dir / "archipelago/archipelago",
         )
-       
+    else:
+        subprocess.check_call(
+            [sys.executable, "-m", "archipelago.sta", "-a", app_dir, "--visualize"]  + extra_args,
+            cwd=args.aha_dir / "archipelago/archipelago",
+        )
+
