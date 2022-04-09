@@ -89,7 +89,7 @@ def run_glb(testname, width, height, test=''):
         test = testname
     print(f"--- {test}")
     print(f"--- {test} - compiling")
-    # os.environ["PIPELINED"] = '1'
+    os.environ["PIPELINED"] = '1'
     start = time.time()
     buildkite_call(["aha", "halide", testname])
     time_compile = time.time() - start
@@ -100,7 +100,7 @@ def run_glb(testname, width, height, test=''):
     #if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
     my_env = {'DISABLE_GP': '1'}
     buildkite_call(
-        ["aha", "map", testname, "--width", str(width), "--height", str(height)],
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
         env=my_env
     )
     time_map = time.time() - start
@@ -166,7 +166,8 @@ def dispatch(args, extra_args=None):
         glb_tests = [
             "apps/gaussian",
             "apps/unsharp",
-            "apps/resnet_layer_gen"
+            "apps/harris_color",
+            "apps/camera_pipeline"
         ]
         resnet_tests = [
             "conv1",
