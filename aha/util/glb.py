@@ -10,8 +10,29 @@ def add_subparser(subparser):
     parser.add_argument("--waveform", action="store_true")
     parser.add_argument("--waveform-glb", action="store_true")
     parser.add_argument("--run", action="store_true")
+    parser.add_argument("--log", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
+def subprocess_check_call_log(cmd, cwd, env, log, log_path):
+    if log:
+        log_file_path = log_path + "/aha_glb.log"
+        subprocess.check_call(["mkdir", "-p", log_path])
+        subprocess.check_call(["rm", "-f", log_file_path])
+        proc = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        subprocess.check_call(["tee", log_file_path], stdin=proc.stdout)
+        proc.wait()
+    else:
+        subprocess.check_call(
+            cmd,
+            cwd=cwd,
+            env=env
+        )
 
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
@@ -32,15 +53,18 @@ def dispatch(args, extra_args=None):
         env["WAVEFORM_GLB_ONLY"] = "1"
 
     if args.run:
-        subprocess.check_call(
-            ["make", "run"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env
-        )
+        make_target = "run"
     else:
-        subprocess.check_call(
-            ["make", "sim"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env
-        )
+        make_target = "sim"
 
+    run_cmd = ["make", make_target] + extra_args
+    run_dir = str(args.aha_dir / "garnet" / "tests" / "test_app")
+
+    log_path = arg_path + "/log"
+    subprocess_check_call_log(
+        cmd=run_cmd,
+        cwd=run_dir,
+        env=env,
+        log=args.log,
+        log_path=log_path
+    )
