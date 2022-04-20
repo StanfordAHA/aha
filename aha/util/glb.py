@@ -10,7 +10,28 @@ def add_subparser(subparser):
     parser.add_argument("--waveform", action="store_true")
     parser.add_argument("--waveform-glb", action="store_true")
     parser.add_argument("--run", action="store_true")
+    parser.add_argument("--log", action="store_true")
     parser.set_defaults(dispatch=dispatch)
+
+
+def subprocess_call_log(cmd, cwd, env, log, log_file_path):
+    if log:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        subprocess.check_call(["tee", log_file_path, "-a"], stdin=proc.stdout)
+        proc.wait()
+    else:
+        subprocess.check_call(
+            cmd,
+            cwd=cwd,
+            env=env
+        )
+
 
 
 def dispatch(args, extra_args=None):
@@ -30,17 +51,29 @@ def dispatch(args, extra_args=None):
         env["WAVEFORM"] = "1"
     elif args.waveform_glb:
         env["WAVEFORM_GLB_ONLY"] = "1"
+    
+    # if there are more than 1 app, store the log in the first app
+    app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
+    log_path = app_dir / Path("log")
+    log_file_path = log_path / Path("aha_glb.log")
+    if args.log:
+        subprocess.check_call(["mkdir", "-p", log_path])
+        subprocess.check_call(["rm", "-f", log_file_path])
 
     if args.run:
-        subprocess.check_call(
-            ["make", "run"] + extra_args,
+        subprocess_call_log (
+            cmd=["make", "run"] + extra_args,
             cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
         )
     else:
-        subprocess.check_call(
-            ["make", "sim"] + extra_args,
+        subprocess_call_log (
+            cmd=["make", "sim"] + extra_args,
             cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
         )
 

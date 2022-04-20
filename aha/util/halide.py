@@ -9,7 +9,27 @@ def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem)
     parser.add_argument("app")
     parser.add_argument("--sim", action='store_true')
+    parser.add_argument("--log", action="store_true")
     parser.set_defaults(dispatch=dispatch)
+
+
+def subprocess_call_log(cmd, cwd, env, log, log_file_path):
+    if log:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        subprocess.check_call(["tee", log_file_path, "-a"], stdin=proc.stdout)
+        proc.wait()
+    else:
+        subprocess.check_call(
+            cmd,
+            cwd=cwd,
+            env=env
+        )
 
 
 def dispatch(args, extra_args=None):
@@ -27,12 +47,20 @@ def dispatch(args, extra_args=None):
     app_name = args.app.name
     run_sim = args.sim
 
+    log_path = app_dir / Path("log")
+    log_file_path = log_path / Path("aha_halide.log")
+    if args.log:
+        subprocess.check_call(["mkdir", "-p", log_path])
+        subprocess.check_call(["rm", "-f", log_file_path])
+
     if "handcrafted" in str(args.app):
         # Generate pgm Images
-        subprocess.check_call(
-            ["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
+        subprocess_call_log (
+            cmd=["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
+            log=args.log,
+            log_file_path=log_file_path
         )
 
         os.rename(
@@ -41,10 +69,12 @@ def dispatch(args, extra_args=None):
     
     else:
         # Raw Images
-        subprocess.check_call(
-            ["make", "-C", app_dir, "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
+        subprocess_call_log (
+            cmd=["make", "-C", app_dir, "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
+            log=args.log,
+            log_file_path=log_file_path
         )
 
         os.rename(
@@ -55,16 +85,20 @@ def dispatch(args, extra_args=None):
         )
 
     if run_sim:
-        subprocess.check_call(
-            ["make", "-C", app_dir, "test-mem"],
+        subprocess_call_log (
+            cmd=["make", "-C", app_dir, "test-mem"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
+            log=args.log,
+            log_file_path=log_file_path
         )
     else:
-        subprocess.check_call(
-            ["make", "-C", app_dir, "map"],
+        subprocess_call_log (
+            cmd=["make", "-C", app_dir, "map"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
+            log=args.log,
+            log_file_path=log_file_path
         )
 
     #move to apps/bin
