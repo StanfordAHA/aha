@@ -167,6 +167,8 @@ def dispatch(args, extra_args=None):
         glb_tests = [
             "apps/gaussian",
             "apps/unsharp",
+            "apps/harris_color",
+            "apps/camera_pipeline_2x2",
             "apps/resnet_layer_gen"
         ]
         resnet_tests = [
@@ -201,6 +203,8 @@ def dispatch(args, extra_args=None):
             "apps/resnet_layer_gen",
             "apps/unsharp",
             "apps/camera_pipeline"
+            "apps/harris_color",
+            "apps/camera_pipeline_2x2",
             #"handcrafted/conv_3_3_chain",
             #"handcrafted/pond_accum",
             #"handcrafted/resnet_pond",
@@ -240,7 +244,10 @@ def dispatch(args, extra_args=None):
     info.append(["garnet", t])
     
     halide_gen_args = {}
-    halide_gen_args["apps/gaussian"] = "mywidth=184 myunroll=8 schedule=3"
+    halide_gen_args["apps/gaussian"]            = "mywidth=368 myunroll=16 schedule=3"
+    halide_gen_args["apps/unsharp"]             = "mywidth=126 myunroll=3 schedule=3"
+    halide_gen_args["apps/harris_color"]        = "mywidth=122 myunroll=2 schedule=31"
+    halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=2"
 
     for test in tests:
         if test in halide_gen_args:
