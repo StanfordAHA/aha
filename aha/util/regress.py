@@ -167,7 +167,8 @@ def dispatch(args, extra_args=None):
         glb_tests = [
             "apps/gaussian",
             "apps/unsharp",
-            "apps/resnet_layer_gen"
+            "apps/camera_pipeline_2x2",
+            "apps/harris_color"
         ]
         resnet_tests = [
             "conv1",
