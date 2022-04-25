@@ -19,8 +19,6 @@ def dispatch(args, extra_args=None):
     env["COREIR_PATH"] = str(args.aha_dir / "coreir")
     env["LAKE_PATH"] = str(args.aha_dir / "lake")
     env["CLOCKWORK_PATH"] = str(args.aha_dir / "clockwork")
-    env["LAKE_CONTROLLERS"] = str(app_dir / "bin")
-    env["LAKE_STREAM"] = str(app_dir / "bin")
     
     if args.base is None:
         app_dir = Path(
