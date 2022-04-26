@@ -207,6 +207,7 @@ def dispatch(args, extra_args=None):
         else:
             os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_glb(test, width, height)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
     os.environ["PNR_PLACER_EXP"] = '2'
     for test in resnet_tests:
         if test == "conv1":
