@@ -15,6 +15,11 @@ def add_subparser(subparser):
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     env = copy.deepcopy(os.environ)
+    env["COREIR_DIR"] = str(args.aha_dir / "coreir")
+    env["COREIR_PATH"] = str(args.aha_dir / "coreir")
+    env["LAKE_PATH"] = str(args.aha_dir / "lake")
+    env["CLOCKWORK_PATH"] = str(args.aha_dir / "clockwork")
+    
     if args.base is None:
         app_dir = Path(
             f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
