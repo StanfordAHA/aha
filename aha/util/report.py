@@ -7,7 +7,7 @@ import re
 
 pattern_usage = re.compile(r"^(PE|MEM|Pond|IO|Reg)s:\s(\d+)")
 pattern_critical_path = re.compile(r"^\s*Critical Path: (\d+.?\d*)")
-pattern_cycle = re.compile(r"^\$finish at simulation time\s*(\d+).?\d* ns")
+pattern_cycle = re.compile(r"^\[.+\]\sIt\stakes\s(\d+\.\d*)\sns\stotal\stime\sto\srun\skernel")
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
