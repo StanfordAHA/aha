@@ -81,6 +81,39 @@ def print_report_items(app, report_items):
         print("{0:{1}} : {2}".format(key, var_len, val))
 
 
+def get_array_dimension():
+    results = {}
+    results["Array_Width"] = 0
+    results["Array_Height"] = 0
+    results["Total_PE"] = 0
+    results["Total_MemCore"] = 0
+    # use grep to pre-parse the verilog file
+    temp_file = "/aha/garnet/grep_tiles.txt"
+    with open(temp_file, "w") as f_temp:
+        cmd = ["grep", "^Tile", "/aha/garnet/garnet.v"]
+        subprocess.check_call(cmd, stdout=f_temp)
+    # parse the grep results
+    pattern = re.compile(r"^Tile_(PE|MemCore)\sTile_X(\w+)_Y(\w+)\s\(")
+    i=0
+    with open(temp_file, "r") as f_temp:
+        line = f_temp.readline()
+        while line:
+            m = pattern.match(line)
+            if m:
+                tile = m.group(1)
+                x_dim = int(m.group(2), 16)
+                y_dim = int(m.group(3), 16)
+                if tile == "PE":
+                    results["Total_PE"] += 1
+                elif tile == "MemCore":
+                    results["Total_MemCore"] += 1
+                results["Array_Width"] = max(x_dim+1, results["Array_Width"])
+                results["Array_Height"] = max(y_dim, results["Array_Height"])
+            line = f_temp.readline()
+    subprocess.check_call(["rm", "-f", temp_file])
+    return results
+
+
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}")
@@ -95,6 +128,7 @@ def dispatch(args, extra_args=None):
     report_items = {}
 
     # parse the log files
+    report_items.update(get_array_dimension())
     report_items.update(get_map_results(aha_map_log))
     report_items.update(get_sta_results(aha_sta_log))
     report_items.update(get_glb_results(aha_glb_log))
