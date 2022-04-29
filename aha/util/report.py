@@ -9,6 +9,7 @@ pattern_usage = re.compile(r"^(PE|MEM|Pond|IO|Reg)s:\s(\d+)")
 pattern_critical_path = re.compile(r"^\s*Critical Path: (\d+.?\d*)")
 pattern_cycle = re.compile(r"^\[.+\]\sIt\stakes\s(\d+\.\d*)\sns\stotal\stime\sto\srun\skernel")
 
+
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app")
@@ -94,7 +95,6 @@ def get_array_dimension():
         subprocess.check_call(cmd, stdout=f_temp)
     # parse the grep results
     pattern = re.compile(r"^Tile_(PE|MemCore)\sTile_X(\w+)_Y(\w+)\s\(")
-    i=0
     with open(temp_file, "r") as f_temp:
         line = f_temp.readline()
         while line:
@@ -107,7 +107,8 @@ def get_array_dimension():
                     results["Total_PE"] += 1
                 elif tile == "MemCore":
                     results["Total_MemCore"] += 1
-                results["Array_Width"] = max(x_dim+1, results["Array_Width"])
+                results["Array_Width"] = max(x_dim + 1, results["Array_Width"])
+                # on vertical direction, we have IO tile at top, so don't need +1
                 results["Array_Height"] = max(y_dim, results["Array_Height"])
             line = f_temp.readline()
     subprocess.check_call(["rm", "-f", temp_file])
@@ -123,7 +124,7 @@ def dispatch(args, extra_args=None):
     aha_map_log = app_dir / Path("log/aha_map.log")
     aha_sta_log = app_dir / Path("log/aha_sta.log")
     aha_glb_log = app_dir / Path("log/aha_glb.log")
-    
+
     # variable to store all results
     report_items = {}
 
