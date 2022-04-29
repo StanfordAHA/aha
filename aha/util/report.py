@@ -42,6 +42,7 @@ def get_sta_results(aha_sta_log_path):
     default_str = "N/A - Have you run aha sta with --log option enabled?"
     sta_results = {}
     sta_results["Critical Path (ps)"] = default_str
+    sta_results["Frequency (MHz)"] = default_str
     if not os.path.exists(aha_sta_log_path):
         return sta_results
     with open(aha_sta_log_path, "r") as f:
@@ -53,6 +54,8 @@ def get_sta_results(aha_sta_log_path):
                 current_items += 1
                 sta_results["Critical Path (ps)"] = m.group(1)
             line = f.readline()
+    freq = 1000000 / float(sta_results["Critical Path (ps)"])
+    sta_results["Frequency (MHz)"] = "{:.2f}".format(freq)
     return sta_results
 
 
@@ -137,6 +140,19 @@ def get_num_tracks():
     return results
 
 
+def get_absolute_time(report_items):
+    results = {}
+    results["Execution Time (us)"] = "N/A"
+    try:
+        cycle = float(report_items["Simultaion Cycles"])
+        period = float(report_items["Critical Path (ps)"])
+    except ValueError:
+        return results
+    exe_time = cycle * period / 1000000
+    results["Execution Time (us)"] = "{:.2f}".format(exe_time)
+    return results
+
+
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}")
@@ -156,6 +172,7 @@ def dispatch(args, extra_args=None):
     report_items.update(get_map_results(aha_map_log))
     report_items.update(get_sta_results(aha_sta_log))
     report_items.update(get_glb_results(aha_glb_log))
+    report_items.update(get_absolute_time(report_items))
 
     # print the results
     print_report_items(args.app, report_items)
