@@ -115,6 +115,28 @@ def get_array_dimension():
     return results
 
 
+def get_num_tracks():
+    results = {}
+    results["#Tracks"] = 0
+    # use grep to pre-parse the verilog file
+    temp_file = "/aha/garnet/grep_tiles.txt"
+    with open(temp_file, "w") as f_temp:
+        cmd = ["grep", "^module SB_ID", "/aha/garnet/garnet.v"]
+        subprocess.check_call(cmd, stdout=f_temp)
+    # parse the grep results
+    pattern = re.compile(r"^module\sSB_ID\d+_(\d+)TRACKS")
+    with open(temp_file, "r") as f_temp:
+        line = f_temp.readline()
+        while line:
+            m = pattern.match(line)
+            if m:
+                results["#Tracks"] = int(m.group(1))
+                break
+            line = f_temp.readline()
+    subprocess.check_call(["rm", "-f", temp_file])
+    return results
+
+
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}")
@@ -130,6 +152,7 @@ def dispatch(args, extra_args=None):
 
     # parse the log files
     report_items.update(get_array_dimension())
+    report_items.update(get_num_tracks())
     report_items.update(get_map_results(aha_map_log))
     report_items.update(get_sta_results(aha_sta_log))
     report_items.update(get_glb_results(aha_glb_log))
