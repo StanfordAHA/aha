@@ -4,80 +4,85 @@ import subprocess
 import sys
 import copy
 import re
+import pandas as pd
+from datetime import datetime
 
-pattern_usage = re.compile(r"^(PE|MEM|Pond|IO|Reg)s:\s(\d+)")
-pattern_critical_path = re.compile(r"^\s*Critical Path: (\d+)")
-pattern_cycle = re.compile(r"^\[.+\]\sIt\stakes\s(\d+\.\d*)\sns\stotal\stime\sto\srun\skernel")
 
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app")
+    parser.add_argument("--tag", type=str, default="")
+    parser.add_argument("--dump-report", action="store_true")
+    parser.add_argument("--dump-report-location", type=str, default="/aha/garnet/aha_report.csv")
     parser.set_defaults(dispatch=dispatch)
 
 
 def get_map_results(aha_map_log_path):
+    pattern = re.compile(r"^(PE|MEM|Pond|IO|Reg)s:\s(\d+)")
     default_str = "NA"
-    map_results = {}
-    map_results["PE"] = default_str
-    map_results["MEM"] = default_str
-    map_results["Pond"] = default_str
-    map_results["IO"] = default_str
-    map_results["Reg"] = default_str
+    results = {}
+    results["PE"] = default_str
+    results["MEM"] = default_str
+    results["Pond"] = default_str
+    results["IO"] = default_str
+    results["Reg"] = default_str
     if not os.path.exists(aha_map_log_path):
-        return map_results
+        return results
     with open(aha_map_log_path, "r") as f:
-        current_items, total_items = 0, len(map_results)
+        current_items, total_items = 0, len(results)
         line = f.readline()
         while line and current_items < total_items:
-            m = pattern_usage.match(line)
+            m = pattern.match(line)
             if m:
                 current_items += 1
-                map_results[m.group(1)] = m.group(2)
+                results[m.group(1)] = m.group(2)
             line = f.readline()
-    return map_results
+    return results
 
 
 def get_sta_results(aha_sta_log_path):
+    pattern = re.compile(r"^\s*Critical Path: (\d+)")
     default_str = "NA"
-    sta_results = {}
-    sta_results["Critical Path (ps)"] = default_str
-    sta_results["Frequency (MHz)"] = default_str
+    results = {}
+    results["Critical_Path_ps"] = default_str
+    results["Frequency_MHz"] = default_str
     if not os.path.exists(aha_sta_log_path):
-        return sta_results
+        return results
     with open(aha_sta_log_path, "r") as f:
-        current_items, total_items = 0, len(sta_results)
+        current_items, total_items = 0, len(results)
         line = f.readline()
         while line and current_items < total_items:
-            m = pattern_critical_path.match(line)
+            m = pattern.match(line)
             if m:
                 current_items += 1
-                sta_results["Critical Path (ps)"] = m.group(1)
+                results["Critical_Path_ps"] = m.group(1)
             line = f.readline()
-    if sta_results["Critical Path (ps)"] == "NA":
-        sta_results["Frequency (MHz)"] = "NA"
+    if results["Critical_Path_ps"] == "NA":
+        results["Frequency_MHz"] = "NA"
     else:
-        freq = 1000000 / float(sta_results["Critical Path (ps)"])
-        sta_results["Frequency (MHz)"] = "{:.2f}".format(freq)
-    return sta_results
+        freq = 1000000 / float(results["Critical_Path_ps"])
+        results["Frequency_MHz"] = "{:.2f}".format(freq)
+    return results
 
 
 def get_glb_results(aha_glb_log_path):
+    pattern = re.compile(r"^\[.+\]\sIt\stakes\s(\d+\.\d*)\sns\stotal\stime\sto\srun\skernel")
     default_str = "NA"
-    glb_results = {}
-    glb_results["Simultaion Cycles"] = default_str
+    results = {}
+    results["Simultaion_Cycles"] = default_str
     if not os.path.exists(aha_glb_log_path):
-        return glb_results
+        return results
     with open(aha_glb_log_path, "r") as f:
-        current_items, total_items = 0, len(glb_results)
+        current_items, total_items = 0, len(results)
         line = f.readline()
         while line and current_items < total_items:
-            m = pattern_cycle.match(line)
+            m = pattern.match(line)
             if m:
                 current_items += 1
-                glb_results["Simultaion Cycles"] = m.group(1)
+                results["Simultaion_Cycles"] = m.group(1)
             line = f.readline()
-    return glb_results
+    return results
 
 
 def print_report_items(report_items):
@@ -122,7 +127,7 @@ def get_array_dimension():
 
 def get_num_tracks():
     results = {}
-    results["#Tracks"] = 0
+    results["Num_Tracks"] = 0
     # use grep to pre-parse the verilog file
     temp_file = "/aha/garnet/grep_tiles.txt"
     with open(temp_file, "w") as f_temp:
@@ -135,7 +140,7 @@ def get_num_tracks():
         while line:
             m = pattern.match(line)
             if m:
-                results["#Tracks"] = int(m.group(1))
+                results["Num_Tracks"] = int(m.group(1))
                 break
             line = f_temp.readline()
     subprocess.check_call(["rm", "-f", temp_file])
@@ -144,33 +149,25 @@ def get_num_tracks():
 
 def get_absolute_time(report_items):
     results = {}
-    results["Execution Time (us)"] = "NA"
+    results["Execution_Time_us"] = "NA"
     try:
-        cycle = float(report_items["Simultaion Cycles"])
-        period = float(report_items["Critical Path (ps)"])
+        cycle = float(report_items["Simultaion_Cycles"])
+        period = float(report_items["Critical_Path_ps"])
     except ValueError:
         return results
     exe_time = cycle * period / 1000000
-    results["Execution Time (us)"] = "{:.2f}".format(exe_time)
+    results["Execution_Time_us"] = "{:.2f}".format(exe_time)
     return results
 
 
-def dump_to_csv(report_items):
-    csv_path = "/aha/cgra_dse/experiment_db.csv"
-    keys = []
-    vals = []
-    for key, val in report_items.items():
-        keys.append(f"{key}")
-        vals.append(f"{val}")
-    key_str = ",".join(keys) + "\n"
-    val_str = ",".join(vals) + "\n"
-    write_header = False
+def dump_to_csv(report_items, csv_path):
     if not os.path.exists(csv_path):
-        write_header = True
-    with open(csv_path, "a") as f:
-        if write_header:
-            f.write(key_str)
-        f.write(val_str)
+        df = pd.DataFrame([{}])
+    else:
+        df = pd.read_csv(csv_path)
+    df_new = pd.DataFrame([report_items])
+    df = pd.concat([df, df_new], ignore_index=True)
+    df.to_csv(csv_path, index=False)
 
 
 def dispatch(args, extra_args=None):
@@ -186,6 +183,7 @@ def dispatch(args, extra_args=None):
     # variable to store all results
     report_items = {}
     report_items["Application"] = args.app
+    report_items["Tag"] = args.tag
 
     # parse the log files
     report_items.update(get_array_dimension())
@@ -196,6 +194,8 @@ def dispatch(args, extra_args=None):
     report_items.update(get_absolute_time(report_items))
 
     # print the results
+    report_items["Time_Stamp"] = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     print_report_items(report_items)
-    dump_to_csv(report_items)
+    if args.dump_report:
+        dump_to_csv(report_items, csv_path=args.dump_report_location)
 

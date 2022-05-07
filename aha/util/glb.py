@@ -16,7 +16,7 @@ def add_subparser(subparser):
 
 def subprocess_call_log(cmd, cwd, env, log, log_file_path):
     if log:
-        print("[log] Command  : {}".format(cmd))
+        print("[log] Command  : {}".format(" ".join(cmd)))
         print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
         with open(log_file_path, "a") as flog:
             subprocess.check_call(

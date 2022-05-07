@@ -15,7 +15,7 @@ def add_subparser(subparser):
 
 def subprocess_call_log(cmd, cwd, env, log, log_file_path):
     if log:
-        print("[log] Command  : {}".format(cmd))
+        print("[log] Command  : {}".format(" ".join(cmd)))
         print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
         with open(log_file_path, "a") as flog:
             subprocess.check_call(
@@ -58,7 +58,7 @@ def dispatch(args, extra_args=None):
     if "handcrafted" in str(args.app):
         # Generate pgm Images
         subprocess_call_log (
-            cmd=["make", "-C", app_dir, "bin/input.raw", "bin/output_cpu.raw"],
+            cmd=["make", "-C", str(app_dir), "bin/input.raw", "bin/output_cpu.raw"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
             log=args.log,
@@ -72,7 +72,7 @@ def dispatch(args, extra_args=None):
     else:
         # Raw Images
         subprocess_call_log (
-            cmd=["make", "-C", app_dir, "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
+            cmd=["make", "-C", str(app_dir), "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
             log=args.log,
@@ -88,7 +88,7 @@ def dispatch(args, extra_args=None):
 
     if run_sim:
         subprocess_call_log (
-            cmd=["make", "-C", app_dir, "test-mem"],
+            cmd=["make", "-C", str(app_dir), "test-mem"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
             log=args.log,
@@ -96,7 +96,7 @@ def dispatch(args, extra_args=None):
         )
     else:
         subprocess_call_log (
-            cmd=["make", "-C", app_dir, "map"],
+            cmd=["make", "-C", str(app_dir), "map"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
             log=args.log,

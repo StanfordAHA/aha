@@ -15,7 +15,7 @@ def add_subparser(subparser):
 
 def subprocess_call_log(cmd, cwd, log, log_file_path):
     if log:
-        print("[log] Command  : {}".format(cmd))
+        print("[log] Command  : {}".format(" ".join(cmd)))
         print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
         with open(log_file_path, "a") as flog:
             subprocess.check_call(
@@ -54,13 +54,13 @@ def dispatch(args, extra_args=None):
         "--no-pd",
         "--interconnect-only",
         "--input-app",
-        app_dir / "bin/design_top.json",
+        str(app_dir / "bin/design_top.json"),
         "--input-file",
-        app_dir / f"bin/input{ext}",
+        str(app_dir / f"bin/input{ext}"),
         "--output-file",
-        app_dir / f"bin/{args.app.name}.bs",
+        str(app_dir / f"bin/{args.app.name}.bs"),
         "--gold-file",
-        app_dir / f"bin/gold{ext}",
+        str(app_dir / f"bin/gold{ext}"),
     ]
 
     log_path = app_dir / Path("log")
@@ -82,7 +82,7 @@ def dispatch(args, extra_args=None):
             # get the full path of the app
             arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
             subprocess_call_log (
-                [sys.executable,
+                cmd=[sys.executable,
                  f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
                  "bin/design_meta_halide.json",
                  "--top", "bin/design_top.json",
