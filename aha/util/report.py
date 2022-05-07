@@ -8,7 +8,6 @@ import pandas as pd
 from datetime import datetime
 
 
-
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app")
@@ -198,4 +197,3 @@ def dispatch(args, extra_args=None):
     print_report_items(report_items)
     if args.dump_report:
         dump_to_csv(report_items, csv_path=args.dump_report_location)
-
