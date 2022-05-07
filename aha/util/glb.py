@@ -16,22 +16,23 @@ def add_subparser(subparser):
 
 def subprocess_call_log(cmd, cwd, env, log, log_file_path):
     if log:
-        proc = subprocess.Popen(
-            cmd,
-            cwd=cwd,
-            env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        subprocess.check_call(["tee", log_file_path, "-a"], stdin=proc.stdout)
-        proc.wait()
+        print("[log] Command  : {}".format(" ".join(cmd)))
+        print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
+        with open(log_file_path, "a") as flog:
+            subprocess.check_call(
+                cmd,
+                cwd=cwd,
+                env=env,
+                stdout=flog,
+                stderr=flog
+            )
+        print("done")
     else:
         subprocess.check_call(
             cmd,
             cwd=cwd,
             env=env
         )
-
 
 
 def dispatch(args, extra_args=None):

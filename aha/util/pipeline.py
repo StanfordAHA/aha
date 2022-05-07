@@ -9,7 +9,29 @@ def add_subparser(subparser):
     parser.add_argument("app")
     parser.add_argument("--base", default=None, type=str)
     parser.add_argument("--no-parse", action="store_true")
+    parser.add_argument("--log", action="store_true")
     parser.set_defaults(dispatch=dispatch)
+
+
+def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log"):
+    if log:
+        print("[log] Command  : {}".format(" ".join(cmd)))
+        print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
+        with open(log_file_path, "a") as flog:
+            subprocess.check_call(
+                cmd,
+                cwd=cwd,
+                env=env,
+                stdout=flog,
+                stderr=flog
+            )
+        print("done")
+    else:
+        subprocess.check_call(
+            cmd,
+            env=env,
+            cwd=cwd
+        )
 
 
 def dispatch(args, extra_args=None):
@@ -32,6 +54,12 @@ def dispatch(args, extra_args=None):
     else:
         ext = ".pgm"
 
+    log_path = app_dir / Path("log")
+    log_file_path = log_path / Path("aha_pipeline.log")
+    if args.log:
+        subprocess.check_call(["mkdir", "-p", log_path])
+        subprocess.check_call(["rm", "-f", log_file_path])
+
     if not ('PIPELINED' in os.environ and os.environ['PIPELINED'] == '1'):
         print("Please set environmental variable PIPELINED=1")
         return
@@ -42,44 +70,50 @@ def dispatch(args, extra_args=None):
         "--no-pd",
         "--interconnect-only",
         "--input-app",
-        app_dir / "bin/design_top.json",
+        str(app_dir / "bin/design_top.json"),
         "--input-file",
-        app_dir / f"bin/input{ext}",
+        str(app_dir / f"bin/input{ext}"),
         "--output-file",
-        app_dir / f"bin/{args.app.name}.bs",
+        str(app_dir / f"bin/{args.app.name}.bs"),
         "--gold-file",
-        app_dir / f"bin/gold{ext}",
+        str(app_dir / f"bin/gold{ext}"),
         "--pipeline-pnr"
     ]
 
-    subprocess.check_call(
-        [sys.executable, "garnet.py"] + map_args + extra_args,
+    subprocess_call_log (
+        cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
         cwd=args.aha_dir / "garnet",
+        log=args.log,
+        log_file_path=log_file_path
     )
 
-    subprocess.check_call(
-        ["make", "-C", app_dir, "reschedule_mem"],
+    subprocess_call_log (
+        cmd=["make", "-C", str(app_dir), "reschedule_mem"],
         cwd=args.aha_dir / "Halide-to-Hardware",
         env=env,
+        log=args.log,
+        log_file_path=log_file_path
     )
 
     map_args = [
         "--no-pd",
         "--interconnect-only",
         "--input-app",
-        app_dir / "bin/design_top.json",
+        str(app_dir / "bin/design_top.json"),
         "--input-file",
-        app_dir / f"bin/input{ext}",
+        str(app_dir / f"bin/input{ext}"),
         "--output-file",
-        app_dir / f"bin/{args.app.name}.bs",
+        str(app_dir / f"bin/{args.app.name}.bs"),
         "--gold-file",
-        app_dir / f"bin/gold{ext}",
+        str(app_dir / f"bin/gold{ext}"),
         "--generate-bitstream-only"
     ]
 
-    subprocess.check_call(
-        [sys.executable, "garnet.py"] + map_args + extra_args,
+    subprocess_call_log (
+        cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
         cwd=args.aha_dir / "garnet",
+        log=args.log,
+        log_file_path=log_file_path
     )
 
     # generate meta_data.json file
@@ -87,12 +121,14 @@ def dispatch(args, extra_args=None):
         if not str(args.app).startswith("handcrafted"):
             # get the full path of the app
             arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
-            subprocess.check_call(
-                [sys.executable,
+            subprocess_call_log (
+                cmd=[sys.executable,
                  f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
                  "bin/design_meta_halide.json",
                  "--top", "bin/design_top.json",
                  "--place", "bin/design.place"],
-                cwd=arg_path
+                cwd=arg_path,
+                log=args.log,
+                log_file_path=log_file_path
             )
 

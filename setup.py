@@ -19,6 +19,7 @@ setup(
         'pydot',
         'requirements-parser',
         'tabulate',
+        'pandas'
     ],
     setup_requires = [
         'networkx',
