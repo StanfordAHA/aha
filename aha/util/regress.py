@@ -155,7 +155,7 @@ def dispatch(args, extra_args=None):
             "apps/harris",
             "apps/resnet_layer_gen",
             "apps/unsharp",
-            "apps/camera_pipeline"
+            "apps/camera_pipeline",
             "apps/harris_color",
             "apps/camera_pipeline_2x2",
             #"handcrafted/conv_3_3_chain",
