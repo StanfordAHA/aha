@@ -50,8 +50,9 @@ def gen_garnet(width, height):
         "--height",
         str(height),
         "--verilog",
-        "--use_sim_sram"
-        #"--interconnect-only"
+        "--use_sim_sram",
+        "--pipeline_config_interval",
+        str(16)
     ])
     return time.time() - start
 
@@ -78,7 +79,7 @@ def run_glb(testname, width, height, test=''):
     #if testname == "apps/unsharp" or testname == "apps/camera_pipeline":
     my_env = {'DISABLE_GP': '1'}
     buildkite_call(
-        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--pipeline_config_interval", str(16)],
         env=my_env
     )
     time_map = time.time() - start
