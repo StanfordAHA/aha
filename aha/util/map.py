@@ -32,7 +32,19 @@ def subprocess_call_log(cmd, cwd, log, log_file_path):
         )
 
 
+def show_dont_use_banner():
+    print("  _____   ____  _   _ _______   _    _  _____ ______ ")
+    print(" |  __ \ / __ \| \ | |__   __| | |  | |/ ____|  ____|")
+    print(" | |  | | |  | |  \| |  | |    | |  | | (___ | |__   ")
+    print(" | |  | | |  | | . ` |  | |    | |  | |\___ \|  __|  ")
+    print(" | |__| | |__| | |\  |  | |    | |__| |____) | |____ ")
+    print(" |_____/ \____/|_| \_|  |_|     \____/|_____/|______|")
+    print()
+    print("=== This function is deprecated! Please use aha pipeline instead. ===")                                            
+
+
 def dispatch(args, extra_args=None):
+    show_dont_use_banner()
     args.app = Path(args.app)
 
     if args.base is None:
