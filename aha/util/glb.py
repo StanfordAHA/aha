@@ -52,7 +52,7 @@ def dispatch(args, extra_args=None):
         env["WAVEFORM"] = "1"
     elif args.waveform_glb:
         env["WAVEFORM_GLB_ONLY"] = "1"
-    
+
     # if there are more than 1 app, store the log in the first app
     app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
     log_path = app_dir / Path("log")
@@ -64,7 +64,7 @@ def dispatch(args, extra_args=None):
     if args.run:
         subprocess_call_log (
             cmd=["make", "run"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+            cwd=str(args.aha_dir / "gem" / "tests" / "test_app"),
             env=env,
             log=args.log,
             log_file_path=log_file_path
@@ -72,7 +72,7 @@ def dispatch(args, extra_args=None):
     else:
         subprocess_call_log (
             cmd=["make", "sim"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+            cwd=str(args.aha_dir / "gem" / "tests" / "test_app"),
             env=env,
             log=args.log,
             log_file_path=log_file_path

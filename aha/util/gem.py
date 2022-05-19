@@ -11,5 +11,5 @@ def add_subparser(subparser):
 
 def dispatch(args, extra_args=None):
     subprocess.check_call(
-        [sys.executable, "garnet.py"] + extra_args, cwd=args.aha_dir / "garnet",
+        [sys.executable, "gem.py"] + extra_args, cwd=args.aha_dir / "gem",
     )
