@@ -41,14 +41,14 @@ def dispatch(args, extra_args=None):
     env["COREIR_PATH"] = str(args.aha_dir / "coreir")
     env["LAKE_PATH"] = str(args.aha_dir / "lake")
     env["CLOCKWORK_PATH"] = str(args.aha_dir / "clockwork")
-    
+
     if args.base is None:
         app_dir = Path(
             f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
         )
     else:
         app_dir = (Path(args.base) / args.app).resolve()
-    
+
     if os.path.exists(str(app_dir / "bin/input.raw")):
         ext = ".raw"
     else:
@@ -73,12 +73,12 @@ def dispatch(args, extra_args=None):
         str(app_dir / f"bin/{args.app.name}.bs"),
         "--gold-file",
         str(app_dir / f"bin/gold{ext}"),
-        "--pipeline-pnr"
+        "--pnr-only"
     ]
 
     subprocess_call_log (
-        cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
-        cwd=args.aha_dir / "garnet",
+        cmd=[sys.executable, "gem.py"] + map_args + extra_args,
+        cwd=args.aha_dir / "gem",
         log=args.log,
         log_file_path=log_file_path
     )
@@ -106,8 +106,8 @@ def dispatch(args, extra_args=None):
     ]
 
     subprocess_call_log (
-        cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
-        cwd=args.aha_dir / "garnet",
+        cmd=[sys.executable, "gem.py"] + map_args + extra_args,
+        cwd=args.aha_dir / "gem",
         log=args.log,
         log_file_path=log_file_path
     )

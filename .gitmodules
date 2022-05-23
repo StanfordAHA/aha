@@ -6,9 +6,9 @@
     path = pycoreir
     url = https://github.com/leonardt/pycoreir
     branch = master
-[submodule "garnet"]
-    path = garnet
-    url = https://github.com/stanfordaha/garnet
+[submodule "gem"]
+    path = gem
+    url = https://github.com/kongty/gem
     branch = master
 [submodule "Halide-to-Hardware"]
     path = Halide-to-Hardware
