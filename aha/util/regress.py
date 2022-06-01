@@ -69,6 +69,7 @@ def run_glb(testname, width, height, test=''):
     print(f"--- {test}")
     print(f"--- {test} - compiling")
     os.environ["PIPELINED"] = '1'
+    os.environ["IO_DELAY"] = '1'
     start = time.time()
     buildkite_call(["aha", "halide", testname])
     time_compile = time.time() - start
