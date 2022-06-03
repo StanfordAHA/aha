@@ -51,8 +51,6 @@ def gen_garnet(width, height):
         str(height),
         "--verilog",
         "--use_sim_sram",
-        "--pipeline_config_interval",
-        str(16)
     ])
     return time.time() - start
 
@@ -80,17 +78,10 @@ def run_glb(testname, width, height, test=''):
     my_env = {}
     my_env = {'DISABLE_GP': '1'}
 
-    # Hack needed to get around scheduling limitation, will remove later
-    if "resnet" in testname:
-        buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--pipeline_config_interval", str(16), "--no-input-broadcast-pipelining"],
-            env=my_env
-        )
-    else:        
-        buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--pipeline_config_interval", str(16)],
-            env=my_env
-        )
+    buildkite_call(
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--no-input-broadcast-pipelining"],
+        env=my_env
+    )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
@@ -129,8 +120,8 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         glb_tests = [
-            "apps/gaussian",
             "apps/unsharp",
+            "apps/gaussian",
             "apps/harris_color",
             "apps/camera_pipeline_2x2",
             "apps/resnet_layer_gen"
@@ -210,7 +201,8 @@ def dispatch(args, extra_args=None):
     halide_gen_args["apps/unsharp"]             = "mywidth=136 myunroll=4 schedule=3"
     halide_gen_args["apps/harris_color"]        = "mywidth=122 myunroll=2 schedule=31"
     halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
-    os.environ["PNR_PLACER_EXP"] = '3'
+    
+    os.environ["PNR_PLACER_EXP"] = '4'
     for test in glb_tests:
         if test in halide_gen_args:
             os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
@@ -218,7 +210,7 @@ def dispatch(args, extra_args=None):
             os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_glb(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-    os.environ["PNR_PLACER_EXP"] = '4'
+
     for test in resnet_tests:
         if test == "conv1":
             os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=16" 
