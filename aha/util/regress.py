@@ -50,9 +50,7 @@ def gen_garnet(width, height):
         "--height",
         str(height),
         "--verilog",
-        "--use_sim_sram",
-        "--pipeline_config_interval",
-        str(16)
+        "--use_sim_sram"
     ])
     return time.time() - start
 
@@ -77,18 +75,11 @@ def run_glb(testname, width, height, test=''):
     start = time.time()
     my_env = {}
     my_env = {'DISABLE_GP': '1'}
-
-    # Hack needed to get around scheduling limitation, will remove later
-    if "resnet" in testname:
-        buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--pipeline_config_interval", str(16), "--no-input-broadcast-pipelining"],
-            env=my_env
-        )
-    else:        
-        buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--pipeline_config_interval", str(16)],
-            env=my_env
-        )
+     
+    buildkite_call(
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+        env=my_env
+    )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
