@@ -103,7 +103,7 @@ def get_array_dimension():
         cmd = ["grep", "^Tile", "/aha/garnet/garnet.v"]
         subprocess.check_call(cmd, stdout=f_temp)
     # parse the grep results
-    pattern = re.compile(r"^Tile_(PE|MemCore)\sTile_X(\w+)_Y(\w+)\s\(")
+    pattern = re.compile(r"^Tile_(PE|MemCore)\w*\sTile_X(\w+)_Y(\w+)\s\(")
     with open(temp_file, "r") as f_temp:
         line = f_temp.readline()
         while line:
@@ -175,7 +175,7 @@ def dispatch(args, extra_args=None):
 
     # log file locations
     aha_halide_log = app_dir / Path("log/aha_halide.log")
-    aha_map_log = app_dir / Path("log/aha_map.log")
+    aha_map_log = app_dir / Path("log/aha_pipeline.log")
     aha_sta_log = app_dir / Path("log/aha_sta.log")
     aha_glb_log = app_dir / Path("log/aha_glb.log")
 
