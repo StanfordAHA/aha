@@ -206,9 +206,9 @@ def dispatch(args, extra_args=None):
     info.append(["garnet", t])
     
     halide_gen_args = {}
-    halide_gen_args["apps/gaussian"]            = "mywidth=368 myunroll=8 schedule=3"
-    halide_gen_args["apps/unsharp"]             = "mywidth=136 myunroll=2 schedule=3"
-    halide_gen_args["apps/harris_color"]        = "mywidth=122 myunroll=1 schedule=31"
+    halide_gen_args["apps/gaussian"]            = "mywidth=368 myunroll=16 schedule=3"
+    halide_gen_args["apps/harris_color"]        = "mywidth=136 myunroll=4 schedule=31"
+    halide_gen_args["apps/unsharp"]             = "mywidth=136 myunroll=4 schedule=3"
     halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
     
     for test in glb_tests:
