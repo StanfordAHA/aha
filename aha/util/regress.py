@@ -79,7 +79,7 @@ def run_glb(testname, width, height, test=''):
     my_env = {'DISABLE_GP': '1'}
 
     buildkite_call(
-        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--no-input-broadcast-pipelining"],
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
         env=my_env
     )
     time_map = time.time() - start
@@ -120,8 +120,8 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         glb_tests = [
-            "apps/unsharp",
             "apps/gaussian",
+            "apps/unsharp",
             "apps/harris_color",
             "apps/camera_pipeline_2x2",
             "apps/resnet_layer_gen"
@@ -197,12 +197,11 @@ def dispatch(args, extra_args=None):
     info.append(["garnet", t])
     
     halide_gen_args = {}
-    halide_gen_args["apps/gaussian"]            = "mywidth=368 myunroll=16 schedule=3"
-    halide_gen_args["apps/unsharp"]             = "mywidth=136 myunroll=4 schedule=3"
-    halide_gen_args["apps/harris_color"]        = "mywidth=122 myunroll=2 schedule=31"
+    halide_gen_args["apps/gaussian"]            = "mywidth=368 myunroll=8 schedule=3"
+    halide_gen_args["apps/unsharp"]             = "mywidth=136 myunroll=2 schedule=3"
+    halide_gen_args["apps/harris_color"]        = "mywidth=122 myunroll=1 schedule=31"
     halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
     
-    os.environ["PNR_PLACER_EXP"] = '4'
     for test in glb_tests:
         if test in halide_gen_args:
             os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
@@ -210,6 +209,7 @@ def dispatch(args, extra_args=None):
             os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_glb(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        
     for test in resnet_tests:
         if test == "conv1":
             os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=16" 
