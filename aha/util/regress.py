@@ -212,7 +212,7 @@ def dispatch(args, extra_args=None):
         
     for test in resnet_tests:
         if test == "conv1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4" 
             os.environ["HL_TARGET"] = "host-x86-64"
         elif test == "conv2_x":
             os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
