@@ -78,10 +78,16 @@ def run_glb(testname, width, height, test=''):
     my_env = {}
     my_env = {'DISABLE_GP': '1'}
 
-    buildkite_call(
-        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
-        env=my_env
-    )
+    if "resnet" in testname:
+        buildkite_call(
+            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--no-input-broadcast-pipelining"],
+            env=my_env
+        )
+    else:
+        buildkite_call(
+            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+            env=my_env
+        )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
@@ -221,7 +227,7 @@ def dispatch(args, extra_args=None):
             os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv3_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=4" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv4_1":
             os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
