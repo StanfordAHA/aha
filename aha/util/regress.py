@@ -221,7 +221,7 @@ def dispatch(args, extra_args=None):
             os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv3_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv4_1":
             os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
