@@ -50,7 +50,8 @@ def gen_garnet(width, height):
         "--height",
         str(height),
         "--verilog",
-        "--use_sim_sram"
+        "--use_sim_sram",
+        "--rv"
     ])
     return time.time() - start
 
@@ -79,12 +80,12 @@ def run_glb(testname, width, height, test=''):
 
     if "resnet" in testname:
         buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--no-input-broadcast-pipelining"],
+            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--no-input-broadcast-pipelining", "--rv"],
             env=my_env
         )
     else:
         buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--rv"],
             env=my_env
         )
     time_map = time.time() - start
