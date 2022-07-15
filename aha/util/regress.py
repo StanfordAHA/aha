@@ -77,16 +77,11 @@ def run_glb(testname, width, height, test=''):
     my_env = {}
     my_env = {'DISABLE_GP': '1'}
 
-    if "resnet" in testname:
-        buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--no-input-broadcast-pipelining"],
-            env=my_env
-        )
-    else:
-        buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
-            env=my_env
-        )
+    buildkite_call(
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+        env=my_env
+    )
+    
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
@@ -125,10 +120,10 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         glb_tests = [
-            "apps/gaussian",
+            "apps/camera_pipeline_2x2",
             "apps/unsharp",
             "apps/harris_color",
-            "apps/camera_pipeline_2x2",
+            "apps/gaussian",
             "apps/resnet_layer_gen"
         ]
         resnet_tests = [
