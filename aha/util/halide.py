@@ -10,6 +10,7 @@ def add_subparser(subparser):
     parser.add_argument("app")
     parser.add_argument("--sim", action='store_true')
     parser.add_argument("--log", action="store_true")
+    parser.add_argument("--chain", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -48,6 +49,7 @@ def dispatch(args, extra_args=None):
 
     app_name = args.app.name
     run_sim = args.sim
+    chain = args.chain
 
     log_path = app_dir / Path("log")
     log_file_path = log_path / Path("aha_halide.log")
@@ -85,6 +87,17 @@ def dispatch(args, extra_args=None):
         os.rename(
             app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
         )
+
+
+    if not chain:
+        subprocess_call_log (
+            cmd=["make", "-C", str(app_dir), "tree"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
+        )
+ 
 
     if run_sim:
         subprocess_call_log (
