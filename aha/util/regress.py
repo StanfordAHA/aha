@@ -70,7 +70,7 @@ def run_glb(testname, width, height, test=''):
 
     start = time.time()
 
-    if "resnet" in test:
+    if "resnet" in testname:
         buildkite_call(["aha", "halide", testname, "--chain"])
     else:
         buildkite_call(["aha", "halide", testname])
