@@ -69,12 +69,7 @@ def run_glb(testname, width, height, test=''):
     os.environ["PIPELINED"] = '1'
 
     start = time.time()
-
-    if "resnet" in test:
-        buildkite_call(["aha", "halide", testname, "--chain"])
-    else:
-        buildkite_call(["aha", "halide", testname])
-
+    buildkite_call(["aha", "halide", testname])
     time_compile = time.time() - start
 
     print(f"--- {test} - mapping")
