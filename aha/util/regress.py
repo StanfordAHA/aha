@@ -42,16 +42,17 @@ def buildkite_call(command, env={}):
 def gen_garnet(width, height):
     print("--- Generating Garnet")
     start = time.time()
-    buildkite_call([
-        "aha",
-        "garnet",
-        "--width",
-        str(width),
-        "--height",
-        str(height),
-        "--verilog",
-        "--use_sim_sram"
-    ])
+    if(not os.path.exists('/aha/garnet/garnet.v')):
+        buildkite_call([
+            "aha",
+            "garnet",
+            "--width",
+            str(width),
+            "--height",
+            str(height),
+            "--verilog",
+            "--use_sim_sram"
+        ])
     return time.time() - start
 
 
@@ -120,11 +121,11 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         glb_tests = [
-            "apps/camera_pipeline_2x2",
-            "apps/unsharp",
-            "apps/harris_color",
+            "apps/pointwise",
             "apps/gaussian",
-            "apps/resnet_layer_gen"
+            "apps/unsharp",
+            "apps/camera_pipeline_2x2",
+            "apps/harris_color",
         ]
         resnet_tests = [
             "conv1",
@@ -156,7 +157,7 @@ def dispatch(args, extra_args=None):
             "apps/harris",
             "apps/resnet_layer_gen",
             "apps/unsharp",
-            "apps/camera_pipeline",
+            #"apps/camera_pipeline",
             "apps/harris_color",
             "apps/camera_pipeline_2x2",
             #"handcrafted/conv_3_3_chain",
@@ -197,9 +198,9 @@ def dispatch(args, extra_args=None):
     info.append(["garnet", t])
     
     halide_gen_args = {}
-    halide_gen_args["apps/gaussian"]            = "mywidth=368 myunroll=16 schedule=3"
-    halide_gen_args["apps/harris_color"]        = "mywidth=136 myunroll=4 schedule=31"
-    halide_gen_args["apps/unsharp"]             = "mywidth=136 myunroll=4 schedule=3"
+    halide_gen_args["apps/gaussian"]            = "mywidth=62 myunroll=2 schedule=3"
+    halide_gen_args["apps/harris_color"]        = "mywidth=62 myunroll=1 schedule=31"
+    halide_gen_args["apps/unsharp"]             = "mywidth=62 myunroll=1 schedule=3"
     halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
     
     for test in glb_tests:
