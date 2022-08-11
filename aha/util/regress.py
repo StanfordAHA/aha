@@ -42,7 +42,7 @@ def buildkite_call(command, env={}):
 def gen_garnet(width, height):
     print("--- Generating Garnet")
     start = time.time()
-    if(not os.path.exists('/aha/garnet/garnet.v')):
+    if (not os.path.exists('/aha/garnet/garnet.v')):
         buildkite_call([
             "aha",
             "garnet",
