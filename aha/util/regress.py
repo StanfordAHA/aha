@@ -134,8 +134,8 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = [
             "conv1",
-            "conv3_x",
             "conv4_1",
+            "conv5_x",
         ]
     elif args.config == "full":
         width, height = 32, 16
@@ -221,7 +221,7 @@ def dispatch(args, extra_args=None):
             os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4" 
             os.environ["HL_TARGET"] = "host-x86-64"
         elif test == "conv2_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=2 glb_o=4" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv3_1":
             os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
