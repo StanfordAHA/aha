@@ -84,7 +84,7 @@ def run_glb(testname, width, height, test=''):
     my_env = {'DISABLE_GP': '1'}
 
     buildkite_call(
-        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32"],
         env=my_env
     )
     
