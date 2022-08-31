@@ -51,7 +51,10 @@ def gen_garnet(width, height):
             "--height",
             str(height),
             "--verilog",
-            "--use_sim_sram"
+            "--use_sim_sram",
+            "--rv",
+            "--sparse-cgra",
+            "--sparse-cgra-combined"
         ])
     return time.time() - start
 
@@ -83,8 +86,9 @@ def run_glb(testname, width, height, test=''):
     my_env = {}
     my_env = {'DISABLE_GP': '1'}
 
+
     buildkite_call(
-        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height)],
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32", "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
         env=my_env
     )
     
@@ -92,7 +96,8 @@ def run_glb(testname, width, height, test=''):
 
     print(f"--- {test} - glb testing")
     start = time.time()
-    buildkite_call(["aha", "glb", testname])
+    buildkite_call(["aha", "glb", testname, "--waveform"])
+    #buildkite_call(["aha", "glb", testname])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -126,16 +131,18 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         glb_tests = [
-            "apps/pointwise",
-            "apps/gaussian",
-            "apps/unsharp",
-            "apps/camera_pipeline_2x2",
-            "apps/harris_color",
+     #       "apps/pointwise",
+     #       "apps/gaussian",
+     #       "apps/unsharp",
+     #       "apps/camera_pipeline_2x2",
+     #       "apps/harris_color",
         ]
         resnet_tests = [
-            "conv1",
-            "conv3_x",
-            "conv4_1",
+     #       "conv1",
+     #       "conv3_x",
+     #       "conv4_1",
+     #       "conv2_x",
+            "conv5_x",
         ]
     elif args.config == "full":
         width, height = 32, 16
@@ -184,18 +191,18 @@ def dispatch(args, extra_args=None):
         width, height = 32, 16
         glb_tests = []
         resnet_tests = [
-            "conv1",
+        #    "conv1",
             "conv2_x",
-            "conv3_1",
-            "conv3_x",
-            "conv4_1",
-            "conv4_x",
-            "conv5_1",
-            "conv5_x",
+        #    "conv3_1",
+        #    "conv3_x",
+        #    "conv4_1",
+        #    "conv4_x",
+        #    "conv5_1",
+        #    "conv5_x",
         ]
 
     else:
-        raise NotImplementedError(f"Unknown test config: {config}")
+        raise NotImplementedError(f"Unknown test config: {args.config}")
 
     print(f"--- Running regression: {args.config}")
     info = []
@@ -221,25 +228,25 @@ def dispatch(args, extra_args=None):
             os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4" 
             os.environ["HL_TARGET"] = "host-x86-64"
         elif test == "conv2_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv3_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv3_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv4_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv4_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv5_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv5_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=7 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8" 
+            os.environ["HALIDE_GEN_ARGS"] = "in_img=7 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         t0, t1, t2 = run_glb("apps/resnet_output_stationary", width, height, test)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
