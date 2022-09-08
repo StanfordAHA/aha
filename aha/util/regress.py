@@ -132,16 +132,16 @@ def dispatch(args, extra_args=None):
         width, height = 32, 16
         glb_tests = [
             "apps/pointwise",
-            #"apps/gaussian",
+            "apps/gaussian",
             "apps/unsharp",
-            #"apps/camera_pipeline_2x2",
-            #"apps/harris_color",
+            "apps/camera_pipeline_2x2",
+            "apps/harris_color",
         ]
         resnet_tests = [
-            #"conv1",
+            "conv1",
             "conv3_x",
-            #"conv4_1",
-            #"conv5_x",
+            "conv4_1",
+            "conv5_x",
         ]
     elif args.config == "full":
         width, height = 32, 16
