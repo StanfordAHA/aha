@@ -96,8 +96,8 @@ def run_glb(testname, width, height, test=''):
 
     print(f"--- {test} - glb testing")
     start = time.time()
-    #buildkite_call(["aha", "glb", testname, "--waveform"])
-    buildkite_call(["aha", "glb", testname])
+    buildkite_call(["aha", "glb", testname, "--waveform"])
+    #buildkite_call(["aha", "glb", testname])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -131,7 +131,7 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         glb_tests = [
-           "apps/pointwise",
+            "apps/pointwise",
             "apps/gaussian",
             "apps/unsharp",
             "apps/camera_pipeline_2x2",
@@ -141,7 +141,6 @@ def dispatch(args, extra_args=None):
             "conv1",
             "conv3_x",
             "conv4_1",
-            "conv2_x",
             "conv5_x",
         ]
     elif args.config == "full":
@@ -191,14 +190,14 @@ def dispatch(args, extra_args=None):
         width, height = 32, 16
         glb_tests = []
         resnet_tests = [
-        #    "conv1",
+            "conv1",
             "conv2_x",
-        #    "conv3_1",
-        #    "conv3_x",
-        #    "conv4_1",
-        #    "conv4_x",
-        #    "conv5_1",
-        #    "conv5_x",
+            "conv3_1",
+            "conv3_x",
+            "conv4_1",
+            "conv4_x",
+            "conv5_1",
+            "conv5_x",
         ]
 
     else:
