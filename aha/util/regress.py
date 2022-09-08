@@ -88,7 +88,11 @@ def run_glb(testname, width, height, test=''):
 
 
     buildkite_call(
+<<<<<<< HEAD
         ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32", "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
+=======
+        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32"],
+>>>>>>> c6277e4769616f61dabcb9cee43afd13302f1f00
         env=my_env
     )
     
@@ -139,7 +143,6 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = [
             "conv1",
-            "conv3_x",
             "conv4_1",
             "conv5_x",
         ]
