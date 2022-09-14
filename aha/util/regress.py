@@ -59,8 +59,11 @@ def gen_garnet(width, height):
     return time.time() - start
 
 
-def run_glb(testname, width, height, test=''):
-    app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/"+testname
+def run_glb(testname, width, height, test='', sparse=False):
+    if sparse:
+        app_path = f"../../../garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0"
+    else:
+        app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/"+testname
     print(app_path)
     try:
         subprocess.call(["make", "clean"], cwd=app_path)
@@ -74,10 +77,13 @@ def run_glb(testname, width, height, test=''):
 
     start = time.time()
 
-    if "resnet_output_stationary" in test:
-        buildkite_call(["aha", "halide", testname, "--chain"])
+    if sparse is False:
+        if "resnet_output_stationary" in test:
+            buildkite_call(["aha", "halide", testname, "--chain"])
+        else:
+            buildkite_call(["aha", "halide", testname])
     else:
-        buildkite_call(["aha", "halide", testname])
+        print("--- sparse test needs no compilation? ---")
 
     time_compile = time.time() - start
 
@@ -85,29 +91,45 @@ def run_glb(testname, width, height, test=''):
     start = time.time()
     my_env = {}
     my_env = {'DISABLE_GP': '1'}
+    if sparse:
+        my_env['PYTHONPATH'] = "/aha/garnet/"
 
-
-    buildkite_call(
-        ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32", "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
-        env=my_env
-    )
+    if sparse:
+        buildkite_call(
+                ["python", "/aha/garnet/tests/test_memory_core/build_tb.py", "--ic_fork", "--sam_graph", f"/aha/sam/compiler/sam-outputs/dot/{testname}.gv", "--seed", f"{0}",
+                    "--dump_bitstream", "--add_pond", "--combined", "--pipeline_scanner", "--base_dir", "/aha/garnet/SPARSE_TESTS/", "--just_glb", "--dump_glb", "--fiber_access"],
+                env=my_env
+                )
+    else:
+        buildkite_call(
+            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32", "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
+            env=my_env
+        )
     
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
     start = time.time()
     #buildkite_call(["aha", "glb", testname, "--waveform"])
-    buildkite_call(["aha", "glb", testname])
+    if sparse:
+        buildkite_call(["aha", "glb", app_path])
+    else:
+        buildkite_call(["aha", "glb", testname])
+    #buildkite_call(["aha", "glb", testname])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
 
 
 def dispatch(args, extra_args=None):
+    sparse_tests = []
     if args.config == "fast":
         width, height = 4, 2
         glb_tests = [
-            "apps/pointwise",
+#            "apps/pointwise",
+        ]
+        sparse_tests = [
+            "vec_identity"
         ]
         resnet_tests = []
     elif args.config == "pr":
@@ -220,7 +242,11 @@ def dispatch(args, extra_args=None):
             os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_glb(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-        
+
+    for test in sparse_tests:
+        t0, t1, t2 = run_glb(test, width, height, sparse=True)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
     for test in resnet_tests:
         if test == "conv1":
             os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4" 
