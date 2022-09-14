@@ -89,6 +89,3 @@
 [submodule "peak_generator"]
 	path = peak_generator
 	url = https://github.com/jack-melchert/peak_generator
-[submodule "sam"]
-	path = sam
-	url = ./sam
