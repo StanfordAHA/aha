@@ -36,6 +36,7 @@ RUN apt-get update && \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
         libncurses5 libxml2-dev \
+        graphviz \
         time \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
