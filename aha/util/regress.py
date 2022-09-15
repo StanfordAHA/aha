@@ -77,13 +77,13 @@ def run_glb(testname, width, height, test='', sparse=False):
 
     start = time.time()
 
-    if sparse is False:
+    if sparse:
+        print("--- sparse test needs no compilation? ---")
+    else:
         if "resnet_output_stationary" in test:
             buildkite_call(["aha", "halide", testname, "--chain"])
         else:
             buildkite_call(["aha", "halide", testname])
-    else:
-        print("--- sparse test needs no compilation? ---")
 
     time_compile = time.time() - start
 
@@ -244,17 +244,17 @@ def dispatch(args, extra_args=None):
     halide_gen_args["apps/harris_color"]        = "mywidth=62 myunroll=1 schedule=31"
     halide_gen_args["apps/unsharp"]             = "mywidth=62 myunroll=1 schedule=3"
     halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
-    
+   
+    for test in sparse_tests:
+        t0, t1, t2 = run_glb(test, width, height, sparse=True)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
     for test in glb_tests:
         if test in halide_gen_args:
             os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
         else:
             os.environ["HALIDE_GEN_ARGS"] = ""
         t0, t1, t2 = run_glb(test, width, height)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
-    for test in sparse_tests:
-        t0, t1, t2 = run_glb(test, width, height, sparse=True)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
