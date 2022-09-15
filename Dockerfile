@@ -37,6 +37,7 @@ RUN apt-get update && \
         libc6-i386 \
         libncurses5 libxml2-dev \
         graphviz \
+        xxd \
         time \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
