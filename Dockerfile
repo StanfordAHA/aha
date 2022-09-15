@@ -64,6 +64,10 @@ COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
 RUN cmake .. && make && make install
 
+# Sam
+WORKDIR /aha/sam
+RUN make sam
+
 # Lake
 COPY ./BufferMapping /aha/BufferMapping
 WORKDIR /aha/BufferMapping/cfunc
