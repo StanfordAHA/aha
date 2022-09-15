@@ -98,7 +98,7 @@ RUN python -m venv . && source bin/activate && pip install wheel six && pip inst
 # Sam
 WORKDIR /aha/sam
 RUN make sam
-RUN pip install -e .
+RUN source /aha/bin/activate && pip install -e .
 
 WORKDIR /aha
 
