@@ -64,10 +64,6 @@ COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
 RUN cmake .. && make && make install
 
-# Sam
-WORKDIR /aha/sam
-RUN make sam
-
 # Lake
 COPY ./BufferMapping /aha/BufferMapping
 WORKDIR /aha/BufferMapping/cfunc
@@ -98,6 +94,10 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
 COPY . /aha
 WORKDIR /aha
 RUN python -m venv . && source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
+
+# Sam
+WORKDIR /aha/sam
+RUN make sam
 
 WORKDIR /aha
 
