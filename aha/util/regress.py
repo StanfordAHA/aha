@@ -126,7 +126,7 @@ def dispatch(args, extra_args=None):
     if args.config == "fast":
         width, height = 4, 2
         glb_tests = [
-#            "apps/pointwise",
+            "apps/pointwise",
         ]
         sparse_tests = [
             "vec_identity"
@@ -134,6 +134,9 @@ def dispatch(args, extra_args=None):
         resnet_tests = []
     elif args.config == "pr":
         width, height = 8, 8
+        sparse_tests = [
+            "vec_identity"
+        ]
         glb_tests = [
             "apps/pointwise",
             "tests/ushift",
@@ -152,6 +155,9 @@ def dispatch(args, extra_args=None):
         resnet_tests = []
     elif args.config == "daily":
         width, height = 32, 16
+        sparse_tests = [
+            "vec_identity"
+        ]
         glb_tests = [
             "apps/pointwise",
             "apps/gaussian",
@@ -166,6 +172,9 @@ def dispatch(args, extra_args=None):
         ]
     elif args.config == "full":
         width, height = 32, 16
+        sparse_tests = [
+            "vec_identity"
+        ]
         glb_tests = [
             "apps/pointwise",
             "tests/rom",
@@ -209,6 +218,7 @@ def dispatch(args, extra_args=None):
         ]
     elif args.config == "resnet":
         width, height = 32, 16
+        sparse_tests = []
         glb_tests = []
         resnet_tests = [
             "conv1",
