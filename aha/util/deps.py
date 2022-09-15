@@ -55,8 +55,7 @@ def dispatch(args, extra_args=None):
             "pythunder": "cgra_pnr/thunder",
             "mflowgen": "mflowgen",
             "metamapper": "MetaMapper",
-            "peak_gen": "peak_generator",
-            "sam": "sam"
+            "peak_gen": "peak_generator"
         }
 
         for dep in order_deps(modules):
