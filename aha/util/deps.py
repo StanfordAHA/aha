@@ -56,6 +56,7 @@ def dispatch(args, extra_args=None):
             "mflowgen": "mflowgen",
             "metamapper": "MetaMapper",
             "peak_gen": "peak_generator",
+            "sam": "sam"
         }
 
         for dep in order_deps(modules):
