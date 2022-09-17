@@ -5,6 +5,8 @@ import sys
 import os
 from tabulate import tabulate
 import time
+from sam.onyx.generate_matrices import *
+import tempfile
 
 
 def add_subparser(subparser):
@@ -97,7 +99,8 @@ def run_glb(testname, width, height, test='', sparse=False):
     if sparse:
         buildkite_call(
                 ["python", "/aha/garnet/tests/test_memory_core/build_tb.py", "--ic_fork", "--sam_graph", f"/aha/sam/compiler/sam-outputs/dot/{testname}.gv", "--seed", f"{0}",
-                    "--dump_bitstream", "--add_pond", "--combined", "--pipeline_scanner", "--base_dir", "/aha/garnet/SPARSE_TESTS/", "--just_glb", "--dump_glb", "--fiber_access"],
+                    "--dump_bitstream", "--add_pond", "--combined", "--pipeline_scanner", "--base_dir", "/aha/garnet/SPARSE_TESTS/", "--just_glb", "--dump_glb", "--fiber_access",
+                    "--width", str(width), "--height", str(height)],
                 env=my_env
                 )
     else:
@@ -112,7 +115,46 @@ def run_glb(testname, width, height, test='', sparse=False):
     start = time.time()
     #buildkite_call(["aha", "glb", testname, "--waveform"])
     if sparse:
-        buildkite_call(["aha", "glb", app_path])
+        try:
+            buildkite_call(["aha", "glb", app_path])
+            print("AFTER BUILDKITE CALL")
+        except:
+            print("MADE IT TO CLEANUP CODE!!!!!!!")
+            # Don't die here...
+        #except Exception as e:
+        # This is where we do the fallback comparison...
+
+        # First get gold matrix from the output...
+        gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0/output_gold.npy")
+        name_line = None
+        with open(f"/aha/garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0/output_name.txt") as output_name_h_:
+            name_line = output_name_h_.readlines()[0].strip()
+        output_name = name_line
+        assert output_name is not None
+
+        # Find the output files...
+        all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
+        just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
+        for file__ in just_out_files_sim:
+            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/")
+        sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                           format="CSF",
+                                           shape=gold_matrix.shape, base=16, early_terminate='x')
+        sim_matrix_np = sim_matrix.get_matrix()
+
+        #try:
+        print(f"GOLD")
+        gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+        print(gold_matrix)
+        print(f"SIM")
+        sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
+        print(sim_matrix)
+        assert numpy.array_equal(gold_matrix, sim_matrix_np)
+        #except AssertionError as e:
+        #    print(f"Test failed...output matrixes are unequal")
+        #    print(numpy.subtract(gold_matrix, sim_matrix))
+
+
     else:
         buildkite_call(["aha", "glb", testname])
     #buildkite_call(["aha", "glb", testname])
@@ -133,9 +175,12 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = []
     elif args.config == "pr":
-        width, height = 8, 8
+        width, height = 16, 8
         sparse_tests = [
-            "vec_identity"
+            "matmul_ijk",
+            "vec_identity",
+            "vec_elemadd",
+            "vec_elemmul"
         ]
         glb_tests = [
             "apps/pointwise",
