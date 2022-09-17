@@ -94,12 +94,15 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN python -m venv . && source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
+RUN python -m venv .
 
 # Sam
 WORKDIR /aha/sam
 RUN make sam
-RUN source /aha/bin/activate && pip install -e .
+RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
+WORKDIR /aha
+RUN source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
 
 WORKDIR /aha
 

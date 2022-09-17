@@ -80,7 +80,7 @@ def run_glb(testname, width, height, test='', sparse=False):
     start = time.time()
 
     if sparse:
-        print("--- sparse test needs no compilation? ---")
+        print("--- sparse test needs no compilation ---")
     else:
         if "resnet_output_stationary" in test:
             buildkite_call(["aha", "halide", testname, "--chain"])
@@ -117,13 +117,10 @@ def run_glb(testname, width, height, test='', sparse=False):
     if sparse:
         try:
             buildkite_call(["aha", "glb", app_path])
-            print("AFTER BUILDKITE CALL")
         except:
-            print("MADE IT TO CLEANUP CODE!!!!!!!")
-            # Don't die here...
-        #except Exception as e:
-        # This is where we do the fallback comparison...
+            print("--- GLB CALLED FAILED!!! Fallback to offsite comparison... ---")
 
+        # This is where we do the fallback comparison...
         # First get gold matrix from the output...
         gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0/output_gold.npy")
         name_line = None
@@ -142,7 +139,6 @@ def run_glb(testname, width, height, test='', sparse=False):
                                            shape=gold_matrix.shape, base=16, early_terminate='x')
         sim_matrix_np = sim_matrix.get_matrix()
 
-        #try:
         print(f"GOLD")
         gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
         print(gold_matrix)
@@ -150,10 +146,6 @@ def run_glb(testname, width, height, test='', sparse=False):
         sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
         print(sim_matrix)
         assert numpy.array_equal(gold_matrix, sim_matrix_np)
-        #except AssertionError as e:
-        #    print(f"Test failed...output matrixes are unequal")
-        #    print(numpy.subtract(gold_matrix, sim_matrix))
-
 
     else:
         buildkite_call(["aha", "glb", testname])
@@ -167,17 +159,18 @@ def dispatch(args, extra_args=None):
     sparse_tests = []
     if args.config == "fast":
         width, height = 4, 2
-        glb_tests = [
-            "apps/pointwise",
-        ]
         sparse_tests = [
             "vec_identity"
+        ]
+        glb_tests = [
+            "apps/pointwise",
         ]
         resnet_tests = []
     elif args.config == "pr":
         width, height = 16, 8
         sparse_tests = [
             "matmul_ijk",
+            'mat_mattransmul',
             "vec_identity",
             "vec_elemadd",
             "vec_elemmul"
@@ -201,7 +194,18 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 32, 16
         sparse_tests = [
-            "vec_identity"
+            'vec_elemadd',
+            'vec_elemmul',
+            'vec_identity',
+            'vec_scalar_mul',
+            'mat_elemadd',
+            'mat_elemadd3',
+            'mat_elemmul',
+            'mat_identity',
+            'mat_mattransmul',
+            'tensor3_mttkrp',
+            'tensor3_ttm',
+            'tensor3_ttv',
         ]
         glb_tests = [
             "apps/pointwise",
@@ -218,7 +222,28 @@ def dispatch(args, extra_args=None):
     elif args.config == "full":
         width, height = 32, 16
         sparse_tests = [
-            "vec_identity"
+            'mat_elemadd',
+            'mat_elemadd3',
+            'mat_elemmul',
+            'mat_identity',
+            'mat_mattransmul',
+            # Turned off until SUB ordering fixed in mapping
+            # 'mat_residual',
+            'mat_sddmm',
+            'mat_vecmul_ij',
+            'matmul_ijk',
+            'matmul_jik',
+            'tensor3_elemadd',
+            'tensor3_elemmul',
+            'tensor3_identity',
+            'tensor3_innerprod',
+            'tensor3_mttkrp',
+            'tensor3_ttm',
+            'tensor3_ttv',
+            'vec_elemadd',
+            'vec_elemmul',
+            'vec_identity',
+            'vec_scalar_mul',
         ]
         glb_tests = [
             "apps/pointwise",
