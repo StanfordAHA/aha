@@ -99,7 +99,7 @@ RUN python -m venv .
 # Sam
 WORKDIR /aha/sam
 RUN make sam
-RUN source /aha/bin/activate && pip install scipy numpy && pip install -e .
+RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 WORKDIR /aha
 RUN source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
