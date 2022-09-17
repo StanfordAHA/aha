@@ -167,7 +167,7 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = []
     elif args.config == "pr":
-        width, height = 16, 8
+        width, height = 20, 8
         sparse_tests = [
             "matmul_ijk",
             'mat_mattransmul',
