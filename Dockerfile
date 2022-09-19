@@ -36,6 +36,8 @@ RUN apt-get update && \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
         libncurses5 libxml2-dev \
+        graphviz \
+        xxd \
         time \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
@@ -92,7 +94,15 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
-RUN python -m venv . && source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
+RUN python -m venv .
+
+# Sam
+WORKDIR /aha/sam
+RUN make sam
+RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
+WORKDIR /aha
+RUN source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
 
 WORKDIR /aha
 
