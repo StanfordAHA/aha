@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 import sys
 import os
+import numpy
 
 
 def add_subparser(subparser):
@@ -11,6 +12,8 @@ def add_subparser(subparser):
     parser.add_argument("--waveform-glb", action="store_true")
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--log", action="store_true")
+    parser.add_argument("--sparse", action="store_true")
+    parser.add_argument("--sparse-test-name", type=str, default=None)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -78,3 +81,34 @@ def dispatch(args, extra_args=None):
             log_file_path=log_file_path
         )
 
+    if args.sparse:
+
+        from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
+        testname = args.sparse_test_name
+
+        # This is where we do the fallback comparison...
+        # First get gold matrix from the output...
+        gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0/output_gold.npy")
+        name_line = None
+        with open(f"/aha/garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0/output_name.txt") as output_name_h_:
+            name_line = output_name_h_.readlines()[0].strip()
+        output_name = name_line
+        assert output_name is not None
+
+        # Find the output files...
+        all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
+        just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
+        for file__ in just_out_files_sim:
+            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/")
+        sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                            format="CSF",
+                                            shape=gold_matrix.shape, base=16, early_terminate='x')
+        sim_matrix_np = sim_matrix.get_matrix()
+
+        print(f"GOLD")
+        gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+        print(gold_matrix)
+        print(f"SIM")
+        sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
+        print(sim_matrix)
+        assert numpy.array_equal(gold_matrix, sim_matrix_np)
