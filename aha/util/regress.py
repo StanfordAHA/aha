@@ -23,22 +23,12 @@ def buildkite_filter(s):
 def buildkite_call(command, env={}):
     env = {**os.environ.copy(), **env}
 
-    try:
-        app = subprocess.run(
-            command,
-            check=True,
-            text=True,
-            capture_output=True,
-            env=env,
-        )
-        print(buildkite_filter(app.stdout))
-    except subprocess.CalledProcessError as err:
-        print("ERROR", file=sys.stderr)
-        print("=== stdout ===", file=sys.stderr)
-        print(buildkite_filter(err.stdout), file=sys.stderr)
-        print("=== stderr ===", file=sys.stderr)
-        print(buildkite_filter(err.stderr), file=sys.stderr)
-        sys.exit(1)
+    app = subprocess.run(
+        command,
+        check=True,
+        text=True,
+        env=env,
+    )
 
 
 def gen_garnet(width, height):
@@ -75,7 +65,6 @@ def run_glb(testname, width, height, test='', sparse=False):
         test = testname
     print(f"--- {test}")
     print(f"--- {test} - compiling")
-    os.environ["PIPELINED"] = '1'
 
     start = time.time()
 
