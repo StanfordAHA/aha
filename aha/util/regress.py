@@ -115,11 +115,7 @@ def run_glb(testname, width, height, test='', sparse=False):
     start = time.time()
     #buildkite_call(["aha", "glb", testname, "--waveform"])
     if sparse:
-        try:
-            buildkite_call(["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname])
-        except:
-            print("--- GLB CALLED FAILED!!! Fallback to offsite comparison... ---")
-
+        buildkite_call(["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname])
     else:
         buildkite_call(["aha", "glb", testname])
     #buildkite_call(["aha", "glb", testname])
