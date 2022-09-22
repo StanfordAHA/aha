@@ -71,10 +71,7 @@ def run_glb(testname, width, height, test='', sparse=False):
     if sparse:
         print("--- sparse test needs no compilation ---")
     else:
-        if "resnet_output_stationary" in test:
-            buildkite_call(["aha", "halide", testname, "--chain"])
-        else:
-            buildkite_call(["aha", "halide", testname])
+        buildkite_call(["aha", "halide", testname])
 
     time_compile = time.time() - start
 
