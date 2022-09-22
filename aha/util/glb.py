@@ -64,24 +64,27 @@ def dispatch(args, extra_args=None):
         subprocess.check_call(["mkdir", "-p", log_path])
         subprocess.check_call(["rm", "-f", log_file_path])
 
-    if args.run:
-        subprocess_call_log (
-            cmd=["make", "run"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env,
-            log=args.log,
-            log_file_path=log_file_path
-        )
-    else:
-        subprocess_call_log (
-            cmd=["make", "sim"] + extra_args,
-            cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-            env=env,
-            log=args.log,
-            log_file_path=log_file_path
-        )
-
     if args.sparse:
+
+        try:
+            if args.run:
+                subprocess_call_log (
+                    cmd=["make", "run"] + extra_args,
+                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                    env=env,
+                    log=args.log,
+                    log_file_path=log_file_path
+                )
+            else:
+                subprocess_call_log (
+                    cmd=["make", "sim"] + extra_args,
+                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                    env=env,
+                    log=args.log,
+                    log_file_path=log_file_path
+                )
+        except:
+            print("Failed as expected...move to offsite comparison...")
 
         from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
         testname = args.sparse_test_name
@@ -112,3 +115,22 @@ def dispatch(args, extra_args=None):
         sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
         print(sim_matrix)
         assert numpy.array_equal(gold_matrix, sim_matrix_np)
+    else:
+
+        if args.run:
+            subprocess_call_log (
+                cmd=["make", "run"] + extra_args,
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
+        else:
+            subprocess_call_log (
+                cmd=["make", "sim"] + extra_args,
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
+
