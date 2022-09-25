@@ -168,6 +168,7 @@ def dispatch(args, extra_args=None):
             "apps/unsharp",
             "apps/camera_pipeline_2x2",
             "apps/harris_color",
+            "tests/three_level_pond",
         ]
         resnet_tests = [
             "conv1",
