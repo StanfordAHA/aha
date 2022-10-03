@@ -91,7 +91,7 @@ def run_glb(testname, width, height, test='', sparse=False):
                 )
     else:
         buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32", "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
+            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
             env=my_env
         )
     
@@ -243,7 +243,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "resnet":
-        width, height = 32, 16
+        width, height = 24, 16
         sparse_tests = []
         glb_tests = []
         resnet_tests = [
