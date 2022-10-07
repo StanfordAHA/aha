@@ -91,7 +91,7 @@ def run_glb(testname, width, height, test='', sparse=False):
                 )
     else:
         buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
+            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32", "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
             env=my_env
         )
     
