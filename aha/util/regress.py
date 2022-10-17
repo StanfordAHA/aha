@@ -34,77 +34,104 @@ def buildkite_call(command, env={}):
 def gen_garnet(width, height):
     print("--- Generating Garnet")
     start = time.time()
-    if (not os.path.exists('/aha/garnet/garnet.v')):
-        buildkite_call([
-            "aha",
-            "garnet",
-            "--width",
-            str(width),
-            "--height",
-            str(height),
-            "--verilog",
-            "--use_sim_sram",
-            "--rv",
-            "--sparse-cgra",
-            "--sparse-cgra-combined"
-        ])
+    if not os.path.exists("/aha/garnet/garnet.v"):
+        buildkite_call(
+            [
+                "aha",
+                "garnet",
+                "--width", str(width),
+                "--height", str(height),
+                "--verilog",
+                "--use_sim_sram",
+                "--rv",
+                "--sparse-cgra",
+                "--sparse-cgra-combined",
+            ]
+        )
     return time.time() - start
 
 
-def run_glb(testname, width, height, test='', sparse=False):
+def run_glb(testname, width, height, test="", sparse=False):
     if sparse:
         app_path = f"../../../garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0"
     else:
-        app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/"+testname
+        app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + testname
+
     print(app_path)
-    try:
-        subprocess.call(["make", "clean"], cwd=app_path)
-    except: 
-        pass
-    if test == '':
+    
+    if test == "":
         test = testname
+    
     print(f"--- {test}")
     print(f"--- {test} - compiling")
 
     start = time.time()
 
+    try:
+        subprocess.call(["make", "clean"], cwd=app_path)
+    except:
+        pass
+
     if sparse:
         print("--- sparse test needs no compilation ---")
     else:
-        buildkite_call(["aha", "halide", testname])
+        buildkite_call(["aha", "halide", testname, "--chain"])
 
     time_compile = time.time() - start
 
     print(f"--- {test} - mapping")
     start = time.time()
     my_env = {}
-    my_env = {'DISABLE_GP': '1'}
+    my_env = {"DISABLE_GP": "1"}
     if sparse:
-        my_env['PYTHONPATH'] = "/aha/garnet/"
+        my_env["PYTHONPATH"] = "/aha/garnet/"
 
     if sparse:
         buildkite_call(
-                ["python", "/aha/garnet/tests/test_memory_core/build_tb.py", "--ic_fork", "--sam_graph", f"/aha/sam/compiler/sam-outputs/dot/{testname}.gv", "--seed", f"{0}",
-                    "--dump_bitstream", "--add_pond", "--combined", "--pipeline_scanner", "--base_dir", "/aha/garnet/SPARSE_TESTS/", "--just_glb", "--dump_glb", "--fiber_access",
-                    "--width", str(width), "--height", str(height)],
-                env=my_env
-                )
+            [
+                "python",
+                "/aha/garnet/tests/test_memory_core/build_tb.py",
+                "--ic_fork",
+                "--sam_graph", f"/aha/sam/compiler/sam-outputs/dot/{testname}.gv",
+                "--seed", f"{0}",
+                "--dump_bitstream",
+                "--add_pond",
+                "--combined",
+                "--pipeline_scanner",
+                "--base_dir", "/aha/garnet/SPARSE_TESTS/",
+                "--just_glb",
+                "--dump_glb",
+                "--fiber_access",
+                "--width", str(width),
+                "--height", str(height),
+            ],
+            env=my_env,
+        )
     else:
         buildkite_call(
-            ["aha", "pipeline", testname, "--width", str(width), "--height", str(height), "--input-broadcast-branch-factor", "2", "--input-broadcast-max-leaves", "32", "--rv", "--sparse-cgra", "--sparse-cgra-combined"],
-            env=my_env
+            [
+                "aha",
+                "pipeline",
+                testname,
+                "--width", str(width),
+                "--height", str(height),
+                "--rv",
+                "--sparse-cgra",
+                "--sparse-cgra-combined",
+            ],
+            env=my_env,
         )
-    
+
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
     start = time.time()
-    #buildkite_call(["aha", "glb", testname, "--waveform"])
     if sparse:
-        buildkite_call(["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname])
+        buildkite_call(
+            ["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname]
+        )
     else:
         buildkite_call(["aha", "glb", testname])
-    #buildkite_call(["aha", "glb", testname])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -264,16 +291,16 @@ def dispatch(args, extra_args=None):
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
-    
+
     halide_gen_args = {}
-    halide_gen_args["apps/gaussian"]            = "mywidth=62 myunroll=2 schedule=3"
-    halide_gen_args["apps/harris_color"]        = "mywidth=62 myunroll=1 schedule=31"
-    halide_gen_args["apps/unsharp"]             = "mywidth=62 myunroll=1 schedule=3"
+    halide_gen_args["apps/gaussian"] = "mywidth=62 myunroll=2 schedule=3"
+    halide_gen_args["apps/harris_color"] = "mywidth=62 myunroll=1 schedule=31"
+    halide_gen_args["apps/unsharp"] = "mywidth=62 myunroll=1 schedule=3"
     halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
-   
+
     for test in sparse_tests:
-        t0, t1, t2 = run_glb(test, width, height, sparse=True)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+       t0, t1, t2 = run_glb(test, width, height, sparse=True)
+       info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
         if test in halide_gen_args:
@@ -285,28 +312,44 @@ def dispatch(args, extra_args=None):
 
     for test in resnet_tests:
         if test == "conv1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4"
             os.environ["HL_TARGET"] = "host-x86-64"
         elif test == "conv2_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4"
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv3_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv3_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv4_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv4_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=14 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv5_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=14 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         elif test == "conv5_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=7 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4" 
+            os.environ[
+                "HALIDE_GEN_ARGS"
+            ] = "in_img=7 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
             os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
         t0, t1, t2 = run_glb("apps/resnet_output_stationary", width, height, test)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
