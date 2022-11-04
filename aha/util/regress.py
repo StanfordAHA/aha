@@ -269,7 +269,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "resnet":
-        width, height = 24, 16
+        width, height = 32, 16
         sparse_tests = []
         glb_tests = []
         resnet_tests = [
@@ -298,8 +298,8 @@ def dispatch(args, extra_args=None):
     halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
 
    for test in sparse_tests:
-      t0, t1, t2 = run_glb(test, width, height, sparse=True)
-      info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        t0, t1, t2 = run_glb(test, width, height, sparse=True)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
         if test in halide_gen_args:
