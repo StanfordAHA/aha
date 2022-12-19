@@ -9,7 +9,7 @@ setup(
     author='Teguh Hofstee',
     url='https://github.com/hofstee/aha',
 
-    py_modules=[]
+    py_modules=[],
     
     python_requires='>=3.7',
     install_requires = [
