@@ -102,7 +102,7 @@ RUN make sam
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 WORKDIR /aha
-RUN source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
+RUN source bin/activate && pip install setuptools -U && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && aha deps install
 
 WORKDIR /aha
 
