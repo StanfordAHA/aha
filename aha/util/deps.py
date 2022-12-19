@@ -44,7 +44,6 @@ def dispatch(args, extra_args=None):
             "fault": "fault",
             "garnet": "garnet",
             "gemstone": "gemstone",
-            "hwtypes": "hwtypes",
             "kratos": "kratos",
             "lake": "lake",
             "lassen": "lassen",
@@ -55,7 +54,8 @@ def dispatch(args, extra_args=None):
             "pythunder": "cgra_pnr/thunder",
             "mflowgen": "mflowgen",
             "metamapper": "MetaMapper",
-            "peak_gen": "peak_generator"
+            "peak_gen": "peak_generator",
+            "hwtypes": "hwtypes"
         }
 
         for dep in order_deps(modules):
