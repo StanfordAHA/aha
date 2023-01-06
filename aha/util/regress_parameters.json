@@ -1,0 +1,61 @@
+{
+    "apps/gaussian":{
+        "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",
+        "HL_TARGET":"host-x86-64"
+    },
+    "apps/harris_color":{
+        "HALIDE_GEN_ARGS":"mywidth=62 myunroll=1 schedule=31",
+        "HL_TARGET":"host-x86-64",
+        "PNR_PLACER_EXP":"1"
+    },
+    "apps/unsharp":{
+        "HALIDE_GEN_ARGS":"mywidth=62 myunroll=1 schedule=3",
+        "HL_TARGET":"host-x86-64",
+        "PNR_PLACER_EXP":"1"
+    },
+    "apps/camera_pipeline_2x2":{
+        "HALIDE_GEN_ARGS":"schedule=3",
+        "HL_TARGET":"host-x86-64",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv1":{
+        "HALIDE_GEN_ARGS":"in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4",
+        "HL_TARGET":"host-x86-64",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv2_x":{
+        "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+        "HL_TARGET":"host-x86-64-enable_ponds",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv3_1":{
+        "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4",
+        "HL_TARGET":"host-x86-64-enable_ponds",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv3_x":{
+        "HALIDE_GEN_ARGS":"in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4",
+        "HL_TARGET":"host-x86-64-enable_ponds",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv4_1":{
+        "HALIDE_GEN_ARGS":"in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4",
+        "HL_TARGET":"host-x86-64-enable_ponds",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv4_x":{
+        "HALIDE_GEN_ARGS":"in_img=14 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4",
+        "HL_TARGET":"host-x86-64-enable_ponds",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv5_1":{
+        "HALIDE_GEN_ARGS":"in_img=14 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4",
+        "HL_TARGET":"host-x86-64-enable_ponds",
+        "PNR_PLACER_EXP":"1"
+    },
+    "conv5_x":{
+        "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4",
+        "HL_TARGET":"host-x86-64-enable_ponds",
+        "PNR_PLACER_EXP":"1"
+    }
+}

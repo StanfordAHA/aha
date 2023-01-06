@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+import json
 import subprocess
 import sys
 import os
@@ -29,6 +30,20 @@ def buildkite_call(command, env={}):
     )
 
 
+def load_environmental_vars():
+    env_vars = {"DISABLE_GP": "1"}
+
+    filename = os.path.realpath(os.path.dirname(__file__)) + "/regress_parameters.json"
+
+    if os.path.exists(filename):
+        fin = open(filename, 'r')
+        env_vars = json.load(fin)
+    else:
+        print(f"{filename} not found, using default environmental variables")
+
+    return env_vars
+
+
 def gen_garnet(width, height):
     print("--- Generating Garnet")
     start = time.time()
@@ -49,7 +64,7 @@ def gen_garnet(width, height):
     return time.time() - start
 
 
-def test_sparse_app(testname, width, height, test=""):
+def test_sparse_app(testname, width, height, test="", env_vars={}):
     if test == "":
         test = testname
 
@@ -64,9 +79,7 @@ def test_sparse_app(testname, width, height, test=""):
 
     print(f"--- {test} - mapping")
     start = time.time()
-    my_env = {}
-    my_env = {"DISABLE_GP": "1"}
-    my_env["PYTHONPATH"] = "/aha/garnet/"
+    env_vars["PYTHONPATH"] = "/aha/garnet/"
     buildkite_call(
         [
             "python",
@@ -86,20 +99,20 @@ def test_sparse_app(testname, width, height, test=""):
             "--width", str(width),
             "--height", str(height),
         ],
-        env=my_env,
+        env=env_vars,
     )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
     start = time.time()
     buildkite_call(
-        ["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname]
+        ["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
     )
     time_test = time.time() - start
 
     return 0, time_map, time_test
 
-def test_dense_app(testname, width, height, test=""):
+def test_dense_app(testname, width, height, test="", env_vars={}):
     if test == "":
         test = testname
 
@@ -114,13 +127,11 @@ def test_dense_app(testname, width, height, test=""):
         pass
 
     start = time.time()
-    buildkite_call(["aha", "halide", testname])
+    buildkite_call(["aha", "halide", testname], env=env_vars)
     time_compile = time.time() - start
 
     print(f"--- {test} - mapping")
     start = time.time()
-    my_env = {}
-    my_env = {"DISABLE_GP": "1"}
 
     buildkite_call(
         [
@@ -135,13 +146,13 @@ def test_dense_app(testname, width, height, test=""):
             "--sparse-cgra",
             "--sparse-cgra-combined",
         ],
-        env=my_env,
+        env=env_vars,
     )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
     start = time.time()
-    buildkite_call(["aha", "glb", testname])
+    buildkite_call(["aha", "glb", testname], env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -294,50 +305,18 @@ def dispatch(args, extra_args=None):
     t = gen_garnet(width, height)
     info.append(["garnet", t])
 
-    halide_gen_args = {}
-    halide_gen_args["apps/gaussian"] = "mywidth=62 myunroll=2 schedule=3"
-    halide_gen_args["apps/harris_color"] = "mywidth=62 myunroll=1 schedule=31"
-    halide_gen_args["apps/unsharp"] = "mywidth=62 myunroll=1 schedule=3"
-    halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
+    env_vars = load_environmental_vars()
 
     for test in sparse_tests:
-        t0, t1, t2 = test_sparse_app(test, width, height)
+        t0, t1, t2 = test_sparse_app(test, width, height, env_vars=env_vars.get(test, {}))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
+    
     for test in glb_tests:
-        if test in halide_gen_args:
-            os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
-        else:
-            os.environ["HALIDE_GEN_ARGS"] = ""
-        t0, t1, t2 = test_dense_app(test, width, height)
+        t0, t1, t2 = test_dense_app(test, width, height, env_vars=env_vars.get(test, {}))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        if test == "conv1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4"
-            os.environ["HL_TARGET"] = "host-x86-64"
-        elif test == "conv2_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv3_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv3_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv4_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv4_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv5_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv5_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=7 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, test)
+        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, test, env_vars=env_vars.get(test, {}))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
