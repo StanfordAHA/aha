@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 import copy
+import json
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
@@ -10,6 +11,7 @@ def add_subparser(subparser):
     parser.add_argument("--base", default=None, type=str)
     parser.add_argument("--no-parse", action="store_true")
     parser.add_argument("--log", action="store_true")
+    parser.add_argument("--env-parameters", default="", type=str)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -34,6 +36,26 @@ def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log"):
         )
 
 
+def load_environmental_vars(env, app, env_parameters=None):
+    filename = os.path.realpath(os.path.dirname(__file__)) + "/application_parameters.json"
+    new_env_vars = {}
+
+    if not os.path.exists(filename):
+        print(f"{filename} not found, using default environmental variables")
+    else:
+        fin = open(filename, 'r')
+        env_vars_fin = json.load(fin)
+        if str(app) in env_vars_fin:
+            if env_parameters is None or env_parameters not in env_vars_fin[str(app)]:
+                new_env_vars = env_vars_fin[str(app)]["default"]
+            else:
+                new_env_vars = env_vars_fin[str(app)][env_parameters]
+
+    for n, v in new_env_vars.items():
+        env[n] = v
+
+
+
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     env = copy.deepcopy(os.environ)
@@ -41,7 +63,9 @@ def dispatch(args, extra_args=None):
     env["COREIR_PATH"] = str(args.aha_dir / "coreir")
     env["LAKE_PATH"] = str(args.aha_dir / "lake")
     env["CLOCKWORK_PATH"] = str(args.aha_dir / "clockwork")
-    
+
+    load_environmental_vars(env, args.app, str(args.env_parameters))
+
     if args.base is None:
         app_dir = Path(
             f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
@@ -56,6 +80,7 @@ def dispatch(args, extra_args=None):
 
     log_path = app_dir / Path("log")
     log_file_path = log_path / Path("aha_pipeline.log")
+
     if args.log:
         subprocess.check_call(["mkdir", "-p", log_path])
         subprocess.check_call(["rm", "-f", log_file_path])
@@ -73,6 +98,11 @@ def dispatch(args, extra_args=None):
         str(app_dir / f"bin/{args.app.name}.bs"),
         "--gold-file",
         str(app_dir / f"bin/gold{ext}"),
+        "--input-broadcast-branch-factor", "2",
+        "--input-broadcast-max-leaves", "32",
+        "--rv",
+        "--sparse-cgra",
+        "--sparse-cgra-combined",
         "--pipeline-pnr"
     ]
 
@@ -80,7 +110,8 @@ def dispatch(args, extra_args=None):
         cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
         cwd=args.aha_dir / "garnet",
         log=args.log,
-        log_file_path=log_file_path
+        log_file_path=log_file_path,
+        env=env
     )
 
     subprocess_call_log (
@@ -102,6 +133,11 @@ def dispatch(args, extra_args=None):
         str(app_dir / f"bin/{args.app.name}.bs"),
         "--gold-file",
         str(app_dir / f"bin/gold{ext}"),
+        "--input-broadcast-branch-factor", "2",
+        "--input-broadcast-max-leaves", "32",
+        "--rv",
+        "--sparse-cgra",
+        "--sparse-cgra-combined",
         "--generate-bitstream-only"
     ]
 
@@ -109,7 +145,8 @@ def dispatch(args, extra_args=None):
         cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
         cwd=args.aha_dir / "garnet",
         log=args.log,
-        log_file_path=log_file_path
+        log_file_path=log_file_path,
+        env=env
     )
 
     # generate meta_data.json file
@@ -125,6 +162,7 @@ def dispatch(args, extra_args=None):
                  "--place", "bin/design.place"],
                 cwd=arg_path,
                 log=args.log,
-                log_file_path=log_file_path
+                log_file_path=log_file_path,
+                env=env
             )
 

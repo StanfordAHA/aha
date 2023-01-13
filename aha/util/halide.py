@@ -3,6 +3,7 @@ import os
 import shutil
 from pathlib import Path
 import subprocess
+import json
 
 
 def add_subparser(subparser):
@@ -11,6 +12,7 @@ def add_subparser(subparser):
     parser.add_argument("--sim", action='store_true')
     parser.add_argument("--log", action="store_true")
     parser.add_argument("--chain", action="store_true")
+    parser.add_argument("--env-parameters", default="", type=str)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -35,6 +37,25 @@ def subprocess_call_log(cmd, cwd, env, log, log_file_path):
         )
 
 
+def load_environmental_vars(env, app, env_parameters=None):
+    filename = os.path.realpath(os.path.dirname(__file__)) + "/application_parameters.json"
+    new_env_vars = {}
+
+    if not os.path.exists(filename):
+        print(f"{filename} not found, using default environmental variables")
+    else:
+        fin = open(filename, 'r')
+        env_vars_fin = json.load(fin)
+        if str(app) in env_vars_fin:
+            if env_parameters is None or env_parameters not in env_vars_fin[str(app)]:
+                new_env_vars = env_vars_fin[str(app)]["default"]
+            else:
+                new_env_vars = env_vars_fin[str(app)][env_parameters]
+
+    for n, v in new_env_vars.items():
+        env[n] = v
+
+
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     env = copy.deepcopy(os.environ)
@@ -46,6 +67,8 @@ def dispatch(args, extra_args=None):
     app_dir = halide_dir / Path("apps/hardware_benchmarks") / args.app
     env["LAKE_CONTROLLERS"] = str(app_dir / "bin")
     env["LAKE_STREAM"] = str(app_dir / "bin")
+
+    load_environmental_vars(env, args.app, str(args.env_parameters))
 
     app_name = args.app.name
     run_sim = args.sim

@@ -13,6 +13,7 @@ import tempfile
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("config")
+    parser.add_argument("--env-parameters", default="", type=str)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -28,20 +29,6 @@ def buildkite_call(command, env={}):
         text=True,
         env=env,
     )
-
-
-def load_environmental_vars():
-    env_vars = {"DISABLE_GP": "1"}
-
-    filename = os.path.realpath(os.path.dirname(__file__)) + "/regress_parameters.json"
-
-    if os.path.exists(filename):
-        fin = open(filename, 'r')
-        env_vars = json.load(fin)
-    else:
-        print(f"{filename} not found, using default environmental variables")
-
-    return env_vars
 
 
 def gen_garnet(width, height):
@@ -64,7 +51,7 @@ def gen_garnet(width, height):
     return time.time() - start
 
 
-def test_sparse_app(testname, width, height, test="", env_vars={}):
+def test_sparse_app(testname, width, height, test=""):
     if test == "":
         test = testname
 
@@ -79,7 +66,7 @@ def test_sparse_app(testname, width, height, test="", env_vars={}):
 
     print(f"--- {test} - mapping")
     start = time.time()
-    env_vars["PYTHONPATH"] = "/aha/garnet/"
+    env_vars = {"PYTHONPATH": "/aha/garnet/"}
     buildkite_call(
         [
             "python",
@@ -112,7 +99,7 @@ def test_sparse_app(testname, width, height, test="", env_vars={}):
 
     return 0, time_map, time_test
 
-def test_dense_app(testname, width, height, test="", env_vars={}):
+def test_dense_app(testname, width, height, test="", env_parameters=""):
     if test == "":
         test = testname
 
@@ -127,7 +114,7 @@ def test_dense_app(testname, width, height, test="", env_vars={}):
         pass
 
     start = time.time()
-    buildkite_call(["aha", "halide", testname], env=env_vars)
+    buildkite_call(["aha", "halide", testname, "--env-parameters", env_parameters])
     time_compile = time.time() - start
 
     print(f"--- {test} - mapping")
@@ -140,19 +127,14 @@ def test_dense_app(testname, width, height, test="", env_vars={}):
             testname,
             "--width", str(width),
             "--height", str(height),
-            "--input-broadcast-branch-factor", "2",
-            "--input-broadcast-max-leaves", "32",
-            "--rv",
-            "--sparse-cgra",
-            "--sparse-cgra-combined",
-        ],
-        env=env_vars,
+            "--env-parameters", env_parameters
+        ]
     )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
     start = time.time()
-    buildkite_call(["aha", "glb", testname], env=env_vars)
+    buildkite_call(["aha", "glb", testname])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -208,11 +190,12 @@ def dispatch(args, extra_args=None):
             "tensor3_ttv",
         ]
         glb_tests = [
-            "apps/pointwise",
             "apps/gaussian",
+            "apps/pointwise",
             "apps/unsharp",
             "apps/camera_pipeline_2x2",
             "apps/harris_color",
+            "apps/cascade",
             "tests/three_level_pond",
         ]
         resnet_tests = [
@@ -305,18 +288,16 @@ def dispatch(args, extra_args=None):
     t = gen_garnet(width, height)
     info.append(["garnet", t])
 
-    env_vars = load_environmental_vars()
+    # for test in sparse_tests:
+    #     t0, t1, t2 = test_sparse_app(test, width, height)
+    #     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    for test in sparse_tests:
-        t0, t1, t2 = test_sparse_app(test, width, height, env_vars=env_vars.get(test, {}))
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-    
     for test in glb_tests:
-        t0, t1, t2 = test_dense_app(test, width, height, env_vars=env_vars.get(test, {}))
+        t0, t1, t2 = test_dense_app(test, width, height, env_parameters=str(args.env_parameters))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, test, env_vars=env_vars.get(test, {}))
+        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, test, env_parameters=str(args.env_parameters))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
