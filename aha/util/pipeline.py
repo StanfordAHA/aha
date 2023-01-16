@@ -6,12 +6,13 @@ import copy
 import json
 
 def add_subparser(subparser):
-    parser = subparser.add_parser(Path(__file__).stem, add_help=False)
-    parser.add_argument("app")
-    parser.add_argument("--base", default=None, type=str)
-    parser.add_argument("--no-parse", action="store_true")
-    parser.add_argument("--log", action="store_true")
-    parser.add_argument("--env-parameters", default="", type=str)
+    parser = subparser.add_parser(Path(__file__).stem, description='AHA flow command for pipelining a mapped halide application, doing place and route, and generating a bitstream to configure the CGRA')
+    parser.add_argument("app", help="Required parameter specifying which halide application to compile")
+    parser.add_argument("--base", default=None, type=str, help="Optional parameter for specifying a base directory of an app")
+    parser.add_argument("--no-parse", action="store_true", help="Skips the parse_design_meta.py script")
+    parser.add_argument("--log", action="store_true", help="Creates a log for command output")
+    parser.add_argument("--layer", type=str, help="Specifies layer parameters if running 'aha pipeline apps/resnet_output_stationary', options for LAYER are in application_parameters.json")
+    parser.add_argument("--env-parameters", default="", type=str, help="Specifies which environmental parameters to use from application_parameters.json, options for ENV_PARAMETERS are in application_parameters.json")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -36,20 +37,27 @@ def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log"):
         )
 
 
-def load_environmental_vars(env, app, env_parameters=None):
+def load_environmental_vars(env, app, layer=None, env_parameters=None):
     filename = os.path.realpath(os.path.dirname(__file__)) + "/application_parameters.json"
     new_env_vars = {}
+    app_name = str(app) if layer is None else str(layer)
 
     if not os.path.exists(filename):
-        print(f"{filename} not found, using default environmental variables")
+        print(f"{filename} not found, not setting environmental variables")
     else:
         fin = open(filename, 'r')
         env_vars_fin = json.load(fin)
-        if str(app) in env_vars_fin:
-            if env_parameters is None or env_parameters not in env_vars_fin[str(app)]:
-                new_env_vars = env_vars_fin[str(app)]["default"]
+        if "global_parameters" in env_vars_fin:
+            if env_parameters is None or str(env_parameters) not in env_vars_fin["global_parameters"]:
+                new_env_vars.update(env_vars_fin["global_parameters"]["default"])
             else:
-                new_env_vars = env_vars_fin[str(app)][env_parameters]
+                new_env_vars.update(env_vars_fin["global_parameters"][str(env_parameters)])
+
+        if app_name in env_vars_fin:
+            if env_parameters is None or str(env_parameters) not in env_vars_fin[app_name]:
+                new_env_vars.update(env_vars_fin[app_name]["default"])
+            else:
+                new_env_vars.update(env_vars_fin[app_name][str(env_parameters)])
 
     for n, v in new_env_vars.items():
         env[n] = v
@@ -64,7 +72,7 @@ def dispatch(args, extra_args=None):
     env["LAKE_PATH"] = str(args.aha_dir / "lake")
     env["CLOCKWORK_PATH"] = str(args.aha_dir / "clockwork")
 
-    load_environmental_vars(env, args.app, str(args.env_parameters))
+    load_environmental_vars(env, args.app, layer=args.layer, env_parameters=args.env_parameters)
 
     if args.base is None:
         app_dir = Path(
