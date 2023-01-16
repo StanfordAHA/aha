@@ -62,6 +62,7 @@ RUN apt-get update && \
 SHELL ["/bin/bash", "--login", "-c"]
 
 # Pono
+COPY ./pono /aha/pono
 WORKDIR /aha/pono
 RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0
 RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh && pip install -e ./deps/smt-switch/build/python
