@@ -92,3 +92,6 @@
 [submodule "sam"]
 	path = sam
 	url = https://github.com/weiya711/sam.git
+[submodule "pono"]
+	path = pono
+	url = https://github.com/upscale-project/pono.git
