@@ -38,7 +38,8 @@ RUN apt-get update && \
         libncurses5 libxml2-dev \
         graphviz \
         xxd \
-        time \
+        time \ 
+        m4 \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
     ln -s /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.1 && \
@@ -59,6 +60,16 @@ RUN apt-get update && \
 
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
+
+# Pono
+COPY ./pono /aha/pono
+WORKDIR /aha/pono
+RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0
+RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh && pip install -e ./deps/smt-switch/build/python
+RUN ./configure.sh --python
+WORKDIR /aha/pono/build
+RUN make -j4 && pip install -e ./python
+WORKDIR /aha
 
 # CoreIR
 COPY ./coreir /aha/coreir
