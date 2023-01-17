@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+import json
 import subprocess
 import sys
 import os
@@ -12,6 +13,7 @@ import tempfile
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("config")
+    parser.add_argument("--env-parameters", default="", type=str)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -64,9 +66,7 @@ def test_sparse_app(testname, width, height, test=""):
 
     print(f"--- {test} - mapping")
     start = time.time()
-    my_env = {}
-    my_env = {"DISABLE_GP": "1"}
-    my_env["PYTHONPATH"] = "/aha/garnet/"
+    env_vars = {"PYTHONPATH": "/aha/garnet/"}
     buildkite_call(
         [
             "python",
@@ -86,27 +86,29 @@ def test_sparse_app(testname, width, height, test=""):
             "--width", str(width),
             "--height", str(height),
         ],
-        env=my_env,
+        env=env_vars,
     )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
     start = time.time()
     buildkite_call(
-        ["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname]
+        ["aha", "glb", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
     )
     time_test = time.time() - start
 
     return 0, time_map, time_test
 
-def test_dense_app(testname, width, height, test=""):
-    if test == "":
-        test = testname
-
+def test_dense_app(test, width, height, layer=None, env_parameters=""):
     print(f"--- {test}")
     print(f"--- {test} - compiling")
-    app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + testname
+    app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
     print(app_path)
+
+    if layer is not None:
+        layer_array = ["--layer", layer]
+    else:
+        layer_array = []
 
     try:
         subprocess.call(["make", "clean"], cwd=app_path)
@@ -114,34 +116,27 @@ def test_dense_app(testname, width, height, test=""):
         pass
 
     start = time.time()
-    buildkite_call(["aha", "halide", testname])
+    buildkite_call(["aha", "halide", test, "--env-parameters", env_parameters] + layer_array)
     time_compile = time.time() - start
 
     print(f"--- {test} - mapping")
     start = time.time()
-    my_env = {}
-    my_env = {"DISABLE_GP": "1"}
 
     buildkite_call(
         [
             "aha",
             "pipeline",
-            testname,
+            test,
             "--width", str(width),
             "--height", str(height),
-            "--input-broadcast-branch-factor", "2",
-            "--input-broadcast-max-leaves", "32",
-            "--rv",
-            "--sparse-cgra",
-            "--sparse-cgra-combined",
-        ],
-        env=my_env,
+            "--env-parameters", env_parameters
+        ] + layer_array
     )
     time_map = time.time() - start
 
     print(f"--- {test} - glb testing")
     start = time.time()
-    buildkite_call(["aha", "glb", testname])
+    buildkite_call(["aha", "glb", test])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -197,11 +192,12 @@ def dispatch(args, extra_args=None):
             "tensor3_ttv",
         ]
         glb_tests = [
-            "apps/pointwise",
             "apps/gaussian",
+            "apps/pointwise",
             "apps/unsharp",
             "apps/camera_pipeline_2x2",
             "apps/harris_color",
+            "apps/cascade",
             "tests/three_level_pond",
         ]
         resnet_tests = [
@@ -294,50 +290,16 @@ def dispatch(args, extra_args=None):
     t = gen_garnet(width, height)
     info.append(["garnet", t])
 
-    halide_gen_args = {}
-    halide_gen_args["apps/gaussian"] = "mywidth=62 myunroll=2 schedule=3"
-    halide_gen_args["apps/harris_color"] = "mywidth=62 myunroll=1 schedule=31"
-    halide_gen_args["apps/unsharp"] = "mywidth=62 myunroll=1 schedule=3"
-    halide_gen_args["apps/camera_pipeline_2x2"] = "schedule=3"
-
     for test in sparse_tests:
         t0, t1, t2 = test_sparse_app(test, width, height)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
-        if test in halide_gen_args:
-            os.environ["HALIDE_GEN_ARGS"] = halide_gen_args[test]
-        else:
-            os.environ["HALIDE_GEN_ARGS"] = ""
-        t0, t1, t2 = test_dense_app(test, width, height)
+        t0, t1, t2 = test_dense_app(test, width, height, env_parameters=str(args.env_parameters))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        if test == "conv1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4"
-            os.environ["HL_TARGET"] = "host-x86-64"
-        elif test == "conv2_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv3_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=56 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv3_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv4_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=28 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv4_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv5_1":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=14 pad=1 ksize=3 stride=2 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        elif test == "conv5_x":
-            os.environ["HALIDE_GEN_ARGS"] = "in_img=7 pad=1 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=8 glb_k=4 glb_o=4"
-            os.environ["HL_TARGET"] = "host-x86-64-enable_ponds"
-        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, test)
+        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, layer=test, env_parameters=str(args.env_parameters))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))

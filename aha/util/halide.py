@@ -3,14 +3,17 @@ import os
 import shutil
 from pathlib import Path
 import subprocess
+import json
 
 
 def add_subparser(subparser):
-    parser = subparser.add_parser(Path(__file__).stem)
-    parser.add_argument("app")
-    parser.add_argument("--sim", action='store_true')
-    parser.add_argument("--log", action="store_true")
-    parser.add_argument("--chain", action="store_true")
+    parser = subparser.add_parser(Path(__file__).stem, description='AHA flow command for doing C simulation of a halide application, scheduling the application using Clockwork, and mapping it to PE and MEM tiles')
+    parser.add_argument("app", help="Required parameter specifying which halide application to compile")
+    parser.add_argument("--sim", action='store_true', help="Additionally runs the clockwork verilator simulation")
+    parser.add_argument("--log", action="store_true", help="Creates a log for command output")
+    parser.add_argument("--chain", action="store_true", help="Uses a chain structure for arithmetic reduction operations rather than a tree structure")
+    parser.add_argument("--layer", type=str, help="Specifies layer parameters if running 'aha halide apps/resnet_output_stationary', options for LAYER are in application_parameters.json")
+    parser.add_argument("--env-parameters", type=str, help="Specifies which environmental parameters to use from application_parameters.json, options for ENV_PARAMETERS are in application_parameters.json")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -35,6 +38,32 @@ def subprocess_call_log(cmd, cwd, env, log, log_file_path):
         )
 
 
+def load_environmental_vars(env, app, layer=None, env_parameters=None):
+    filename = os.path.realpath(os.path.dirname(__file__)) + "/application_parameters.json"
+    new_env_vars = {}
+    app_name = str(app) if layer is None else str(layer)
+
+    if not os.path.exists(filename):
+        print(f"{filename} not found, not setting environmental variables")
+    else:
+        fin = open(filename, 'r')
+        env_vars_fin = json.load(fin)
+        if "global_parameters" in env_vars_fin:
+            if env_parameters is None or str(env_parameters) not in env_vars_fin["global_parameters"]:
+                new_env_vars.update(env_vars_fin["global_parameters"]["default"])
+            else:
+                new_env_vars.update(env_vars_fin["global_parameters"][str(env_parameters)])
+
+        if app_name in env_vars_fin:
+            if env_parameters is None or str(env_parameters) not in env_vars_fin[app_name]:
+                new_env_vars.update(env_vars_fin[app_name]["default"])
+            else:
+                new_env_vars.update(env_vars_fin[app_name][str(env_parameters)])
+
+    for n, v in new_env_vars.items():
+        env[n] = v
+
+
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     env = copy.deepcopy(os.environ)
@@ -46,6 +75,8 @@ def dispatch(args, extra_args=None):
     app_dir = halide_dir / Path("apps/hardware_benchmarks") / args.app
     env["LAKE_CONTROLLERS"] = str(app_dir / "bin")
     env["LAKE_STREAM"] = str(app_dir / "bin")
+
+    load_environmental_vars(env, args.app, layer=args.layer, env_parameters=args.env_parameters)
 
     app_name = args.app.name
     run_sim = args.sim
