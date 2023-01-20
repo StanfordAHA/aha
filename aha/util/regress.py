@@ -56,7 +56,7 @@ def test_sparse_app(testname, width, height, test=""):
         test = testname
 
     print(f"--- {test}")
-    app_path = f"../../../garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path)
 
     try:
