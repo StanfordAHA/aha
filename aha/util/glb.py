@@ -93,7 +93,7 @@ def dispatch(args, extra_args=None):
         sparse_comp = args.sparse_comparison
 
         if sparse_comp is None:
-            sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}/GLB_DIR/{testname}_combined_seed_0/"
+            sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0/"
 
         # This is where we do the fallback comparison...
         # First get gold matrix from the output...
