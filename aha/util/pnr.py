@@ -87,7 +87,7 @@ def dispatch(args, extra_args=None):
         ext = ".pgm"
 
     log_path = app_dir / Path("log")
-    log_file_path = log_path / Path("aha_pipeline.log")
+    log_file_path = log_path / Path("aha_pnr.log")
 
     if args.log:
         subprocess.check_call(["mkdir", "-p", log_path])
