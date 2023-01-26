@@ -7,7 +7,7 @@ import json
 
 
 def add_subparser(subparser):
-    parser = subparser.add_parser(Path(__file__).stem, description='AHA flow command for doing C simulation of a halide application, scheduling the application using Clockwork, and mapping it to PE and MEM tiles')
+    parser = subparser.add_parser(Path(__file__).stem, aliases=['halide'], description='AHA flow command for doing C simulation of a halide application, scheduling the application using Clockwork, and mapping it to PE and MEM tiles')
     parser.add_argument("app", help="Required parameter specifying which halide application to compile")
     parser.add_argument("--sim", action='store_true', help="Additionally runs the clockwork verilator simulation")
     parser.add_argument("--log", action="store_true", help="Creates a log for command output")

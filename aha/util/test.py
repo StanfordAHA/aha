@@ -6,7 +6,7 @@ import numpy
 
 
 def add_subparser(subparser):
-    parser = subparser.add_parser(Path(__file__).stem, add_help=False)
+    parser = subparser.add_parser(Path(__file__).stem, aliases=['glb'], add_help=False)
     parser.add_argument("app", nargs="+")
     parser.add_argument("--waveform", action="store_true")
     parser.add_argument("--waveform-glb", action="store_true")
