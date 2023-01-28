@@ -6,7 +6,7 @@ import copy
 import json
 
 def add_subparser(subparser):
-    parser = subparser.add_parser(Path(__file__).stem, description='AHA flow command for pipelining a mapped halide application, doing place and route, and generating a bitstream to configure the CGRA')
+    parser = subparser.add_parser(Path(__file__).stem, aliases=['pipeline'], description='AHA flow command for pipelining a mapped halide application, doing place and route, and generating a bitstream to configure the CGRA')
     parser.add_argument("app", help="Required parameter specifying which halide application to compile")
     parser.add_argument("--base", default=None, type=str, help="Optional parameter for specifying a base directory of an app")
     parser.add_argument("--no-parse", action="store_true", help="Skips the parse_design_meta.py script")
@@ -87,7 +87,7 @@ def dispatch(args, extra_args=None):
         ext = ".pgm"
 
     log_path = app_dir / Path("log")
-    log_file_path = log_path / Path("aha_pipeline.log")
+    log_file_path = log_path / Path("aha_pnr.log")
 
     if args.log:
         subprocess.check_call(["mkdir", "-p", log_path])
