@@ -29,4 +29,5 @@ setup(
     entry_points = {
         'console_scripts': ['aha=aha.aha:main'],
     },
+    py_modules=[],
 )
