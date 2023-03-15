@@ -1,18 +1,17 @@
 #!/bin/bash
 
+CMD=$0
 aha_branch=tmp-verify-submodule
 HELP="""
   DESCRIPTION
-    Uses a dummy aha branch "$aha_branch" to launch aha-flow 
-    CI tests on the given submodule and branch or hash.
-    Test progress can be monitored at 
+
+    Uses a dummy aha branch '"$aha_branch"' to launch aha-flow regressions
+    on the given submodule and branch/hash.
+
+    Test progress can be monitored online at 
     https://buildkite.com/stanford-aha/aha-flow/builds?branch=tmp-verify-submodule
 
   EXAMPLES
-    # Clone a local repo if don't have one yet
-    cd /nobackup/myname/github
-    git clone https://github.com/StanfordAHA/aha aha
-    cd aha-flow
 
     # Launch CI tests on the given submodule and branch or hash
     $CMD garnet spv-merge-to-spv-8
