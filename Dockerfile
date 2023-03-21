@@ -62,6 +62,7 @@ RUN apt-get update && \
 SHELL ["/bin/bash", "--login", "-c"]
 
 # Pono
+COPY . /aha
 COPY ./pono /aha/pono
 WORKDIR /aha/pono
 RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0
@@ -103,7 +104,6 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
     rm -rf lib/*
 
 # Install AHA Tools
-COPY . /aha
 WORKDIR /aha
 RUN python -m venv .
 
