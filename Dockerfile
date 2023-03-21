@@ -65,7 +65,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 COPY ./pono /aha/pono
 WORKDIR /aha/pono
 RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0
-RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh
+RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ../aha/bin/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh
 RUN ./configure.sh --python
 WORKDIR /aha/pono/build
 RUN make -j4 && pip install -e ./python
