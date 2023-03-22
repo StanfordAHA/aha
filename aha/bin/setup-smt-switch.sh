@@ -63,7 +63,6 @@ if [ ! -d "$DEPS/smt-switch" ]; then
     cd $DEPS
     git clone https://github.com/makaimann/smt-switch
     cd smt-switch
-    git checkout -f $SMT_SWITCH_VERSION
     ./contrib/setup-btor.sh
     ./contrib/setup-bitwuzla.sh
     if [ $cvc5_home = default ]; then
