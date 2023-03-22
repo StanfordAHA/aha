@@ -63,6 +63,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 # Pono
 COPY ./pono /aha/pono
+COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
 WORKDIR /aha/pono
 RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0
 RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh
