@@ -100,8 +100,9 @@ def test_sparse_app(testname, width, height, test=""):
     return 0, time_map, time_test
 
 def test_dense_app(test, width, height, layer=None, env_parameters=""):
-    print(f"--- {test}")
-    print(f"--- {test} - compiling")
+    testname = layer if layer is not None else test
+    print(f"--- {testname}")
+    print(f"--- {testname} - compiling and mapping")
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
     print(app_path)
 
@@ -116,10 +117,10 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
         pass
 
     start = time.time()
-    buildkite_call(["aha", "map", test, "--env-parameters", env_parameters] + layer_array)
+    buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array)
     time_compile = time.time() - start
 
-    print(f"--- {test} - mapping")
+    print(f"--- {testname} - pnr and pipelining")
     start = time.time()
 
     buildkite_call(
@@ -129,12 +130,12 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
             test,
             "--width", str(width),
             "--height", str(height),
-            "--env-parameters", env_parameters
+            "--env-parameters", env_parameters,
         ] + layer_array
     )
     time_map = time.time() - start
 
-    print(f"--- {test} - glb testing")
+    print(f"--- {testname} - glb testing")
     start = time.time()
     buildkite_call(["aha", "test", test])
     time_test = time.time() - start
