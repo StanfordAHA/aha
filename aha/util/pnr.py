@@ -6,7 +6,7 @@ import copy
 import json
 
 def add_subparser(subparser):
-    parser = subparser.add_parser(Path(__file__).stem, description='AHA flow command for pipelining a mapped halide application, doing place and route, and generating a bitstream to configure the CGRA')
+    parser = subparser.add_parser(Path(__file__).stem, aliases=['pipeline'], description='AHA flow command for pipelining a mapped halide application, doing place and route, and generating a bitstream to configure the CGRA')
     parser.add_argument("app", help="Required parameter specifying which halide application to compile")
     parser.add_argument("--base", default=None, type=str, help="Optional parameter for specifying a base directory of an app")
     parser.add_argument("--no-parse", action="store_true", help="Skips the parse_design_meta.py script")
@@ -87,7 +87,7 @@ def dispatch(args, extra_args=None):
         ext = ".pgm"
 
     log_path = app_dir / Path("log")
-    log_file_path = log_path / Path("aha_pipeline.log")
+    log_file_path = log_path / Path("aha_pnr.log")
 
     if args.log:
         subprocess.check_call(["mkdir", "-p", log_path])
@@ -121,42 +121,7 @@ def dispatch(args, extra_args=None):
         log_file_path=log_file_path,
         env=env
     )
-
-    subprocess_call_log (
-        cmd=["make", "-C", str(app_dir), "reschedule_mem"],
-        cwd=args.aha_dir / "Halide-to-Hardware",
-        env=env,
-        log=args.log,
-        log_file_path=log_file_path
-    )
-
-    map_args = [
-        "--no-pd",
-        "--interconnect-only",
-        "--input-app",
-        str(app_dir / "bin/design_top.json"),
-        "--input-file",
-        str(app_dir / f"bin/input{ext}"),
-        "--output-file",
-        str(app_dir / f"bin/{args.app.name}.bs"),
-        "--gold-file",
-        str(app_dir / f"bin/gold{ext}"),
-        "--input-broadcast-branch-factor", "2",
-        "--input-broadcast-max-leaves", "32",
-        "--rv",
-        "--sparse-cgra",
-        "--sparse-cgra-combined",
-        "--generate-bitstream-only"
-    ]
-
-    subprocess_call_log (
-        cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
-        cwd=args.aha_dir / "garnet",
-        log=args.log,
-        log_file_path=log_file_path,
-        env=env
-    )
-
+    
     # generate meta_data.json file
     if not args.no_parse:
         if not str(args.app).startswith("handcrafted"):

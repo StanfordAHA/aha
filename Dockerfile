@@ -63,9 +63,10 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 # Pono
 COPY ./pono /aha/pono
+COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
 WORKDIR /aha/pono
 RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0
-RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh && pip install -e ./deps/smt-switch/build/python
+RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh
 RUN ./configure.sh --python
 WORKDIR /aha/pono/build
 RUN make -j4 && pip install -e ./python
@@ -113,7 +114,7 @@ RUN make sam
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 WORKDIR /aha
-RUN source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && aha deps install
+RUN source bin/activate && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && pip install -e ./pono/deps/smt-switch/build/python && pip install -e pono/build/python/ && aha deps install
 
 WORKDIR /aha
 
