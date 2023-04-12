@@ -100,7 +100,7 @@ def test_sparse_app(testname, width, height, test=""):
     return 0, time_map, time_test
 
 def test_dense_app(test, width, height, layer=None, env_parameters=""):
-    testname = test
+    testname = layer if layer is not None else test
     print(f"--- {testname}")
     print(f"--- {testname} - compiling and mapping")
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
