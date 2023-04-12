@@ -72,7 +72,7 @@ def test_sparse_app(testname, width, height, test=""):
             "python",
             "/aha/garnet/tests/test_memory_core/build_tb.py",
             "--ic_fork",
-            "--sam_graph", f"/aha/sam/compiler/sam-outputs/dot/{testname}.gv",
+            "--sam_graph", f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv",
             "--seed", f"{0}",
             "--dump_bitstream",
             "--add_pond",
