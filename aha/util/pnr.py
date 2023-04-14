@@ -107,7 +107,7 @@ def dispatch(args, extra_args=None):
         "--gold-file",
         str(app_dir / f"bin/gold{ext}"),
         "--input-broadcast-branch-factor", "2",
-        "--input-broadcast-max-leaves", "32",
+        "--input-broadcast-max-leaves", "16",
         "--rv",
         "--sparse-cgra",
         "--sparse-cgra-combined",
