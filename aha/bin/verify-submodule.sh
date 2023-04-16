@@ -46,9 +46,19 @@ echo "--- Use aha branch $aha_branch to launch the regression"
 # Build the verification branch if it does not yet exist
 if ! git checkout $aha_branch; then
     echo "WARNING: Looks like branch $aha_branch does not exist yet; I will create it for you"
-    git checkout master; git pull
+    # Err out if e.g. current branch has uncommited changes
+    set -x
+    git checkout master || exit 13
+    git pull
     git checkout -b $aha_branch
+    set +x
 fi
+
+# Update to the latest master
+set -x
+git fetch origin
+git merge --no-edit origin/master
+set +x
 
 # Clear out all the (existing) submodules (why?)
 git submodule deinit -f --all
