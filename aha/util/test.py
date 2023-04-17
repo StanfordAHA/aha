@@ -14,6 +14,7 @@ def add_subparser(subparser):
     parser.add_argument("--log", action="store_true")
     parser.add_argument("--sparse", action="store_true")
     parser.add_argument("--sparse-test-name", type=str, default=None)
+    parser.add_argument("--sparse-comparison", type=str, default=None)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -89,11 +90,16 @@ def dispatch(args, extra_args=None):
         from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
         testname = args.sparse_test_name
 
+        sparse_comp = args.sparse_comparison
+
+        if sparse_comp is None:
+            sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0/"
+
         # This is where we do the fallback comparison...
         # First get gold matrix from the output...
-        gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0/output_gold.npy")
+        gold_matrix = numpy.load(f"{sparse_comp}/output_gold.npy")
         name_line = None
-        with open(f"/aha/garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0/output_name.txt") as output_name_h_:
+        with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
             name_line = output_name_h_.readlines()[0].strip()
         output_name = name_line
         assert output_name is not None

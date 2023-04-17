@@ -56,7 +56,7 @@ def test_sparse_app(testname, width, height, test=""):
         test = testname
 
     print(f"--- {test}")
-    app_path = f"../../../garnet/SPARSE_TESTS/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path)
 
     try:
@@ -72,7 +72,7 @@ def test_sparse_app(testname, width, height, test=""):
             "python",
             "/aha/garnet/tests/test_memory_core/build_tb.py",
             "--ic_fork",
-            "--sam_graph", f"/aha/sam/compiler/sam-outputs/dot/{testname}.gv",
+            "--sam_graph", f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv",
             "--seed", f"{0}",
             "--dump_bitstream",
             "--add_pond",
@@ -83,6 +83,9 @@ def test_sparse_app(testname, width, height, test=""):
             "--just_glb",
             "--dump_glb",
             "--fiber_access",
+            #"--give_tensor",
+            #"--tensor_locs",
+            #"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
             "--width", str(width),
             "--height", str(height),
         ],
