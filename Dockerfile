@@ -114,7 +114,7 @@ RUN make sam
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 WORKDIR /aha
-RUN source bin/activate && pip install urllib3==1.27 && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && pip install -e ./pono/deps/smt-switch/build/python && pip install -e pono/build/python/ && aha deps install
+RUN source bin/activate && pip install urllib3==1.26.15 && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && pip install -e ./pono/deps/smt-switch/build/python && pip install -e pono/build/python/ && aha deps install
 
 WORKDIR /aha
 
