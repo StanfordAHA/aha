@@ -56,7 +56,7 @@ def test_sparse_app(testname, width, height, test=""):
         test = testname
 
     print(f"--- {test}")
-    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_tile0/GLB_DIR/{testname}_combined_seed_tile0"
     print(app_path)
 
     try:
@@ -83,9 +83,9 @@ def test_sparse_app(testname, width, height, test=""):
             "--just_glb",
             "--dump_glb",
             "--fiber_access",
-            #"--give_tensor",
-            #"--tensor_locs",
-            #"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
+            "--give_tensor",
+            "--tensor_locs",
+            "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
             "--width", str(width),
             "--height", str(height),
         ],
@@ -149,12 +149,13 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 def dispatch(args, extra_args=None):
     sparse_tests = []
     if args.config == "fast":
-        width, height = 4, 4
+        width, height = 32, 16
         sparse_tests = [
-            "vec_identity"
+            #"vec_identity"
+            "matmul_ijk",
         ]
         glb_tests = [
-            "apps/pointwise"
+            #"apps/pointwise"
         ]
         resnet_tests = []
     elif args.config == "pr":
