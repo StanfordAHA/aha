@@ -56,7 +56,7 @@ def test_sparse_app(testname, width, height, test=""):
         test = testname
 
     print(f"--- {test}")
-    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_5/GLB_DIR/{testname}_combined_seed_5"
     print(app_path)
 
     try:
@@ -73,7 +73,8 @@ def test_sparse_app(testname, width, height, test=""):
             "/aha/garnet/tests/test_memory_core/build_tb.py",
             "--ic_fork",
             "--sam_graph", f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv",
-            "--seed", f"{0}",
+            "--seed", f"{5}",
+            #"--seed", f"{0}",
             "--dump_bitstream",
             "--add_pond",
             "--combined",
@@ -83,6 +84,8 @@ def test_sparse_app(testname, width, height, test=""):
             "--just_glb",
             "--dump_glb",
             "--fiber_access",
+            "--unroll",
+            "4",
             #"--give_tensor",
             #"--tensor_locs",
             #"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
@@ -96,7 +99,7 @@ def test_sparse_app(testname, width, height, test=""):
     print(f"--- {test} - glb testing")
     start = time.time()
     buildkite_call(
-        ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
+        ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname, "--waveform"], env=env_vars,
     )
     time_test = time.time() - start
 
@@ -149,12 +152,13 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 def dispatch(args, extra_args=None):
     sparse_tests = []
     if args.config == "fast":
-        width, height = 4, 4
+        width, height = 32, 16
         sparse_tests = [
-            "vec_identity"
+            "matmul_ijk",
+            #"vec_identity"
         ]
         glb_tests = [
-            "apps/pointwise"
+            #"apps/pointwise"
         ]
         resnet_tests = []
     elif args.config == "pr":

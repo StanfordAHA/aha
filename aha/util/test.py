@@ -93,34 +93,38 @@ def dispatch(args, extra_args=None):
         sparse_comp = args.sparse_comparison
 
         if sparse_comp is None:
-            sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0/"
+            sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}_5/GLB_DIR/{testname}_combined_seed_5/"
 
-        # This is where we do the fallback comparison...
-        # First get gold matrix from the output...
-        gold_matrix = numpy.load(f"{sparse_comp}/output_gold.npy")
-        name_line = None
-        with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
-            name_line = output_name_h_.readlines()[0].strip()
-        output_name = name_line
-        assert output_name is not None
+        outputs = ["0", "1", "2", "3"]
+        for output in outputs:
+            # This is where we do the fallback comparison...
+            # First get gold matrix from the output...
+            gold_matrix = numpy.load(f"{sparse_comp}/output_gold_{output}.npy")
+            name_line = None
+            with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
+                name_line = output_name_h_.readlines()[0].strip()
+            output_name = name_line
+            assert output_name is not None
 
-        # Find the output files...
-        all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
-        just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
-        for file__ in just_out_files_sim:
-            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/")
-        sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
-                                            format="CSF",
-                                            shape=gold_matrix.shape, base=16, early_terminate='x')
-        sim_matrix_np = sim_matrix.get_matrix()
+            # Find the output files...
+            all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
+            just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
+            print(just_out_files_sim)
+            for file__ in just_out_files_sim:
+                convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", suffix=f"_{output}")
+            sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                                format="CSF",
+                                                shape=gold_matrix.shape, base=16, early_terminate='x',
+                                                suffix=f"_{output}")
+            sim_matrix_np = sim_matrix.get_matrix()
 
-        print(f"GOLD")
-        gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
-        print(gold_matrix)
-        print(f"SIM")
-        sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
-        print(sim_matrix)
-        assert numpy.array_equal(gold_matrix, sim_matrix_np)
+            print(f"GOLD")
+            gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+            print(gold_matrix)
+            print(f"SIM")
+            sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
+            print(sim_matrix)
+            assert numpy.array_equal(gold_matrix, sim_matrix_np)
     else:
 
         if args.run:
