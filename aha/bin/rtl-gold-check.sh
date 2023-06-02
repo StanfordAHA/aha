@@ -64,7 +64,7 @@ if [ 1 ]; then
 
     # Update docker to match necessary amber environment
     $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
-    source tmp-amber-updates.sh
+    bash -c 'set -x; tmp-amber-updates.sh'
 fi
 
     ########################################################################
@@ -115,7 +115,8 @@ echo "+++ Compare result to reference build"
 # Reference designs are gzipped to save space
 ref=garnet-4x2.v
 test -f $ref && rm $ref
-cp $scriptdir/ref/$ref.gz .; gunzip $ref.gz
+cp $scriptdir/ref/$ref.gz . || exit 13
+gunzip $ref.gz
 f1=design.v; f2=$ref
 
 # Need 'sed s/unq...' to handle the case where both designs are
