@@ -27,6 +27,17 @@ EXAMPLE
 [ "$1" == "--help" ] && echo "$HELP" && exit
 
 
+# E.g. if script is "$GARNET_HOME/tests/test_amber_rtl_build/amber-rtl-build-check.sh"
+# then scriptdir is "$GARNET_HOME/tests/test_amber_rtl_build"
+scriptpath=$0
+scriptpath=`readlink $scriptpath || echo $scriptpath`  # Full path of script dir
+scriptdir=${scriptpath%/*}  # E.g. "build_tarfile.sh" or "foo/bar"
+
+# Assumes script home is e.g. $AHA_REPO/aha/bin/
+
+export GARNET_HOME=`cd $scriptdir/../../garnet; pwd`
+echo "--- Found GARNET_HOME=$GARNET_HOME"
+
 ##############################################################################
 # Work in a safe space I guess?
 mkdir -p tmp-rtl-gold-check
@@ -42,11 +53,8 @@ cd       tmp-rtl-gold-check
 width=4     # quick 4x2
 height=$((width/2))
 
-# E.g. if script is "$GARNET_HOME/tests/test_amber_rtl_build/amber-rtl-build-check.sh"
-# then scriptdir is "$GARNET_HOME/tests/test_amber_rtl_build"
-scriptpath=$0
-scriptpath=`readlink $scriptpath || echo $scriptpath`  # Full path of script dir
-scriptdir=${scriptpath%/*}  # E.g. "build_tarfile.sh" or "foo/bar"
+
+
 
 echo '--- RTL test BEGIN' `date`
 
@@ -73,11 +81,6 @@ export WHICH_SOC=amber
 
     export save_verilog_to_tmpdir=False
     export rtl_docker_image=default
-
-    # Assumes script home is e.g. $AHA_REPO/aha/bin/
-
-    export GARNET_HOME=`cd $scriptdir/../../garnet; pwd`
-    echo "--- Found GARNET_HOME=$GARNET_HOME"
 
     # (gen_rtl.sh copies final design.v to "./outputs" subdirectory)
 
