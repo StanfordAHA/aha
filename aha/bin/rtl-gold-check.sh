@@ -10,8 +10,8 @@
 ########################################################################
 # --help switch
 
-cmd=$0
 cmd=rtl-gold-check.sh
+cmd=$0
 
 HELP="
 DESCRIPTION: Builds RTL for a 4x2 amber grid, compares to reference build.
@@ -29,8 +29,8 @@ EXAMPLE
 
 ##############################################################################
 # Work in a safe space I guess?
-mkdir tmp-rtl-gold-check
-cd    tmp-rtl-gold-check
+mkdir -p tmp-rtl-gold-check
+cd       tmp-rtl-gold-check
 
 
 ########################################################################
