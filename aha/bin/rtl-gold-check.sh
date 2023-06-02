@@ -115,7 +115,11 @@ echo "+++ Compare result to reference build"
 # Reference designs are gzipped to save space
 ref=garnet-4x2.v
 test -f $ref && rm $ref
-cp $scriptdir/ref/$ref.gz . || exit 13
+
+# I guess the most recent cd left us in "/aha/garnet" :(
+
+refdir=../aha/bin/ref
+cp $refdir/$ref.gz . || exit 13
 gunzip $ref.gz
 f1=design.v; f2=$ref
 
