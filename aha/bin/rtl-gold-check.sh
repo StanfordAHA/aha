@@ -38,10 +38,10 @@ scriptdir=${scriptpath%/*}  # E.g. "build_tarfile.sh" or "foo/bar"
 export GARNET_HOME=`cd $scriptdir/../../garnet; pwd`
 echo "--- Found GARNET_HOME=$GARNET_HOME"
 
-##############################################################################
-# Work in a safe space I guess?
-mkdir -p tmp-rtl-gold-check
-cd       tmp-rtl-gold-check
+# ##############################################################################
+# # Work in a safe space I guess? => NO it just does a 'cd /aha' later :(
+# mkdir -p tmp-rtl-gold-check
+# cd       tmp-rtl-gold-check
 
 
 ########################################################################
@@ -61,33 +61,55 @@ echo '--- RTL test BEGIN' `date`
 # Default (for now)
 export WHICH_SOC=amber
 
-[ "$1" == "--amber" ] && export WHICH_SOC=amber
+if [ "$1" == "--amber" ]; then
+    export WHICH_SOC=amber
 
-    # Use garnet's "gen_rtl.sh" to build a docker environment and use that to build the RTL
+    # Update docker to match necessary amber environment
+    $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
+    source tmp-amber-updates.sh
+fi
 
-    export array_width=$width
-    export array_height=$height
-    export glb_tile_mem_size=256
-    export num_glb_tiles=16
-    export pipeline_config_interval=8
-    export interconnect_only=False
-    export glb_only=False
-    export soc_only=False
-    export PWR_AWARE=True
-    export use_container=True
+    ########################################################################
+    ########################################################################
+    ########################################################################
 
-    # export use_local_garnet=True
-    export use_local_garnet=False # for now
+    # FIXME should really use garnet's gen_rtl.sh to generate the RTL
+    # This would require some kind of --no-docker flag for gen_rtl.sh or some such...
 
-    export save_verilog_to_tmpdir=False
-    export rtl_docker_image=default
+    # RTL-build flags
+    flags="--width $width --height $((width/2)) --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
+    echo "FLAGS: $flags"
 
-    # (gen_rtl.sh copies final design.v to "./outputs" subdirectory)
+    # FIXME this makes a big mess in top-level dir /aha
+    # Why not build in a subdir e.g. tmp-rtl-gold-check? (Would probably break a lot of things.)
 
-    mkdir -p outputs
-    $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh
-    # mv outputs/design.v .
+    # Prep/clean
+    cd /aha
+    rm -rf garnet/genesis_verif
+    rm -f  garnet/garnet.v
 
+    # Build new rtl
+    export WHICH_SOC='amber'
+    source /aha/bin/activate; # Set up the build environment
+    aha garnet $flags
+
+    # Assemble final design.v
+    cd /aha/garnet
+    cp garnet.v genesis_verif/garnet.v
+    cat genesis_verif/* > design.v
+    cat global_buffer/systemRDL/output/glb_pio.sv >> design.v
+    cat global_buffer/systemRDL/output/glb_jrdl_decode.sv >> design.v
+    cat global_buffer/systemRDL/output/glb_jrdl_logic.sv >> design.v
+    cat global_controller/systemRDL/output/*.sv >> design.v
+
+    # For better or worse: I put this in gen_rtl.sh
+    # Hack it up! FIXME should use same mechanism as onyx...define AO/AN_CELL
+    # Also see: garnet/mflowgen/common/rtl/gen_rtl.sh, gemstone/tests/common/rtl/{AN_CELL.sv,AO_CELL.sv}
+    cat design.v \
+        | sed 's/AN_CELL inst/AN2D0BWP16P90 inst/' \
+        | sed 's/AO_CELL inst/AO22D0BWP16P90 inst/' \
+              > /tmp/tmp.v
+    mv -f /tmp/tmp.v design.v
 
 printf "\n"
 echo "+++ Compare result to reference build"
@@ -96,7 +118,7 @@ echo "+++ Compare result to reference build"
 ref=garnet-4x2.v
 test -f $ref && rm $ref
 cp $scriptdir/ref/$ref.gz .; gunzip $ref.gz
-f1=outputs/design.v; f2=$ref
+f1=design.v; f2=$ref
 
 # Need 'sed s/unq...' to handle the case where both designs are
 # exactly the same but different "unq" suffixes e.g.
