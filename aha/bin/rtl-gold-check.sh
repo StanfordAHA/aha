@@ -58,10 +58,8 @@ height=$((width/2))
 
 echo '--- RTL test BEGIN' `date`
 
-# Default (for now)
-export WHICH_SOC=amber
-
-if [ "$1" == "--amber" ]; then
+# if [ "$1" == "--amber" ]; then
+if [ 1 ]; then
     export WHICH_SOC=amber
 
     # Update docker to match necessary amber environment
