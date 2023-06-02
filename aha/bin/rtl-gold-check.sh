@@ -1,8 +1,7 @@
 #!/bin/bash
 
 ########################################################################
-# TODO
-# - copy refs to 
+# TODO want option to run 32x16 run maybe?
 # - --4x2 or something maybe
 # - or maybe "rtl-gold-check <amber|onyx> <--4x2 | --32x16>"
 
@@ -10,62 +9,53 @@
 ########################################################################
 # --help switch
 
-cmd=rtl-gold-check.sh
 cmd=$0
 
 HELP="
 DESCRIPTION: Builds RTL for a 4x2 amber grid, compares to reference build.
 
 USAGE (default is "--local"):
-   $cmd --amber  # Build and compare amber RTL
-   $cmd --onyx   # Build and compare onyx RTL
+   $cmd amber  # Build and compare amber RTL
+   $cmd onyx   # Build and compare onyx RTL
 
 EXAMPLE
-   $cmd --amber && echo PASS || echo FAIL
+   $cmd amber && echo PASS || echo FAIL
 
 "
 [ "$1" == "--help" ] && echo "$HELP" && exit
 
+########################################################################
+# Pretty sure this only works inside a docker container :(
+if ! test -e aha; then
+  echo 'ERROR cannot find root directory "/aha"'
+  echo 'Must be inside aha docker container for script to work'
+  exit 13
+fi
 
-# E.g. if script is "$GARNET_HOME/tests/test_amber_rtl_build/amber-rtl-build-check.sh"
-# then scriptdir is "$GARNET_HOME/tests/test_amber_rtl_build"
-scriptpath=$0
-scriptpath=`readlink $scriptpath || echo $scriptpath`  # Full path of script dir
-scriptdir=${scriptpath%/*}  # E.g. "build_tarfile.sh" or "foo/bar"
-
-# Assumes script home is e.g. $AHA_REPO/aha/bin/
-
-export GARNET_HOME=`cd $scriptdir/../../garnet; pwd`
+# export GARNET_HOME=`cd $scriptdir/../../garnet; pwd`
+export GARNET_HOME=/aha/garnet
 echo "--- Found GARNET_HOME=$GARNET_HOME"
+
 
 # ##############################################################################
 # # Work in a safe space I guess? => NO it just does a 'cd /aha' later :(
-# mkdir -p tmp-rtl-gold-check
-# cd       tmp-rtl-gold-check
+# mkdir -p tmp-rtl-gold-check; cd       tmp-rtl-gold-check
 
-
-########################################################################
-# Always debug (for now). Later maybe:
-# Use "-v" as first arg if want extra debug info
-# [ "$1" == "-v" ] && shift && set -x
 
 # width=32  # slow 32x16
 width=4     # quick 4x2
 height=$((width/2))
 
-
-
-
-echo '--- RTL test BEGIN' `date`
-
-# if [ "$1" == "--amber" ]; then
-if [ 1 ]; then
+# amber or onyx?
+if [ "$1" == "amber" ]; then
     export WHICH_SOC=amber
 
     # Update docker to match necessary amber environment
     $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
     bash -c 'set -x; tmp-amber-updates.sh'
 fi
+
+echo '--- RTL test BEGIN ($1)' `date`
 
     ########################################################################
     ########################################################################
@@ -149,6 +139,3 @@ if [ "$ndiffs" != "0" ]; then
 fi
 
 echo "Test PASSED"
-
-
-
