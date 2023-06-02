@@ -1,5 +1,28 @@
 #!/bin/bash
 
+sq="'" # Handle for single-quote character
+HELP='
+DESCRIPTION:
+  Tells how far each submodule is from its respective master.
+  Must be run from aha repo root.
+
+EXAMPLE:
+  % cd $AHA_REPO; aha/bin/aha-fresh.sh
+
+  # Legend: Distance "n (a,b)" means submodule is <a> commits
+  # ahead and <b> commits behind the submodule'$sq's master branch.
+
+  lake                 5369a4c    356 (a0,b356)       StanfordAHA/lake
+  clockwork            544e1de    316 (a0,b316)       dillonhuff/clockwork
+  magma                266aaee    259 (a259,b0)       phanrahan/magma
+  ...
+  garnet               c22e8a4      0 (a0,b0)         stanfordaha/garnet
+  cosa                 141be4b      0 (a0,b0)         cristian-mattarei/cosa
+  BufferMapping        8ef4117      0 (a0,b0)         joyliu37/BufferMapping
+'
+[ "$1" == "--help" ] && echo "$HELP" && exit
+
+
 DBG=notnull   # debug
 DBG=''        # no debug
 
