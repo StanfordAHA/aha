@@ -46,6 +46,12 @@ echo "--- Found GARNET_HOME=$GARNET_HOME"
 width=4     # quick 4x2
 height=$((width/2))
 
+# FIXME should really use garnet's gen_rtl.sh to generate the RTL and flags etc.
+# This would require some kind of --no-docker flag for gen_rtl.sh or some such...
+
+# RTL-build flags
+flags="--width $width --height $height --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
+
 # amber or onyx?
 if [ "$1" == "amber" ]; then
     export WHICH_SOC=amber
@@ -56,23 +62,21 @@ if [ "$1" == "amber" ]; then
 
     ref=garnet-4x2.v
 elif [ "$1" == "onyx" ]; then
+    export WHICH_SOC=onyx
     ref=onyx-4x2.v
+    flags="$flags --rv --sparse-cgra --sparse-cgra-combined"
+
 else
     echo "$HELP" && exit 13
 fi
 
 echo '--- RTL test BEGIN ($1)' `date`
+echo "FLAGS: $flags"
+
 
     ########################################################################
     ########################################################################
     ########################################################################
-
-    # FIXME should really use garnet's gen_rtl.sh to generate the RTL
-    # This would require some kind of --no-docker flag for gen_rtl.sh or some such...
-
-    # RTL-build flags
-    flags="--width $width --height $((width/2)) --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
-    echo "FLAGS: $flags"
 
     # FIXME this makes a big mess in top-level dir /aha
     # Why not build in a subdir e.g. tmp-rtl-gold-check? (Would probably break a lot of things.)
@@ -83,7 +87,6 @@ echo '--- RTL test BEGIN ($1)' `date`
     rm -f  garnet/garnet.v
 
     # Build new rtl
-    export WHICH_SOC='amber'
     source /aha/bin/activate; # Set up the build environment
     aha garnet $flags
 
