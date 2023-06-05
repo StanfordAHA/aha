@@ -53,6 +53,12 @@ if [ "$1" == "amber" ]; then
     # Update docker to match necessary amber environment
     $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
     bash -c 'set -x; tmp-amber-updates.sh'
+
+    ref=garnet-4x2.v
+elif [ "$1" == "onyx" ]; then
+    ref=onyx-4x2.v
+else
+    echo "$HELP" && exit 13
 fi
 
 echo '--- RTL test BEGIN ($1)' `date`
@@ -103,7 +109,6 @@ printf "\n"
 echo "+++ Compare result to reference build"
 
 # Reference designs are gzipped to save space
-ref=garnet-4x2.v
 test -f $ref && rm $ref
 
 # I guess the most recent cd left us in "/aha/garnet" :(
