@@ -125,8 +125,19 @@ f1=design.v; f2=$ref
 # exactly the same but different "unq" suffixes e.g.
 #     < Register_unq3 Register_inst0 (
 #     > Register_unq2 Register_inst0 (
-function vcompare { sort $1 | sed 's/,$//' | sed 's/unq[0-9*]/unq/' | sed '/^\s*$/d'; }
+#
+# Need 's/_O._value_O/...' because generator seems to randomly assign
+# the equivalent values 'PE_onyx_inst_onyxpeintf_O3_value_O' and '...O4_value_O' :(
 
+function vcompare {
+         cat $1 |
+         sed 's/_O._value_O/_Ox_value_O/g' | # Treat all zeroes as equivalent
+         sed 's/,$//'           | # No trailing commas
+         sed 's/unq[0-9*]/unq/' | # Canonicalize unq's
+         sed '/^\s*$/d'         | # No blank lines
+         sort                   | # Out-of-order is okay
+         cat
+}
 printf "\n"
 echo "Comparing `vcompare $f1 | wc -l` lines of $f1"
 echo "versus    `vcompare $f2 | wc -l` lines of $f2"
