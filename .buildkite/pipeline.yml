@@ -61,6 +61,27 @@ steps:
   agents:
     docker: true
 
+- label: ":hammer: Integration Tests"
+  key: "integration-tests"
+  depends_on: "docker-build"
+  commands:
+  - /aha/aha/bin/rtl-goldcheck.sh amber
+  plugins:
+    - docker#v3.2.0:
+        image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
+        volumes:
+          - "/cad/:/cad"
+          - "./temp:/buildkite:rw"
+        mount-checkout: false
+        propagate-environment: true
+        environment:
+          - CONFIG
+          - FLOW_REPO
+        shell: ["/bin/bash", "-e", "-c"]
+  agents:
+    docker: true
+
+
 - label: ":skull_and_crossbones: Delete Docker Image"
   depends_on: "integration-tests"
   commands:
