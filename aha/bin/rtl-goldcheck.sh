@@ -53,7 +53,7 @@ flags="--width $width --height $height --pipeline_config_interval 8 -v --glb_til
 if [ "$1" == "amber" ]; then
     # Update docker to match necessary amber environment
     $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
-    bash -c 'set -x; tmp-amber-updates.sh'
+    bash -c 'set -x; source tmp-amber-updates.sh'
 fi
 
 # amber or onyx?
