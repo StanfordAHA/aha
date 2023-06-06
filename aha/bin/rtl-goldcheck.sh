@@ -49,21 +49,18 @@ height=$((width/2))
 # RTL-build flags
 flags="--width $width --height $height --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
 
+export WHICH_SOC=$1
+ref=$1-4x2.v
+
 # Amber needs a slightly different versions for some of the submodules
+# Onyx needs extra gen flags
+
 if [ "$1" == "amber" ]; then
     # Update docker to match necessary amber environment
     $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
     bash -c 'set -x; source tmp-amber-updates.sh'
-fi
-
-# amber or onyx?
-if [ "$1" == "amber" ]; then
-    export WHICH_SOC=amber
-    ref=garnet-4x2.v
 
 elif [ "$1" == "onyx" ]; then
-    export WHICH_SOC=onyx
-    ref=onyx-4x2.v
     flags="$flags --rv --sparse-cgra --sparse-cgra-combined"
 
 else echo "$HELP" && exit 13; fi
