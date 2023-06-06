@@ -12,11 +12,11 @@
 cmd=$0
 
 HELP="
-DESCRIPTION: Builds RTL for a 4x2 amber grid, compares to reference build.
+DESCRIPTION: Builds RTL for a 4x2 amber or onyx SoC, compares to reference build.
 
-USAGE (default is "--local"):
-   $cmd amber  # Build and compare amber RTL
-   $cmd onyx   # Build and compare onyx RTL
+USAGE:
+   $cmd amber      # Build and compare amber RTL
+   $cmd onyx       # Build and compare onyx RTL
 
 EXAMPLE
    $cmd amber && echo PASS || echo FAIL
@@ -25,22 +25,19 @@ EXAMPLE
 [ "$1" == "--help" ] && echo "$HELP" && exit
 
 ########################################################################
-# Pretty sure this only works inside a docker container :(
+# Script is designed to work from inside a docker container
+
 if ! test -e aha; then
   echo 'ERROR cannot find root directory "/aha"'
   echo 'Must be inside aha docker container for script to work'
   exit 13
 fi
 
-# export GARNET_HOME=`cd $scriptdir/../../garnet; pwd`
 export GARNET_HOME=/aha/garnet
 echo "--- Found GARNET_HOME=$GARNET_HOME"
 
-
-# ##############################################################################
-# # Work in a safe space I guess? => NO it just does a 'cd /aha' later :(
-# mkdir -p tmp-rtl-gold-check; cd       tmp-rtl-gold-check
-
+########################################################################
+# Assemble the generation command-lie flags, env vars, etc.
 
 # width=32  # slow 32x16
 width=4     # quick 4x2
@@ -52,63 +49,67 @@ height=$((width/2))
 # RTL-build flags
 flags="--width $width --height $height --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
 
-# amber or onyx?
+# Amber needs a slightly different versions for some of the submodules
 if [ "$1" == "amber" ]; then
-    export WHICH_SOC=amber
-
     # Update docker to match necessary amber environment
     $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
     bash -c 'set -x; tmp-amber-updates.sh'
+fi
 
+# amber or onyx?
+if [ "$1" == "amber" ]; then
+    export WHICH_SOC=amber
     ref=garnet-4x2.v
+
 elif [ "$1" == "onyx" ]; then
     export WHICH_SOC=onyx
     ref=onyx-4x2.v
     flags="$flags --rv --sparse-cgra --sparse-cgra-combined"
 
-else
-    echo "$HELP" && exit 13
-fi
+else echo "$HELP" && exit 13; fi
 
+
+########################################################################
 echo '--- RTL test BEGIN ($1)' `date`
+echo "WHICH_SOC: $WHICH_SOC"
 echo "FLAGS: $flags"
 
+# FIXME: this basically duplicates what is done by gen_rtl.sh;
+# TODO should build/fix some kind of "build-rtl-only" for
+# $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh and call that instead,
+# like we do above for submodule updates.
 
-    ########################################################################
-    ########################################################################
-    ########################################################################
+# Prep/clean
+cd /aha
+rm -rf garnet/genesis_verif
+rm -f  garnet/garnet.v
 
-    # FIXME this makes a big mess in top-level dir /aha
-    # Why not build in a subdir e.g. tmp-rtl-gold-check? (Would probably break a lot of things.)
+# Build new rtl
+source /aha/bin/activate; # Set up the build environment
+aha garnet $flags
 
-    # Prep/clean
-    cd /aha
-    rm -rf garnet/genesis_verif
-    rm -f  garnet/garnet.v
+# Assemble final design.v
+cd /aha/garnet
+cp garnet.v genesis_verif/garnet.v
+cat genesis_verif/* > design.v
+cat global_buffer/systemRDL/output/glb_pio.sv >> design.v
+cat global_buffer/systemRDL/output/glb_jrdl_decode.sv >> design.v
+cat global_buffer/systemRDL/output/glb_jrdl_logic.sv >> design.v
+cat global_controller/systemRDL/output/*.sv >> design.v
 
-    # Build new rtl
-    source /aha/bin/activate; # Set up the build environment
-    aha garnet $flags
-
-    # Assemble final design.v
-    cd /aha/garnet
-    cp garnet.v genesis_verif/garnet.v
-    cat genesis_verif/* > design.v
-    cat global_buffer/systemRDL/output/glb_pio.sv >> design.v
-    cat global_buffer/systemRDL/output/glb_jrdl_decode.sv >> design.v
-    cat global_buffer/systemRDL/output/glb_jrdl_logic.sv >> design.v
-    cat global_controller/systemRDL/output/*.sv >> design.v
-
-    # For better or worse: I put this in gen_rtl.sh
-    # Hack it up! FIXME should use same mechanism as onyx...define AO/AN_CELL
-    # Also see: garnet/mflowgen/common/rtl/gen_rtl.sh, gemstone/tests/common/rtl/{AN_CELL.sv,AO_CELL.sv}
-    cat design.v \
-        | sed 's/AN_CELL inst/AN2D0BWP16P90 inst/' \
-        | sed 's/AO_CELL inst/AO22D0BWP16P90 inst/' \
-              > /tmp/tmp.v
-    mv -f /tmp/tmp.v design.v
+# For better or worse: I put this in gen_rtl.sh
+# Hack it up! FIXME should use same mechanism as onyx...define AO/AN_CELL
+# Also see: garnet/mflowgen/common/rtl/gen_rtl.sh, gemstone/tests/common/rtl/{AN_CELL.sv,AO_CELL.sv}
+cat design.v \
+    | sed 's/AN_CELL inst/AN2D0BWP16P90 inst/' \
+    | sed 's/AO_CELL inst/AO22D0BWP16P90 inst/' \
+          > /tmp/tmp.v
+mv -f /tmp/tmp.v design.v
 
 printf "\n"
+
+
+########################################################################
 echo "+++ Compare result to reference build"
 
 # Reference designs are gzipped to save space
