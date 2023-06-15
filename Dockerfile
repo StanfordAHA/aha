@@ -111,7 +111,12 @@ RUN python -m venv .
 # Sam
 WORKDIR /aha/sam
 RUN make sam
-RUN source /aha/bin/activate && pip install scipy numpy pytest torch && pip install -e .
+RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
+# Install torch (need big tmp folder)
+WORKDIR /aha
+RUN mkdir /aha/tmp/torch_install/
+RUN source /aha/bin/activate && TMPDIR=/aha/tmp/torch_install/ pip install --cache-dir=$TMPDIR --build $TMPDIR torch
 
 WORKDIR /aha
 RUN source bin/activate && pip install urllib3==1.26.15 && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && pip install -e ./pono/deps/smt-switch/build/python && pip install -e pono/build/python/ && aha deps install
