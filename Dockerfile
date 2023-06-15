@@ -115,7 +115,7 @@ RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e
 
 # Install torch (need big tmp folder)
 WORKDIR /aha
-RUN mkdir /aha/tmp/torch_install/
+RUN mkdir -p /aha/tmp/torch_install/
 RUN source /aha/bin/activate && TMPDIR=/aha/tmp/torch_install/ pip install --cache-dir=$TMPDIR --build $TMPDIR torch
 
 WORKDIR /aha
