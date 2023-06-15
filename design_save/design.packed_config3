@@ -1,0 +1,64 @@
+Netlists:
+e0: (I7_2, io2f_17)	(m0, MEM_input_width_17_num_2)
+e1: (m2, MEM_output_width_17_num_0)	(p0_3, PE_input_width_17_num_2)
+e2: (m0, MEM_output_width_17_num_1)	(m2, MEM_input_width_17_num_3)
+e3: (m4, MEM_output_width_17_num_0)	(p6_3, PE_input_width_17_num_2)
+e4: (I7_2, io2f_17)	(m6, MEM_input_width_17_num_2)
+e5: (m6, MEM_output_width_17_num_1)	(m4, MEM_input_width_17_num_3)
+e6: (m0, MEM_output_width_17_num_2)	(m6, MEM_input_width_17_num_0)
+e0_2: (I1, io2f_17)	(m0_2, MEM_input_width_17_num_2)
+e1_2: (m2_2, MEM_output_width_17_num_0)	(I3, f2io_17)
+e2_2: (m0_2, MEM_output_width_17_num_1)	(m2_2, MEM_input_width_17_num_3)
+e3_2: (m4_2, MEM_output_width_17_num_0)	(I5, f2io_17)
+e4_2: (I7, io2f_17)	(m6_2, MEM_input_width_17_num_2)
+e5_2: (m6_2, MEM_output_width_17_num_1)	(m4_2, MEM_input_width_17_num_3)
+e6_2: (m0_2, MEM_output_width_17_num_2)	(m6_2, MEM_input_width_17_num_0)
+e1_3: (I7_2, io2f_17)	(p0_3, PE_input_width_17_num_0)
+e2_3: (I7_2, io2f_17)	(p0_3, PE_input_width_17_num_1)
+e3_3: (I7_2, io2f_17)	(p0_3, PE_input_width_17_num_3)
+e5_3: (I7_2, io2f_17)	(p6_3, PE_input_width_17_num_0)
+e6_3: (I7_2, io2f_17)	(p6_3, PE_input_width_17_num_1)
+e7_3: (I7_2, io2f_17)	(p6_3, PE_input_width_17_num_3)
+
+ID to Names:
+m0: m0
+I1: I1
+m2: m2
+I3: I3
+m4: m4
+I5: I5
+m6: m6
+I7: I7
+m0_2: m0_2
+I1_2: I1_2
+m2_2: m2_2
+I3_2: I3_2
+m4_2: m4_2
+I5_2: I5_2
+m6_2: m6_2
+I7_2: I7_2
+p0_3: p0
+p6_3: p6
+
+
+Netlist Bus:
+e0: 17
+e1: 17
+e2: 17
+e3: 17
+e4: 17
+e5: 17
+e6: 17
+e0_2: 17
+e1_2: 17
+e2_2: 17
+e3_2: 17
+e4_2: 17
+e5_2: 17
+e6_2: 17
+e1_3: 17
+e2_3: 17
+e3_3: 17
+e5_3: 17
+e6_3: 17
+e7_3: 17
