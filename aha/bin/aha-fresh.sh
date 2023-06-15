@@ -131,7 +131,7 @@ function find_distance {
     # [ "$DBG" ] && echo gh api --paginate repos/$REPO/compare/$commit...master
 
     # ahead_behind=(0 25)
-    gh="repos/$REPO/compare/$commit...master"
+    gh="repos/$REPO/compare/master...$commit"
     # ahead_behind=(`gh api $gh | jq ".ahead_by,.behind_by"`)
     # ahead_behind=(`curl -s https://api.github.com/$gh | jq ".ahead_by,.behind_by"`)
     ahead_behind=(`curl -s $token https://api.github.com/$gh | ahead_behind`)
