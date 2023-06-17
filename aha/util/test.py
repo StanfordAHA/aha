@@ -97,7 +97,7 @@ def dispatch(args, extra_args=None):
 
         # This is where we do the fallback comparison...
         # First get gold matrix from the output...
-        gold_matrix = numpy.load(f"{sparse_comp}/output_gold.npy")
+        gold_matrix = numpy.load(f"{sparse_comp}/output_gold_0.npy")
         name_line = None
         with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
             name_line = output_name_h_.readlines()[0].strip()
