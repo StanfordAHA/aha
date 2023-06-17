@@ -191,7 +191,7 @@ def dispatch(args, extra_args=None):
             "mat_elemmul",
             "mat_identity",
             "mat_mattransmul",
-            # "tensor3_mttkrp",
+            "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
         ]
@@ -227,7 +227,7 @@ def dispatch(args, extra_args=None):
             "tensor3_elemmul",
             "tensor3_identity",
             "tensor3_innerprod",
-            # "tensor3_mttkrp",
+            "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
             "vec_elemadd",
