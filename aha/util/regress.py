@@ -51,28 +51,20 @@ def gen_garnet(width, height):
     return time.time() - start
 
 
-def test_sparse_app(testname, width, height, test=""):
-    if test == "":
-        test = testname
+def generate_sparse_bitstreams(sparse_tests, width, height):
 
-    print(f"--- {test}")
-    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
-    print(app_path)
-
-    try:
-        subprocess.call(["make", "clean"], cwd=app_path)
-    except:
-        pass
-
-    print(f"--- {test} - mapping")
+    print(f"--- mapping all tests")
     start = time.time()
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    start = time.time()
+    all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
+
     buildkite_call(
         [
             "python",
             "/aha/garnet/tests/test_memory_core/build_tb.py",
             "--ic_fork",
-            "--sam_graph", f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv",
+            "--sam_graph", *all_sam_graphs,
             "--seed", f"{0}",
             "--dump_bitstream",
             "--add_pond",
@@ -92,6 +84,24 @@ def test_sparse_app(testname, width, height, test=""):
         env=env_vars,
     )
     time_map = time.time() - start
+    return time_map
+
+
+def test_sparse_app(testname, test=""):
+    if test == "":
+        test = testname
+
+    print(f"--- {test}")
+
+    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+
+    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    print(app_path)
+
+    try:
+        subprocess.call(["make", "clean"], cwd=app_path)
+    except:
+        pass
 
     print(f"--- {test} - glb testing")
     start = time.time()
@@ -100,7 +110,8 @@ def test_sparse_app(testname, width, height, test=""):
     )
     time_test = time.time() - start
 
-    return 0, time_map, time_test
+    return 0, 0, time_test
+
 
 def test_dense_app(test, width, height, layer=None, env_parameters=""):
     testname = layer if layer is not None else test
@@ -294,8 +305,10 @@ def dispatch(args, extra_args=None):
     t = gen_garnet(width, height)
     info.append(["garnet", t])
 
+    generate_sparse_bitstreams(sparse_tests, width, height)
+
     for test in sparse_tests:
-        t0, t1, t2 = test_sparse_app(test, width, height)
+        t0, t1, t2 = test_sparse_app(test)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
