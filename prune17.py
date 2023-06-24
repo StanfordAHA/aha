@@ -1,84 +1,64 @@
-# python script to take list of fixed routes remove from 17.graph
-
 # determine fixed routes from design.packed
-fopen = open('design.packed_config1', 'r')
-packed_lines = fopen.readlines()
-fopen.close()
-# fixed_routes = ["e2", "e5", "e6", "e2_2", "e5_2", "e6_2"]
+with open('design.packed_config1', 'r') as fopen:
+    packed_lines = fopen.readlines()
 
-fixed_route = []
+fixed_routes = []
 
 for packed_line in packed_lines:
     if "Bus" in packed_line:
         break
     if "Netlist" in packed_line:
         continue
-    if "e" in packed_line and not "I" in packed_line:
-        fixed_route.append(packed_line.split()[0][:-1])
-
-print(fixed_route)
-    
-            
+    if "e" in packed_line and "I" not in packed_line:
+        # grab edge name from packed lines not interfacing with glb
+        fixed_routes.append(packed_line.split()[0][:-1])
 
 
 # read in design.route line by line
-fopen = open('design.route_config1', 'r')
-route_lines = fopen.readlines()
-fopen.close()
+with open('design.route_config1', 'r') as fopen:
+    route_lines = fopen.readlines()
 
 sb_to_remove = []
+save_route = []
+found_net = False
 
 # find extractable SB
-num_lines = len(route_lines)
-i = 0
-found_net = False
-save_route = []
-while i < num_lines:
-    if "Net ID" in route_lines[i]:
+for route_line in route_lines:
+    if "Net ID" in route_line:
         for fixed_route in fixed_routes:
-            if fixed_route == route_lines[i].split()[2]:
-                print(route_lines[i])
+            # compare edge names
+            if fixed_route == route_line.split()[2]:
                 found_net = True
                 break
-            else:
-                found_net = False
-    if found_net == True:
-        if "SB" in route_lines[i]:
-            sb_to_remove.append(route_lines[i])
-        save_route.append(route_lines[i])
+        else:
+            found_net = False
+    if found_net:
+        if "SB" in route_line:
+            sb_to_remove.append(route_line)
+        save_route.append(route_line)
 
-    i += 1
-
-print(save_route)
+print(sb_to_remove)
 
 # remove SB from 17.graph
-fopen = open('17.graph', 'r')
-graph_lines = fopen.readlines()
-fopen.close()
+with open('SIM_DIR/17.graph', 'r') as fopen:
+    graph_lines = fopen.readlines()
 
-num_lines = len(graph_lines)
-i = 0
 new_graph_lines = []
 found_sb = False
-while i < num_lines:
-    if "SB" in graph_lines[i]:
+
+for graph_line in graph_lines:
+    if "SB" in graph_line:
         for sb in sb_to_remove:
-            if sb in graph_lines[i]:
+            if sb in graph_line:
                 found_sb = True
                 break
-            else:
-                found_sb = False
-    if found_sb == False:
-        new_graph_lines.append(graph_lines[i])
+        else:
+            found_sb = False
+    if "END" in graph_line:
+        found_sb = False
+    if not found_sb:
+        new_graph_lines.append(graph_line)
 
-    i += 1
-
-# write remaining graph lines in new 17_new.graph
-fopen = open('SIM_DIR/17.graph', 'w')
-fopen.writelines(new_graph_lines)
-fopen.close()
-
-
-
-            
-            
+# write remaining graph lines to new 17_new.graph
+with open('SIM_DIR/17.graph', 'w') as fopen:
+    fopen.writelines(new_graph_lines)
