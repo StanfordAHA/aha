@@ -4,7 +4,7 @@ import re
 # fixed_routes = ["e2", "e5", "e6", "e2_2", "e5_2", "e6_2"]
 fixed_routes = []
 # read in design.route line by line
-fopen = open('matmul_config1', 'r')
+fopen = open('/aha/matmul_config1', 'r')
 route_lines = fopen.readlines()
 fopen.close()
 
@@ -22,7 +22,7 @@ save_route = []
 
 found_net = False
 
-fopen = open('design.route_config1', 'r')
+fopen = open('/aha/design.route_config1', 'r')
 route_lines = fopen.readlines()
 fopen.close()
 
@@ -35,7 +35,7 @@ for route_line in route_lines:
 
 
 # replace routes in design.route line by line
-fopen = open('SIM_DIR/design.route', 'r')
+fopen = open('/aha/SIM_DIR/design.route', 'r')
 route_lines = fopen.readlines()
 fopen.close()
 
@@ -48,7 +48,7 @@ for route_line in route_lines:
         new_route.append(route_line)
 
 
-fopen = open('SIM_DIR/design.route', 'w')
+fopen = open('/aha/SIM_DIR/design.route', 'w')
 fopen.writelines(new_route)
 fopen.writelines(save_route)
 fopen.close()               

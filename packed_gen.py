@@ -10,8 +10,29 @@ fixed_route = []
 
 # TODO: should count outputs automatically
 # matmul has 3 outputs
-pes = ["p100", "p101", "p102"]
+num_pes = 3
+pe_list = []
+for pe in range(num_pes):
+    pe_num = 100+pe
+    pe_list.append(f'p{pe_num}')
 
+inputs = []
+outputs = []
+
+for pack in packed_lines:
+    pack = pack.split()
+    print(pack)
+    if len(pack) == 0:
+        break
+    if "Netlist" in pack[0]:
+        continue
+    if pack[1][1] == "I":
+        inputs.append(pack[1][1:-1])
+    if pack[3][1] == "I":
+        outputs.append(pack[3][1:-1])
+
+print(inputs)
+print(outputs)
 
 def dup(lines_to_copy):
     new_packed = []
@@ -51,14 +72,23 @@ for packed_line in packed_lines:
     elif "ID to Names:" in packed_line:
         new_packed = new_packed + ["Netlists:\n"]
         p1, p2 = dup(lines_to_copy)
-        new_packed = new_packed + p1[:-1] + p2
+        new_packed = new_packed + p1[:-1] + p2[:-1]
+        # extra edges (4 ports)
+        e = 1
+        for pe in pe_list:
+            new_packed.append(f'e{e}000_3: ({inputs[0]}_2, io2f_17) ({pe}, PE_input_width_17_num_2)\n')
+            new_packed.append(f'e{e}001_3: ({inputs[1]}_2, io2f_17) ({pe}, PE_input_width_17_num_0)\n')
+            new_packed.append(f'e{e}002_3: ({inputs[1]}_2, io2f_17) ({pe}, PE_input_width_17_num_1)\n')
+            new_packed.append(f'e{e}003_3: ({inputs[1]}_2, io2f_17) ({pe}, PE_input_width_17_num_3)\n')
+            e+=1
         lines_to_copy = []
+        new_packed = new_packed + ["\n"]
     elif "Netlist Bus:" in packed_line:
         new_packed = new_packed + ["ID to Names:\n"]
         p1, p2 = dup(lines_to_copy)
         tiles1, tiles2 = p1, p2
         new_packed = new_packed + p1[:-1] + p2[:-1]
-        for pe in pes:
+        for pe in pe_list:
             new_packed.append(pe + ": " + pe + "\n")
         new_packed.append("\n")
         lines_to_copy = []
@@ -69,41 +99,31 @@ for packed_line in packed_lines:
 new_packed = new_packed + ["Netlist Bus:\n"]
 p1, p2 = dup(lines_to_copy)
 new_packed = new_packed + p1 + p2
-
-# Attempt to fix IO
-# search_string = ".*:"
-# fixed_io = []
-# for tile in tiles1 + tiles2:
-#     res = re.search(search_string, tile)
-#     fixed_io.append(res.group(0)[:-1])
-
-# # sort alphabetically
-# fixed_io.sort()
-
-# fixed_io_write = []
-# i = 0
-# p = 0
-# m = 0
-# for io in fixed_io
-#     if io[0] == "p":
-#         fixed_io_write.append(f'fixed_io[{io}] = (31}
-    
+e = 1
+for pe in pe_list:
+    new_packed.append(f'e{e}000_3: 17\n')
+    new_packed.append(f'e{e}001_3: 17\n')
+    new_packed.append(f'e{e}002_3: 17\n')
+    new_packed.append(f'e{e}003_3: 17\n')
+    e+=1
 
 
-# fopen = open('fixed_io', 'w')
-# fopen.writelines(fixed_io)
-# fopen.close()
-
-
-# remove I._2 for config
+# remove I._2 for config1
 config1 = []
 to_remove = []
 for packed_line in new_packed:
     if re.search("\(I\d*_2", packed_line):
-        to_remove.append(packed_line.split()[0][:-1])
+        edge =  packed_line.split()[0][:-1]
+        # keep edges for ready=0 intersects
+        if "_3" not in edge: 
+            to_remove.append(edge)
+        else:
+            config1.append(packed_line)
     else:
+        # Don't add if edge has I_2
         if not any([x in packed_line for x in to_remove]):
             config1.append(packed_line)
+
 
 fopen = open('config1', 'w')
 fopen.writelines(config1)
@@ -115,6 +135,13 @@ to_remove = []
 pe_idx = 0
 for packed_line in new_packed:
     split_line = packed_line.split()
+    # ready=0 intersect case
+    if "_3:" in packed_line:
+        if "00_3" in packed_line:
+            continue
+        else:
+            config2.append(packed_line)
+            continue
     if len(split_line) > 4 and split_line[1][1] == "I":
         if "_2" in split_line[1]:
             split_line[1] = split_line[1].replace("_2","")
@@ -123,7 +150,7 @@ for packed_line in new_packed:
         config2.append(" ".join(split_line) + "\n")
     elif len(split_line) > 4 and split_line[3][1] == "I":
         if "_2" in split_line[3]:
-            split_line[3] = "(" + pes[pe_idx] + ","
+            split_line[3] = "(" + pe_list[pe_idx] + ","
             pe_idx = (pe_idx + 1)
             split_line[4] = "PE_input_width_17_num_2)"
         config2.append(" ".join(split_line) + "\n")
@@ -141,11 +168,18 @@ config3 = []
 to_remove = []
 for packed_line in new_packed:
     split_line = packed_line.split()
+    # ready=0 intersect case
+    if "_3:" in packed_line:
+        if "00_3" in packed_line:
+            continue
+        else:
+            config3.append(packed_line)
+            continue
     if len(split_line) > 3 and split_line[3][1] == "I":
         if "_2" in split_line[3]:
             split_line[3] = split_line[3].replace("_2","")
         else:
-            split_line[3] = "(" + pes[pe_idx] + ","
+            split_line[3] = "(" + pe_list[pe_idx] + ","
             pe_idx = (pe_idx + 1)
             split_line[4] = "PE_input_width_17_num_2)"
         config3.append(" ".join(split_line) + "\n")

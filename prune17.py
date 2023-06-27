@@ -1,5 +1,5 @@
 # determine fixed routes from design.packed
-with open('design.packed_config1', 'r') as fopen:
+with open('/aha/design.packed_config1', 'r') as fopen:
     packed_lines = fopen.readlines()
 
 fixed_routes = []
@@ -15,7 +15,7 @@ for packed_line in packed_lines:
 
 
 # read in design.route line by line
-with open('design.route_config1', 'r') as fopen:
+with open('/aha/design.route_config1', 'r') as fopen:
     route_lines = fopen.readlines()
 
 sb_to_remove = []
@@ -40,7 +40,7 @@ for route_line in route_lines:
 print(sb_to_remove)
 
 # remove SB from 17.graph
-with open('SIM_DIR/17.graph', 'r') as fopen:
+with open('/aha/SIM_DIR/17.graph', 'r') as fopen:
     graph_lines = fopen.readlines()
 
 new_graph_lines = []
@@ -60,5 +60,5 @@ for graph_line in graph_lines:
         new_graph_lines.append(graph_line)
 
 # write remaining graph lines to new 17_new.graph
-with open('SIM_DIR/17.graph', 'w') as fopen:
+with open('/aha/SIM_DIR/17.graph', 'w') as fopen:
     fopen.writelines(new_graph_lines)
