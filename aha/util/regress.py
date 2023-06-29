@@ -52,7 +52,7 @@ def gen_garnet(width, height):
 
 
 def generate_sparse_bitstreams(sparse_tests, width, height):
-    if len(sparse_tests == 0):
+    if len(sparse_tests) == 0:
         return 0
     
     print(f"--- mapping all tests")
