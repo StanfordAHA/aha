@@ -69,20 +69,28 @@ for tile in fixed_list:
 for tile in fixed_list:
     if "p" in tile:
         pe_x = pe // 8
+        if pe_x >= 3:
+            pe_x += 1
+        if pe_x >= 7:
+            pe_x += 1
         pe_y = (pe % 8) + 1
         fixed_lines.append(f'fixed_io[\"{tile}\"] = ({pe_x}, {pe_y})')
         fixed_lines.append("\n")
-        pe += 1
+        pe += 2
 
 pe = 0
 
 for tile in fixed_list:
     if "p" in tile:
         pe_x = pe // 8 
+        if pe_x >= 3:
+            pe_x += 1
+        if pe_x >= 7:
+            pe_x += 1
         pe_y = (pe % 8) + 9
         fixed_lines.append(f'fixed_io[\"{tile}_2\"] = ({pe_x}, {pe_y})')
         fixed_lines.append("\n")
-        pe += 1
+        pe += 2
 
 for tile in fixed_list:
     if "m" in tile:

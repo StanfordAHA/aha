@@ -1,21 +1,35 @@
+import sys 
+import re
+
 # determine fixed routes from design.packed
-with open('/aha/design.packed_config1', 'r') as fopen:
+with open(sys.argv[1], 'r') as fopen:
     packed_lines = fopen.readlines()
 
 fixed_routes = []
+not_fixed_routes = []
 
 for packed_line in packed_lines:
-    if "Bus" in packed_line:
+    if "ID" in packed_line:
         break
     if "Netlist" in packed_line:
         continue
-    if "e" in packed_line and "I" not in packed_line:
-        # grab edge name from packed lines not interfacing with glb
-        fixed_routes.append(packed_line.split()[0][:-1])
+    if "e" in packed_line:
+        split_line = packed_line.split()
+        pe_num1 = split_line[1][1:-1]
+        pe_num2 = split_line[3][1:-1]
+        _pe_num1 = "_" in pe_num1
+        _pe_num2 = "_" in pe_num2
+        int_pe_num1 = int(pe_num1[1:]) >= 100
+        int_pe_num2 = int(pe_num2[1:]) >= 100
+        # grab edge name from packed lines in graphs or to glb
+        # what about p100 tied to p100
+        if not("I" in packed_line or re.search("p1\d\d", packed_line)):
+            print(packed_line)
+            fixed_routes.append(packed_line.split()[0][:-1])
 
 
 # read in design.route line by line
-with open('/aha/design.route_config1', 'r') as fopen:
+with open(sys.argv[2], 'r') as fopen:
     route_lines = fopen.readlines()
 
 sb_to_remove = []
@@ -37,7 +51,16 @@ for route_line in route_lines:
             sb_to_remove.append(route_line)
         save_route.append(route_line)
 
-print(sb_to_remove)
+# sb_to_remove_2 = sb_to_remove
+# sb_to_remove = []
+
+# print("save these sbs")
+# for sb in sb_to_remove_2:
+#     split_sb = sb.split()
+#     if not ("0" in split_sb[1] and "1," == split_sb[3]):
+#         sb_to_remove.append(sb)
+#     else: 
+#         print(sb)
 
 # remove SB from 17.graph
 with open('/aha/SIM_DIR/17.graph', 'r') as fopen:

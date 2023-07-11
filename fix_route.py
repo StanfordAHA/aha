@@ -1,30 +1,36 @@
+import sys
 import re
 # python script to take list of fixed routes remove from 17.graph
 
-# fixed_routes = ["e2", "e5", "e6", "e2_2", "e5_2", "e6_2"]
 fixed_routes = []
 # read in design.route line by line
-fopen = open('/aha/matmul_config1', 'r')
-route_lines = fopen.readlines()
-fopen.close()
+with open(sys.argv[1], 'r') as fopen:
+    packed_lines = fopen.readlines()
 
-for route_line in route_lines:
-    if "ID" in route_line:
+fixed_routes = []
+not_fixed_routes = []
+
+for packed_line in packed_lines:
+    if "ID" in packed_line:
         break
-    if "Netlist" in route_line:
+    if "Netlist" in packed_line:
         continue
-    if not "I" in route_line and len(route_line.split()) > 0:
-       fixed_routes.append(route_line.split()[0][:-1]) 
-    
+    if not("I" in packed_line or re.search("p1\d\d", packed_line)):
+            print(packed_line)
+            fixed_routes.append(packed_line.split()[0][:-1])
+
+print("fixed_routes2")
 print(fixed_routes)
+print("not fixed_routes2")
+print(not_fixed_routes)
+        
 
 save_route = []
 
 found_net = False
 
-fopen = open('/aha/design.route_config1', 'r')
-route_lines = fopen.readlines()
-fopen.close()
+with open(sys.argv[2], 'r') as fopen:
+    route_lines = fopen.readlines()
 
 # find extractable SB
 for route_line in route_lines:

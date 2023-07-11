@@ -10,7 +10,7 @@ fixed_route = []
 
 # TODO: should count outputs automatically
 # matmul has 3 outputs
-num_pes = 3
+num_pes = 12
 pe_list = []
 for pe in range(num_pes):
     pe_num = 100+pe
@@ -21,7 +21,6 @@ outputs = []
 
 for pack in packed_lines:
     pack = pack.split()
-    print(pack)
     if len(pack) == 0:
         break
     if "Netlist" in pack[0]:
@@ -31,8 +30,6 @@ for pack in packed_lines:
     if pack[3][1] == "I":
         outputs.append(pack[3][1:-1])
 
-print(inputs)
-print(outputs)
 
 def dup(lines_to_copy):
     new_packed = []
@@ -77,9 +74,9 @@ for packed_line in packed_lines:
         e = 1
         for pe in pe_list:
             new_packed.append(f'e{e}000_3: ({inputs[0]}_2, io2f_17) ({pe}, PE_input_width_17_num_2)\n')
-            new_packed.append(f'e{e}001_3: ({inputs[1]}_2, io2f_17) ({pe}, PE_input_width_17_num_0)\n')
-            new_packed.append(f'e{e}002_3: ({inputs[1]}_2, io2f_17) ({pe}, PE_input_width_17_num_1)\n')
-            new_packed.append(f'e{e}003_3: ({inputs[1]}_2, io2f_17) ({pe}, PE_input_width_17_num_3)\n')
+            new_packed.append(f'e{e}001_3: ({pe}, PE_output_width_17_num_0) ({pe}, PE_input_width_17_num_0)\n')
+            new_packed.append(f'e{e}002_3: ({pe}, PE_output_width_17_num_1) ({pe}, PE_input_width_17_num_1)\n')
+            new_packed.append(f'e{e}003_3: ({pe}, PE_output_width_17_num_2) ({pe}, PE_input_width_17_num_3)\n')
             e+=1
         lines_to_copy = []
         new_packed = new_packed + ["\n"]
@@ -108,17 +105,54 @@ for pe in pe_list:
     e+=1
 
 
-# remove I._2 for config1
-config1 = []
+print(new_packed)
+
+# remove I._2 for config0 and remove output glb tiles (I)
+config0 = []
 to_remove = []
 for packed_line in new_packed:
+    split_line = packed_line.split()
     if re.search("\(I\d*_2", packed_line):
-        edge =  packed_line.split()[0][:-1]
+        edge =  split_line[0][:-1]
         # keep edges for ready=0 intersects
         if "_3" not in edge: 
             to_remove.append(edge)
         else:
+            config0.append(packed_line)
+    elif len(split_line) > 4 and split_line[3][1] == "I":
+        edge =  split_line[0]
+        to_remove.append(edge)
+    else:
+        # Don't add if edge has I_2
+        if not any([x in packed_line for x in to_remove]):
+            config0.append(packed_line)
+
+
+fopen = open('config0', 'w')
+fopen.writelines(config0)
+fopen.close()
+
+# put start app, put output in ready=0
+config1 = []
+to_remove = []
+pe_idx = 0
+pe_idx2 = 0
+for packed_line in new_packed:
+    split_line = packed_line.split()
+    # ready=0 intersect case
+    if "_3:" in packed_line:
+        if not "00_3" in packed_line:
             config1.append(packed_line)
+    elif re.search("\(I\d*_2", packed_line):
+        edge =  split_line[0][:-1]
+        # keep edges for ready=0 intersects
+        to_remove.append(edge)
+    elif len(split_line) > 4 and split_line[3][1] == "I":
+        if not "_2" in split_line[3]:
+            split_line[3] = "(" + pe_list[pe_idx] + ","
+            pe_idx = (pe_idx + 1)
+            split_line[4] = "PE_input_width_17_num_2)"
+        config1.append(" ".join(split_line) + "\n")
     else:
         # Don't add if edge has I_2
         if not any([x in packed_line for x in to_remove]):
@@ -146,7 +180,8 @@ for packed_line in new_packed:
         if "_2" in split_line[1]:
             split_line[1] = split_line[1].replace("_2","")
         else:
-            split_line[1] = split_line[1][:-1] + "_2" + split_line[1][-1]
+            # use only 1 extra input
+            split_line[1] = "(" + inputs[0] + "_2" + split_line[1][-1]
         config2.append(" ".join(split_line) + "\n")
     elif len(split_line) > 4 and split_line[3][1] == "I":
         if "_2" in split_line[3]:
@@ -187,7 +222,7 @@ for packed_line in new_packed:
         if "_2" in split_line[1]:
             split_line[1] = split_line[1].replace("_2","")
         else:
-            split_line[1] = split_line[1][:-1] + "_2" + split_line[1][-1]
+            split_line[1] = "(" + inputs[0] + "_2" + split_line[1][-1]
         config3.append(" ".join(split_line) + "\n")
     else:
         config3.append(packed_line)
