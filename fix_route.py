@@ -1,8 +1,6 @@
 import sys
 import re
-# python script to take list of fixed routes remove from 17.graph
 
-fixed_routes = []
 # read in design.route line by line
 with open(sys.argv[1], 'r') as fopen:
     packed_lines = fopen.readlines()
@@ -15,7 +13,20 @@ for packed_line in packed_lines:
         break
     if "Netlist" in packed_line:
         continue
-    if not("I" in packed_line or re.search("p1\d\d", packed_line)):
+    if "e" in packed_line:
+        split_line = packed_line.split()
+        pe_num1 = split_line[1][1:-1]
+        pe_num2 = split_line[3][1:-1]
+        _pe_num1 = "_" in pe_num1
+        _pe_num2 = "_" in pe_num2
+        int_pe_num1 = int(pe_num1[1:]) >= 1000
+        int_pe_num2 = int(pe_num2[1:]) >= 1000
+        # grab edge name from packed lines in graphs or to glb
+        # what about p1000 tied to p1000
+        if int_pe_num1 and int_pe_num2:
+            print(packed_line)
+            fixed_routes.append(packed_line.split()[0][:-1])
+        elif not("I" in packed_line or re.search("p1\d\d\d", packed_line)):
             print(packed_line)
             fixed_routes.append(packed_line.split()[0][:-1])
 
