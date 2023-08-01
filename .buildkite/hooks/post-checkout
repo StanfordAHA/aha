@@ -1,6 +1,15 @@
 #!/bin/bash -e
+set -x
+
+echo "+++ foo post checkout"
+pwd
+ls -ld temp || echo nope
+ls -l temp || echo nope 2
+
 if [[ ${BUILDKITE_STEP_KEY} =~ ^(docker-build|integration-tests)$ ]]; then
     mkdir -p temp
+    ls -ld temp
+    ls -l temp
     rm -rf temp/.TEST
     touch temp/.TEST
 fi
