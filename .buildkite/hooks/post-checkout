@@ -1,15 +1,14 @@
 #!/bin/bash -e
-set -x
 
-echo "+++ foo post checkout"
-pwd
-ls -ld temp || echo nope
-ls -l temp || echo nope 2
+echo "+++ LOCAL POST CHECKOUT FROM AHA REPO"
+echo "PWD: "; `pwd`
 
 if [[ ${BUILDKITE_STEP_KEY} =~ ^(docker-build|integration-tests)$ ]]; then
+    set -x
     mkdir -p temp
-    ls -ld temp
-    ls -l temp
-    rm -rf temp/.TEST
+    rm -rf temp/.TEST # Does not complain if file not exists!
     touch temp/.TEST
+    set +x
+else
+    echo "Nothing to do, not the right step yet"
 fi
