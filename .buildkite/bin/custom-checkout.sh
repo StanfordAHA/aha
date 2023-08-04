@@ -5,7 +5,7 @@ RESTORE_SHELLOPTS="$(set +o)"
 set +u # nounset? not on my watch!
 set +x # debug OFF
 
-echo "--- BEGIN CUSTOM CHECKOUT"
+echo "--- custom-checkout.sh BEGIN"
 
 # IF this works it enables all kinds of optimiztions
 echo FLOW_REPO=$FLOW_REPO || echo nop
@@ -108,7 +108,11 @@ if [ "$PR_FROM_SUBMOD" ]; then
     done
     echo now i am here
 
-    # # want?
+    # tmp-vars holds e.g. FLOW_REPO and FLOW_HEAD_SHA vars for later commands e.g.
+    # commands:
+    #   - source custom-checkout.sh           # Sets tmp.vars
+    #   - source tmp.vars; echo $FLOW_REPO    # Uses tmp.vars
+    # NO no need for tmp-vars.
     set -x
     if [ "$FOUND_SUBMOD" ]; then
         # These are used later by pipeline.xml
@@ -128,8 +132,8 @@ fi
 
 echo '+++ FLOW_REPO?'
 set -x
-ls -l tmp-vars || echo no
-cat tmp-vars || echo no
+ls -l tmp-vars 2> /dev/null || echo no
+cat tmp-vars   2> /dev/null || echo no
 set +x
 
 
@@ -174,3 +178,4 @@ fi
 echo "--- RESTORE SHELLOPTS"
 eval "$RESTORE_SHELLOPTS"
 pwd
+echo "--- custom-checkout.sh END"

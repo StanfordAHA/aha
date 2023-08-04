@@ -11,25 +11,7 @@ steps:
   key: "docker-build"
   commands:
 
-#   - echo "--- Custom checkout"
-#   - echo "+++ debug BEGIN"
-#   - echo '------------------------------------------------------------------------'
-#   - ls -ld /var/lib/buildkite-agent/builds/r7cad-docker-[12345678]/stanford-aha/aha-flow/temp || echo nope
-#   - echo '------------------------------------------------------------------------'
-#   - ls -1 /var/lib/buildkite-agent/builds/r7cad-docker-[12345678]/stanford-aha/aha-flow/.buildkite/hooks/post-checkout || echo nope
-#   - echo '------------------------------------------------------------------------'
-#   - pwd
-#   - echo '------------------------------------------------------------------------'
-#   - ls -ld .buildkite/hooks || echo nope
-#   - echo '------------------------------------------------------------------------'
-#   - ls -l .buildkite/hooks || echo nope
-#   - echo '------------------------------------------------------------------------'
-#   - echo "--- debug END"
-# 
-#   - echo "--- successed or not i dunno"
-#   - exit 13
-
-
+  - echo "--- pipeilne.xml commands BEGIN"
 
   # The "if FLOW_REPO" part is redundant when/if not using heroku...
   # - source $$CHECKOUT
@@ -39,7 +21,10 @@ steps:
   - echo FLOW_REPO=$FLOW_REPO
   - 'set -x;
      pwd;
-     test -e tmp-vars && source tmp-vars;
+     if test -e tmp-vars; then
+       cat -n tmp-vars;
+       source tmp-vars;
+     fi
      if [[ $$FLOW_REPO ]]; then
        echo "--- Handle PR";
        cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
@@ -62,6 +47,10 @@ steps:
 
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
+
+  - echo "--- pipeilne.xml commands END"
+
+
   agents:
     docker: true
   plugins:
@@ -76,12 +65,16 @@ steps:
 #   - SpencerSharkey/hooks:
 #       precommand: $${BUILDKITE_DOWNLOADS_PATH}/custom-checkout.sh
   - improbable-eng/metahook:
+
       pre-checkout: |
         echo source $CHECKOUT
         source $CHECKOUT
         # set -x; source .buildkite/hooks/post-checkout
+
+# What? no!
       pre-command: |
-        set -x; test -e tmp-vars && source tmp-vars
+        set -x; pwd; if test -e tmp-vars; then source tmp-vars; fi
+
       pre-exit: |
         pwd
         ls
@@ -197,3 +190,26 @@ steps:
   plugins:
   - uber-workflow/run-without-clone:
 # - thedyrt/skip-checkout#v0.1.1: ~
+
+
+########################################################################
+# OLD
+#   - echo "+++ debug BEGIN"
+#   - echo '------------------------------------------------------------------------'
+#   - ls -ld /var/lib/buildkite-agent/builds/r7cad-docker-[12345678]/stanford-aha/aha-flow/temp || echo nope
+#   - echo '------------------------------------------------------------------------'
+#   - ls -1 /var/lib/buildkite-agent/builds/r7cad-docker-[12345678]/stanford-aha/aha-flow/.buildkite/hooks/post-checkout || echo nope
+#   - echo '------------------------------------------------------------------------'
+#   - pwd
+#   - echo '------------------------------------------------------------------------'
+#   - ls -ld .buildkite/hooks || echo nope
+#   - echo '------------------------------------------------------------------------'
+#   - ls -l .buildkite/hooks || echo nope
+#   - echo '------------------------------------------------------------------------'
+#   - echo "--- debug END"
+# 
+#   - echo "--- successed or not i dunno"
+#   - exit 13
+
+
+
