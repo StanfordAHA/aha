@@ -60,7 +60,9 @@ echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
 echo "--- CLONE AHA REPO"
 d=$BUILDKITE_BUILD_CHECKOUT_PATH
 test -e $d && /bin/rm -rf $d || echo nop
-git clone https://github.com/hofstee/aha $d; cd $d
+git clone --recurse-submodules https://github.com/hofstee/aha $d
+
+cd $d
 
 set -x
 git remote set-url origin https://github.com/hofstee/aha
