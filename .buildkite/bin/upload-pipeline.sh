@@ -1,5 +1,12 @@
 #!/bin/bash
+
+# save and restore existing shell opts in case script is sourced
+RESTORE_SHELLOPTS="$(set +o)"
+set +u # nounset? not on my watch!
+
 echo "--- upload-pipeline BEGIN"
+
+
 set -x
 
 # Unique BUILD_NUMBER query at end of url prevents caching
@@ -40,6 +47,8 @@ for i in 1; do set -x
     if curl -sf $adev/$p > $ptmp; then curl -sf $adev/$c > $ctmp; break; fi
     echo Cannot find dev pipeline, will use master instead
 done
+
 buildkite-agent pipeline upload $ptmp
 
+echo "--- RESTORE SHELLOPTS"; eval "$RESTORE_SHELLOPTS"
 echo "--- upload-pipeline END"
