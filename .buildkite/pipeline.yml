@@ -3,7 +3,7 @@ env:
 
   # CHECKOUT env var should have been set by aha pipeline flow steps config
   # see https://buildkite.com/stanford-aha/aha-flow/settings/steps
-  CHECKOUT: /tmp/ahaflow-custom-checkout-$$BUILDKITE_BUILD_NUMBER.sh
+  CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
 
 steps:
 # This first step builds the docker image that gets used by all subsequent steps.
