@@ -62,12 +62,14 @@ d=$BUILDKITE_BUILD_CHECKOUT_PATH
 test -e $d && /bin/rm -rf $d || echo nop
 git clone https://github.com/hofstee/aha $d; cd $d
 
+set -x
 git remote set-url origin https://github.com/hofstee/aha
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 
 unset PR_FROM_SUBMOD
 # PR_FROM_SUBMOD means build was triggered by foreign (non-aha) repo, i.e. one of the submods
+
 echo git fetch -v --prune -- origin $BUILDKITE_COMMIT
 if   git fetch -v --prune -- origin $BUILDKITE_COMMIT; then
     echo "Checked out aha commit '$BUILDKITE_COMMIT'"
@@ -84,7 +86,7 @@ else
 fi
 
 set -x
-git checkout -f FETCH_HEAD
+git checkout -f $BUILDKITE_COMMIT
 git submodule sync --recursive
 git submodule update --init --recursive --force
 git submodule foreach --recursive "git reset --hard"
