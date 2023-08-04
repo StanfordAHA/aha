@@ -3,6 +3,7 @@
 # save and restore existing shell opts in case script is sourced
 RESTORE_SHELLOPTS="$(set +o)"
 set +u # nounset? not on my watch!
+set +x # Extreme dev time is OVER
 
 echo "--- upload-pipeline BEGIN"
 
@@ -24,7 +25,7 @@ adev=$u/no-heroku/.buildkite
 # Establish baselines
 curl -s --fail $amaster/$p_remote > $p_local
 curl -s        $amaster/$c_remote > $c_local  # Okay (for now) if checkout.sh does not exist
-echo Established default pipeline foo
+echo Established default pipeline $p_local.
 
 # ls /tmp/*/pre-command || echo nop
 # cat -n /tmp/*/pre-command || echo nop
@@ -32,17 +33,19 @@ echo Established default pipeline foo
 for i in 1; do set -x
     # Test this path by doing "git pull master" from a submodule
     [ "$FLOW_HEAD_SHA" ] && break    # (heroku uses pipeline from master)
-    echo Not heroku, stay w default
+    echo Not heroku, continue search for possible default override.
 
     # curl -s $acommit/$p_remote > $p_local  && break || echo Not triggered by aha repo
     # If acommit exists, trigger came from aha repo. Okay (for now) if checkout.sh does not exist
     # Test this path by doing "git push" from aha repo
+    echo If triggered by valid aha-repo commit, then use that.
     if curl -sf $acommit/$p_remote > $p_local; then
        curl -s  $acommit/$c_remote > $c_local; break
     fi
-    echo Not triggered by aha repo
+    echo "Not triggered by aha repo, must be a request from a submodule."
+    echo "-----"
 
-    # curl -s $adev/$p_remote > $p_local  && break || echo Cannot find dev pipeline
+    echo "Override default w dev script if one exists"
     # Not heroku; not aha; this is the new stuff
     # Triggered by non-aha repo (i.e. just garnet for now)
     # Use dev pipe if exists, else stick with master
@@ -50,7 +53,7 @@ for i in 1; do set -x
     if curl -sf $adev/$p_remote > $p_local; then
        curl -sf $adev/$c_remote > $c_local; break
     fi
-    echo Cannot find dev pipeline, will use master instead
+    echo Cannot find dev pipeline, will stay w master default.
 done
 
 buildkite-agent pipeline upload $p_local
