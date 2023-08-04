@@ -30,17 +30,21 @@ echo Established default pipeline $p_local.
 # ls /tmp/*/pre-command || echo nop
 # cat -n /tmp/*/pre-command || echo nop
 
-for i in 1; do set -x
+for i in 1; do
+    echo "Until we turn it off, heroku behaves as before."
     # Test this path by doing "git pull master" from a submodule
-    [ "$FLOW_HEAD_SHA" ] && break    # (heroku uses pipeline from master)
+    if [ "$FLOW_HEAD_SHA" ]; then
+        echo "Found heroku, will use pipeline from master, as before."
+        break
+    fi
     echo Not heroku, continue search for possible default override.
 
-    # curl -s $acommit/$p_remote > $p_local  && break || echo Not triggered by aha repo
-    # If acommit exists, trigger came from aha repo. Okay (for now) if checkout.sh does not exist
+    # If acommit exists, trigger came from aha repo.
     # Test this path by doing "git push" from aha repo
-    echo If triggered by valid aha-repo commit, then use that.
+    echo If triggered by valid aha-repo commit, use pipeline from that commit.
     if curl -sf $acommit/$p_remote > $p_local; then
-       curl -s  $acommit/$c_remote > $c_local; break
+       curl -s  $acommit/$c_remote > $c_local  # Okay (for now) if checkout.sh does not exist
+       break
     fi
     echo "Not triggered by aha repo, must be a request from a submodule."
     echo "-----"
