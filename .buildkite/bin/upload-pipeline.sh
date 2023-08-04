@@ -25,13 +25,13 @@ adev=$u/no-heroku/.buildkite
 # Establish baselines
 curl -s --fail $amaster/$p_remote > $p_local
 curl -s        $amaster/$c_remote > $c_local  # Okay (for now) if checkout.sh does not exist
-echo Established default pipeline $p_local.
+echo Established default pipeline $p_local from aha master branch.
 
 # ls /tmp/*/pre-command || echo nop
 # cat -n /tmp/*/pre-command || echo nop
 
 for i in 1; do
-    echo "Until we turn it off, heroku behaves as before."
+    echo "Heroku trigger? (Until we turn it off, heroku behaves as before.)"
     # Test this path by doing "git pull master" from a submodule
     if [ "$FLOW_HEAD_SHA" ]; then
         echo "Found heroku, will use pipeline from master, as before."
@@ -41,7 +41,7 @@ for i in 1; do
 
     # If acommit exists, trigger came from aha repo.
     # Test this path by doing "git push" from aha repo
-    echo If triggered by valid aha-repo commit, use pipeline from that commit.
+    echo "Triggered by valid aha-repo commit? If so, use pipeline from that commit."
     if curl -sf $acommit/$p_remote > $p_local; then
        curl -s  $acommit/$c_remote > $c_local  # Okay (for now) if checkout.sh does not exist
        break
