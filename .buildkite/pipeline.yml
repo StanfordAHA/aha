@@ -67,7 +67,7 @@ steps:
   - improbable-eng/metahook:
 
       pre-checkout: |
-        aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+        aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
         ls -ld $$aha || echo no
         ls -ld $$aha/temp || echo no
         ls -laR $$aha/temp || echo no
@@ -88,7 +88,7 @@ steps:
           set -x
           echo "+++ DEBUG POST-CHECKOUT HOOK"
           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
-          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
           echo "+++ DEBUG DOCKER TRASH"
           docker images; docker ps
@@ -177,7 +177,7 @@ steps:
           set -x
           echo "+++ DEBUG POST-CHEKOUT HOOK"
           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
-          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
           echo "+++ DEBUG DOCKER TRASH"
           docker images; docker ps

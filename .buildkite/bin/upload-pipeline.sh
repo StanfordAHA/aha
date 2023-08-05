@@ -67,7 +67,7 @@ done
 
 echo "+++ DEBUG: What is up with r7cad-docker-5?"
 set -x
-d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford/aha/aha-flow
+d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
 ls -ld $d || echo no
 echo "-----"
 ls -la $d || echo no
