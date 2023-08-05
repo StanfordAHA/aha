@@ -63,8 +63,6 @@ for i in 1; do
     echo Cannot find dev pipeline, will stay w master default.
 done
 
-
-
 echo "+++ DEBUG: What is up with r7cad-docker-5?"
 set -x
 d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
@@ -74,6 +72,29 @@ ls -la $d || echo no
 echo "-----"
 ls -laR $d | grep root || echo no
 set +x
+
+# That's what's up.
+# ls -la /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
+# buildkite-agent temp
+# 
+# ls -laR /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow | grep root
+# root temp
+# root .
+# root .TEST
+
+# If temp subdir contains files owned by root, that's bad.
+# Delete the entire directory if this is found to be true.
+echo "+++ PURGE BAD TEMP FILES"
+for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
+    if (ls -laR $d | grep root); then
+        echo "WARNING found root-owned objects in $d"
+        set -x; /bin/rm-rf $d; set +x
+    fi
+done
+
+
+
+
 
 
 echo "--- continue"
