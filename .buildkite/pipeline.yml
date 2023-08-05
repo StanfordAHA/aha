@@ -120,14 +120,11 @@ steps:
   key: "integration-tests"
   depends_on: "docker-build"
   commands:
-
-  # Disabled checkout so maybe .buildkite/hooks/post-checkout does not exist
+  # Disabled checkout so maybe .buildkite/hooks/post-checkout not guaranteed to exist
   # So must embed finctionality here instead :/
   - mkdir -p /buildkite/temp; rm -rf /buildkite/temp/.TEST; touch /buildkite/temp/.TEST
   
-
-
-  - docker images; docker ps; sleep 500; exit 0
+  # - docker images; docker ps; sleep 500; exit 0
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
@@ -154,9 +151,19 @@ steps:
 
 # need to run post-checkout and pre-exit hooks even though did not checkout aha repo
   plugins:
-    - matrix-org/download#v1.1.0:
-        urls:
-          - https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/custom-checkout.sh
+    - improbable-eng/metahook:
+        pre-command: |
+          set -x
+          echo "+++ DEBUG POST-CHEKOUT HOOK"
+          date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
+          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+          ls -l $$aha/.buildkite/hooks/post-checkout || echo no
+          echo "+++ DEBUG DOCKER TRASH"
+          docker images; docker ps
+
+#     - matrix-org/download#v1.1.0:
+#         urls:
+#           - https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/custom-checkout.sh
 #     - SpencerSharkey/hooks:
 #         precommand: $${BUILDKITE_DOWNLOADS_PATH}/custom-checkout.sh
 
