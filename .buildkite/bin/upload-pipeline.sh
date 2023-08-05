@@ -71,6 +71,15 @@ echo "-----"
 ls -la $d || echo no
 echo "-----"
 ls -laR $d | grep root || echo no
+echo "-----"
+echo "-----"
+echo "-----"
+ls -l $d/temp/temp/ || echo no
+echo "-----"
+ls -ld $d/temp/temp/.TEST || echo no
+echo "-----"
+echo "-----"
+echo "-----"
 set +x
 
 # That's what's up.
