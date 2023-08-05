@@ -71,6 +71,16 @@ steps:
         ls -ld $$aha || echo no
         ls -ld $$aha/temp || echo no
         ls -laR $$aha/temp || echo no
+        # If temp subdir contains files owned by root, that's bad.
+        # Delete the entire directory if this is found to be true.
+        echo "+++ PURGE BAD TEMP FILES"
+        echo I am `whoami`
+        for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
+            if (ls -laR $$d | grep root); then
+                echo "WARNING found root-owned objects in $$d"
+                set -x; /bin/rm -rf $$d; set +x
+            fi
+        done
 
 
       # pre-checkout is a BAD IDEA maybe

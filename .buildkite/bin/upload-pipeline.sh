@@ -71,15 +71,11 @@ echo "-----"
 ls -la $d || echo no
 echo "-----"
 ls -laR $d | grep root || echo no
-echo "-----"
-echo "-----"
-echo "-----"
-ls -l $d/temp/temp/ || echo no
+printf "-----\n-----\n-----\n"
+ls -la $d/temp/temp/ || echo no
 echo "-----"
 ls -ld $d/temp/temp/.TEST || echo no
-echo "-----"
-echo "-----"
-echo "-----"
+printf "-----\n-----\n-----\n"
 set +x
 
 # That's what's up.
@@ -91,15 +87,15 @@ set +x
 # root .
 # root .TEST
 
-# If temp subdir contains files owned by root, that's bad.
-# Delete the entire directory if this is found to be true.
-echo "+++ PURGE BAD TEMP FILES"
-for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
-    if (ls -laR $d | grep root); then
-        echo "WARNING found root-owned objects in $d"
-        set -x; /bin/rm -rf $d; set +x
-    fi
-done
+# # If temp subdir contains files owned by root, that's bad.
+# # Delete the entire directory if this is found to be true.
+# echo "+++ PURGE BAD TEMP FILES"
+# for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
+#     if (ls -laR $d | grep root); then
+#         echo "WARNING found root-owned objects in $d"
+#         set -x; /bin/rm -rf $d; set +x
+#     fi
+# done
 
 
 

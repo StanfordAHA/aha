@@ -48,6 +48,17 @@ echo '-------------'
 echo I am `whoami`
 echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
 
+# # If temp subdir contains files owned by root, that's bad.
+# # Delete the entire directory if this is found to be true.
+# echo "+++ PURGE BAD TEMP FILES"
+# echo I am `whoami`
+# for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
+#     if (ls -laR $d | grep root); then
+#         echo "WARNING found root-owned objects in $d"
+#         set -x; /bin/rm -rf $d; set +x
+#     fi
+# done
+
 # This is what I SHOULD do...
 echo "--- CLONE AHA REPO"
 
