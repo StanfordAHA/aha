@@ -87,15 +87,19 @@ set +x
 # root .
 # root .TEST
 
-# # If temp subdir contains files owned by root, that's bad.
-# # Delete the entire directory if this is found to be true.
-# echo "+++ PURGE BAD TEMP FILES"
-# for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
-#     if (ls -laR $d | grep root); then
-#         echo "WARNING found root-owned objects in $d"
-#         set -x; /bin/rm -rf $d; set +x
-#     fi
-# done
+# If temp subdir contains files owned by root, that's bad.
+# Delete the entire directory if this is found to be true.
+echo "+++ PURGE BAD TEMP FILES"
+for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
+    if (ls -laR $d | grep root); then
+        echo "WARNING found root-owned objects in $d"
+        set -x
+        mkdir -p /var/lib/buildkite-agent/builds/DELETEME
+        # set -x; /bin/rm -rf $d; set +x
+        mv $d /var/lib/buildkite-agent/builds/DELETEME
+        set +x
+    fi
+done
 
 
 
