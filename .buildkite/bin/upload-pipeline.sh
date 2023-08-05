@@ -68,9 +68,11 @@ done
 echo "+++ DEBUG: What is up with r7cad-docker-5?"
 set -x
 d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford/aha/aha-flow
-ls -l $d || echo no
+ls -ld $d || echo no
 echo "-----"
-ls -lR $d | grep root || echo no
+ls -la $d || echo no
+echo "-----"
+ls -laR $d | grep root || echo no
 set +x
 
 
