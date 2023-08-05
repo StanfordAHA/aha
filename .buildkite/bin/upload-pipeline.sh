@@ -5,7 +5,7 @@ RESTORE_SHELLOPTS="$(set +o)"
 set +u # nounset? not on my watch!
 set +x # Extreme dev time is OVER
 
-echo "--- upload-pipeline BEGIN"
+echo "--- BEGIN upload-pipeline.sh"
 
 # Remote locations for pipeline, checkout scripts
 # (Unique BUILD_NUMBER query at end of url prevents caching)
@@ -65,8 +65,9 @@ done
 
 buildkite-agent pipeline upload $p_local
 
-echo "--- RESTORE SHELLOPTS"; eval "$RESTORE_SHELLOPTS"
-echo "--- upload-pipeline END"
+echo RESTORE SHELLOPTS
+eval "$RESTORE_SHELLOPTS"
 
-echo ls -l $c_local
-     ls -l $c_local || echo no
+ls -l $c_local || echo ERROR cannot find $c_local
+
+echo "--- END upload-pipeline.sh"
