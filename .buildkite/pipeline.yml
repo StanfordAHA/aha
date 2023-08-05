@@ -67,9 +67,9 @@ steps:
   - improbable-eng/metahook:
 
       pre-checkout: |
+        echo "Is /tmp reliable? And/or should curl from url?"
         pwd; df /tmp
         echo ls -l $CHECKOUT; ls -l $CHECKOUT || echo no
-        echo ls -l $$CHECKOUT; ls -l $$CHECKOUT || echo no
         #
         echo source $CHECKOUT
         source $CHECKOUT

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# This script runs from root dir. Flee to safety!
+mkdir -p /tmp/buildkite-agent-safe-space
+touch    /tmp/buildkite-agent-safe-space # Immunity from cleanup-old-files script
+cd       /tmp/buildkite-agent-safe-space
+
 # save and restore existing shell opts in case script is sourced
 RESTORE_SHELLOPTS="$(set +o)"
 set +u # nounset? not on my watch!
@@ -7,40 +12,27 @@ set +x # debug OFF
 
 echo "--- custom-checkout.sh BEGIN"
 
+echo "+++ Check on our trash"
+ls -l /tmp | grep buildkite-agent
+echo "--- Continue"
+
 # IF this works it enables all kinds of optimiztions
+# Okay. Like what for example?
 echo FLOW_REPO=$FLOW_REPO || echo nop
 echo FLOW_HEAD_SHA=$FLOW_HEAD_SHA || echo nop
 
-# This is supposed to detect heroku jobs
-if [ "$BUILDKITE_STEP_KEY" == "" ]; then
-    if [ "$FLOW_REPO" ]; then
-        # set commit to "master" and let default pipeline do the rest
-        echo "--- HEROKU DETECTED"
-        BUILDKITE_COMMIT=master
-        echo Reset BUILD_COMMIT=$BUILD_COMMIT
-    fi
-fi
-
-# echo "+++ checkout.sh cleanup"
-# rm /tmp/ahaflow-custom-checkout-83* || echo nop
-# rm /tmp/ahaflow-custom-checkout-84[01]* || echo nop
-
-# ########################################################################
-# echo "+++ checkout.sh trash"
-# echo '-------------'
-# ls -l /tmp/ahaflow-custom-checkout* || echo nope
-# 
-# echo '-------------'
-# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/ || echo nope
-# 
-# echo '-------------'
-# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/aha || echo nope
-# 
-# echo '-------------'
-# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/.buildkite/hooks || echo nope
-# 
-# echo '-------------'
-# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/aha/.buildkite/hooks || echo nope
+# Current mechanism is such that
+# - heroku is detected in prior upload-pipeline.sh script
+# - which then loads OLD pipeline.xml, which does NOT use this checkout script. Right?
+# # This is supposed to detect heroku jobs
+# if [ "$BUILDKITE_STEP_KEY" == "" ]; then
+#     if [ "$FLOW_REPO" ]; then
+#         # set commit to "master" and let default pipeline do the rest
+#         echo "--- HEROKU DETECTED"
+#         BUILDKITE_COMMIT=master
+#         echo Reset BUILD_COMMIT=$BUILD_COMMIT
+#     fi
+# fi
 
 echo '-------------'
  
@@ -185,3 +177,32 @@ echo "--- RESTORE SHELLOPTS"
 eval "$RESTORE_SHELLOPTS"
 pwd
 echo "--- custom-checkout.sh END"
+
+
+
+
+
+##############################################################################
+# TRASH
+
+# echo "+++ checkout.sh cleanup"
+# rm /tmp/ahaflow-custom-checkout-83* || echo nop
+# rm /tmp/ahaflow-custom-checkout-84[01]* || echo nop
+
+# ########################################################################
+# echo "+++ checkout.sh trash"
+# echo '-------------'
+# ls -l /tmp/ahaflow-custom-checkout* || echo nope
+# 
+# echo '-------------'
+# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/ || echo nope
+# 
+# echo '-------------'
+# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/aha || echo nope
+# 
+# echo '-------------'
+# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/.buildkite/hooks || echo nope
+# 
+# echo '-------------'
+# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/aha/.buildkite/hooks || echo nope
+
