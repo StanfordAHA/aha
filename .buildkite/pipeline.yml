@@ -75,9 +75,14 @@ steps:
         source $CHECKOUT
         # set -x; source .buildkite/hooks/post-checkout
 
-# What? no!
-#       pre-command: |
-#         set -x; pwd; if test -e tmp-vars; then source tmp-vars; fi
+      pre-command: |
+          set -x
+          echo "+++ DEBUG POST-CHECKOUT HOOK"
+          date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
+          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+          ls -l $$aha/.buildkite/hooks/post-checkout || echo no
+          echo "+++ DEBUG DOCKER TRASH"
+          docker images; docker ps
 
       pre-exit: |
         pwd
@@ -155,6 +160,7 @@ steps:
 
 # need to run post-checkout and pre-exit hooks even though did not checkout aha repo
   plugins:
+    - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
         pre-command: |
           set -x
