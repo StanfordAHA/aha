@@ -67,3 +67,6 @@ buildkite-agent pipeline upload $p_local
 
 echo "--- RESTORE SHELLOPTS"; eval "$RESTORE_SHELLOPTS"
 echo "--- upload-pipeline END"
+
+echo ls -l $c_local
+     ls -l $c_local || echo no

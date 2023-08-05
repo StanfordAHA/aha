@@ -67,6 +67,10 @@ steps:
   - improbable-eng/metahook:
 
       pre-checkout: |
+        pwd; df /tmp
+        echo ls -l $CHECKOUT; ls -l $CHECKOUT || echo no
+        echo ls -l $$CHECKOUT; ls -l $$CHECKOUT || echo no
+        #
         echo source $CHECKOUT
         source $CHECKOUT
         # set -x; source .buildkite/hooks/post-checkout
