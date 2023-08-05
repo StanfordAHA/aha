@@ -63,6 +63,18 @@ for i in 1; do
     echo Cannot find dev pipeline, will stay w master default.
 done
 
+
+
+echo "+++ DEBUG: What is up with r7cad-docker-5?"
+set -x
+d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford/aha/aha-flow
+ls -l $d || echo no
+echo "-----"
+ls -lR $d | grep root || echo no
+set +x
+
+
+echo "--- continue"
 buildkite-agent pipeline upload $p_local
 
 echo RESTORE SHELLOPTS
