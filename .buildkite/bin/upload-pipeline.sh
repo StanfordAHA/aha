@@ -43,7 +43,10 @@ for i in 1; do
     # Test this path by doing "git push" from aha repo
     echo "Triggered by valid aha-repo commit? If so, use pipeline from that commit."
     if curl -sf $acommit/$p_remote > $p_local; then
+       echo Using pipeline from commit $acommit
+       echo downloading $acommit/$c_remote
        curl -s  $acommit/$c_remote > $c_local  # Okay (for now) if checkout.sh does not exist
+       ls -l $c_local || echo no
        break
     fi
     echo "Not triggered by aha repo, must be a request from a submodule."
