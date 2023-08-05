@@ -52,7 +52,7 @@ echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
 echo "--- CLONE AHA REPO"
 
 # Start with a clean slate. Could be bad news if files leftover from previous runs.
-d=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+d=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
 if test -d $d; then
   ls -lR $d/temp || echo no
   /bin/rm -rf $d/temp || echo nop
@@ -204,5 +204,5 @@ echo "--- custom-checkout.sh END"
 # ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/.buildkite/hooks || echo nope
 # 
 # echo '-------------'
-# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow/aha/.buildkite/hooks || echo nope
+# ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow-aha/.buildkite/hooks || echo nope
 
