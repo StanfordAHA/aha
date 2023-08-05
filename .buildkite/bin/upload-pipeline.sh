@@ -71,11 +71,11 @@ echo "-----"
 ls -la $d || echo no
 echo "-----"
 ls -laR $d | grep root || echo no
-printf "-----\n-----\n-----\n"
+printf "===\n===\n===\n"
 ls -la $d/temp/temp/ || echo no
 echo "-----"
 ls -ld $d/temp/temp/.TEST || echo no
-printf "-----\n-----\n-----\n"
+printf "===\n===\n===\n"
 set +x
 
 # That's what's up.
