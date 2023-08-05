@@ -66,6 +66,13 @@ steps:
 #       precommand: $${BUILDKITE_DOWNLOADS_PATH}/custom-checkout.sh
   - improbable-eng/metahook:
 
+      pre-checkout: |
+        aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+        ls -ld $$aha || echo no
+        ls -ld $$aha/temp || echo no
+        ls -laR $$aha/temp || echo no
+
+
       # pre-checkout is a BAD IDEA maybe
       # "Preparing working directory" might clear out aha-flow maybe??
       post-checkout: |
@@ -89,6 +96,8 @@ steps:
       pre-exit: |
         pwd
         ls
+        ls -ld temp || echo no
+        ls -laR temp || echo no
         chmod +x .buildkite/hooks/pre-exit; ./.buildkite/hooks/pre-exit
 #         source .buildkite/hooks/pre-exit # complains about unbound variable :( ??
 
