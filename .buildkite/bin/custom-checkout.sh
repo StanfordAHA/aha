@@ -58,10 +58,16 @@ echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
 
 # This is what I SHOULD do...
 echo "--- CLONE AHA REPO"
-d=$BUILDKITE_BUILD_CHECKOUT_PATH
-test -e $d && /bin/rm -rf $d || echo nop
-git clone --recurse-submodules https://github.com/hofstee/aha $d
 
+# Start with a clean slate. Could be bad news if files leftover from previous runs.
+d=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford/aha/aha-flow
+if test -d $d; then
+  ls -lR $d/temp || echo no
+  /bin/rm -rf $d/temp || echo nop
+  /bin/rm -rf $d || echo nop
+fi
+
+git clone --recurse-submodules https://github.com/hofstee/aha $d
 cd $d
 
 set -x

@@ -5,7 +5,10 @@ echo "PWD: " `pwd`
 
 if [[ ${BUILDKITE_STEP_KEY} =~ ^(docker-build|integration-tests)$ ]]; then
     set -x
+    pwd
     mkdir -p temp
+    pwd
+    echo Renewing `pwd`/temp/.TEST
     rm -rf temp/.TEST # Does not complain if file not exists!
     touch temp/.TEST
     set +x
