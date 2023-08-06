@@ -99,7 +99,7 @@ echo ls .buildkite
 
 echo "--- continue"
 # buildkite-agent pipeline upload $p_local
-buildkite-agent pipeline upload .buildkite/pipeline.xml
+buildkite-agent pipeline upload .buildkite/pipeline.yml
 
 set +x
 
