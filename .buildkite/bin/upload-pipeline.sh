@@ -69,9 +69,9 @@ for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
     if (ls -laR $d | grep root); then
         echo "WARNING found root-owned objects in $d"
         set -x
-        mkdir -p /var/lib/buildkite-agent/builds/DELETEME
+        mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
         # set -x; /bin/rm -rf $d; set +x
-        mv $d /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
+        mv $d /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
         set +x
     fi
 done
