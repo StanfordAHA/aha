@@ -20,6 +20,9 @@ cc_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
 echo cp .buildkite/bin/custom-checkout.sh $cc_local
      cp .buildkite/bin/custom-checkout.sh $cc_local
 
+echo ls .buildkite
+     ls .buildkite
+
 # # Remote locations for pipeline, checkout scripts
 # # (Unique BUILD_NUMBER query at end of url prevents caching)
 # p_remote=pipeline.yml?$BUILDKITE_BUILD_NUMBER
@@ -89,6 +92,10 @@ for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
         set +x
     fi
 done
+
+set -x
+echo ls .buildkite
+     ls .buildkite
 
 echo "--- continue"
 # buildkite-agent pipeline upload $p_local
