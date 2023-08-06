@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# save and restore existing shell opts in case script is sourced
-RESTORE_SHELLOPTS="$(set +o)"
+# NO, too paranoid
+# # save and restore existing shell opts in case script is sourced
+# RESTORE_SHELLOPTS="$(set +o)"
+
 set +u # nounset? not on my watch!
 set +x # Extreme dev time is OVER
 
 echo "--- BEGIN upload-pipeline.sh"
+
+echo "I am here: `pwd`"
+git status -uno
 
 # Remote locations for pipeline, checkout scripts
 # (Unique BUILD_NUMBER query at end of url prevents caching)
@@ -65,22 +70,32 @@ done
 # If temp subdir contains files owned by root, that's bad.
 # Delete the entire directory if this is found to be true.
 echo "+++ PURGE BAD TEMP FILES"
-for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow; do
-    if (ls -laR $d/temp | grep root); then
-        echo "WARNINGgg found root-owned objects in $d"
+for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
+    if (ls -laR $d | grep root); then
+        echo "WARNING found root-owned objects in $d"
         set -x
         mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
         # set -x; /bin/rm -rf $d; set +x
-        mv $d /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
+        mv $d/.. /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
         set +x
     fi
 done
 
+# custom pipeline.xml expects to find:
+#   CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# sourced as pre-checkout hook in step "Build Docker Image"
+
+
+
+
 echo "--- continue"
 buildkite-agent pipeline upload $p_local
 
-echo RESTORE SHELLOPTS
-eval "$RESTORE_SHELLOPTS"
+set +x
+
+# NO, too paranoid
+# echo RESTORE SHELLOPTS
+# eval "$RESTORE_SHELLOPTS"
 
 ls -l $c_local || echo ERROR cannot find $c_local
 
