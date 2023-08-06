@@ -71,7 +71,7 @@ for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
         set -x
         mkdir -p /var/lib/buildkite-agent/builds/DELETEME
         # set -x; /bin/rm -rf $d; set +x
-        mv $d /var/lib/buildkite-agent/builds/DELETEME
+        mv $d /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
         set +x
     fi
 done
