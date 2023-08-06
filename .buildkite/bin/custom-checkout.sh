@@ -21,43 +21,11 @@ echo "--- Continue"
 echo FLOW_REPO=$FLOW_REPO || echo nop
 echo FLOW_HEAD_SHA=$FLOW_HEAD_SHA || echo nop
 
-# Current mechanism is such that
-# - heroku is detected in prior upload-pipeline.sh script
-# - which then loads OLD pipeline.xml, which does NOT use this checkout script. Right?
-# # This is supposed to detect heroku jobs
-# if [ "$BUILDKITE_STEP_KEY" == "" ]; then
-#     if [ "$FLOW_REPO" ]; then
-#         # set commit to "master" and let default pipeline do the rest
-#         echo "--- HEROKU DETECTED"
-#         BUILDKITE_COMMIT=master
-#         echo Reset BUILD_COMMIT=$BUILD_COMMIT
-#     fi
-# fi
-
 echo '-------------'
  
-# # No!
-# f='/tmp/ahaflow-custom-checkout-$BUILDKITE_BUILD_NUMBER.sh'
-# test -f $f && /bin/rm $f
-# 
-# 
-# echo "--- CONTINUE"
-# ########################################################################
-
 # BUILDKITE_BUILD_CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
-echo I am `whoami`
+echo I am `whoami`     # Watch out if this ever says "I am root"
 echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
-
-# # If temp subdir contains files owned by root, that's bad.
-# # Delete the entire directory if this is found to be true.
-# echo "+++ PURGE BAD TEMP FILES"
-# echo I am `whoami`
-# for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
-#     if (ls -laR $d | grep root); then
-#         echo "WARNING found root-owned objects in $d"
-#         set -x; /bin/rm -rf $d; set +x
-#     fi
-# done
 
 # This is what I SHOULD do...
 echo "--- CLONE AHA REPO"
@@ -217,3 +185,34 @@ echo "--- custom-checkout.sh END"
 # echo '-------------'
 # ls -ld /var/lib/buildkite-agent/builds/*[1-8]/stanford-aha/aha-flow-aha/.buildkite/hooks || echo nope
 
+# # If temp subdir contains files owned by root, that's bad.
+# # Delete the entire directory if this is found to be true.
+# echo "+++ PURGE BAD TEMP FILES"
+# echo I am `whoami`
+# for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
+#     if (ls -laR $d | grep root); then
+#         echo "WARNING found root-owned objects in $d"
+#         set -x; /bin/rm -rf $d; set +x
+#     fi
+# done
+
+# Current mechanism is such that
+# - heroku is detected in prior upload-pipeline.sh script
+# - which then loads OLD pipeline.xml, which does NOT use this checkout script. Right?
+# # This is supposed to detect heroku jobs
+# if [ "$BUILDKITE_STEP_KEY" == "" ]; then
+#     if [ "$FLOW_REPO" ]; then
+#         # set commit to "master" and let default pipeline do the rest
+#         echo "--- HEROKU DETECTED"
+#         BUILDKITE_COMMIT=master
+#         echo Reset BUILD_COMMIT=$BUILD_COMMIT
+#     fi
+# fi
+
+# # No!
+# f='/tmp/ahaflow-custom-checkout-$BUILDKITE_BUILD_NUMBER.sh'
+# test -f $f && /bin/rm $f
+# 
+# 
+# echo "--- CONTINUE"
+# ########################################################################

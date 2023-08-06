@@ -27,9 +27,6 @@ curl -s --fail $amaster/$p_remote > $p_local
 curl -s        $amaster/$c_remote > $c_local  # Okay (for now) if checkout.sh does not exist
 echo Established default pipeline $p_local from aha master branch.
 
-# ls /tmp/*/pre-command || echo nop
-# cat -n /tmp/*/pre-command || echo nop
-
 for i in 1; do
     echo "Heroku trigger? (Until we turn it off, heroku behaves as before.)"
     # Test this path by doing "git pull master" from a submodule
@@ -63,30 +60,8 @@ for i in 1; do
     echo Cannot find dev pipeline, will stay w master default.
 done
 
-echo "+++ DEBUG: What is up with r7cad-docker-5?"
-set -x
-d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
-ls -ld $d || echo no
-echo "-----"
-ls -la $d || echo no
-echo "-----"
-ls -laR $d | grep root || echo no
-printf "===\n===\n===\n"
-ls -la $d/temp/temp/ || echo no
-echo "-----"
-ls -ld $d/temp/temp/.TEST || echo no
-printf "===\n===\n===\n"
-set +x
-
-# That's what's up.
-# ls -la /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
-# buildkite-agent temp
-# 
-# ls -laR /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow | grep root
-# root temp
-# root .
-# root .TEST
-
+# FIXME once we reach steady state, can delete this wackadoo check.
+# FIXME !remindme maybe delete in a month, today is 4 aug 2023
 # If temp subdir contains files owned by root, that's bad.
 # Delete the entire directory if this is found to be true.
 echo "+++ PURGE BAD TEMP FILES"
@@ -101,11 +76,6 @@ for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp/; do
     fi
 done
 
-
-
-
-
-
 echo "--- continue"
 buildkite-agent pipeline upload $p_local
 
@@ -115,3 +85,30 @@ eval "$RESTORE_SHELLOPTS"
 ls -l $c_local || echo ERROR cannot find $c_local
 
 echo "--- END upload-pipeline.sh"
+
+
+
+# TRASH
+# echo "+++ DEBUG: What is up with r7cad-docker-5?"
+# set -x
+# d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
+# ls -ld $d || echo no
+# echo "-----"
+# ls -la $d || echo no
+# echo "-----"
+# ls -laR $d | grep root || echo no
+# printf "===\n===\n===\n"
+# ls -la $d/temp/temp/ || echo no
+# echo "-----"
+# ls -ld $d/temp/temp/.TEST || echo no
+# printf "===\n===\n===\n"
+# set +x
+# 
+# # That's what's up.
+# # ls -la /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
+# # buildkite-agent temp
+# # 
+# # Ls -laR /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow | grep root
+# # root temp
+# # root .
+# # root .TEST

@@ -66,15 +66,9 @@ steps:
 #       precommand: $${BUILDKITE_DOWNLOADS_PATH}/custom-checkout.sh
   - improbable-eng/metahook:
 
-      pre-checkout: |
-        aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-        ls -ld $$aha || echo no
-        ls -ld $$aha/temp || echo no
-        ls -laR $$aha/temp || echo no
-
       # pre-checkout is a BAD IDEA maybe
       # "Preparing working directory" might clear out aha-flow maybe??
-      post-checkout: |
+      pre-checkout: |
         echo "Is /tmp reliable? And/or should curl from url?"
         pwd; df /tmp
         echo ls -l $CHECKOUT; ls -l $CHECKOUT || echo no
@@ -238,5 +232,9 @@ steps:
 #   - echo "--- successed or not i dunno"
 #   - exit 13
 
-
+#       pre-checkout: |
+#         aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+#         ls -ld $$aha || echo no
+#         ls -ld $$aha/temp || echo no
+#         ls -laR $$aha/temp || echo no
 
