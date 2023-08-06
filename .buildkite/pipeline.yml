@@ -167,7 +167,7 @@ steps:
   - rm -rf /buildkite/.TEST
   - ls -al /buildkite
 
-  - pwd
+  - exit 0
 
 # need to run post-checkout and pre-exit hooks even though did not checkout aha repo
   plugins:
