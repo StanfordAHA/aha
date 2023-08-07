@@ -67,6 +67,9 @@ for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
     /bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME || echo no
 done
 
+# Don't delete yourself!
+mkdir -p /var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+
 set -x
 echo ls .buildkite
      ls .buildkite
