@@ -84,6 +84,12 @@ steps:
       # FIXME maybe should not rely on repo hook for post-echkout, pre-exit!
       # "Preparing working directory" might clear out aha-flow maybe??
       pre-checkout: |
+        echo "+++ PRE CHECKOUT HOOK"
+
+        echo "+++ where is custom-checkout?"; set -x
+        cc_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+        ls -l $cc_local || echo ERROR cannot find $cc_local
+
         echo "Is /tmp reliable? And/or should curl from url?"
         pwd; df /tmp
         echo ls -l $CHECKOUT; ls -l $CHECKOUT || echo no
@@ -91,6 +97,11 @@ steps:
         echo source $CHECKOUT
         source $CHECKOUT
         # set -x; source .buildkite/hooks/post-checkout
+
+        echo "+++ where is custom-checkout?"; set -x
+        cc_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+        ls -l $cc_local || echo ERROR cannot find $cc_local
+
 
       pre-command: |
           set -x
