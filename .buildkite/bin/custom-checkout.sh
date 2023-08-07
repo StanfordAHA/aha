@@ -66,6 +66,38 @@ fi
 
 set -x
 git checkout -f $BUILDKITE_COMMIT
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+echo "--- custom-checkout.sh EARLY OUT for debugging purposes only"
+return
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 git submodule sync --recursive
 git submodule update --init --recursive --force
 git submodule foreach --recursive "git reset --hard"
