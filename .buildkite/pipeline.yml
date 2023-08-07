@@ -3,7 +3,16 @@ env:
 
   # CHECKOUT env var should have been set by aha pipeline flow steps config
   # see https://buildkite.com/stanford-aha/aha-flow/settings/steps
-  CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+
+  # NO /tmp is unreliable
+  # CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+
+  # MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
+  # MYTMP: /var/lib/buildkite-agent/builds/tmp
+
+  CHECKOUT: $$MYTMP/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+
+
 
 steps:
 
@@ -21,7 +30,9 @@ steps:
 # 
 # 
 # 
-  - echo "--- temporarily skipping this step"; exit 0
+  - echo "+++ temporarily skipping this step"; set -x
+  - git pull stanfordaha/garnet:latest
+  - exit 0
   - echo foooooooo
 # 
 # 
@@ -87,11 +98,11 @@ steps:
         echo "+++ PRE CHECKOUT HOOK"
 
         echo "+++ where is custom-checkout?"; set -x
-        cc_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+        cc_local=$$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
         ls -l $cc_local || echo ERROR cannot find $cc_local
 
         echo "Is /tmp reliable? And/or should curl from url?"
-        pwd; df /tmp
+        pwd; df $$MYTMP
         echo ls -l $CHECKOUT; ls -l $CHECKOUT || echo no
         #
         echo source $CHECKOUT
@@ -99,7 +110,7 @@ steps:
         # set -x; source .buildkite/hooks/post-checkout
 
         echo "+++ where is custom-checkout?"; set -x
-        cc_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+        cc_local=$$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
         ls -l $cc_local || echo ERROR cannot find $cc_local
 
 
@@ -142,7 +153,7 @@ steps:
     # - thedyrt/skip-checkout#v0.1.1: ~
     - docker#v3.2.0:
         # image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
-        image: garnet:latest
+        image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"
@@ -203,9 +214,14 @@ steps:
         pre-command: |
           set -x
           echo "+++ DEBUG POST-CHEKOUT HOOK"
-          date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
+          date; pwd; ls -l .buildkite/hooks/post-checkout || echo no thats okay
           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-          ls -l $$aha/.buildkite/hooks/post-checkout || echo no
+          ls -l $$aha/.buildkite/hooks/post-checkout || echo no thats okay
+          ls -l $$aha || echo no thats okay
+
+          # Once I got a message "Process working directory $$aha doesn't exist"(!)
+          ls -l $$aha || mkdir -p $$aha
+
           # Already did this in prev step??
           # echo "+++ DEBUG DOCKER TRASH"
           # docker images; docker ps
@@ -213,7 +229,7 @@ steps:
 
     - docker#v3.2.0:
         # image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
-        image: garnet:latest
+        image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"

@@ -1,9 +1,14 @@
 #!/bin/bash
 
+# MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
+# export MYTMP=/var/lib/buildkite-agent/builds/tmp
+
 # This script runs from root dir. Flee to safety!
-mkdir -p /tmp/buildkite-agent-safe-space
-touch    /tmp/buildkite-agent-safe-space # Immunity from cleanup-old-files script
-cd       /tmp/buildkite-agent-safe-space
+# Note NOTHING SHOULD HAPPEN in this safe space, soon we will cd to working dir, see below.
+if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
+mkdir -p $MYTMP/buildkite-agent-safe-space
+touch    $MYTMP/buildkite-agent-safe-space # Immunity from cleanup-old-files script
+cd       $MYTMP/buildkite-agent-safe-space
 
 # save and restore existing shell opts in case script is sourced
 RESTORE_SHELLOPTS="$(set +o)"
@@ -13,7 +18,11 @@ set +x # debug OFF
 echo "--- custom-checkout.sh BEGIN"
 
 echo "+++ Check on our trash"
-ls -l /tmp | grep buildkite-agent
+set -x
+ls -l /tmp | grep buildkite-agent || echo okay
+echo "----------------------------------------------"
+ls -l $MYTMP | grep buildkite-agent || echo okay
+set +x
 echo "--- Continue"
 
 # IF this works it enables all kinds of optimiztions

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# what do i do? not much ackshully
+# - copy local (agent-specific) .buildkite/bin/custom-checkout.sh to common TEMP area
+# - find root-owned temp directories and purge them (!!!)
+# - upload local (agent-specific) pipeline.yml
+
 # NO, too paranoid
 # # save and restore existing shell opts in case script is sourced
 # RESTORE_SHELLOPTS="$(set +o)"
@@ -16,21 +21,89 @@ git status -buno | head -1  # E.g. "On branch no-heroku" or "HEAD detached at 3b
 #   CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
 # sourced as pre-checkout hook in step "Build Docker Image"
 
-cc_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
+cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
 echo cp .buildkite/bin/custom-checkout.sh $cc_local
      cp .buildkite/bin/custom-checkout.sh $cc_local
 
 echo ls .buildkite
      ls .buildkite
 
+# FIXME once we reach steady state, can delete this wackadoo check.
+# FIXME !remindme maybe delete in a month, today is 4 aug 2023
+# If temp subdir contains files owned by root, that's bad.
+# Delete the entire directory if this is found to be true.
+echo "+++ PURGE BAD TEMP FILES"
+set -x
+for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
+    if (ls -laR $d | grep root); then
+        echo "WARNING found root-owned objects in $d"
+        set -x
+        mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
+        # set -x; /bin/rm -rf $d; set +x
+        repo=$(cd $d; cd ..; pwd)
+        mv $repo /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
+        set +x
+    fi
+    /bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME || echo no
+done
+
+set -x
+echo ls .buildkite
+     ls .buildkite
+
+echo "--- continue"
+# buildkite-agent pipeline upload $p_local
+buildkite-agent pipeline upload .buildkite/pipeline.yml
+
+set +x
+
+# NO, too paranoid
+# echo RESTORE SHELLOPTS
+# eval "$RESTORE_SHELLOPTS"
+
+echo "+++ where is custom-checkout?"; set -x
+cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+ls -l $cc_local || echo ERROR cannot find $cc_local
+
+echo "--- END upload-pipeline.sh"
+
+
+
+# TRASH
+# echo "+++ DEBUG: What is up with r7cad-docker-5?"
+# set -x
+# d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
+# ls -ld $d || echo no
+# echo "-----"
+# ls -la $d || echo no
+# echo "-----"
+# ls -laR $d | grep root || echo no
+# printf "===\n===\n===\n"
+# ls -la $d/temp/temp/ || echo no
+# echo "-----"
+# ls -ld $d/temp/temp/.TEST || echo no
+# printf "===\n===\n===\n"
+# set +x
+# 
+# # That's what's up.
+# # ls -la /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
+# # buildkite-agent temp
+# # 
+# # Ls -laR /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow | grep root
+# # root temp
+# # root .
+# # root .TEST
+
+# -----
 # # Remote locations for pipeline, checkout scripts
 # # (Unique BUILD_NUMBER query at end of url prevents caching)
 # p_remote=pipeline.yml?$BUILDKITE_BUILD_NUMBER
 # c_remote=bin/custom-checkout.sh?$BUILDKITE_BUILD_NUMBER
 # 
 # # Where to put scripts (locally) when we find them
-# p_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-pipeline.xml
-# c_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# p_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-pipeline.xml
+# c_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
 # 
 # # Various places we might find pipeline.xml
 # u=https://raw.githubusercontent.com/StanfordAHA/aha
@@ -76,68 +149,3 @@ echo ls .buildkite
 #     echo Cannot find dev pipeline, will stay w master default.
 # done
 
-# FIXME once we reach steady state, can delete this wackadoo check.
-# FIXME !remindme maybe delete in a month, today is 4 aug 2023
-# If temp subdir contains files owned by root, that's bad.
-# Delete the entire directory if this is found to be true.
-echo "+++ PURGE BAD TEMP FILES"
-set -x
-for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
-    if (ls -laR $d | grep root); then
-        echo "WARNING found root-owned objects in $d"
-        set -x
-        mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
-        # set -x; /bin/rm -rf $d; set +x
-        repo=$(cd $d; cd ..; pwd)
-        mv $repo /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
-        set +x
-    fi
-    /bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME || echo no
-done
-
-set -x
-echo ls .buildkite
-     ls .buildkite
-
-echo "--- continue"
-# buildkite-agent pipeline upload $p_local
-buildkite-agent pipeline upload .buildkite/pipeline.yml
-
-set +x
-
-# NO, too paranoid
-# echo RESTORE SHELLOPTS
-# eval "$RESTORE_SHELLOPTS"
-
-echo "+++ where is custom-checkout?"; set -x
-cc_local=/tmp/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-ls -l $cc_local || echo ERROR cannot find $cc_local
-
-echo "--- END upload-pipeline.sh"
-
-
-
-# TRASH
-# echo "+++ DEBUG: What is up with r7cad-docker-5?"
-# set -x
-# d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
-# ls -ld $d || echo no
-# echo "-----"
-# ls -la $d || echo no
-# echo "-----"
-# ls -laR $d | grep root || echo no
-# printf "===\n===\n===\n"
-# ls -la $d/temp/temp/ || echo no
-# echo "-----"
-# ls -ld $d/temp/temp/.TEST || echo no
-# printf "===\n===\n===\n"
-# set +x
-# 
-# # That's what's up.
-# # ls -la /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
-# # buildkite-agent temp
-# # 
-# # Ls -laR /var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow | grep root
-# # root temp
-# # root .
-# # root .TEST
