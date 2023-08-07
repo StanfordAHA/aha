@@ -218,10 +218,16 @@ steps:
         # "If this works, we'll eat like kings!"
         pre-checkout: |
           echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
+          set -x
           # Want original post-checkout, pre-exit hooks available
           [ "$$BUILDKITE_BUILD_CHECKOUT_PATH" ] || exit 13 # big trouble if not exists
           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
           cp -rp $$MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+          ls -l $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
+          ls -l $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
+          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+          ls -l $$aha/.buildkite/hooks/post-checkout || echo no thats okay
+          ls -l $$aha || echo no thats okay
           echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
 
         pre-command: |
