@@ -210,12 +210,23 @@ steps:
   - exit 0
 
 # need to run post-checkout and pre-exit hooks even though did not checkout aha repo
+  # ONYX INTEGRATION TESTS
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
+
+      # "If this works, we'll eat like kings!"
+      pre-checkout: |
+        echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
+        # Want original post-checkout, pre-exit hooks available
+        [ "$$BUILDKITE_BUILD_CHECKOUT_PATH" ] || exit 13 # big trouble if not exists
+        mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+        cp -rp $$MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+        echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
+
         pre-command: |
           set -x
-          echo "+++ DEBUG POST-CHEKOUT HOOK"
+          echo "+++ DEBUG POST-CHECKOUT HOOK, OIT STEP"
           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no thats okay
           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
           ls -l $$aha/.buildkite/hooks/post-checkout || echo no thats okay
