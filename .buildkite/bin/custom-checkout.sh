@@ -3,6 +3,11 @@
 # MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
 # export MYTMP=/var/lib/buildkite-agent/builds/tmp
 
+# Actually MYTMP is '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# Want to expand it to e.g. '/var/lib/buildkite-agent/builds/4458'
+MYTMP=`eval echo $MYTMP`
+
+set -x
 # This script runs from root dir. Flee to safety!
 # Note NOTHING SHOULD HAPPEN in this safe space, soon we will cd to working dir, see below.
 if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
