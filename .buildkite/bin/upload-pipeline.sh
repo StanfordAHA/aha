@@ -81,9 +81,9 @@ set +x
 # echo RESTORE SHELLOPTS
 # eval "$RESTORE_SHELLOPTS"
 
-echo "+++ where is custom-checkout?"; set -x
-cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-ls -l $cc_local || echo ERROR cannot find $cc_local
+# echo "+++ where is custom-checkout?"; set -x
+# cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# ls -l $cc_local || echo ERROR cannot find $cc_local
 
 echo "--- END upload-pipeline.sh"
 

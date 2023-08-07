@@ -11,7 +11,7 @@ env:
   # MYTMP: /var/lib/buildkite-agent/builds/tmp
 
   # CHECKOUT: $$MYTMP/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-  CHECKOUT: $$MYTMP/aha-flow/.buildkite/bin/custom-checkout.sh
+  CHECKOUT: $MYTMP/aha-flow/.buildkite/bin/custom-checkout.sh
 
 
 
