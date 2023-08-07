@@ -17,17 +17,36 @@ echo "--- BEGIN upload-pipeline.sh"
 echo "I am here: `pwd`"
 git status -buno | head -1  # E.g. "On branch no-heroku" or "HEAD detached at 3bf5dc7"
 
-# custom pipeline.xml expects to find:
-#   CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-# sourced as pre-checkout hook in step "Build Docker Image"
 
-# MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
-cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-echo cp .buildkite/bin/custom-checkout.sh $cc_local
-     cp .buildkite/bin/custom-checkout.sh $cc_local
 
-echo ls .buildkite
-     ls .buildkite
+
+
+
+
+##############################################################################
+# Um pretty sure $MYTMP/.buildkite/bin/custom-checkout.sh exists already.
+# 
+# 
+# 
+# # custom pipeline.xml expects to find:
+# #   CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# # sourced as pre-checkout hook in step "Build Docker Image"
+# 
+# # Why not use that directly?
+# # MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
+# cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# echo cp .buildkite/bin/custom-checkout.sh $cc_local
+#      cp .buildkite/bin/custom-checkout.sh $cc_local
+# 
+# echo ls .buildkite
+#      ls .buildkite
+
+
+
+
+
+
+
 
 # FIXME once we reach steady state, can delete this wackadoo check.
 # FIXME !remindme maybe delete in a month, today is 4 aug 2023

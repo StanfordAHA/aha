@@ -22,6 +22,10 @@ set -x
 ls -l /tmp | grep buildkite-agent || echo okay
 echo "----------------------------------------------"
 ls -l $MYTMP | grep buildkite-agent || echo okay
+echo "----------------------------------------------"
+du -x --max-depth=0 $MYTMP || echo okay
+d=(cd $MYTMP/..; pwd) || echo okay
+du -x --max-depth=0 $d || echo okay
 set +x
 echo "--- Continue"
 

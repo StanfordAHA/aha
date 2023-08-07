@@ -10,7 +10,8 @@ env:
   # MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
   # MYTMP: /var/lib/buildkite-agent/builds/tmp
 
-  CHECKOUT: $$MYTMP/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+  # CHECKOUT: $$MYTMP/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+  CHECKOUT: $$MYTMP/aha-flow/.buildkite/bin/custom-checkout.sh
 
 
 
@@ -98,8 +99,7 @@ steps:
         echo "+++ PRE CHECKOUT HOOK, BDI STEP"
 
         echo "+++ where is custom-checkout? pc1"; set -x
-        cc_local=$$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-        ls -l $$cc_local || echo ERROR cannot find $$cc_local
+        ls -l $$CHECKOUT || echo ERROR cannot find $$CHECKOUT
 
         #         echo "Is /tmp reliable? And/or should curl from url?"
         #         pwd; df -h $$MYTMP
@@ -110,8 +110,7 @@ steps:
         # set -x; source .buildkite/hooks/post-checkout
 
         echo "+++ where is custom-checkout? pc2"; set -x
-        cc_local=$$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-        ls -l $$cc_local || echo ERROR cannot find $$cc_local
+        ls -l $$CHECKOUT || echo ERROR cannot find $$CHECKOUT
 
 
       pre-command: |
