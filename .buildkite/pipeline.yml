@@ -101,10 +101,10 @@ steps:
         cc_local=$$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
         ls -l $$cc_local || echo ERROR cannot find $$cc_local
 
-#         echo "Is /tmp reliable? And/or should curl from url?"
-#         pwd; df -h $$MYTMP
+        #         echo "Is /tmp reliable? And/or should curl from url?"
+        #         pwd; df -h $$MYTMP
         echo ls -l $CHECKOUT; ls -l $CHECKOUT || echo no
-        #
+
         echo source $CHECKOUT
         source $CHECKOUT
         # set -x; source .buildkite/hooks/post-checkout
@@ -116,13 +116,13 @@ steps:
 
       pre-command: |
           set -x
-
-# local post-checkout working as of build 8583
-#           echo "+++ DEBUG POST-CHECKOUT HOOK"
-#           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
-#           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-#           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
-
+          #
+          # local post-checkout working as of build 8583
+          #           echo "+++ DEBUG POST-CHECKOUT HOOK"
+          #           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
+          #           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+          #           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
+          #
           echo "+++ DEBUG DOCKER TRASH DBI pre-comm"
           docker images; docker ps
           docker kill deleteme_garnet_ci4114 || echo okay
