@@ -13,6 +13,7 @@ set -x
 MYTMP=`eval echo $MYTMP` # Expand '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
 shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
 # test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
+mkdir -p $MYTMP
 cp -rp $BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
 set +x
 
