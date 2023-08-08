@@ -7,11 +7,14 @@
 
 set +u # nounset? not on my watch!
 set +x # Extreme dev time is OVER
+shopt -s dotglob  # Else will not copy/remove dotfiles e.g. .buildkite/hooks :o
+
+# Offload from online steps
+/bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME/* || echo okay
 
 set -x
 # Use MYTMP to pass information from one step to the next on same machine
 MYTMP=`eval echo $MYTMP` # Expand '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
 # test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
 mkdir -p $MYTMP
 cp -rp $BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
