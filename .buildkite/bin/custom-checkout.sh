@@ -62,6 +62,7 @@ if test -d $d; then
   /bin/rm -rf $d || echo nop
 fi
 
+echo "--- CLONE AHA REPO AND INIT ALL SUBMODULES"
 git clone --recurse-submodules https://github.com/hofstee/aha $d
 # git clone https://github.com/hofstee/aha $d
 
