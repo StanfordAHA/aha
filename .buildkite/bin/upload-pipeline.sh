@@ -25,24 +25,24 @@ echo "--- BEGIN upload-pipeline.sh"
 echo "I am here: `pwd`"
 git status -buno | head -1  # E.g. "On branch no-heroku" or "HEAD detached at 3bf5dc7"
 
-# # FIXME once we reach steady state, can delete this wackadoo check.
-# # FIXME !remindme maybe delete in a month, today is 4 aug 2023
-# # If temp subdir contains files owned by root, that's bad.
-# # Delete the entire directory if this is found to be true.
-# echo "+++ PURGE BAD TEMP FILES"
-# set -x
-# for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
-#     if (ls -laR $d | grep root); then
-#         echo "WARNING found root-owned objects in $d"
-#         set -x
-#         mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
-#         # set -x; /bin/rm -rf $d; set +x
-#         repo=$(cd $d; cd ..; pwd)
-#         mv $repo /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
-#         set +x
-#     fi
-#     /bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME || echo no
-# done
+# FIXME once we reach steady state, can delete this wackadoo check.
+# FIXME !remindme maybe delete in a month, today is 4 aug 2023
+# If temp subdir contains files owned by root, that's bad.
+# Delete the entire directory if this is found to be true.
+echo "+++ PURGE BAD TEMP FILES"
+set -x
+for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
+    if (ls -laR $d | grep root); then
+        echo "WARNING found root-owned objects in $d"
+        set -x
+        mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
+        # set -x; /bin/rm -rf $d; set +x
+        repo=$(cd $d; cd ..; pwd)
+        mv $repo /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
+        set +x
+    fi
+    /bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME || echo no
+done
 
 # Don't delete yourself!
 mkdir -p /var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
