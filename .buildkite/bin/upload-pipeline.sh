@@ -5,27 +5,16 @@
 # - find root-owned temp directories and purge them (!!!)
 # - upload local (agent-specific) pipeline.yml
 
-# NO, too paranoid
-# # save and restore existing shell opts in case script is sourced
-# RESTORE_SHELLOPTS="$(set +o)"
-
-set -x
-
-# Expand MYTMP from '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-echo ONE MYTMP=$MYTMP
-MYTMP=`eval echo $MYTMP`
-echo TWO MYTMP=$MYTMP
-
-# Use MYTMP to pass information from one step to the next on same machine
-shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
-test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
-cp -rp $$BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
-
-
-
-
 set +u # nounset? not on my watch!
 set +x # Extreme dev time is OVER
+
+set -x
+# Use MYTMP to pass information from one step to the next on same machine
+MYTMP=`eval echo $MYTMP` # Expand '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
+# test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
+cp -rp $$BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
+set +x
 
 echo "--- BEGIN upload-pipeline.sh"
 
@@ -176,4 +165,8 @@ return || exit
 # 
 # echo ls .buildkite
 #      ls .buildkite
+
+# NO, too paranoid
+# # save and restore existing shell opts in case script is sourced
+# RESTORE_SHELLOPTS="$(set +o)"
 
