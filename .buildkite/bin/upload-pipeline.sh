@@ -17,37 +17,6 @@ echo "--- BEGIN upload-pipeline.sh"
 echo "I am here: `pwd`"
 git status -buno | head -1  # E.g. "On branch no-heroku" or "HEAD detached at 3bf5dc7"
 
-
-
-
-
-
-
-##############################################################################
-# Um pretty sure $MYTMP/.buildkite/bin/custom-checkout.sh exists already.
-# 
-# 
-# 
-# # custom pipeline.xml expects to find:
-# #   CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-# # sourced as pre-checkout hook in step "Build Docker Image"
-# 
-# # Why not use that directly?
-# # MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
-# cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-# echo cp .buildkite/bin/custom-checkout.sh $cc_local
-#      cp .buildkite/bin/custom-checkout.sh $cc_local
-# 
-# echo ls .buildkite
-#      ls .buildkite
-
-
-
-
-
-
-
-
 # FIXME once we reach steady state, can delete this wackadoo check.
 # FIXME !remindme maybe delete in a month, today is 4 aug 2023
 # If temp subdir contains files owned by root, that's bad.
@@ -80,6 +49,15 @@ buildkite-agent pipeline upload .buildkite/pipeline.yml
 
 set +x
 
+echo "--- END upload-pipeline.sh"
+return || exit
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+# TRASH
+
 # NO, too paranoid
 # echo RESTORE SHELLOPTS
 # eval "$RESTORE_SHELLOPTS"
@@ -88,11 +66,7 @@ set +x
 # cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
 # ls -l $cc_local || echo ERROR cannot find $cc_local
 
-echo "--- END upload-pipeline.sh"
 
-
-
-# TRASH
 # echo "+++ DEBUG: What is up with r7cad-docker-5?"
 # set -x
 # d=/var/lib/buildkite-agent/builds/r7cad-docker-5/stanford-aha/aha-flow
@@ -170,4 +144,22 @@ echo "--- END upload-pipeline.sh"
 #     fi
 #     echo Cannot find dev pipeline, will stay w master default.
 # done
+
+##############################################################################
+# Um pretty sure $MYTMP/.buildkite/bin/custom-checkout.sh exists already.
+# 
+# 
+# 
+# # custom pipeline.xml expects to find:
+# #   CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# # sourced as pre-checkout hook in step "Build Docker Image"
+# 
+# # Why not use that directly?
+# # MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
+# cc_local=$MYTMP/aha-flow-$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+# echo cp .buildkite/bin/custom-checkout.sh $cc_local
+#      cp .buildkite/bin/custom-checkout.sh $cc_local
+# 
+# echo ls .buildkite
+#      ls .buildkite
 

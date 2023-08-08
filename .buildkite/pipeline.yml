@@ -224,11 +224,11 @@ steps:
           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
           shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
-          ls -l $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
-          ls -l $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
+          ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
+          ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-          ls -l $$aha/.buildkite/hooks/post-checkout || echo no thats okay
-          ls -l $$aha || echo no thats okay
+          ls -la $$aha/.buildkite/hooks/post-checkout || echo no thats okay
+          ls -la $$aha || echo no thats okay
           echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
 
         pre-command: |

@@ -1,26 +1,30 @@
 #!/bin/bash
 
-# MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
-# export MYTMP=/var/lib/buildkite-agent/builds/tmp
+set +u # nounset? not on my watch!
+set +x # debug OFF
 
-# Actually MYTMP is '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-# Want to expand it to e.g. '/var/lib/buildkite-agent/builds/4458'
+echo "--- custom-checkout.sh BEGIN"
+
+# export MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# Steps (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
+# set MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+
+# Expand MYTMP from '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# to e.g. '/var/lib/buildkite-agent/builds/4458'
 MYTMP=`eval echo $MYTMP`
+
+# BUILDKITE_BUILD_CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
+echo I am `whoami`     # Watch out if this ever says "I am root"
+echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
+
 
 set -x
 # This script runs from root dir. Flee to safety!
 # Note NOTHING SHOULD HAPPEN in this safe space, soon we will cd to working dir, see below.
 if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
-mkdir -p $MYTMP/buildkite-agent-safe-space
-touch    $MYTMP/buildkite-agent-safe-space # Immunity from cleanup-old-files script
-cd       $MYTMP/buildkite-agent-safe-space
+cd $MYTMP
+set +x
 
-# save and restore existing shell opts in case script is sourced
-RESTORE_SHELLOPTS="$(set +o)"
-set +u # nounset? not on my watch!
-set +x # debug OFF
-
-echo "--- custom-checkout.sh BEGIN"
 
 echo "+++ Check on our trash"
 set -x
@@ -32,6 +36,7 @@ du -x --max-depth=0 $MYTMP || echo okay
 d=$(cd $MYTMP/..; pwd) || echo okay
 du -x --max-depth=0 $d || echo okay
 set +x
+
 echo "--- Continue"
 
 # IF this works it enables all kinds of optimiztions
@@ -41,22 +46,25 @@ echo FLOW_HEAD_SHA=$FLOW_HEAD_SHA || echo nop
 
 echo '-------------'
  
-# BUILDKITE_BUILD_CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
-echo I am `whoami`     # Watch out if this ever says "I am root"
-echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
-
-# This is what I SHOULD do...
 echo "--- CLONE AHA REPO"
 
 # Start with a clean slate. Could be bad news if files leftover from previous runs.
-d=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+d=$BUILDKITE_BUILD_CHECKOUT_PATH
+
+# temporary check to make sure we are doing the right thing
+# DELETE this blockafter i dunno like 08/13/2023 or so
+d1=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+[ "$d" == "$d1" ] || exit 13
+
 if test -d $d; then
-  ls -lR $d/temp || echo no
-  /bin/rm -rf $d/temp || echo nop
+  echo "+++ WARNING checkout dir $d exists"
+  echo "Deleting $d ..."
   /bin/rm -rf $d || echo nop
 fi
 
 git clone --recurse-submodules https://github.com/hofstee/aha $d
+# git clone https://github.com/hofstee/aha $d
+
 cd $d
 
 set -x
@@ -84,38 +92,6 @@ fi
 
 set -x
 git checkout -f $BUILDKITE_COMMIT
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-echo "--- custom-checkout.sh EARLY OUT for debugging purposes only"
-return
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
 git submodule sync --recursive
 git submodule update --init --recursive --force
 git submodule foreach --recursive "git reset --hard"
@@ -184,26 +160,6 @@ if (cd garnet; git log remotes/origin/aha-flow-no-heroku | grep $BUILDKITE_COMMI
     # echo "  AFTER:  " `ls -l .buildkite/pipeline.yml`
 fi
 
-
-
-
-# echo "+++ WHAT IS UP WITH THE HOOKS?"
-# # set -x
-# # echo '--------------'
-# # git branch
-# # echo '--------------'
-# # git status -uno
-# ls -l .buildkite/hooks || echo nop
-# cat .buildkite/hooks/post-checkout || echo hop
-# set +x
-# 
-# echo '+++ HOOKS 155'
-# pwd
-# ls -l .buildkite/hooks || echo nop
-# grep foo .buildkite/hooks/* || echo nop
-
-echo "--- RESTORE SHELLOPTS"
-eval "$RESTORE_SHELLOPTS"
 pwd
 echo "--- custom-checkout.sh END"
 
@@ -266,3 +222,30 @@ echo "--- custom-checkout.sh END"
 # 
 # echo "--- CONTINUE"
 # ########################################################################
+
+# # save and restore existing shell opts in case script is sourced
+# RESTORE_SHELLOPTS="$(set +o)"
+
+
+
+
+
+# echo "+++ WHAT IS UP WITH THE HOOKS?"
+# # set -x
+# # echo '--------------'
+# # git branch
+# # echo '--------------'
+# # git status -uno
+# ls -l .buildkite/hooks || echo nop
+# cat .buildkite/hooks/post-checkout || echo hop
+# set +x
+# 
+# echo '+++ HOOKS 155'
+# pwd
+# ls -l .buildkite/hooks || echo nop
+# grep foo .buildkite/hooks/* || echo nop
+
+# Yeah we don't do this no more
+# echo "--- RESTORE SHELLOPTS"
+# eval "$RESTORE_SHELLOPTS"
+
