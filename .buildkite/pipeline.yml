@@ -222,11 +222,8 @@ steps:
           # Want original post-checkout, pre-exit hooks available
           [ "$$BUILDKITE_BUILD_CHECKOUT_PATH" ] || exit 13 # big trouble if not exists
           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+          shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
-          tmp=/var/lib/buildkite-agent/builds/tmp/$$BUILDKITE_AGENT_NAME
-          [ "$$tmp" == "$MYTMP" ] || exit 13
-
-
           ls -l $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
           ls -l $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
@@ -324,3 +321,6 @@ steps:
 #         precommand: $${BUILDKITE_DOWNLOADS_PATH}/custom-checkout.sh
 
     # - thedyrt/skip-checkout#v0.1.1: ~
+
+#           tmp=/var/lib/buildkite-agent/builds/tmp/$$BUILDKITE_BUILD_NUMBER
+#           [ "$$tmp" == "$MYTMP" ] || exit 13
