@@ -1,19 +1,13 @@
 env:
   CONFIG: ${CONFIG:-daily}
 
-  # CHECKOUT env var should have been set by aha pipeline flow steps config
+  # CHECKOUT and MYTMP env vars should have been set by aha pipeline flow steps config
   # see https://buildkite.com/stanford-aha/aha-flow/settings/steps
 
-  # NO /tmp is unreliable
-  # CHECKOUT: /tmp/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-
-  # MYTMP is set by https://buildkite.com/stanford-aha/aha-flow/settings/steps env, see?
   # MYTMP: /var/lib/buildkite-agent/builds/tmp
-
   # CHECKOUT: $$MYTMP/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
+
   CHECKOUT: $MYTMP/aha-flow/.buildkite/bin/custom-checkout.sh
-
-
 
 steps:
 
@@ -23,30 +17,13 @@ steps:
   commands:
 
   - echo "--- pipeline.xml commands BEGIN"
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-  - echo "+++ temporarily skipping this step"; set -x
-  - docker pull stanfordaha/garnet:latest
-  - exit 0
-  - echo foooooooo
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-  # The "if FLOW_REPO" part is redundant when/if not using heroku...
-  # - source $$CHECKOUT
-  # - source $$CHECKOUT;if [[ $$FLOW_REPO ]]; then (
-  # - env
+
+#   - echo "+++ temporarily skipping this step"; set -x
+#   - docker pull stanfordaha/garnet:latest
+#   - exit 0
+#   - echo foooooooo
+
+  # The "if FLOW_REPO" part is redundant when/if not using heroku...?
   - echo FLOW_REPO=$$FLOW_REPO
   - echo FLOW_REPO=$FLOW_REPO
   - 'set -x;
@@ -131,20 +108,10 @@ steps:
         ls
         ls -ld temp || echo no
         ls -laR temp || echo no
-        chmod +x .buildkite/hooks/pre-exit; ./.buildkite/hooks/pre-exit
+#         chmod +x .buildkite/hooks/pre-exit; ./.buildkite/hooks/pre-exit
 #         source .buildkite/hooks/pre-exit # complains about unbound variable :( ??
 
 
-#       post-checkout: |
-#         set -x; curl -s https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/custom-checkout.sh > custom-checkout.sh
-#         pwd
-#         ls -l
-#         chmod +x ./custom-checkout.sh
-#         ls -l
-#         ./custom-checkout.sh
-
-
-  
 - label: ":hammer: Amber Gold RTL"
   key: "goldcheck-amber"
   depends_on: "docker-build"
@@ -154,8 +121,8 @@ steps:
   plugins:
     # - thedyrt/skip-checkout#v0.1.1: ~
     - docker#v3.2.0:
-        # image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
-        image: stanfordaha/garnet:latest
+        image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
+        # image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"
@@ -178,29 +145,29 @@ steps:
 # TEST to see if failure canary works?
 
 #   # Disabled checkout so maybe .buildkite/hooks/post-checkout not guaranteed to exist
-#   # So must embed finctionality here instead :/
+#   # So must embed functionality here instead :/
 #   - mkdir -p /buildkite/temp; rm -rf /buildkite/temp/.TEST; touch /buildkite/temp/.TEST
   
-#   # - docker images; docker ps; sleep 500; exit 0
-#   - source /aha/bin/activate
-#   - source /cad/modules/tcl/init/sh
-#   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
-#   # make /bin/sh symlink to bash instead of dash:
-#   - echo "dash dash/sh boolean false" | debconf-set-selections
-#   - DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
-#   - apt update
-#   - apt install time
-#   - ls /aha
-#   - pip freeze
-#   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
-#   # Run regression tests
-#   - if [[ $$FLOW_REPO ]]; then
-#       export CONFIG=pr;
-#     fi
-#   - aha regress $$CONFIG
-#   # We report success to the aha-flow app by removing the .TEST file,
-#   # which is created in the post-checkout hook and checked for in the
-#   # pre-exit hook.
+  # - docker images; docker ps; sleep 500; exit 0
+  - source /aha/bin/activate
+  - source /cad/modules/tcl/init/sh
+  - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
+  # make /bin/sh symlink to bash instead of dash:
+  - echo "dash dash/sh boolean false" | debconf-set-selections
+  - DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+  - apt update
+  - apt install time
+  - ls /aha
+  - pip freeze
+  - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
+  # Run regression tests
+  - if [[ $$FLOW_REPO ]]; then
+      export CONFIG=pr;
+    fi
+  - aha regress $$CONFIG
+  # We report success to the aha-flow app by removing the .TEST file,
+  # which is created in the post-checkout hook and checked for in the
+  # pre-exit hook.
 
   - echo "--- Removing Failure Canary"
   - ls -al /buildkite
@@ -248,8 +215,8 @@ steps:
           # docker kill deleteme_garnet_ci3927
 
     - docker#v3.2.0:
-        # image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
-        image: stanfordaha/garnet:latest
+        image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
+        # image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"
