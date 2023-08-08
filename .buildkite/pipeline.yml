@@ -18,11 +18,6 @@ steps:
 
   - echo "--- pipeline.xml commands BEGIN"
 
-#   - echo "+++ temporarily skipping this step"; set -x
-#   - docker pull stanfordaha/garnet:latest
-#   - exit 0
-#   - echo foooooooo
-
   # The "if FLOW_REPO" part is redundant when/if not using heroku...?
   - echo FLOW_REPO=$$FLOW_REPO
   - echo FLOW_REPO=$FLOW_REPO
@@ -75,28 +70,27 @@ steps:
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP"
         
-        # If CHECKOUT exists, MYTMP exists.
-        # If MYTMP exists, we have valid clone from current build (MYTMP is build-specific)
+        # MYTMP=/var/lib/buildkite-agent/builds/tmp/$BUILDKITE_BUILD_NUMBER
+        # If MYTMP exists, we have valid clone from current build
         if [ -e $CHECKOUT ]; then
-            echo source $CHECKOUT
-            source $CHECKOUT
-
+            # (If CHECKOUT exists, MYTMP exists.)
+            echo "Found pre-existing build clone, use that for checkout"
+            echo source $CHECKOUT; source $CHECKOUT
         else
+            echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
             set -x
-
-            # MYTMP=/var/lib/buildkite-agent/builds/tmp
-            aha_clone=$MYTMP/aha-flow
-            git clone $$BUILDKITE_REPO $$aha_clone; cd $$aha_clone
-            
-            # cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+            git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
             git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
             source .buildkite/bin/custom-checkout.sh
 
-            # I guess? maybe?
+            echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
+            set -x
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-            shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
+            shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
             cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
         fi
+        echo "--- PRE CHECKOUT HOOK, BDI STEP END"
+
 
       pre-command: |
           echo "+++ DEBUG DOCKER TRASH BDI pre-comm"
@@ -190,21 +184,41 @@ steps:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
 
-        # "If this works, we'll eat like kings!"
         pre-checkout: |
           echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
+
+          # MYTMP=/var/lib/buildkite-agent/builds/tmp/$BUILDKITE_BUILD_NUMBER
+          # If MYTMP exists, we have valid clone from current build
+          if [ ! -e $MYTMP ]; then
+              echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
+              set -x
+              git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
+              git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+          fi
+          echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
           set -x
-          # Want original post-checkout, pre-exit hooks available
-          [ "$$BUILDKITE_BUILD_CHECKOUT_PATH" ] || exit 13 # big trouble if not exists
           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-          shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
+          shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
-          ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
-          ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
-          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-          ls -la $$aha/.buildkite/hooks/post-checkout || echo no thats okay
-          ls -la $$aha || echo no thats okay
-          echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
+          echo "--- PRE CHECKOUT HOOK, OIT STEP END"
+
+
+#           set -x
+# 
+#           # Want original post-checkout, pre-exit hooks available
+#           [ "$$BUILDKITE_BUILD_CHECKOUT_PATH" ] || exit 13 # big trouble if not exists
+# 
+#           shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
+# 
+#           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+# 
+# 
+#           ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
+#           ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
+#           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+#           ls -la $$aha/.buildkite/hooks/post-checkout || echo no thats okay
+#           ls -la $$aha || echo no thats okay
+#           echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
 
         pre-command: |
           set -x
@@ -305,3 +319,9 @@ steps:
 # 
 #         #         echo "Is /tmp reliable? And/or should curl from url?"
 #         #         pwd; df -h $$MYTMP
+
+#   - echo "+++ temporarily skipping this step"; set -x
+#   - docker pull stanfordaha/garnet:latest
+#   - exit 0
+#   - echo foooooooo
+
