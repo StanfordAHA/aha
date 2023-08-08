@@ -43,10 +43,9 @@ set -x
 echo ls .buildkite
      ls .buildkite
 
-echo "--- continue"
-# buildkite-agent pipeline upload $p_local
+echo "--- Upload the pipeline"
+set -x
 buildkite-agent pipeline upload .buildkite/pipeline.yml
-
 set +x
 
 echo "--- END upload-pipeline.sh"

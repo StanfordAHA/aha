@@ -70,27 +70,36 @@ steps:
       # This should run as pre-checkout, else risk not executing post-checkout hook from repo
       # If run as pre-checkout, still get local post-checkout hook
       # If run as post-checkout, local (repo) post-checkout hook DOES NOT HAPPEN! :(
-      # FIXME maybe should not rely on repo hook for post-echkout, pre-exit!
+      # FIXME maybe should not rely on repo hook for post-checkout, pre-exit!
       # "Preparing working directory" might clear out aha-flow maybe??
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP"
+        
+        # If CHECKOUT exists, MYTMP exists.
+        # If MYTMP exists, we have valid clone from current build (MYTMP is build-specific)
+        if [ -e $CHECKOUT ]; then
+            echo source $CHECKOUT
+            source $CHECKOUT
 
-        echo "+++ where is custom-checkout? pc1"; set -x
-        ls -l $CHECKOUT || echo ERROR cannot find $CHECKOUT
+        else
+            set -x
 
-        #         echo "Is /tmp reliable? And/or should curl from url?"
-        #         pwd; df -h $$MYTMP
-        echo ls -l $CHECKOUT; ls -l $CHECKOUT || echo no
+            # MYTMP=/var/lib/buildkite-agent/builds/tmp
+            aha_clone=$MYTMP/aha-flow
+            git clone $$BUILDKITE_REPO $$aha_clone; cd $$aha_clone
+            
+            # cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+            git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+            source .buildkite/bin/custom-checkout.sh
 
-        echo source $CHECKOUT
-        source $CHECKOUT
-        # set -x; source .buildkite/hooks/post-checkout
-
-        echo "+++ where is custom-checkout? pc2"; set -x
-        ls -l $CHECKOUT || echo ERROR cannot find $CHECKOUT
-
+            # I guess? maybe?
+            mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+            shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
+            cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+        fi
 
       pre-command: |
+          echo "+++ DEBUG DOCKER TRASH BDI pre-comm"
           set -x
           #
           # local post-checkout working as of build 8583
@@ -99,7 +108,6 @@ steps:
           #           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
           #           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
           #
-          echo "+++ DEBUG DOCKER TRASH DBI pre-comm"
           docker images; docker ps
           docker kill deleteme_garnet_ci4114 || echo okay
 
@@ -291,3 +299,9 @@ steps:
 
 #           tmp=/var/lib/buildkite-agent/builds/tmp/$$BUILDKITE_BUILD_NUMBER
 #           [ "$$tmp" == "$MYTMP" ] || exit 13
+
+#         echo "+++ where is custom-checkout? pc1"; set -x
+#         ls -l $CHECKOUT || echo ERROR cannot find $CHECKOUT
+# 
+#         #         echo "Is /tmp reliable? And/or should curl from url?"
+#         #         pwd; df -h $$MYTMP
