@@ -102,7 +102,7 @@ steps:
 
         # NO MORE MYTMP!!!
 
-        echo "+++ Clone aha directly to $$BUILDKITE_BUILD_CHECKOUT_PATH
+        echo "+++ Clone aha directly to $$BUILDKITE_BUILD_CHECKOUT_PATH"
         mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
         (cd $$BUILDKITE_BUILD_CHECKOUT_PATH; git clean -ffxdq)
         git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
