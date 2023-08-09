@@ -1,42 +1,19 @@
 #!/bin/bash
-
 set +u # nounset? not on my watch!
+
 set +x # debug OFF
-
 echo "+++ custom-checkout.sh BEGIN"
-
-# export MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-# Steps (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
-# set MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-
-
-
-# NOT USED i think
-# # Expand MYTMP from '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-# # to e.g. '/var/lib/buildkite-agent/builds/4458'
-# MYTMP=`eval echo $MYTMP`
-
-
-
 
 # BUILDKITE_BUILD_CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
 echo I am `whoami`     # Watch out if this ever says "I am root"
 echo I am in dir `pwd` # Watch out if this ever we are in root dir (/)
 
-# # Nah too paranoid
-# if [ `pwd` == "/" ]; then echo OH NO we are in root directory; exit 13; fi
+echo "--- BEGIN CLEANUP"
 
-# # This script runs from root dir. Flee to safety!
-# # Note NOTHING SHOULD HAPPEN in this safe space, soon we will cd to working dir, see below.
-# if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
-# echo "cd $MYTMP"
-#       cd $MYTMP
-
-function cleanout {
+function cleanup {
     dir=$1; ndays=$3
     echo "SPACE"
     du -hx --max-depth=0 $dir/* 2> /dev/null || echo no
-    set -x
     echo "----------------------------------------------"
     ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` \
         || echo Ignoring find-command problem
@@ -56,7 +33,7 @@ function cleanout {
 
 set +x
 echo "+++ Check on our trash in /tmp"
-cleanout /tmp older-than 1 days
+cleanup /tmp older-than 1 days
 
 set +x
 echo "+++ Check on our trash in MYTMPs"
@@ -65,60 +42,28 @@ ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
 echo "----------------------------------------------"
 echo "CLEAN"
 # find /var/lib/buildkite-agent/builds/tmp -user buildkite-agent -mtime 1 -exec /bin/rm -rf {} \; 2> /dev/null || echo no
-cleanout /var/lib/buildkite-agent/builds/tmp -older-than 1 days
+cleanup /var/lib/buildkite-agent/builds/tmp -older-than 1 days
 echo "----------------------------------------------"
 echo "AFTER"
 ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
 echo "----------------------------------------------"
 
+echo "--- END CLEANUP"
 
-# set -x
-# 
-# echo "----------------------------------------------"
-# find $MYTMP -user buildkite-agent 2> /dev/null || echo okay
-# echo "----------------------------------------------"
-# du -x --max-depth=0 $MYTMP || echo okay
-# d=$(cd $MYTMP/..; pwd) || echo okay
-# du -x --max-depth=0 $d || echo okay
-# set +x
-
+set +x
 echo "--- Continue"
 
 # IF this works it enables all kinds of optimiztions
 # Okay. Like what for example?
 echo FLOW_REPO=$FLOW_REPO || echo nop
 echo FLOW_HEAD_SHA=$FLOW_HEAD_SHA || echo nop
-
 echo '-------------'
  
-echo "--- CLONE AHA REPO"
+echo "--- PREP AHA REPO and all its submodules"; set -x
 
-# Start with a clean slate. Could be bad news if files leftover from previous runs.
-d=$BUILDKITE_BUILD_CHECKOUT_PATH
-
-# temporary check to make sure we are doing the right thing
-# DELETE this blockafter i dunno like 08/13/2023 or so
-d1=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-[ "$d" == "$d1" ] || exit 13
-
-# if test -d $d; then
-#   echo "+++ WARNING checkout dir $d exists"
-#   echo "Deleting $d ..."
-#   /bin/rm -rf $d || echo nop
-# fi
-
-# echo "--- CLONE AHA REPO AND INIT ALL SUBMODULES"
-# git clone --recurse-submodules https://github.com/hofstee/aha $d
-# # git clone https://github.com/hofstee/aha $d
-# cd $d
-
-echo "--- UPDATE/CHECKOUT ALL SUBMODULES"
-cd $d
-git submodule update --checkout
-
-
-
-set -x
+pwd
+cd $BUILDKITE_BUILD_CHECKOUT_PATH # Actually I think we're already there but whatevs
+git submodule update --checkout # This is probably unnecessary but whatevs
 git remote set-url origin https://github.com/hofstee/aha
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
@@ -299,4 +244,51 @@ echo "--- custom-checkout.sh END"
 # Yeah we don't do this no more
 # echo "--- RESTORE SHELLOPTS"
 # eval "$RESTORE_SHELLOPTS"
+
+# # temporary check to make sure we are doing the right thing
+# # DELETE this blockafter i dunno like 08/13/2023 or so
+# d1=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+# [ "$d" == "$d1" ] || exit 13
+
+# if test -d $d; then
+#   echo "+++ WARNING checkout dir $d exists"
+#   echo "Deleting $d ..."
+#   /bin/rm -rf $d || echo nop
+# fi
+
+# echo "--- CLONE AHA REPO AND INIT ALL SUBMODULES"
+# git clone --recurse-submodules https://github.com/hofstee/aha $d
+# # git clone https://github.com/hofstee/aha $d
+# cd $d
+
+
+# set -x
+# 
+# echo "----------------------------------------------"
+# find $MYTMP -user buildkite-agent 2> /dev/null || echo okay
+# echo "----------------------------------------------"
+# du -x --max-depth=0 $MYTMP || echo okay
+# d=$(cd $MYTMP/..; pwd) || echo okay
+# du -x --max-depth=0 $d || echo okay
+# set +x
+
+# export MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# Steps (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
+# set MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+
+
+
+# NOT USED i think
+# # Expand MYTMP from '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# # to e.g. '/var/lib/buildkite-agent/builds/4458'
+# MYTMP=`eval echo $MYTMP`
+
+# # Nah too paranoid
+# if [ `pwd` == "/" ]; then echo OH NO we are in root directory; exit 13; fi
+
+# # This script runs from root dir. Flee to safety!
+# # Note NOTHING SHOULD HAPPEN in this safe space, soon we will cd to working dir, see below.
+# if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
+# echo "cd $MYTMP"
+#       cd $MYTMP
 
