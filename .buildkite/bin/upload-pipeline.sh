@@ -11,16 +11,6 @@ set +u     # nounset? not on my watch!
 set +x     # Extreme dev time is OVER
 shopt -s dotglob  # Else will not copy/remove dotfiles e.g. .buildkite/hooks :o
 
-# It only takes two seconds to clone a new aha; no need to cache it here.
-# set -x
-# # Use MYTMP to pass information from one step to the next on same machine
-# MYTMP=`eval echo $MYTMP` # Expand '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-# # test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
-# mkdir -p $MYTMP
-# cp -rp $BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
-# set +x
-
-
 echo "I am here: `pwd`"
 git status -buno | head -1  # E.g. "On branch no-heroku" or "HEAD detached at 3bf5dc7"
 
@@ -179,4 +169,14 @@ return || exit
 # NO, too paranoid
 # # save and restore existing shell opts in case script is sourced
 # RESTORE_SHELLOPTS="$(set +o)"
+
+# It only takes two seconds to clone a new aha; no need to cache it here.
+# set -x
+# # Use MYTMP to pass information from one step to the next on same machine
+# MYTMP=`eval echo $MYTMP` # Expand '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# # test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
+# mkdir -p $MYTMP
+# cp -rp $BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
+# set +x
+
 

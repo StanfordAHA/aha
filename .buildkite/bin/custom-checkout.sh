@@ -3,46 +3,63 @@
 set +u # nounset? not on my watch!
 set +x # debug OFF
 
-echo "--- custom-checkout.sh BEGIN"
+echo "+++ custom-checkout.sh BEGIN"
 
 # export MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
 # Steps (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
 # set MYTMP='/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
 
-# Expand MYTMP from '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-# to e.g. '/var/lib/buildkite-agent/builds/4458'
-MYTMP=`eval echo $MYTMP`
+
+
+# NOT USED i think
+# # Expand MYTMP from '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# # to e.g. '/var/lib/buildkite-agent/builds/4458'
+# MYTMP=`eval echo $MYTMP`
+
+
+
 
 # BUILDKITE_BUILD_CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
 echo I am `whoami`     # Watch out if this ever says "I am root"
-echo I am in dir `pwd` # We are in root dir (/) !!!oh no!!!
+echo I am in dir `pwd` # Watch out if this ever we are in root dir (/)
 
+# # Nah too paranoid
+# if [ `pwd` == "/" ]; then echo OH NO we are in root directory; exit 13; fi
 
-set -x
-# This script runs from root dir. Flee to safety!
-# Note NOTHING SHOULD HAPPEN in this safe space, soon we will cd to working dir, see below.
-if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
-cd $MYTMP
-set +x
+# # This script runs from root dir. Flee to safety!
+# # Note NOTHING SHOULD HAPPEN in this safe space, soon we will cd to working dir, see below.
+# if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
+# echo "cd $MYTMP"
+#       cd $MYTMP
 
 function cleanout {
     dir=$1; ndays=$3
     echo "SPACE"
-    du -hx --max-depth=0 $dir/* || echo no
+    du -hx --max-depth=0 $dir/* 2> /dev/null || echo no
+    set -x
     echo "----------------------------------------------"
-    ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` || echo no
+    ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` \
+        || echo Ignoring find-command problem
     echo "BEFORE: $ntrash buildkite-agent files in $dir"
-    find $dir -user buildkite-agent -mtime $ndays -exec /bin/rm -rf {} \; 2> /dev/null || echo no
-    ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` || echo no
+    echo "----------------------------------------------"
+
+    find $dir -user buildkite-agent -mtime $ndays -exec /bin/rm -rf {} \; \
+         || echo Ignoring find-command problem
+    # 2> /dev/null || echo Ignoring find-command problem
+
+    echo "----------------------------------------------"
+    ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` \
+        || echo Ignoring find-command problem
     echo "AFTER: $ntrash buildkite-agent files in $dir"
+    echo "----------------------------------------------"
 }
 
 set +x
 echo "+++ Check on our trash in /tmp"
-cleanout /tmp older-than 3 days
+cleanout /tmp older-than 1 days
 
 set +x
-echo "+++ Check on our trash in $MYTMP"
+echo "+++ Check on our trash in MYTMPs"
 echo "BEFORE"
 ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
 echo "----------------------------------------------"
