@@ -102,11 +102,16 @@ steps:
 
         # NO MORE MYTMP!!!
 
-        echo "+++ Clone aha directly to $$BUILDKITE_BUILD_CHECKOUT_PATH"
-        mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-        (cd $$BUILDKITE_BUILD_CHECKOUT_PATH; git clean -ffxdq)
-        git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-        cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+        echo "+++ Clone aha directly to $$BUILDKITE_BUILD_CHECKOUT_PATH"; set -x
+
+
+        echo "+++ CD to aha repo clone"; set -x
+        if ! cd $$BUILDKITE_BUILD_CHECKOUT_PATH; then
+            echo "Clone does not exist (yet); will clone a new one"
+            mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+            git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
+            cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+        fi
         git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
 
         echo "Checkout full repo, submodules and all"
@@ -226,11 +231,13 @@ steps:
 
           # NO MORE MYTMP!!!
 
-          echo "+++ Clone aha directly to $$BUILDKITE_BUILD_CHECKOUT_PATH
-          mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-          (cd $$BUILDKITE_BUILD_CHECKOUT_PATH; git clean -ffxdq)
-          git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+          echo "+++ CD to aha repo clone"; set -x
+          if ! cd $$BUILDKITE_BUILD_CHECKOUT_PATH; then
+            echo "Clone does not exist (yet); will clone a new one"
+            mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+            git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
+            cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+          fi
           git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
 
 
