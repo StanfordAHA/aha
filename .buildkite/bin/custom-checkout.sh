@@ -101,17 +101,22 @@ d=$BUILDKITE_BUILD_CHECKOUT_PATH
 d1=/var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
 [ "$d" == "$d1" ] || exit 13
 
-if test -d $d; then
-  echo "+++ WARNING checkout dir $d exists"
-  echo "Deleting $d ..."
-  /bin/rm -rf $d || echo nop
-fi
+# if test -d $d; then
+#   echo "+++ WARNING checkout dir $d exists"
+#   echo "Deleting $d ..."
+#   /bin/rm -rf $d || echo nop
+# fi
 
-echo "--- CLONE AHA REPO AND INIT ALL SUBMODULES"
-git clone --recurse-submodules https://github.com/hofstee/aha $d
-# git clone https://github.com/hofstee/aha $d
+# echo "--- CLONE AHA REPO AND INIT ALL SUBMODULES"
+# git clone --recurse-submodules https://github.com/hofstee/aha $d
+# # git clone https://github.com/hofstee/aha $d
+# cd $d
 
+echo "--- UPDATE/CHECKOUT ALL SUBMODULES"
 cd $d
+git submodule update --checkout
+
+
 
 set -x
 git remote set-url origin https://github.com/hofstee/aha
