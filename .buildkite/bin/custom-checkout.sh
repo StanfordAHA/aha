@@ -33,28 +33,22 @@ function cleanout {
     ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` || echo no
     echo "BEFORE: $ntrash buildkite-agent files in $dir"
     find $dir -user buildkite-agent -mtime $ndays -exec /bin/rm -rf {} \; 2> /dev/null || echo no
+    ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` || echo no
     echo "AFTER: $ntrash buildkite-agent files in $dir"
 }
 
-echo "+++ Check on our trash in /tmp"; set -x
-# ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l` || echo no
-# echo "BEFORE: $ntrash buildkite-agent files in /tmp"
-# find /tmp -user buildkite-agent -mtime 3 -exec /bin/rm -rf {} \; 2> /dev/null || echo no
+set +x
+echo "+++ Check on our trash in /tmp"
 cleanout /tmp older-than 3 days
-# ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l` || echo no
-# echo "AFTER: $ntrash buildkite-agent files in /tmp"
 
-echo "+++ Check on our trash in $MYTMP"; set -x
+set +x
+echo "+++ Check on our trash in $MYTMP"
 echo "BEFORE"
-du -hx  --max-depth=0 /var/lib/buildkite-agent/builds/tmp/* || echo no
-echo "----------------------------------------------"
 ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
 echo "----------------------------------------------"
 echo "CLEAN"
-set -x
 # find /var/lib/buildkite-agent/builds/tmp -user buildkite-agent -mtime 1 -exec /bin/rm -rf {} \; 2> /dev/null || echo no
 cleanout /var/lib/buildkite-agent/builds/tmp -older-than 1 days
-set +x
 echo "----------------------------------------------"
 echo "AFTER"
 ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
