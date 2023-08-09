@@ -26,16 +26,38 @@ cd $MYTMP
 set +x
 
 
-echo "+++ Check on our trash"
+echo "+++ Check on our trash in /tmp"
+ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l`
+echo "BEFORE: $ntrash buildkite-agent files in /tmp"
+find /tmp -mtime +3 -exec /bin/rm -rf {} \;
+ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l`
+echo "AFTER: $ntrash buildkite-agent files in /tmp"
+
+echo "+++ Check on our trash in $MYTMP"
+echo "BEFORE"
+du -hx  --max-depth=0 /var/lib/buildkite-agent/builds/tmp/* || echo no
+echo "----------------------------------------------"
+ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
+echo "----------------------------------------------"
+echo "CLEAN"
 set -x
-find /tmp -user buildkite-agent 2> /dev/null || echo okay
-echo "----------------------------------------------"
-find $MYTMP -user buildkite-agent 2> /dev/null || echo okay
-echo "----------------------------------------------"
-du -x --max-depth=0 $MYTMP || echo okay
-d=$(cd $MYTMP/..; pwd) || echo okay
-du -x --max-depth=0 $d || echo okay
+find /var/lib/buildkite-agent/builds/tmp -mtime +1 -exec /bin/rm -rf {} \; || echo no
 set +x
+echo "----------------------------------------------"
+echo "AFTER"
+ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
+echo "----------------------------------------------"
+
+
+# set -x
+# 
+# echo "----------------------------------------------"
+# find $MYTMP -user buildkite-agent 2> /dev/null || echo okay
+# echo "----------------------------------------------"
+# du -x --max-depth=0 $MYTMP || echo okay
+# d=$(cd $MYTMP/..; pwd) || echo okay
+# du -x --max-depth=0 $d || echo okay
+# set +x
 
 echo "--- Continue"
 
