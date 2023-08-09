@@ -29,10 +29,10 @@ set +x
 echo "+++ Check on our trash in /tmp"
 set -x
 echo $SHELL
-ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l`
+ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l` || echo no
 echo "BEFORE: $ntrash buildkite-agent files in /tmp"
 find /tmp -mtime +3 -exec /bin/rm -rf {} \;
-ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l`
+ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l` || echo no
 echo "AFTER: $ntrash buildkite-agent files in /tmp"
 
 echo "+++ Check on our trash in $MYTMP"
