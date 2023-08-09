@@ -26,16 +26,14 @@ cd $MYTMP
 set +x
 
 
-echo "+++ Check on our trash in /tmp"
-set -x
-echo $SHELL
+echo "+++ Check on our trash in /tmp"; set -x
 ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l` || echo no
 echo "BEFORE: $ntrash buildkite-agent files in /tmp"
-find /tmp -mtime +3 -exec /bin/rm -rf {} \;
+find /tmp -user buildkite-agent -mtime +3 -exec /bin/rm -rf {} \; || echo no
 ntrash=`find /tmp -user buildkite-agent 2> /dev/null | wc -l` || echo no
 echo "AFTER: $ntrash buildkite-agent files in /tmp"
 
-echo "+++ Check on our trash in $MYTMP"
+echo "+++ Check on our trash in $MYTMP"; set -x
 echo "BEFORE"
 du -hx  --max-depth=0 /var/lib/buildkite-agent/builds/tmp/* || echo no
 echo "----------------------------------------------"
@@ -43,7 +41,7 @@ ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
 echo "----------------------------------------------"
 echo "CLEAN"
 set -x
-find /var/lib/buildkite-agent/builds/tmp -mtime +1 -exec /bin/rm -rf {} \; || echo no
+find /var/lib/buildkite-agent/builds/tmp -user buildkite-agent -mtime +1 -exec /bin/rm -rf {} \; || echo no
 set +x
 echo "----------------------------------------------"
 echo "AFTER"
