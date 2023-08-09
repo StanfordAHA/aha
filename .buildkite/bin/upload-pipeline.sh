@@ -11,16 +11,15 @@ set +u     # nounset? not on my watch!
 set +x     # Extreme dev time is OVER
 shopt -s dotglob  # Else will not copy/remove dotfiles e.g. .buildkite/hooks :o
 
-# Offload from online steps
-/bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME/* || echo okay
+# It only takes two seconds to clone a new aha; no need to cache it here.
+# set -x
+# # Use MYTMP to pass information from one step to the next on same machine
+# MYTMP=`eval echo $MYTMP` # Expand '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
+# # test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
+# mkdir -p $MYTMP
+# cp -rp $BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
+# set +x
 
-set -x
-# Use MYTMP to pass information from one step to the next on same machine
-MYTMP=`eval echo $MYTMP` # Expand '/var/lib/buildkite-agent/builds/$BUILDKITE_BUILD_NUMBER'
-# test -e $MYTMP/aha-flow && /bin/rm -rf $MYTMP/aha-flow
-mkdir -p $MYTMP
-cp -rp $BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
-set +x
 
 echo "I am here: `pwd`"
 git status -buno | head -1  # E.g. "On branch no-heroku" or "HEAD detached at 3bf5dc7"
@@ -50,12 +49,13 @@ for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
 done
 echo "-----------------------------"
 ls -laR /var/lib/buildkite-agent/builds/DELETEME | grep root || echo okay
+/bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME/* || echo okay
 
 # # Don't delete yourself!
 # mkdir -p /var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
 
-echo ls .buildkite
-     ls .buildkite
+# echo ls .buildkite
+#      ls .buildkite
 
 echo "--- Upload the pipeline"
 set -x

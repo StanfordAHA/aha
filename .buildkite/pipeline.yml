@@ -70,9 +70,11 @@ steps:
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP"
         
+        # ALWAYS build mytmp, then don't need upload-script (eventually)
         # MYTMP=/var/lib/buildkite-agent/builds/tmp/$BUILDKITE_BUILD_NUMBER
         # If MYTMP exists, we have valid clone from current build
-        if [ -e $CHECKOUT ]; then
+        # if [ -e $CHECKOUT ]; then
+        if [ "" ]; then
             # (If CHECKOUT exists, MYTMP exists.)
             echo "Found pre-existing build clone, use that for checkout"
             echo source $CHECKOUT; source $CHECKOUT
