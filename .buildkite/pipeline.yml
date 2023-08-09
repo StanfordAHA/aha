@@ -83,25 +83,15 @@ steps:
             set -x
             git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
             git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+            set +x
             source .buildkite/bin/custom-checkout.sh
 
             echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
             set -x
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
             shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
-
-            echo "---------------------"
-            ls -ld $$BUILDKITE_BUILD_CHECKOUT_PATH/.git || echo no
-            echo "---------------------"
-            ls -ld $$BUILDKITE_BUILD_CHECKOUT_PATH/.git/objects || echo no
-            echo "---------------------"
-            ls -ld $$BUILDKITE_BUILD_CHECKOUT_PATH/.git/objects/pack || echo no
-            echo "---------------------"
-            ls -ld $$BUILDKITE_BUILD_CHECKOUT_PATH/.git/objects/pack/pack* || echo no
-            echo "---------------------"
-
             (cd $$BUILDKITE_BUILD_CHECKOUT_PATH; git clean -ffxdq)
-            cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+            cp -rfp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
         fi
         echo "--- PRE CHECKOUT HOOK, BDI STEP END"
 

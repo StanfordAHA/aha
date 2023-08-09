@@ -28,9 +28,9 @@ set +x
 
 echo "+++ Check on our trash"
 set -x
-ls -l /tmp | grep buildkite-agent || echo okay
+find /tmp -user buildkite-agent 2> /dev/null || echo okay
 echo "----------------------------------------------"
-ls -l $MYTMP | grep buildkite-agent || echo okay
+find $MYTMP -user buildkite-agent 2> /dev/null || echo okay
 echo "----------------------------------------------"
 du -x --max-depth=0 $MYTMP || echo okay
 d=$(cd $MYTMP/..; pwd) || echo okay
