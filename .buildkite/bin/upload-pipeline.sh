@@ -5,8 +5,10 @@
 # - find root-owned temp directories and purge them (!!!)
 # - upload local (agent-specific) pipeline.yml
 
-set +u # nounset? not on my watch!
-set +x # Extreme dev time is OVER
+echo "--- BEGIN upload-pipeline.sh"
+
+set +u     # nounset? not on my watch!
+set +x     # Extreme dev time is OVER
 shopt -s dotglob  # Else will not copy/remove dotfiles e.g. .buildkite/hooks :o
 
 # Offload from online steps
@@ -20,34 +22,38 @@ mkdir -p $MYTMP
 cp -rp $BUILDKITE_BUILD_CHECKOUT_PATH $MYTMP/aha-flow
 set +x
 
-echo "--- BEGIN upload-pipeline.sh"
-
 echo "I am here: `pwd`"
 git status -buno | head -1  # E.g. "On branch no-heroku" or "HEAD detached at 3bf5dc7"
 
-# FIXME once we reach steady state, can delete this wackadoo check.
-# FIXME !remindme maybe delete in a month, today is 4 aug 2023
-# If temp subdir contains files owned by root, that's bad.
-# Delete the entire directory if this is found to be true.
-echo "+++ PURGE BAD TEMP FILES"
-set -x
+
+# # FIXME once we reach steady state, can delete this wackadoo check.
+# # FIXME !remindme maybe delete in a month, today is 4 aug 2023
+# # If temp subdir contains files owned by root, that's bad.
+# # Delete the entire directory if this is found to be true.
+echo "+++ CHECKING FOR BAD TEMP FILES"
 for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/temp; do
+    echo "Checking $d..."
     if (ls -laR $d | grep root); then
-        echo "WARNING found root-owned objects in $d"
-        set -x
-        mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
-        # set -x; /bin/rm -rf $d; set +x
-        repo=$(cd $d; cd ..; pwd)
-        mv $repo /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
-        set +x
+        printf "WARNING found root-owned objects in $d\n\n"
+
+# This is probably gonna be trouble!!! Not deleting/mocing this anymore.
+# But the right thing is to do it on demand and only when absolutely necessary
+#         set -x
+#         mkdir -p /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM
+#         # set -x; /bin/rm -rf $d; set +x
+#         repo=$(cd $d; cd ..; pwd)
+#         # What are you, crazy? What if someone is using this repo???
+#         mv $repo /var/lib/buildkite-agent/builds/DELETEME/temp-$BUILDKITE_BUILD_NUMBER-$RANDOM/
+#         set +x
     fi
-    /bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME || echo no
+#     /bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME || echo no
 done
+echo "-----------------------------"
+ls -laR /var/lib/buildkite-agent/builds/DELETEME | grep root || echo okay
 
-# Don't delete yourself!
-mkdir -p /var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+# # Don't delete yourself!
+# mkdir -p /var/lib/buildkite-agent/builds/$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
 
-set -x
 echo ls .buildkite
      ls .buildkite
 
