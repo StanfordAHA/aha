@@ -20,7 +20,7 @@ steps:
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
         
-        echo "+++ CD to aha repo clone"; set -x
+        echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
@@ -156,7 +156,7 @@ steps:
           set +x
           echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
 
-          echo "+++ CD to aha repo clone"; set -x
+          echo "+++ CD to aha repo clone"
           if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH

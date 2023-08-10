@@ -1,5 +1,4 @@
 #!/bin/bash
-set +u # nounset? not on my watch!
 
 # What this script does:
 # - Clean up docker files in /tmp dir - FIXME only need this for a couple of days
@@ -9,7 +8,11 @@ set +u # nounset? not on my watch!
 # - If triggered from submod, update submod to match commit hash of triggering repo
 # - Something something tmp-vars maybe
 
-set +x # debug OFF
+# Setup
+set +u    # nounset? not on my watch!
+set +x    # debug OFF
+PS4="#"   # Prevents "+++" prefix during 3-deep set -x execution
+
 echo "+++ custom-checkout.sh BEGIN"
 
 # BUILDKITE_BUILD_CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
@@ -20,14 +23,15 @@ echo "--- BEGIN CLEANUP"
 
 function cleanup {
     dir=$1; ndays=$3
-    echo "SPACE"
-    du -hx --max-depth=0 $dir/* 2> /dev/null || echo no
-    echo "----------------------------------------------"
+
+#     echo "SPACE"
+#     du -hx --max-depth=0 $dir/* 2> /dev/null || echo no
+#     echo "----------------------------------------------"
 
     echo "TIME"
     FIND="find $dir -maxdepth 1 -user buildkite-agent"
     files=`$FIND 2> /dev/null`
-    ls -ld $files
+    ls -ld $files | cat -n
     echo "----------------------------------------------"
 
     echo "PURGE/BEFORE"
@@ -52,7 +56,7 @@ cleanup /tmp older-than 1 days
 echo "--- END CLEANUP"
 
 set +x
-echo "--- Continue"
+echo "+++ Continue custom-checkout.sh"
 
 # IF this works it enables all kinds of optimiztions
 # Okay. Like what for example?
@@ -67,6 +71,7 @@ git submodule update --checkout # This is probably unnecessary but whatevs
 git remote set-url origin https://github.com/hofstee/aha
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
+set +x
 
 echo "--- Check out appropriate AHA branch"
 unset PR_FROM_SUBMOD
