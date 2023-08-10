@@ -1,6 +1,14 @@
 #!/bin/bash
 set +u # nounset? not on my watch!
 
+# What this script does:
+# - Clean up docker files in /tmp dir - FIXME only need this for a couple of days
+# - Update and initialize all aha repo submodules
+# - Check out aha branch BUILDKITE_COMMIT if build triggered from aha repo
+#   or AHA DEFAULT (no-heroku now, master later) if triggered from submod push/pull
+# - If triggered from submod, update submod to match commit hash of triggering repo
+# - Something something tmp-vars maybe
+
 set +x # debug OFF
 echo "+++ custom-checkout.sh BEGIN"
 
@@ -15,38 +23,31 @@ function cleanup {
     echo "SPACE"
     du -hx --max-depth=0 $dir/* 2> /dev/null || echo no
     echo "----------------------------------------------"
-    ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` \
-        || echo Ignoring find-command problem
-    echo "BEFORE: $ntrash buildkite-agent files in $dir"
+
+    echo "TIME"
+    FIND="find $dir -maxdepth 1 -user buildkite-agent"
+    files=`$FIND 2> /dev/null`
+    ls -ld $files
     echo "----------------------------------------------"
 
-    find $dir -user buildkite-agent -mtime $ndays -exec /bin/rm -rf {} \; \
-         || echo Ignoring find-command problem
-    # 2> /dev/null || echo Ignoring find-command problem
-
+    echo "PURGE/BEFORE"
+    ntrash=`$FIND 2> /dev/null | wc -l` || echo Ignoring find-command problem
+    echo "Found $ntrash buildkite-agent files in $dir"
     echo "----------------------------------------------"
-    ntrash=`find $dir -user buildkite-agent 2> /dev/null | wc -l` \
-        || echo Ignoring find-command problem
-    echo "AFTER: $ntrash buildkite-agent files in $dir"
+
+    echo "PURGE/PURGE"
+    $FIND -mtime +$ndays -exec /bin/rm -rf {} \; || echo Ignoring find-command problem
+    echo "----------------------------------------------"
+
+    echo "PURGE/AFTER"
+    ntrash=`$FIND 2> /dev/null | wc -l` || echo Ignoring find-command problem
+    echo "Found $ntrash buildkite-agent files in $dir"
     echo "----------------------------------------------"
 }
 
 set +x
 echo "+++ Check on our trash in /tmp"
 cleanup /tmp older-than 1 days
-
-set +x
-echo "+++ Check on our trash in MYTMPs"
-echo "BEFORE"
-ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
-echo "----------------------------------------------"
-echo "CLEAN"
-# find /var/lib/buildkite-agent/builds/tmp -user buildkite-agent -mtime 1 -exec /bin/rm -rf {} \; 2> /dev/null || echo no
-cleanup /var/lib/buildkite-agent/builds/tmp -older-than 1 days
-echo "----------------------------------------------"
-echo "AFTER"
-ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
-echo "----------------------------------------------"
 
 echo "--- END CLEANUP"
 
@@ -60,7 +61,6 @@ echo FLOW_HEAD_SHA=$FLOW_HEAD_SHA || echo nop
 echo '-------------'
  
 echo "--- PREP AHA REPO and all its submodules"; set -x
-
 pwd
 cd $BUILDKITE_BUILD_CHECKOUT_PATH # Actually I think we're already there but whatevs
 git submodule update --checkout # This is probably unnecessary but whatevs
@@ -68,11 +68,13 @@ git remote set-url origin https://github.com/hofstee/aha
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 
+echo "--- Check out appropriate AHA branch"
 unset PR_FROM_SUBMOD
 # PR_FROM_SUBMOD means build was triggered by foreign (non-aha) repo, i.e. one of the submods
 
 echo git fetch -v --prune -- origin $BUILDKITE_COMMIT
 if   git fetch -v --prune -- origin $BUILDKITE_COMMIT; then
+    git checkout -f $BUILDKITE_COMMIT
     echo "Checked out aha commit '$BUILDKITE_COMMIT'"
 else
     echo '-------------------------------------------'
@@ -84,15 +86,15 @@ else
     AHA_DEFAULT_BRANCH=no-heroku
     echo "Meanwhile, will use default branch '$AHA_DEFAULT_BRANCH' for aha repo"
     git fetch -v --prune -- origin $AHA_DEFAULT_BRANCH
+    git checkout -f $AHA_DEFAULT_BRANCH
+    echo "Checked out aha default branch '$AHA_DEFAULT_BRANCH'"
 fi
 
 set -x
-git checkout -f $BUILDKITE_COMMIT
 git submodule sync --recursive
 git submodule update --init --recursive --force
 git submodule foreach --recursive "git reset --hard"
 set +x
-
 
 if [ "$PR_FROM_SUBMOD" ]; then
     echo "--- Handle PR"
@@ -147,16 +149,17 @@ set +x
 # if [ "$FOUND_SUBMOD" ]; then
 #   if [ "$submod" == "garnet" ]; then
 
-if (cd garnet; git log remotes/origin/aha-flow-no-heroku | grep $BUILDKITE_COMMIT); then
-    echo "+++ FOR NOW, load pipeline from garnet aha-flow-no-heroku"
-    # echo "  BEFORE: " `ls -l .buildkite/pipeline.yml`
-    u=https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/pipeline.yml
-    curl -s $u > .buildkite/pipeline.yml
-    # echo "  curl -s $u > .buildkite/pipeline.yml"
-    # echo "  AFTER:  " `ls -l .buildkite/pipeline.yml`
-fi
+# NO! NO! NO!!! Already got pipeline.yml, that's who called us!!!?
+# if (cd garnet; git log remotes/origin/aha-flow-no-heroku | grep $BUILDKITE_COMMIT); then
+#     echo "+++ FOR NOW, load pipeline from garnet aha-flow-no-heroku"
+#     # echo "  BEFORE: " `ls -l .buildkite/pipeline.yml`
+#     u=https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/pipeline.yml
+#     curl -s $u > .buildkite/pipeline.yml
+#     # echo "  curl -s $u > .buildkite/pipeline.yml"
+#     # echo "  AFTER:  " `ls -l .buildkite/pipeline.yml`
+# fi
+# pwd
 
-pwd
 echo "--- custom-checkout.sh END"
 
 
@@ -291,4 +294,17 @@ echo "--- custom-checkout.sh END"
 # if ! [ "$MYTMP" ]; then echo ERROR MYTMP NOT SET; exit 13; fi
 # echo "cd $MYTMP"
 #       cd $MYTMP
+
+# set +x
+# echo "+++ Check on our trash in MYTMPs"
+# echo "BEFORE"
+# ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
+# echo "----------------------------------------------"
+# echo "CLEAN"
+# # find /var/lib/buildkite-agent/builds/tmp -user buildkite-agent -mtime 1 -exec /bin/rm -rf {} \; 2> /dev/null || echo no
+# cleanup /var/lib/buildkite-agent/builds/tmp -older-than 1 days
+# echo "----------------------------------------------"
+# echo "AFTER"
+# ls -lt /var/lib/buildkite-agent/builds/tmp/ || echo no
+# echo "----------------------------------------------"
 

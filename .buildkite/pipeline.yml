@@ -15,7 +15,7 @@ steps:
   - improbable-eng/metahook:
 
       # Must clone aha repo in the pre-checkout phase,
-      # to have repo-based post-checkout hook ready for later.
+      # so repo-based post-checkout hook will be ready for post-checkout phase.
 
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
