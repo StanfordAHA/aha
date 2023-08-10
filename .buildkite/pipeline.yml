@@ -1,14 +1,6 @@
 env:
   CONFIG: ${CONFIG:-daily}
 
-  # CHECKOUT and MYTMP env vars should have been set by aha pipeline flow steps config
-  # see https://buildkite.com/stanford-aha/aha-flow/settings/steps
-
-  # MYTMP: /var/lib/buildkite-agent/builds/tmp
-  # CHECKOUT: $$MYTMP/aha-flow-$$BUILDKITE_BUILD_NUMBER-custom-checkout.sh
-
-  # CHECKOUT: $MYTMP/aha-flow/.buildkite/bin/custom-checkout.sh
-
 steps:
 
 # This first step builds the docker image that gets used by all subsequent steps.
@@ -70,38 +62,6 @@ steps:
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP"
         
-        # ALWAYS build mytmp, then don't need upload-script (eventually)
-        # MYTMP=/var/lib/buildkite-agent/builds/tmp/$BUILDKITE_BUILD_NUMBER
-        # If MYTMP exists, we have valid clone from current build
-        # if [ -e $CHECKOUT ]; then
-
-        # NO MORE MYTMP!!!
-        # 
-        # 
-        # #         if [ "" ]; then
-        # #             # (If CHECKOUT exists, MYTMP exists.)
-        # #             echo "Found pre-existing build clone, use that for checkout"
-        # #             echo source $CHECKOUT; source $CHECKOUT
-        # #         else
-        # 
-        #             echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
-        #             set -x
-        #             git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
-        #             git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
-        #             set +x
-        # 
-        #             echo "Checkout full repo, submodules and all"
-        #             source .buildkite/bin/custom-checkout.sh
-        # 
-        #             echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
-        #             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-        #             shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
-        #             (cd $$BUILDKITE_BUILD_CHECKOUT_PATH; git clean -ffxdq)
-        #             echo "cp -rfp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH"
-        #                   cp -rfp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
-
-        # NO MORE MYTMP!!!
-
         echo "+++ Clone aha directly to $$BUILDKITE_BUILD_CHECKOUT_PATH"; set -x
 
 
@@ -379,4 +339,36 @@ steps:
 #   - docker pull stanfordaha/garnet:latest
 #   - exit 0
 #   - echo foooooooo
+
+        # ALWAYS build mytmp, then don't need upload-script (eventually)
+        # MYTMP=/var/lib/buildkite-agent/builds/tmp/$BUILDKITE_BUILD_NUMBER
+        # If MYTMP exists, we have valid clone from current build
+        # if [ -e $CHECKOUT ]; then
+
+        # NO MORE MYTMP!!!
+        # 
+        # 
+        # #         if [ "" ]; then
+        # #             # (If CHECKOUT exists, MYTMP exists.)
+        # #             echo "Found pre-existing build clone, use that for checkout"
+        # #             echo source $CHECKOUT; source $CHECKOUT
+        # #         else
+        # 
+        #             echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
+        #             set -x
+        #             git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
+        #             git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+        #             set +x
+        # 
+        #             echo "Checkout full repo, submodules and all"
+        #             source .buildkite/bin/custom-checkout.sh
+        # 
+        #             echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
+        #             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+        #             shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
+        #             (cd $$BUILDKITE_BUILD_CHECKOUT_PATH; git clean -ffxdq)
+        #             echo "cp -rfp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH"
+        #                   cp -rfp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+
+        # NO MORE MYTMP!!!
 
