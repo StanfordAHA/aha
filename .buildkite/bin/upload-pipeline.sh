@@ -60,7 +60,7 @@ echo "-----------------------------"
 
 # First delete what you can without being root
 set -x
-/bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME/*
+/bin/rm -rf /var/lib/buildkite-agent/builds/DELETEME/* || echo okay
 set +x
 echo "-----------------------------"
 
