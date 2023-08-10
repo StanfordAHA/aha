@@ -6,44 +6,6 @@ steps:
 # This first step builds the docker image that gets used by all subsequent steps.
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
-  commands:
-
-  - echo "--- pipeline.xml commands BEGIN"
-
-  # The "if FLOW_REPO" part is redundant when/if not using heroku...?
-  - echo FLOW_REPO=$$FLOW_REPO
-  - echo FLOW_REPO=$FLOW_REPO
-  - 'set -x;
-     pwd;
-     if test -e tmp-vars; then
-       cat -n tmp-vars;
-       source tmp-vars;
-     fi;
-     if [[ $$FLOW_REPO ]]; then
-       echo "--- Handle PR";
-       cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
-     fi'
- 
-  # !!!
-  - echo "+++ debug BEGIN"
-
-#   - source .buildkite/hooks/post-checkout
-
-  # Note, from here down, FLOW_REPO and FLOW_HEAD_SHA are null
-  # if not called via heroku (I think)
-
-  - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
-  # Clear out .TEST file to avoid reporting failure to aha-flow-app.
-  # This is a heroku thing I guess.
-  # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks
-  - rm -rf temp/.TEST
-
-  - echo "--- Pruning Docker Images"
-  - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
-
-  - echo "--- pipeline.xml commands END"
-
 
   agents:
     docker: true
@@ -100,6 +62,44 @@ steps:
         ls -laR temp || echo no
 #         chmod +x .buildkite/hooks/pre-exit; ./.buildkite/hooks/pre-exit
 #         source .buildkite/hooks/pre-exit # complains about unbound variable :( ??
+
+  commands:
+
+  - echo "--- pipeline.xml commands BEGIN"
+
+  # The "if FLOW_REPO" part is redundant when/if not using heroku...?
+  - echo FLOW_REPO=$$FLOW_REPO
+  - echo FLOW_REPO=$FLOW_REPO
+  - 'set -x;
+     pwd;
+     if test -e tmp-vars; then
+       cat -n tmp-vars;
+       source tmp-vars;
+     fi;
+     if [[ $$FLOW_REPO ]]; then
+       echo "--- Handle PR";
+       cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
+     fi'
+ 
+  # !!!
+  - echo "+++ debug BEGIN"
+
+#   - source .buildkite/hooks/post-checkout
+
+  # Note, from here down, FLOW_REPO and FLOW_HEAD_SHA are null
+  # if not called via heroku (I think)
+
+  - echo "--- Creating garnet Image"
+  - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
+  # Clear out .TEST file to avoid reporting failure to aha-flow-app.
+  # This is a heroku thing I guess.
+  # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks
+  - rm -rf temp/.TEST
+
+  - echo "--- Pruning Docker Images"
+  - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
+
+  - echo "--- pipeline.xml commands END"
 
 
 - label: ":hammer: Amber Gold RTL"
