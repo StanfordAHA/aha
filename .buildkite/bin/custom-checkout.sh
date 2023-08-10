@@ -68,10 +68,8 @@ echo "--- PREP AHA REPO and all its submodules"; set -x
 pwd
 cd $BUILDKITE_BUILD_CHECKOUT_PATH # Actually I think we're already there but whatevs
 
-echo "--- git submodule update --checkout"
 git submodule update --checkout # This is probably unnecessary but whatevs
 git remote set-url origin https://github.com/hofstee/aha
-echo '--- git submodule foreach --recursive "git clean -ffxdq"'
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
@@ -100,7 +98,9 @@ fi
 
 set -x
 git submodule sync --recursive
+echo "--- git submodule update --init --recursive --force"
 git submodule update --init --recursive --force
+echo '--- git submodule foreach --recursive "git reset --hard"'
 git submodule foreach --recursive "git reset --hard"
 set +x
 
