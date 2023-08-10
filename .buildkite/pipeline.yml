@@ -6,40 +6,35 @@ steps:
 # This first step builds the docker image that gets used by all subsequent steps.
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
-
   agents:
     docker: true
-
-  # label: ":wrench: Build Docker Image"
 
   plugins:
   - uber-workflow/run-without-clone:
   - improbable-eng/metahook:
 
-      # This should run as pre-checkout, else risk not executing post-checkout hook from repo
-      # If run as pre-checkout, still get local post-checkout hook
-      # If run as post-checkout, local (repo) post-checkout hook DOES NOT HAPPEN! :(
-      # FIXME maybe should not rely on repo hook for post-checkout, pre-exit!
-      # "Preparing working directory" might clear out aha-flow maybe??
+      # Must clone aha repo in the pre-checkout phase,
+      # to have repo-based post-checkout hook ready for later.
+
       pre-checkout: |
-        echo "+++ PRE CHECKOUT HOOK, BDI STEP"
+        echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
         
-        echo "+++ Clone aha directly to $$BUILDKITE_BUILD_CHECKOUT_PATH"; set -x
-
-
-        echo "+++ CD to aha repo clone"; set -x
+        echo "CD to aha repo clone"
         if ! cd $$BUILDKITE_BUILD_CHECKOUT_PATH; then
-            echo "Clone does not exist (yet); will clone a new one"
+            echo "Clone does not exist (yet); will clone a new one"; set -x
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
             cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+            set +x
         fi
+        echo 'git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku'; set -x
         git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+        set +x
 
         echo "Checkout full repo, submodules and all"
         source .buildkite/bin/custom-checkout.sh
 
-        echo "--- PRE CHECKOUT HOOK, BDI STEP END"
+        echo "--- PRE CHECKOUT HOOK, BDI STEP, END"
 
 
       pre-command: |
