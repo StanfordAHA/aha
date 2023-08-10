@@ -10,6 +10,7 @@ steps:
     docker: true
 
   plugins:
+  # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
   - improbable-eng/metahook:
 
@@ -31,32 +32,15 @@ steps:
         git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
         set +x
 
-        echo "Checkout full repo, submodules and all"
+        echo "--- DEBUG DOCKER TRASH"; set -x
+        docker images; docker ps
+        # docker kill deleteme_garnet_ci4114 || echo okay
+        set +x
+
+        echo "--- CHECKOUT FULL REPO, submodules and all"
         source .buildkite/bin/custom-checkout.sh
 
         echo "--- PRE CHECKOUT HOOK, BDI STEP, END"
-
-
-      pre-command: |
-          echo "+++ DEBUG DOCKER TRASH BDI pre-comm"
-          set -x
-          #
-          # local post-checkout working as of build 8583
-          #           echo "+++ DEBUG POST-CHECKOUT HOOK"
-          #           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
-          #           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-          #           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
-          #
-          docker images; docker ps
-          docker kill deleteme_garnet_ci4114 || echo okay
-
-      pre-exit: |
-        pwd
-        ls
-        ls -ld temp || echo no
-        ls -laR temp || echo no
-#         chmod +x .buildkite/hooks/pre-exit; ./.buildkite/hooks/pre-exit
-#         source .buildkite/hooks/pre-exit # complains about unbound variable :( ??
 
   commands:
 
@@ -367,3 +351,33 @@ steps:
 
         # NO MORE MYTMP!!!
 
+
+#       pre-command: |
+#           echo "+++ DEBUG DOCKER TRASH BDI pre-comm"
+#           set -x
+#           #
+#           # local post-checkout working as of build 8583
+#           #           echo "+++ DEBUG POST-CHECKOUT HOOK"
+#           #           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
+#           #           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+#           #           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
+#           #
+#           docker images; docker ps
+#           docker kill deleteme_garnet_ci4114 || echo okay
+
+        #
+        # local post-checkout working as of build 8583
+        #           echo "+++ DEBUG POST-CHECKOUT HOOK"
+        #           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no
+        #           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+        #           ls -l $$aha/.buildkite/hooks/post-checkout || echo no
+        #
+
+
+#       pre-exit: |
+#         pwd
+#         ls
+#         ls -ld temp || echo no
+#         ls -laR temp || echo no
+# #         chmod +x .buildkite/hooks/pre-exit; ./.buildkite/hooks/pre-exit
+# #         source .buildkite/hooks/pre-exit # complains about unbound variable :( ??
