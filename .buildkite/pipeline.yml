@@ -20,16 +20,15 @@ steps:
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
         
-        echo "CD to aha repo clone"
-        if ! cd $$BUILDKITE_BUILD_CHECKOUT_PATH; then
-            echo "Clone does not exist (yet); will clone a new one"; set -x
+        echo "+++ CD to aha repo clone"; set -x
+        if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
+            echo "No aha clone in checkout dir (yet); I will build one"
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-            cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-            set +x
         fi
+        cd $$BUILDKITE_BUILD_CHECKOUT_PATH
         echo 'git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku'; set -x
-        git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+              git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
         set +x
 
         echo "--- DEBUG DOCKER TRASH"; set -x
@@ -154,65 +153,21 @@ steps:
     - improbable-eng/metahook:
 
         pre-checkout: |
+          set +x
           echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
 
-          #           # MYTMP=/var/lib/buildkite-agent/builds/tmp/$BUILDKITE_BUILD_NUMBER
-          #           # If MYTMP exists, we have valid clone from current build
-          #           if [ ! -e $MYTMP ]; then
-          #               echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
-          #               set -x
-          #               git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
-          #               git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
-          #           fi
-          #           echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
-          #           set -x
-          #           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-          #           shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
-          #           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
-
-          # NO MORE MYTMP!!!
-
           echo "+++ CD to aha repo clone"; set -x
-          if ! cd $$BUILDKITE_BUILD_CHECKOUT_PATH; then
-            echo "Clone does not exist (yet); will clone a new one"
+          if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
+            echo "No aha clone in checkout dir (yet); I will build one"
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-            cd $$BUILDKITE_BUILD_CHECKOUT_PATH
           fi
-          git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
-
-
+          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+          echo 'git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku'; set -x
+                git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+          set +x
 
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
-
-
-
-
-
-
-
-
-
-
-
-
-
-#           set -x
-# 
-#           # Want original post-checkout, pre-exit hooks available
-#           [ "$$BUILDKITE_BUILD_CHECKOUT_PATH" ] || exit 13 # big trouble if not exists
-# 
-#           shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
-# 
-#           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
-# 
-# 
-#           ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
-#           ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
-#           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-#           ls -la $$aha/.buildkite/hooks/post-checkout || echo no thats okay
-#           ls -la $$aha || echo no thats okay
-#           echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
 
         pre-command: |
           set -x
@@ -381,3 +336,37 @@ steps:
 #         ls -laR temp || echo no
 # #         chmod +x .buildkite/hooks/pre-exit; ./.buildkite/hooks/pre-exit
 # #         source .buildkite/hooks/pre-exit # complains about unbound variable :( ??
+
+          #           # MYTMP=/var/lib/buildkite-agent/builds/tmp/$BUILDKITE_BUILD_NUMBER
+          #           # If MYTMP exists, we have valid clone from current build
+          #           if [ ! -e $MYTMP ]; then
+          #               echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
+          #               set -x
+          #               git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
+          #               git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+          #           fi
+          #           echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
+          #           set -x
+          #           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+          #           shopt -s dotglob  # Else will not copy dotfiles e.g. .buildkite/hooks :o
+          #           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+
+          # NO MORE MYTMP!!!
+
+#           set -x
+# 
+#           # Want original post-checkout, pre-exit hooks available
+#           [ "$$BUILDKITE_BUILD_CHECKOUT_PATH" ] || exit 13 # big trouble if not exists
+# 
+#           shopt -s dotglob  # Otherwise will not copy dotfiles e.g. .buildkite/hooks :o
+# 
+#           cp -rp $MYTMP/aha-flow/* $$BUILDKITE_BUILD_CHECKOUT_PATH
+# 
+# 
+#           ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH || echo okay
+#           ls -la $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/hook* || echo okay
+#           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+#           ls -la $$aha/.buildkite/hooks/post-checkout || echo no thats okay
+#           ls -la $$aha || echo no thats okay
+#           echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
+
