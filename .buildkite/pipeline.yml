@@ -176,6 +176,8 @@ steps:
 
 #   # Disabled checkout so maybe .buildkite/hooks/post-checkout not guaranteed to exist
 #   # So must embed functionality here instead :/
+
+# VERY BAD! This creates a root-owned unremovable dir 'temp' in the host machine :(
 #   - mkdir -p /buildkite/temp; rm -rf /buildkite/temp/.TEST; touch /buildkite/temp/.TEST
   
   # - docker images; docker ps; sleep 500; exit 0
