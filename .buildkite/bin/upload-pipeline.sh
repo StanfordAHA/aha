@@ -87,15 +87,13 @@ if [ "$t" ]; then
     set +x
 
     function dexec { docker exec $container /bin/bash -c "$*"; }
-    echo "BEFORE: "
-    dexec "ls -l /DELETEME"
+    echo "BEFORE: "; dexec "cd DELETEME; ls"
     echo "--------------------------------------------"
     echo "PURGE"
     echo 'dexec "/bin/rm -rf /DELETEME/temp*"'
           dexec "/bin/rm -rf /DELETEME/temp*"
     echo "--------------------------------------------"
-    echo "AFTER: "
-    dexec "ls -l /DELETEME"
+    echo "AFTER: "; dexec "cd DELETEME; ls"
     echo "--------------------------------------------"
 
     docker kill $container
