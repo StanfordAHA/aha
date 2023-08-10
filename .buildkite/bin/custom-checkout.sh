@@ -11,7 +11,7 @@
 # Setup
 set +u    # nounset? not on my watch!
 set +x    # debug OFF
-PS4="#"   # Prevents "+++" prefix during 3-deep set -x execution
+PS4="_"   # Prevents "+++" prefix during 3-deep set -x execution
 
 echo "+++ custom-checkout.sh BEGIN"
 
@@ -31,7 +31,7 @@ function cleanup {
     echo "TIME"
     FIND="find $dir -maxdepth 1 -user buildkite-agent"
     files=`$FIND 2> /dev/null`
-    ls -ld $files | cat -n
+    ls -ltd $files | cat -n
     echo "----------------------------------------------"
 
     echo "PURGE/BEFORE"
@@ -39,7 +39,7 @@ function cleanup {
     echo "Found $ntrash buildkite-agent files in $dir"
     echo "----------------------------------------------"
 
-    echo "PURGE/PURGE"
+    echo "PURGE/PURGE delete files older than 24 hours"
     $FIND -mtime +$ndays -exec /bin/rm -rf {} \; || echo Ignoring find-command problem
     echo "----------------------------------------------"
 
@@ -67,8 +67,11 @@ echo '-------------'
 echo "--- PREP AHA REPO and all its submodules"; set -x
 pwd
 cd $BUILDKITE_BUILD_CHECKOUT_PATH # Actually I think we're already there but whatevs
+
+echo "--- git submodule update --checkout"
 git submodule update --checkout # This is probably unnecessary but whatevs
 git remote set-url origin https://github.com/hofstee/aha
+echo '--- git submodule foreach --recursive "git clean -ffxdq"'
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
