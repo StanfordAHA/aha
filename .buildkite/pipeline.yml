@@ -4,12 +4,9 @@ env:
   DEV_BRANCH: remotes/origin/no-heroku
 
 steps:
-
 - label: ":wrench: Build Docker Image"
   # Build the docker image that "Integration Tests" step will use
   key: "docker-build"
-  agents:
-    docker: true
 
   plugins:
   # Override standard checkout procedure with custom checkout script
@@ -44,25 +41,14 @@ steps:
         echo "--- PRE CHECKOUT HOOK, BDI STEP, END"
 
   commands:
-
-  - echo "--- pipeline.xml commands, BDI step, BEGIN"
-
-#   # At this point I think FLOW_REPO is always NULL
-#   # The "if FLOW_REPO" part is redundant when/if not using heroku...?
-#   - echo FLOW_REPO=$$FLOW_REPO
-#   - echo FLOW_REPO=$FLOW_REPO
-
-# BOOKMARK cleanup
-
-  # Note, from here down, FLOW_REPO and FLOW_HEAD_SHA are null maybe?
+  - echo "+++ pipeline.xml commands, BDI step, BEGIN"
 
   - echo "--- Creating garnet Image"
+  - docker build . -t "garnet:$BUILDKITE_COMMIT
+  # Docker image successfully built, clear out .TEST file to avoid
+  # reporting failure to aha-flow-app.
 
-  # - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
-  - docker build . -t "garnet:$BUILDKITE_COMMIT"
-
-  # Clear out .TEST file to avoid reporting failure to aha-flow-app.
-  # This is a heroku thing I guess.
+  # Clear out .TEST file to avoid reporting failure to aha-flow-app. This is a heroku thing I guess.
   # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks
   - rm -rf temp/.TEST
 
@@ -71,18 +57,20 @@ steps:
 
   - echo "--- pipeline.xml commands END"
 
+  agents:
+    docker: true
+
+# BOOKMARK cleanup
+
 
 - label: ":hammer: Amber Gold RTL"
   key: "goldcheck-amber"
   depends_on: "docker-build"
   commands:
-  - set -x; echo "+++ EARLY OUT foooool"; exit 0
   - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
   plugins:
-    # - thedyrt/skip-checkout#v0.1.1: ~
     - docker#v3.2.0:
-        image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
-        # image: stanfordaha/garnet:latest
+        image: garnet:$BUILDKITE_COMMIT
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"
@@ -178,7 +166,7 @@ steps:
           # docker kill deleteme_garnet_ci3927
 
     - docker#v3.2.0:
-        image: garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA
+        image: garnet:$BUILDKITE_COMMIT
         # image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
@@ -201,7 +189,7 @@ steps:
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use
   # them for the Docker cache.
-  - docker image rm "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA" --no-prune
+  - docker image rm "garnet:$BUILDKITE_COMMIT" --no-prune
   agents:
     docker: true
   plugins:
@@ -378,4 +366,9 @@ steps:
 #   - echo "+++ debug BEGIN"
 
 #   - source .buildkite/hooks/post-checkout
+
+#   # At this point I think FLOW_REPO is always NULL
+#   # The "if FLOW_REPO" part is redundant when/if not using heroku...?
+#   - echo FLOW_REPO=$$FLOW_REPO
+#   - echo FLOW_REPO=$FLOW_REPO
 

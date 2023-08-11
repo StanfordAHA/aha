@@ -115,60 +115,22 @@ if [ "$PR_FROM_SUBMOD" ]; then
     unset FOUND_SUBMOD
     for submod in garnet Halide-to-Hardware lassen gemstone canal lake; do
         echo "--- - " Looking in submod $submod
-        # (cd $submod; git checkout $BUILDKITE_COMMIT && echo UPDATE SUBMOD $submod || echo NOT $submod);
+        # --- THIS IS WHERE THE CHECKOUT HAPPENS ---
         (set -x; cd $submod; git fetch origin && git checkout $BUILDKITE_COMMIT) && FOUND_SUBMOD=true || echo "--- -- NOT " Ssubmod
         [ "$FOUND_SUBMOD" ] && echo "--- -- FOUND " $submod
         [ "$FOUND_SUBMOD" ] && break
     done
 
-    if ! [ "$FOUND_SUBMOD" ]; then
+    if [ "$FOUND_SUBMOD" ]; then
+        echo "--- Checked out submodule '$submod', commit '$BUILDKITE_COMMIT'"
+    else
         echo "ERROR could not find requesting submod"; exit 13
     fi
     set +x
 else
     echo "--- NOT A PULL REQUEST"
 fi
-
-# if [[ $$FLOW_REPO ]]; then
-#     echo "--- Handle PR";
-#     cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
-# fi
-
 echo "--- custom-checkout.sh END"
-
-
-
-# echo '+++ FLOW_REPO?'
-# set -x
-# ls -l tmp-vars 2> /dev/null || echo no
-# cat tmp-vars   2> /dev/null || echo no
-# set +x
-
-
-# https://github.com/StanfordAHA/garnet/blob/aha-flow-no-heroku/TEMP/custom-checkout.sh
-# https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/custom-checkout.sh
-# curl -s https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/custom-checkout.sh > /tmp/tmp
-# BUILDKITE_BUILD_NUMBER
-
-# Temporarily, for dev purposes, load pipeline from garnet repo;
-# later replace aha repo .buildkite/pipeline.yml w dev from garnet, see?
-
-# if [ "$FOUND_SUBMOD" ]; then
-#   if [ "$submod" == "garnet" ]; then
-
-# NO! NO! NO!!! Already got pipeline.yml, that's who called us!!!?
-# if (cd garnet; git log remotes/origin/aha-flow-no-heroku | grep $BUILDKITE_COMMIT); then
-#     echo "+++ FOR NOW, load pipeline from garnet aha-flow-no-heroku"
-#     # echo "  BEFORE: " `ls -l .buildkite/pipeline.yml`
-#     u=https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/pipeline.yml
-#     curl -s $u > .buildkite/pipeline.yml
-#     # echo "  curl -s $u > .buildkite/pipeline.yml"
-#     # echo "  AFTER:  " `ls -l .buildkite/pipeline.yml`
-# fi
-# pwd
-
-
-
 
 
 
@@ -341,3 +303,31 @@ echo "--- custom-checkout.sh END"
 #        source tmp-vars;
 #      fi;
 
+# echo '+++ FLOW_REPO?'
+# set -x
+# ls -l tmp-vars 2> /dev/null || echo no
+# cat tmp-vars   2> /dev/null || echo no
+# set +x
+
+
+# https://github.com/StanfordAHA/garnet/blob/aha-flow-no-heroku/TEMP/custom-checkout.sh
+# https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/custom-checkout.sh
+# curl -s https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/custom-checkout.sh > /tmp/tmp
+# BUILDKITE_BUILD_NUMBER
+
+# Temporarily, for dev purposes, load pipeline from garnet repo;
+# later replace aha repo .buildkite/pipeline.yml w dev from garnet, see?
+
+# if [ "$FOUND_SUBMOD" ]; then
+#   if [ "$submod" == "garnet" ]; then
+
+# NO! NO! NO!!! Already got pipeline.yml, that's who called us!!!?
+# if (cd garnet; git log remotes/origin/aha-flow-no-heroku | grep $BUILDKITE_COMMIT); then
+#     echo "+++ FOR NOW, load pipeline from garnet aha-flow-no-heroku"
+#     # echo "  BEFORE: " `ls -l .buildkite/pipeline.yml`
+#     u=https://raw.githubusercontent.com/StanfordAHA/garnet/aha-flow-no-heroku/TEMP/pipeline.yml
+#     curl -s $u > .buildkite/pipeline.yml
+#     # echo "  curl -s $u > .buildkite/pipeline.yml"
+#     # echo "  AFTER:  " `ls -l .buildkite/pipeline.yml`
+# fi
+# pwd
