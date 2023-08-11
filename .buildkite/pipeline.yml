@@ -1,10 +1,12 @@
 env:
   CONFIG: ${CONFIG:-daily}
+  # FIXME after dev is done, use "master" as default instead of no-heroku
+  DEV_BRANCH: remotes/origin/no-heroku
 
 steps:
 
-# This first step builds the docker image that gets used by all subsequent steps.
 - label: ":wrench: Build Docker Image"
+  # Build the docker image that "Integration Tests" step will use
   key: "docker-build"
   agents:
     docker: true
@@ -27,8 +29,8 @@ steps:
             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
         fi
         cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-        echo 'git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku'; set -x
-              git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+        echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
+              git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
         set +x
 
         echo "--- DEBUG DOCKER TRASH"; set -x
@@ -43,29 +45,31 @@ steps:
 
   commands:
 
-  - echo "--- pipeline.xml commands BEGIN"
+  - echo "--- pipeline.xml commands, BDI step, BEGIN"
 
   # The "if FLOW_REPO" part is redundant when/if not using heroku...?
   - echo FLOW_REPO=$$FLOW_REPO
   - echo FLOW_REPO=$FLOW_REPO
-  - 'set -x;
-     pwd;
-     if test -e tmp-vars; then
-       cat -n tmp-vars;
-       source tmp-vars;
-     fi;
-     if [[ $$FLOW_REPO ]]; then
-       echo "--- Handle PR";
-       cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
-     fi'
- 
-  # !!!
-  - echo "+++ debug BEGIN"
+# BOOKMARK cleanup
+
+#   # 'tmp-vars' created by custom-checkout.sh; sets FLOW_REPO and FLOW_HEAD_SHA
+#   - 'set -x;
+#      pwd;
+#      if test -e tmp-vars; then
+#        cat -n tmp-vars;
+#        source tmp-vars;
+#      fi;
+#      if [[ $$FLOW_REPO ]]; then
+#        echo "--- Handle PR";
+#        cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
+#      fi'
+#  
+#   # !!!
+#   - echo "+++ debug BEGIN"
 
 #   - source .buildkite/hooks/post-checkout
 
-  # Note, from here down, FLOW_REPO and FLOW_HEAD_SHA are null
-  # if not called via heroku (I think)
+  # Note, from here down, FLOW_REPO and FLOW_HEAD_SHA are null maybe?
 
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
@@ -163,8 +167,8 @@ steps:
             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
           fi
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-          echo 'git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku'; set -x
-                git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+          echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
+                git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
           set +x
 
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
@@ -291,7 +295,7 @@ steps:
         #             echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
         #             set -x
         #             git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
-        #             git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+        #             git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH
         #             set +x
         # 
         #             echo "Checkout full repo, submodules and all"
@@ -343,7 +347,7 @@ steps:
           #               echo "Build a new MYTMP (prev step built MYTMP on a different machine maybe)"
           #               set -x
           #               git clone $$BUILDKITE_REPO $MYTMP/aha-flow; cd $MYTMP/aha-flow
-          #               git checkout $$BUILDKITE_COMMIT || git checkout remotes/origin/no-heroku
+          #               git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH
           #           fi
           #           echo "Copy aha clone to checkout path so bk will find local post-checkout etc."
           #           set -x

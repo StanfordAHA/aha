@@ -50,7 +50,7 @@ function cleanup {
 }
 
 set +x
-echo "+++ Check on our trash in /tmp"
+echo "--- Check on our trash in /tmp"
 cleanup /tmp older-than 1 days
 
 echo "--- END CLEANUP"
@@ -73,6 +73,11 @@ git remote set-url origin https://github.com/hofstee/aha
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
+
+# Would this work for heroku maybe? Surely this would work for heroku.
+if expr "$$BUILDKITE_MESSAGE" : "PR from "; then
+    BUILDKITE_COMMIT=FLOW_HEAD_SHA
+fi
 
 echo "--- Check out appropriate AHA branch"
 unset PR_FROM_SUBMOD
@@ -117,21 +122,25 @@ if [ "$PR_FROM_SUBMOD" ]; then
     done
     echo now i am here
 
-    # tmp-vars holds e.g. FLOW_REPO and FLOW_HEAD_SHA vars for later commands e.g.
-    # commands:
-    #   - source custom-checkout.sh           # Sets tmp.vars
-    #   - source tmp.vars; echo $FLOW_REPO    # Uses tmp.vars
-    # NO no need for tmp-vars.
-    set -x
-    if [ "$FOUND_SUBMOD" ]; then
-        # These are used later by pipeline.xml
-        # BUT NOT as global env vars; this script must
-        # be sourced in same scope as var usage, see?
-        pwd # Should be e.g. /var/lib/buildkite-agent/builds/r7cad-docker-2/stanford-aha/aha-flow
-        test -e tmp-vars && /bin/rm -rf tmp-vars
-        echo "FLOW_REPO=$submod; export FLOW_REPO" >> tmp-vars
-        echo "FLOW_HEAD_SHA=$BUILDKITE_COMMIT; export FLOW_HEAD_SHA" >> tmp-vars
-    else
+# NO no need for tmp-vars.
+#     # tmp-vars holds e.g. FLOW_REPO and FLOW_HEAD_SHA vars for later commands e.g.
+#     # commands:
+#     #   - source custom-checkout.sh           # Sets tmp.vars
+#     #   - source tmp.vars; echo $FLOW_REPO    # Uses tmp.vars
+#     # NO no need for tmp-vars.
+# 
+#     set -x
+#     if [ "$FOUND_SUBMOD" ]; then
+#         # These are used later by pipeline.xml
+#         # BUT NOT as global env vars; this script must
+#         # be sourced in same scope as var usage, see?
+#         pwd # Should be e.g. /var/lib/buildkite-agent/builds/r7cad-docker-2/stanford-aha/aha-flow
+#         test -e tmp-vars && /bin/rm -rf tmp-vars
+#         echo "FLOW_REPO=$submod; export FLOW_REPO" >> tmp-vars
+#         echo "FLOW_HEAD_SHA=$BUILDKITE_COMMIT; export FLOW_HEAD_SHA" >> tmp-vars
+#     fi
+
+    if ! [ "$FOUND_SUBMOD" ]; then
         echo "ERROR could not find requesting submod"; exit 13
     fi
     set +x
@@ -139,11 +148,32 @@ else
     echo "--- NOT A PULL REQUEST"
 fi
 
-echo '+++ FLOW_REPO?'
-set -x
-ls -l tmp-vars 2> /dev/null || echo no
-cat tmp-vars   2> /dev/null || echo no
-set +x
+
+     set -x;
+     pwd;
+
+#   # 'tmp-vars' created by custom-checkout.sh; sets FLOW_REPO and FLOW_HEAD_SHA
+#      if test -e tmp-vars; then
+#        cat -n tmp-vars;
+#        source tmp-vars;
+#      fi;
+
+     if [[ $$FLOW_REPO ]]; then
+       echo "--- Handle PR";
+       cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
+     fi
+ 
+
+
+echo "--- custom-checkout.sh END"
+
+
+
+# echo '+++ FLOW_REPO?'
+# set -x
+# ls -l tmp-vars 2> /dev/null || echo no
+# cat tmp-vars   2> /dev/null || echo no
+# set +x
 
 
 # https://github.com/StanfordAHA/garnet/blob/aha-flow-no-heroku/TEMP/custom-checkout.sh
@@ -168,7 +198,6 @@ set +x
 # fi
 # pwd
 
-echo "--- custom-checkout.sh END"
 
 
 
