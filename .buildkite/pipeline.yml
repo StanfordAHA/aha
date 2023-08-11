@@ -47,32 +47,20 @@ steps:
 
   - echo "--- pipeline.xml commands, BDI step, BEGIN"
 
-  # The "if FLOW_REPO" part is redundant when/if not using heroku...?
-  - echo FLOW_REPO=$$FLOW_REPO
-  - echo FLOW_REPO=$FLOW_REPO
+#   # At this point I think FLOW_REPO is always NULL
+#   # The "if FLOW_REPO" part is redundant when/if not using heroku...?
+#   - echo FLOW_REPO=$$FLOW_REPO
+#   - echo FLOW_REPO=$FLOW_REPO
+
 # BOOKMARK cleanup
-
-#   # 'tmp-vars' created by custom-checkout.sh; sets FLOW_REPO and FLOW_HEAD_SHA
-#   - 'set -x;
-#      pwd;
-#      if test -e tmp-vars; then
-#        cat -n tmp-vars;
-#        source tmp-vars;
-#      fi;
-#      if [[ $$FLOW_REPO ]]; then
-#        echo "--- Handle PR";
-#        cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
-#      fi'
-#  
-#   # !!!
-#   - echo "+++ debug BEGIN"
-
-#   - source .buildkite/hooks/post-checkout
 
   # Note, from here down, FLOW_REPO and FLOW_HEAD_SHA are null maybe?
 
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
+
+  # - docker build . -t "garnet:$BUILDKITE_COMMIT$FLOW_REPO$FLOW_HEAD_SHA"
+  - docker build . -t "garnet:$BUILDKITE_COMMIT"
+
   # Clear out .TEST file to avoid reporting failure to aha-flow-app.
   # This is a heroku thing I guess.
   # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks
@@ -373,4 +361,21 @@ steps:
 #           ls -la $$aha/.buildkite/hooks/post-checkout || echo no thats okay
 #           ls -la $$aha || echo no thats okay
 #           echo "+++ PRE CHECKOUT HOOK, OIT STEP END"
+
+#   # 'tmp-vars' created by custom-checkout.sh; sets FLOW_REPO and FLOW_HEAD_SHA
+#   - 'set -x;
+#      pwd;
+#      if test -e tmp-vars; then
+#        cat -n tmp-vars;
+#        source tmp-vars;
+#      fi;
+#      if [[ $$FLOW_REPO ]]; then
+#        echo "--- Handle PR";
+#        cd $FLOW_REPO && git fetch && git checkout $FLOW_HEAD_SHA;
+#      fi'
+#  
+#   # !!!
+#   - echo "+++ debug BEGIN"
+
+#   - source .buildkite/hooks/post-checkout
 
