@@ -60,9 +60,6 @@ steps:
   agents:
     docker: true
 
-# BOOKMARK cleanup
-
-
 - label: ":hammer: Amber Gold RTL"
   key: "goldcheck-amber"
   depends_on: "docker-build"
@@ -88,17 +85,43 @@ steps:
 - label: ":hammer: Onyx Integration Tests"
   key: "integration-tests"
   depends_on: "docker-build"
+
+  plugins:
+    # - uber-workflow/run-without-clone: # should not need this bc/ skip-checkout true below
+    - docker#v3.2.0:
+        image: garnet:$BUILDKITE_COMMIT
+        # image: stanfordaha/garnet:latest
+        volumes:
+          - "/cad/:/cad"
+          - "./temp:/buildkite:rw"
+        mount-checkout: false
+        skip-checkout: true
+        propagate-environment: true
+        environment:
+          - CONFIG
+          - FLOW_REPO
+        shell: ["/bin/bash", "-e", "-c"]
+    - improbable-eng/metahook:
+
+        pre-checkout: |
+          set +x
+          echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
+
+          echo "+++ CD to aha repo clone"
+          if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
+              echo "No aha clone in checkout dir (yet); I will build one"
+              mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+              git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
+          fi
+          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+          echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
+                git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
+          set +x
+
+          echo "--- PRE CHECKOUT HOOK, OIT STEP END"
+
+
   commands:
-
-# TEST to see if failure canary works?
-
-#   # Disabled checkout so maybe .buildkite/hooks/post-checkout not guaranteed to exist
-#   # So must embed functionality here instead :/
-
-# VERY BAD! This creates a root-owned unremovable dir 'temp' in the host machine :(
-#   - mkdir -p /buildkite/temp; rm -rf /buildkite/temp/.TEST; touch /buildkite/temp/.TEST
-  
-  # - docker images; docker ps; sleep 500; exit 0
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
@@ -119,67 +142,16 @@ steps:
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
 
+  # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
   - echo "--- Removing Failure Canary"
   - ls -al /buildkite
   - rm -rf /buildkite/.TEST
   - ls -al /buildkite
 
-  - exit 0
-
-# need to run post-checkout and pre-exit hooks even though did not checkout aha repo
-  # ONYX INTEGRATION TESTS
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-
-        pre-checkout: |
-          set +x
-          echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
-
-          echo "+++ CD to aha repo clone"
-          if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
-            echo "No aha clone in checkout dir (yet); I will build one"
-            mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-            git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-          fi
-          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-          echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
-                git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
-          set +x
-
-          echo "--- PRE CHECKOUT HOOK, OIT STEP END"
-
-        pre-command: |
-          set -x
-          echo "+++ DEBUG POST-CHECKOUT HOOK, OIT STEP"
-          date; pwd; ls -l .buildkite/hooks/post-checkout || echo no thats okay
-          aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
-          ls -l $$aha/.buildkite/hooks/post-checkout || echo no thats okay
-          ls -l $$aha || echo no thats okay
-
-          # Once I got a message "Process working directory $$aha doesn't exist"(!)
-          ls -l $$aha || mkdir -p $$aha
-
-          # Already did this in prev step??
-          # echo "+++ DEBUG DOCKER TRASH"
-          # docker images; docker ps
-          # docker kill deleteme_garnet_ci3927
-
-    - docker#v3.2.0:
-        image: garnet:$BUILDKITE_COMMIT
-        # image: stanfordaha/garnet:latest
-        volumes:
-          - "/cad/:/cad"
-          - "./temp:/buildkite:rw"
-        mount-checkout: false
-        skip-checkout: true
-        propagate-environment: true
-        environment:
-          - CONFIG
-          - FLOW_REPO
-        shell: ["/bin/bash", "-e", "-c"]
   agents:
     docker: true
+
+# BOOKMARK cleanup
 
 # FIXME does docker image get removed even when dependence(s) fail?
 - label: ":skull_and_crossbones: Delete Docker Image"
@@ -372,3 +344,28 @@ steps:
 #   - echo FLOW_REPO=$$FLOW_REPO
 #   - echo FLOW_REPO=$FLOW_REPO
 
+# TEST to see if failure canary works?
+
+#   # Disabled checkout so maybe .buildkite/hooks/post-checkout not guaranteed to exist
+#   # So must embed functionality here instead :/
+
+# VERY BAD! This creates a root-owned unremovable dir 'temp' in the host machine :(
+#   - mkdir -p /buildkite/temp; rm -rf /buildkite/temp/.TEST; touch /buildkite/temp/.TEST
+  
+  # - docker images; docker ps; sleep 500; exit 0
+
+#         pre-command: |
+#           set -x
+#           echo "+++ DEBUG POST-CHECKOUT HOOK, OIT STEP"
+#           date; pwd; ls -l .buildkite/hooks/post-checkout || echo no thats okay
+#           aha=/var/lib/buildkite-agent/builds/$$BUILDKITE_AGENT_NAME/stanford-aha/aha-flow
+#           ls -l $$aha/.buildkite/hooks/post-checkout || echo no thats okay
+#           ls -l $$aha || echo no thats okay
+# 
+#           # Once I got a message "Process working directory $$aha doesn't exist"(!)
+#           ls -l $$aha || mkdir -p $$aha
+# 
+#           # Already did this in prev step??
+#           # echo "+++ DEBUG DOCKER TRASH"
+#           # docker images; docker ps
+#           # docker kill deleteme_garnet_ci3927
