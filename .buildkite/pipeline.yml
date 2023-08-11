@@ -44,7 +44,7 @@ steps:
   - echo "+++ pipeline.xml commands, BDI step, BEGIN"
 
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:$BUILDKITE_COMMIT
+  - docker build . -t "garnet:$BUILDKITE_COMMIT"
   # Docker image successfully built, clear out .TEST file to avoid
   # reporting failure to aha-flow-app.
 
