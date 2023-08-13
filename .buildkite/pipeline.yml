@@ -120,17 +120,28 @@ steps:
                 git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
           set +x
 
-          echo "Set env var to tell docker whether to do pr config or no"
-          export DO_PR=false
-          if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
-              DO_PR=true
+          echo "Set env var to tell docker whether to do pr config or no"; set -x
+          export DO_PR=true
+          ap=`eval echo $$AHA_PUSHPULL`
+          if buildkite-agent artifact download $$ap . ; then
+              DO_PR=false # Do NOT do pr tests if commit came from aha repo
           fi
-          echo "DO_PR=$$DO_PR"
+          echo "FOO DO_PR=$$DO_PR"
 
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
 
 
   commands:
+  - echo FOO
+  - echo BAR
+  - echo $$DO_PR
+  - echo BAZ
+
+  - (echo FOO)
+  - (echo BAR)
+  - (echo $$DO_PR)
+  - (echo BAZ)
+
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
@@ -145,6 +156,11 @@ steps:
   # Run regression tests
   # - if [[ $$FLOW_REPO ]]; then
   # - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
+  - (echo FOO)
+  - (echo BAR)
+  - (echo $$DO_PR)
+  - (echo BAZ)
+
   - if [ "$$DO_PR" == "true" ]; then
       echo "Trigger came from aha repo; use default config"
     else
