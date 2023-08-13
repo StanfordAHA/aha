@@ -67,14 +67,14 @@ echo "-----------------------------"
 
 # FINALLY we will try and purge the DELETEME directory of root-owned trash
 d=/var/lib/buildkite-agent/builds/DELETEME
-echo "ROOT_OWNED OBJECTS in $d"
-t=`find /var/lib/buildkite-agent/builds/DELETEME -user root 2> /dev/null`
+echo "ROOT-OWNED OBJECTS in $d"
+t=`find /var/lib/buildkite-agent/builds/DELETEME -user root 2> /dev/null` || echo okay
 echo "$t"
 echo "-----------------------------"
 
 
 if [ "$t" ]; then
-    echo "PURGING ROOT_OWNED OBJECTS in $d"
+    echo "PURGING ROOT-OWNED OBJECTS in $d"
 
     set -x
     d=/var/lib/buildkite-agent/builds/DELETEME
