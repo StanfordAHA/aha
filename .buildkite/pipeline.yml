@@ -66,12 +66,13 @@ steps:
   commands:
   - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
   plugins:
+    - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
     - docker#v3.2.0:
         image: garnet:$BUILDKITE_COMMIT
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"
-        skip-checkout: true
+        # skip-checkout: true
         mount-checkout: false
         propagate-environment: true
         environment:
