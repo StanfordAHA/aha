@@ -87,7 +87,7 @@ steps:
   depends_on: "docker-build"
 
   plugins:
-    # - uber-workflow/run-without-clone: # should not need this bc/ skip-checkout true below
+    - uber-workflow/run-without-clone: # skip-checkout alone (below) did not do the trick!
     - docker#v3.2.0:
         image: garnet:$BUILDKITE_COMMIT
         # image: stanfordaha/garnet:latest
