@@ -119,6 +119,13 @@ steps:
                 git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
           set +x
 
+          echo "Set env var to tell docker whether to do pr config or no"
+          export DO_PR=false
+          if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
+              DO_PR=true
+          fi
+          echo "DO_PR=$$DO_PR"
+
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
 
 
@@ -136,7 +143,8 @@ steps:
   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
   # Run regression tests
   # - if [[ $$FLOW_REPO ]]; then
-  - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
+  # - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
+  - if [ "$$DO_PR" == "true" ]; then
       echo "Trigger came from aha repo; use default config"
     else
       echo "Trigger came from submod repo pull request; use pr config"
