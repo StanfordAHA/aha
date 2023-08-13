@@ -101,6 +101,7 @@ steps:
         environment:
           - CONFIG
           - FLOW_REPO
+          - DO_PR
         shell: ["/bin/bash", "-e", "-c"]
     - improbable-eng/metahook:
 
