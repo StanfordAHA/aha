@@ -120,28 +120,21 @@ steps:
                 git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
           set +x
 
-          echo "Set env var to tell docker whether to do pr config or no"; set -x
-          export DO_PR=true
+          echo "+++ DO_PR"; set -x
+          echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           ap=`eval echo $$AHA_PUSHPULL`
           if buildkite-agent artifact download $$ap . ; then
-              DO_PR=false # Do NOT do pr tests if commit came from aha repo
+              /bin/rm -rf temp/DO_PR
+          else
+              mkdir -p temp; touch temp/DO_PR
           fi
-          echo "FOO DO_PR=$$DO_PR"
+          pwd
+          test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
 
-
   commands:
-  - echo FOO
-  - echo BAR
-  - echo $$DO_PR
-  - echo BAZ
-
-  - (echo FOO)
-  - (echo BAR)
-  - (echo $$DO_PR)
-  - (echo BAZ)
-
+  - set -x; test -e /buildkite/DO_PR && echo FOO /buildkite/DO_PR exists || echo FOO /buildkite/DO_PR not exists
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
@@ -156,17 +149,13 @@ steps:
   # Run regression tests
   # - if [[ $$FLOW_REPO ]]; then
   # - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
-  - (echo FOO)
-  - (echo BAR)
-  - (echo $$DO_PR)
-  - (echo BAZ)
-
-  - if [ "$$DO_PR" == "true" ]; then
-      echo "Trigger came from aha repo; use default config"
+  # - if [ "$$DO_PR" == "true" ]; then
+  - set -x; pwd; if test -f /buildkite/DO_PR; then
+      echo "Trigger came from aha repo; use default config";
     else
-      echo "Trigger came from submod repo pull request; use pr config"
+      echo "Trigger came from submod repo pull request; use pr config";
       export CONFIG=pr;
-    fi
+    fi;
   - aha regress $$CONFIG
   # We report success to the aha-flow app by removing the .TEST file,
   # which is created in the post-checkout hook and checked for in the
