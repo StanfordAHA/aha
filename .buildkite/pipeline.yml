@@ -136,7 +136,10 @@ steps:
   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
   # Run regression tests
   # - if [[ $$FLOW_REPO ]]; then
-  - if [[ "$$IS_PR_FROM_SUBMOD" == "true" ]]; then
+  - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
+      echo "Trigger came from aha repo; use default config"
+    else
+      echo "Trigger came from submod repo pull request; use pr config"
       export CONFIG=pr;
     fi
   - aha regress $$CONFIG
