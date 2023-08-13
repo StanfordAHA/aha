@@ -156,10 +156,10 @@ steps:
   # - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
   # - if [ "$$DO_PR" == "true" ]; then
   - set -x; pwd; if test -e /buildkite/DO_PR; then
-      echo "Trigger came from aha repo; use default config";
-    else
       echo "Trigger came from submod repo pull request; use pr config";
       export CONFIG=pr;
+    else
+      echo "Trigger came from aha repo; use default config";
     fi;
   - aha regress $$CONFIG
   # We report success to the aha-flow app by removing the .TEST file,
