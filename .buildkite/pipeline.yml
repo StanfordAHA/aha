@@ -135,7 +135,8 @@ steps:
   - pip freeze
   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
   # Run regression tests
-  - if [[ $$FLOW_REPO ]]; then
+  # - if [[ $$FLOW_REPO ]]; then
+  - if [[ "$$IS_PR_FROM_SUBMOD" == "true" ]]; then
       export CONFIG=pr;
     fi
   - aha regress $$CONFIG
