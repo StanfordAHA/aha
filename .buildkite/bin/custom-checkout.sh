@@ -92,7 +92,7 @@ if [ "$PR_FROM_SUBMOD" ]; then
     echo "--- Handle PR"
     echo "--- Looking for submod commit $BUILDKITE_COMMIT"
     unset FOUND_SUBMOD
-    for submod in garnet Halide-to-Hardware lassen gemstone canal lake; do
+    for submod in garnet Halide-to-Hardware lassen gemstone canal lake hwtypes; do
         echo "--- - " Looking in submod $submod
         # --- THIS IS WHERE THE CHECKOUT HAPPENS ---
         (set -x; cd $submod; git fetch origin && git checkout $BUILDKITE_COMMIT) && FOUND_SUBMOD=true || echo "--- -- NOT " Ssubmod
