@@ -16,9 +16,8 @@ steps:
       # Must clone aha repo in the pre-checkout phase,
       # so repo-based post-checkout hook will be ready for post-checkout phase.
 
-      pre-checkout:
-      - echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
-      - |
+      pre-checkout: |
+        echo "+++ BDI PRE CHECKOUT HOOK BEGIN"
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
@@ -39,10 +38,10 @@ steps:
         echo "--- CHECKOUT FULL REPO, submodules and all"
         source .buildkite/bin/custom-checkout.sh
 
-        echo "--- PRE CHECKOUT HOOK, BDI STEP, END"
+        echo "--- BDI PRE CHECKOUT HOOK END"
 
   commands:
-  - echo "+++ pipeline.xml commands, BDI step, BEGIN"
+  - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
 
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT"
@@ -56,7 +55,7 @@ steps:
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
 
-  - echo "--- pipeline.xml commands END"
+  - echo "--- BDI PIPELINE.XML COMMANDS END"
 
   agents:
     docker: true
