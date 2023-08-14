@@ -39,7 +39,7 @@ if expr "$$BUILDKITE_MESSAGE" : "PR from "; then
 fi
 
 AHA_DEFAULT_BRANCH=no-heroku
-echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $AHA_DEFAULT_BRANCH, or master"
+echo "--- See if we need to update a submodule"
 unset PR_FROM_SUBMOD
 
 # PR_FROM_SUBMOD means build was triggered by foreign (non-aha) repo,
@@ -54,9 +54,10 @@ echo git fetch -v --prune -- origin $BUILDKITE_COMMIT
 if   git fetch -v --prune -- origin $BUILDKITE_COMMIT; then
 
     # Pretty sure we already did this, in pipeline.xml BDI step pre-checkout hook
-    # git checkout -f $BUILDKITE_COMMIT
+    # But what the heck, let's do it again, don't break what is working already.
+    git checkout -f $BUILDKITE_COMMIT
+    echo "Found aha commit '$BUILDKITE_COMMIT'; no need to update submodule"
 
-    echo "Using aha commit '$BUILDKITE_COMMIT'"
 else
     echo '-------------------------------------------'
     echo 'REQUESTED COMMIT DOES NOT EXIST in aha repo'
@@ -93,18 +94,18 @@ set +x
 
 if [ "$PR_FROM_SUBMOD" ]; then
     echo "--- Handle PR"
-    echo "--- Looking for submod commit $BUILDKITE_COMMIT"
+    echo "+++ Looking for submod commit $BUILDKITE_COMMIT"
     unset FOUND_SUBMOD
     for submod in garnet Halide-to-Hardware lassen gemstone canal lake hwtypes; do
         echo "--- - " Looking in submod $submod
         # --- THIS IS WHERE THE CHECKOUT HAPPENS ---
-        (set -x; cd $submod; git fetch origin && git checkout $BUILDKITE_COMMIT) && FOUND_SUBMOD=true || echo "--- -- NOT " Ssubmod
+        (set -x; cd $submod; git fetch origin && git checkout $BUILDKITE_COMMIT) && FOUND_SUBMOD=true || echo "NOT " $submod
         [ "$FOUND_SUBMOD" ] && echo "--- -- FOUND " $submod
         [ "$FOUND_SUBMOD" ] && break
     done
 
     if [ "$FOUND_SUBMOD" ]; then
-        echo "--- Checked out submodule '$submod', commit '$BUILDKITE_COMMIT'"
+        echo "--- Updated submodule '$submod' w commit '$BUILDKITE_COMMIT'"
     else
         echo "ERROR could not find requesting submod"; exit 13
     fi
