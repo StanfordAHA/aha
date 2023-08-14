@@ -16,9 +16,9 @@ steps:
       # Must clone aha repo in the pre-checkout phase,
       # so repo-based post-checkout hook will be ready for post-checkout phase.
 
-      pre-checkout: |
-        echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
-        
+      pre-checkout:
+      - echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
+      - |
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
@@ -42,12 +42,6 @@ steps:
         echo "--- PRE CHECKOUT HOOK, BDI STEP, END"
 
   commands:
-  - |
-    echo foo
-    echo bar
-    # echo baz
-    echo bramble
-
   - echo "+++ pipeline.xml commands, BDI step, BEGIN"
 
   - echo "--- Creating garnet Image"
@@ -145,12 +139,12 @@ steps:
           echo "--- PRE COMMAND HOOK, OIT STEP END"
 
   commands:
-  - if test -e /buildkite/DO_PR; then
+  - |
+    if test -e /buildkite/DO_PR; then
         echo "--- DO_PR SET (TRUE)"
     else
         echo "--- DO_PR UNSET (FALSE)"
-    fi;
-  - test -e /buildkite/DO_PR && echo FOO /buildkite/DO_PR exists || echo FOO /buildkite/DO_PR not exists
+    fi
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
