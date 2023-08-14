@@ -35,7 +35,7 @@ set +x
 # as the desired submod commit, and auto-discover the repo that goes with the commit.
 
 if expr "$$BUILDKITE_MESSAGE" : "PR from "; then
-    BUILDKITE_COMMIT=FLOW_HEAD_SHA
+    BUILDKITE_COMMIT=$FLOW_HEAD_SHA
 fi
 
 AHA_DEFAULT_BRANCH=no-heroku
