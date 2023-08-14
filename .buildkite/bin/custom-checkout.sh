@@ -46,14 +46,17 @@ unset PR_FROM_SUBMOD
 # i.e. one of the submods. The submod sends its commit hash BUT DOES
 # NOT TELL US WHAT REPO IT IS. :(
 
-# We detect this by attempting to checkout BUILDKITE_COMMIT from aha repo.
+# We detect this by attempting to fetch BUILDKITE_COMMIT from aha repo.
 # Success means this is an aha-triggered build. Failure means we need to
 # find what repo actually did trigger the commit.
 
 echo git fetch -v --prune -- origin $BUILDKITE_COMMIT
 if   git fetch -v --prune -- origin $BUILDKITE_COMMIT; then
-    git checkout -f $BUILDKITE_COMMIT
-    echo "Checked out aha commit '$BUILDKITE_COMMIT'"
+
+    # Pretty sure we already did this, in pipeline.xml BDI step pre-checkout hook
+    # git checkout -f $BUILDKITE_COMMIT
+
+    echo "Using aha commit '$BUILDKITE_COMMIT'"
 else
     echo '-------------------------------------------'
     echo 'REQUESTED COMMIT DOES NOT EXIST in aha repo'
