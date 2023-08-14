@@ -26,8 +26,8 @@ steps:
             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
         fi
         cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-        echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
-              git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
+        echo 'git checkout -q $$BUILDKITE_COMMIT || git checkout -q $$DEV_BRANCH || git checkout -q master'; set -x
+              git checkout -q $$BUILDKITE_COMMIT || git checkout -q $$DEV_BRANCH || git checkout -q master
         set +x
 
         echo "--- DEBUG DOCKER TRASH"; set -x
@@ -41,6 +41,12 @@ steps:
         echo "--- PRE CHECKOUT HOOK, BDI STEP, END"
 
   commands:
+  - |
+    echo foo
+    echo bar
+    # echo baz
+    echo bramble
+
   - echo "+++ pipeline.xml commands, BDI step, BEGIN"
 
   - echo "--- Creating garnet Image"
@@ -120,26 +126,29 @@ steps:
           set +x
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
 
-        # Note oops post-checkout removes temp dir completely oh no
         pre-command: |
+          # Cannot run this as part of pre-checkout, because post-checkout removes temp dir :o
           echo "+++ PRE COMMAND HOOK, OIT STEP BEGIN"
-          echo "+++ DO_PR"; set -x
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           ap=`eval echo $$AHA_PUSHPULL`
           if buildkite-agent artifact download $$ap . ; then
               /bin/rm -rf temp/DO_PR
+              echo "+++ DO_PR UNSET (FALSE)"
           else
               mkdir -p temp; touch temp/DO_PR
+              echo "+++ DO_PR SET (TRUE)"
           fi
           pwd
           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
           echo "--- PRE COMMAND HOOK, OIT STEP END"
 
-
-
   commands:
-  - echo "+++ DO_PR in the docker"
-  - set -x; test -e /buildkite/DO_PR && echo FOO /buildkite/DO_PR exists || echo FOO /buildkite/DO_PR not exists
+  - if test -e /buildkite/DO_PR; then
+        echo "--- DO_PR SET (TRUE)"
+    else
+        echo "--- DO_PR UNSET (FALSE)"
+    fi;
+  - test -e /buildkite/DO_PR && echo FOO /buildkite/DO_PR exists || echo FOO /buildkite/DO_PR not exists
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
@@ -155,7 +164,7 @@ steps:
   # - if [[ $$FLOW_REPO ]]; then
   # - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
   # - if [ "$$DO_PR" == "true" ]; then
-  - set -x; pwd; if test -e /buildkite/DO_PR; then
+  - if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config";
       export CONFIG=pr;
     else
