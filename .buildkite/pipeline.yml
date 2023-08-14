@@ -19,15 +19,13 @@ steps:
       pre-checkout: |
         echo "+++ PRE CHECKOUT HOOK, BDI STEP, BEGIN"
         
-        if expr "$$BUILDKITE_MESSAGE" : "PR from "; then
-            BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
-
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
         fi
+        if expr "$$BUILDKITE_MESSAGE" : "PR from "; then BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
         cd $$BUILDKITE_BUILD_CHECKOUT_PATH
         echo 'git checkout -q $$BUILDKITE_COMMIT || git checkout -q $$DEV_BRANCH || git checkout -q master'; set -x
               git checkout -q $$BUILDKITE_COMMIT || git checkout -q $$DEV_BRANCH || git checkout -q master
@@ -123,6 +121,7 @@ steps:
               mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
               git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
           fi
+          if expr "$$BUILDKITE_MESSAGE" : "PR from "; then BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
           echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
                 git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
