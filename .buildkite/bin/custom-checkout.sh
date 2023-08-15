@@ -108,7 +108,7 @@ if [ "$PR_FROM_SUBMOD" ]; then
 
     if [ "$FOUND_SUBMOD" ]; then
         echo "--- Updated submodule '$submod' w commit '$BUILDKITE_COMMIT'"
-        update_repo=`cd $submod; git remote git_url origin`
+        update_repo=`cd $submod; git remote get-url origin`
     else
         echo "ERROR could not find requesting submod"; exit 13
     fi
