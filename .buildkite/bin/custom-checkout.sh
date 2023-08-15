@@ -119,6 +119,12 @@ fi
 
 echo "+++ NOTIFY GITHUB OF PENDING JOB"
 echo "Sending update to repo $update_repo"
-~buildkite-agent/bin/status-update $BUILDKITE_BUILD_NUMBER $update_repo $BUILDKITE_COMMIT pending
+~/bin/status-update $BUILDKITE_BUILD_NUMBER $update_repo $BUILDKITE_COMMIT pending
+
+
+# Save update_repo information for later step to report pass/fail info
+mkdir -p /var/lib/buildkite-agent/builds/DELETEME
+echo $update_repo > /var/lib/buildkite-agent/builds/DELETEME/update_repo_$BUILDKITE_BUILD_NUMBER 
+
 
 echo "--- custom-checkout.sh END"

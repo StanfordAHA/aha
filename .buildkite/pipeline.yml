@@ -41,8 +41,13 @@ steps:
 
         echo "--- BDI PRE CHECKOUT HOOK END"
 
+      pre-exit: |
+        echo "+++ exit code=$$BUILDKITE_COMMAND_EXIT_STATUS"
+        env
+
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
+  - exit 13
 
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT"
