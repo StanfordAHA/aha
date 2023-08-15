@@ -17,7 +17,7 @@ steps:
       # so repo-based post-checkout hook will be ready for post-checkout phase.
 
       pre-checkout: |
-        echo "+++ BDI PRE CHECKOUT HOOK BEGIN"
+        echo "+++ BDI PRE CHECKOUT HOOK BEGIN"; set -x
         exit 14
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
