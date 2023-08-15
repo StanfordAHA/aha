@@ -88,6 +88,8 @@ echo '--- git submodule foreach --recursive "git reset --hard"'
 git submodule foreach --recursive "git reset --hard"
 set +x
 
+update_repo=`git remote git_url origin`
+
 # To find out what repo triggered the commit, we iterate through
 # all the submodules and find which one can successfully checkout
 # the desired BUILKITE_COMMIT.
@@ -106,6 +108,7 @@ if [ "$PR_FROM_SUBMOD" ]; then
 
     if [ "$FOUND_SUBMOD" ]; then
         echo "--- Updated submodule '$submod' w commit '$BUILDKITE_COMMIT'"
+        update_repo=`cd $submod; git remote git_url origin`
     else
         echo "ERROR could not find requesting submod"; exit 13
     fi
@@ -113,45 +116,9 @@ if [ "$PR_FROM_SUBMOD" ]; then
 else
     echo "--- NOT A PULL REQUEST"
 fi
+
+echo "+++ NOTIFY GITHUB OF PENDING JOB"
+echo "Sending update to repo $update_repo"
+~buildkite-agent/bin/status-update $BUILDKITE_BUILD_NUMBER $update_repo $BUILDKITE_COMMIT pending
+
 echo "--- custom-checkout.sh END"
-
-
-
-##############################################################################
-# TRASH
-
-# echo "--- BEGIN CLEANUP"
-# 
-# function cleanup {
-#     dir=$1; ndays=$3
-# 
-# #     echo "SPACE"
-# #     du -hx --max-depth=0 $dir/* 2> /dev/null || echo no
-# #     echo "----------------------------------------------"
-# 
-#     echo "TIME"
-#     FIND="find $dir -maxdepth 1 -user buildkite-agent"
-#     files=`$FIND 2> /dev/null`
-#     ls -ltd $files | cat -n
-#     echo "----------------------------------------------"
-# 
-#     echo "PURGE/BEFORE"
-#     ntrash=`$FIND 2> /dev/null | wc -l` || echo Ignoring find-command problem
-#     echo "Found $ntrash buildkite-agent files in $dir"
-#     echo "----------------------------------------------"
-# 
-#     echo "PURGE/PURGE delete files older than 24 hours"
-#     $FIND -mtime +$ndays -exec /bin/rm -rf {} \; || echo Ignoring find-command problem
-#     echo "----------------------------------------------"
-# 
-#     echo "PURGE/AFTER"
-#     ntrash=`$FIND 2> /dev/null | wc -l` || echo Ignoring find-command problem
-#     echo "Found $ntrash buildkite-agent files in $dir"
-#     echo "----------------------------------------------"
-# }
-# 
-# set +x
-# echo "--- Check on our trash in /tmp"
-# cleanup /tmp older-than 1 days
-# 
-# echo "--- END CLEANUP"
