@@ -18,6 +18,7 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK BEGIN"
+        exit 14
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
