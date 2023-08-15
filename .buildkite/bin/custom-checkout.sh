@@ -88,7 +88,7 @@ echo '--- git submodule foreach --recursive "git reset --hard"'
 git submodule foreach --recursive "git reset --hard"
 set +x
 
-update_repo=`git remote git_url origin`
+update_repo=`git remote get-url origin`
 
 # To find out what repo triggered the commit, we iterate through
 # all the submodules and find which one can successfully checkout
