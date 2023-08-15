@@ -42,7 +42,8 @@ steps:
         echo "--- BDI PRE CHECKOUT HOOK END"
 
       pre-exit: |
-        echo "+++ exit code=$$BUILDKITE_COMMAND_EXIT_STATUS"
+        s=$$BUILDKITE_COMMAND_EXIT_STATUS || s=99
+        echo "+++ exit code=$$s"
         env
 
   commands:
