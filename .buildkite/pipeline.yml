@@ -62,8 +62,6 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
-  - exit 13
-
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT"
   # Docker image successfully built, clear out .TEST file to avoid
