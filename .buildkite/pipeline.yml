@@ -18,6 +18,7 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK BEGIN"; set -x
+        exit 14
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
@@ -42,10 +43,11 @@ steps:
         echo "--- BDI PRE CHECKOUT HOOK END"
 
       pre-exit: |
+        set -x
         if test -v BUILDKITE_COMMAND_EXIT_STATUS; then
             s=$$BUILDKITE_COMMAND_EXIT_STATUS
-        elif test -v BUILDKITE_LAST_HOOK_STATUS; then
-            s=$$BUILDKITE_LAST_HOOK_STATUS
+        elif test -v BUILDKITE_LAST_HOOK_EXIT_STATUS; then
+            s=$$BUILDKITE_LAST_HOOK_EXIT_STATUS
         else
             s=99
         fi
