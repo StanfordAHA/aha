@@ -88,7 +88,8 @@ echo '--- git submodule foreach --recursive "git reset --hard"'
 git submodule foreach --recursive "git reset --hard"
 set +x
 
-update_repo=`git remote get-url origin`
+# update_repo=`git remote get-url origin` # huh.
+update_repo=`git config --get remote.origin.url`
 
 # To find out what repo triggered the commit, we iterate through
 # all the submodules and find which one can successfully checkout
@@ -108,7 +109,7 @@ if [ "$PR_FROM_SUBMOD" ]; then
 
     if [ "$FOUND_SUBMOD" ]; then
         echo "--- Updated submodule '$submod' w commit '$BUILDKITE_COMMIT'"
-        update_repo=`cd $submod; git remote get-url origin`
+        update_repo=`cd $submod; git config --get remote.origin.url`
     else
         echo "ERROR could not find requesting submod"; exit 13
     fi
