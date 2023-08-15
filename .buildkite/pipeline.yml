@@ -18,6 +18,7 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK BEGIN"; set -x
+        exit 14
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
@@ -43,16 +44,22 @@ steps:
 
       pre-exit: |
         set -x
-        if test -v BUILDKITE_COMMAND_EXIT_STATUS; then
-            s=$$BUILDKITE_COMMAND_EXIT_STATUS
-        elif test -v BUILDKITE_LAST_HOOK_EXIT_STATUS; then
-            s=$$BUILDKITE_LAST_HOOK_EXIT_STATUS
-        else
+        set +u
+        echo "+++ CHECKING EXIT STATUS"
+        if ! test -v BUILDKITE_LAST_HOOK_EXIT_STATUS; then
+            echo "Hooks never ran! This is bad."
             s=99
+        else
+            s=$$BUILDKITE_LAST_HOOK_EXIT_STATUS;
+        fi
+        if [ "$$s" != "0" ]; then
+            echo "Hook failed with exit status $$s"
+        else
+            s=$$BUILDKITE_COMMAND_EXIT_STATUS;
+            echo "No hooks failed. Use command exit status $$s"
         fi
         # s=$$BUILDKITE_COMMAND_EXIT_STATUS || s=99
         echo "+++ exit code=$$s"
-        env
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
