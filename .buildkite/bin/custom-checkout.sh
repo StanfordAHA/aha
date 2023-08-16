@@ -16,6 +16,18 @@ echo "+++ custom-checkout.sh BEGIN"
 echo I am `whoami`     # Watch out if this ever says "I am root"
 echo I am in dir `pwd` # Watch out if this ever we are in root dir (/)
 
+# FIXME only want to do status update in case of PULL_REQUEST...right???
+# Early-alert to github for valid pull requests (not useful for pushes)
+# Use parens sub-shell so as not to mess up env vars
+if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then (
+  # Force pending status even though EXIT_STATUS maybe not valid yet...
+  export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
+  export BUILDKITE_COMMAND_EXIT_STATUS=0
+  # Send status to github
+  ~/bin/status-update $BUILDKITE_PULL_REQUEST_REPO $BUILDKITE_COMMIT pending
+); fi
+
+
 echo "--- PREP AHA REPO and all its submodules"; set -x
 pwd
 # E.g. CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
@@ -127,6 +139,7 @@ update_commit=$BUILDKITE_COMMIT
   # Force pending status even though EXIT_STATUS maybe not valid yet...
   export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
   export BUILDKITE_COMMAND_EXIT_STATUS=0
+  # Send status to github
   ~/bin/status-update $update_repo $update_commit pending
 )
 
