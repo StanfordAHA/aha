@@ -132,7 +132,7 @@ update_commit=$BUILDKITE_COMMIT
 
 # Save update_repo information so later step(s) can report pass/fail info.
 tmp=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $tmp
-echo $update_repo    > $tmp/$BUILDKITE_BUILD_NUMBER_update_repo
-echo $update_commmit > $tmp/$BUILDKITE_BUILD_NUMBER_update_commit
+echo $update_repo    > $tmp/${BUILDKITE_BUILD_NUMBER}_update_repo
+echo $update_commmit > $tmp/${BUILDKITE_BUILD_NUMBER}_update_commit
 
 echo "--- custom-checkout.sh END"
