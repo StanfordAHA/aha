@@ -19,13 +19,15 @@ echo I am in dir `pwd` # Watch out if this ever we are in root dir (/)
 # FIXME only want to do status update in case of PULL_REQUEST...right???
 # Early-alert to github for valid pull requests (not useful for pushes)
 # Use parens sub-shell so as not to mess up env vars
-if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then (
-  # Force pending status even though EXIT_STATUS maybe not valid yet...
-  export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
-  export BUILDKITE_COMMAND_EXIT_STATUS=0
-  # Send status to github
-  ~/bin/status-update $BUILDKITE_PULL_REQUEST_REPO $BUILDKITE_COMMIT pending
-); fi
+(
+    echo "+++ NOTIFY GITHUB OF PENDING JOB"
+    echo "Sending update to repo '$BUILDKITE_PULL_REQUEST_REPO' commit '$BUILDKITE_COMMIT'"
+    # Force pending status even though EXIT_STATUS maybe not valid yet...
+    export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
+    export BUILDKITE_COMMAND_EXIT_STATUS=0
+    # Send status to github
+    ~/bin/status-update pending
+)
 
 
 echo "--- PREP AHA REPO and all its submodules"; set -x
@@ -130,22 +132,17 @@ else
     echo "--- NOT A PULL REQUEST"
 fi
 
-echo "+++ NOTIFY GITHUB OF PENDING JOB"
-echo "Sending update to repo $update_repo"
-update_commit=$BUILDKITE_COMMIT
+# echo "+++ NOTIFY GITHUB OF PENDING JOB"
+# echo "Sending update to repo $update_repo"
 # ~/bin/status-update $BUILDKITE_BUILD_NUMBER $update_repo $update_commit pending
 
-(
-  # Force pending status even though EXIT_STATUS maybe not valid yet...
-  export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
-  export BUILDKITE_COMMAND_EXIT_STATUS=0
-  # Send status to github
-  ~/bin/status-update $update_repo $update_commit pending
-)
-
-# Save update_repo information so later step(s) can report pass/fail info.
-tmp=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $tmp
-echo $update_repo    > $tmp/${BUILDKITE_BUILD_NUMBER}_update_repo
-echo $update_commmit > $tmp/${BUILDKITE_BUILD_NUMBER}_update_commit
+# I do a thing once; why do it again?
+# (
+#   # Force pending status even though EXIT_STATUS maybe not valid yet...
+#   export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
+#   export BUILDKITE_COMMAND_EXIT_STATUS=0
+#   # Send status to github
+#   ~/bin/status-update pending
+# )
 
 echo "--- custom-checkout.sh END"

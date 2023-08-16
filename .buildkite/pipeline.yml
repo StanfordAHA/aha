@@ -44,8 +44,9 @@ steps:
       pre-exit: |
         set +u
         echo "+++ CHECKING EXIT STATUS"; set -x
+
         # Send status to github (again), in case we failed already
-        if ! ~/bin/status-update $update_repo $update_commit pending; then
+        if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
             (set -x; docker image rm "garnet:$$BUILDKITE_COMMIT" --no-prune)
         fi
