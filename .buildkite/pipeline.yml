@@ -18,6 +18,7 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK BEGIN"; set -x
+        exit 14
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
@@ -42,23 +43,22 @@ steps:
         echo "--- BDI PRE CHECKOUT HOOK END"
 
       pre-exit: |
-        set -x
         set +u
-        echo "+++ CHECKING EXIT STATUS"
-        if ! test -v BUILDKITE_LAST_HOOK_EXIT_STATUS; then
-            echo "Hooks never ran! This is bad."
-            s=99
-        else
-            s=$$BUILDKITE_LAST_HOOK_EXIT_STATUS;
-        fi
-        if [ "$$s" != "0" ]; then
-            echo "Hook failed with exit status $$s"
-        else
-            s=$$BUILDKITE_COMMAND_EXIT_STATUS;
-            echo "No hooks failed. Use command exit status $$s"
-        fi
-        # s=$$BUILDKITE_COMMAND_EXIT_STATUS || s=99
+        echo "+++ CHECKING EXIT STATUS"; set -x
+        s1=$$BUILDKITE_LAST_HOOK_EXIT_STATUS
+        s2=$$BUILDKITE_COMMAND_EXIT_STATUS
+        echo "BUILDKITE_LAST_HOOK_EXIT_STATUS=$$s1"
+        echo "BUILDKITE_COMMAND_EXIT_STATUS=$$s2"
+        if [ "$$s1" != "0" ]; then
+            echo "Hooks failed with exit status '$$s1'"; s=$$s1
+        elif [ "$$s2" != "0" ]; then
+            echo "Commands failed with exit status '$$s2'"; s=$$s1
+        else s=0; fi
         echo "+++ exit code=$$s"
+
+        # On failure, remove docker image. We already failed once,
+        # so it's okay if the image does not exist.
+        [ "$$s" == 0 ] || docker image rm "garnet:$BUILDKITE_COMMIT" --no-prune
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
@@ -200,8 +200,9 @@ steps:
     docker: true
 
 # BOOKMARK cleanup
+- wait: { continue_on_failure: true } # One step at a time + continue on failure
 
-# FIXME does docker image get removed even when dependence(s) fail?
+# FIXME does docker image get removed even when dependence(s) fail? NO :(
 - label: ":skull_and_crossbones: Delete Docker Image"
   depends_on:
   - "integration-tests"
