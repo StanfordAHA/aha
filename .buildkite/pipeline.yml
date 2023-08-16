@@ -63,8 +63,6 @@ steps:
 
   - rm -rf temp/.TEST
 
-  - exit 13
-
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
 
