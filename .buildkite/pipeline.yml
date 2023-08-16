@@ -44,19 +44,25 @@ steps:
       pre-exit: |
         set +u
         echo "+++ CHECKING EXIT STATUS"
+        if ! ~/bin/status-update $update_repo $update_commit pending; then
+            # Build failed already, remove the docker image and begone
+            (set -x; docker image rm "garnet:$$BUILDKITE_COMMIT" --no-prune)
+        fi
 
-        s1=$$BUILDKITE_LAST_HOOK_EXIT_STATUS; s2=$$BUILDKITE_COMMAND_EXIT_STATUS
-        echo "LAST_HOOK_EXIT_STATUS=$$s1";    echo "COMMAND_EXIT_STATUS=$$s2"
-        if [ "$$s1" != "0" ]; then
-            echo "+++ ERROR Hooks failed with exit status '$$s1'"; s=$$s1
-        elif [ "$$s2" != "0" ]; then
-            echo "+++ ERROR Commands failed with exit status '$$s2'"; s=$$s2
-        else s=0; fi
-        echo "exit code=$$s"
+# status-update does all this now...maybe...
+#         s1=$$BUILDKITE_LAST_HOOK_EXIT_STATUS; s2=$$BUILDKITE_COMMAND_EXIT_STATUS
+#         echo "LAST_HOOK_EXIT_STATUS=$$s1";    echo "COMMAND_EXIT_STATUS=$$s2"
+#         if [ "$$s1" != "0" ]; then
+#             echo "+++ ERROR Hooks failed with exit status '$$s1'"; s=$$s1
+#         elif [ "$$s2" != "0" ]; then
+#             echo "+++ ERROR Commands failed with exit status '$$s2'"; s=$$s2
+#         else s=0; fi
+#         echo "exit code=$$s"
 
-        # On failure, remove docker image. We already failed once,
-        # so it's okay if the image does not exist.
-        [ "$$s" == 0 ] || (set -x; docker image rm "garnet:$$BUILDKITE_COMMIT" --no-prune)
+#         # On failure, remove docker image. We already failed once,
+#         # so it's okay if the image does not exist.
+#         [ "$$s" == 0 ] || (set -x; docker image rm "garnet:$$BUILDKITE_COMMIT" --no-prune)
+# 
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
