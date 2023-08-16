@@ -121,7 +121,14 @@ fi
 echo "+++ NOTIFY GITHUB OF PENDING JOB"
 echo "Sending update to repo $update_repo"
 update_commit=$BUILDKITE_COMMIT
-~/bin/status-update $BUILDKITE_BUILD_NUMBER $update_repo $update_commit pending
+# ~/bin/status-update $BUILDKITE_BUILD_NUMBER $update_repo $update_commit pending
+
+(
+  # Force pending status even though EXIT_STATUS maybe not valid yet...
+  export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
+  export BUILDKITE_COMMAND_EXIT_STATUS=0
+  ~/bin/status-update $update_repo $update_commit pending
+)
 
 # Save update_repo information so later step(s) can report pass/fail info.
 tmp=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $tmp
