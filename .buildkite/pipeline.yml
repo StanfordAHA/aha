@@ -42,10 +42,8 @@ steps:
         echo "--- BDI PRE CHECKOUT HOOK END"
 
       pre-exit: |
-        set +u
         echo "+++ CHECKING EXIT STATUS"; set -x
-
-        # Send status to github (again), in case we failed already
+        echo "Send status to github, delete docker image if job failed"
         if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
             (set -x; docker image rm "garnet:$$BUILDKITE_COMMIT" --no-prune)
@@ -71,9 +69,11 @@ steps:
   agents:
     docker: true
 
+# Set soft_fail so that failing gold check does not fail pipeline.
 - label: ":hammer: Amber Gold RTL"
   key: "goldcheck-amber"
   depends_on: "docker-build"
+  soft_fail: true
   commands:
   - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
   plugins:
@@ -115,7 +115,7 @@ steps:
         shell: ["/bin/bash", "-e", "-c"]
     - improbable-eng/metahook:
 
-        pre-checkout: |
+      pre-checkout: |
           set +x
           echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
 
@@ -133,7 +133,7 @@ steps:
           set +x
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
 
-        pre-command: |
+      pre-command: |
           # Cannot run this as part of pre-checkout, because post-checkout removes temp dir :o
           echo "+++ PRE COMMAND HOOK, OIT STEP BEGIN"
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
@@ -148,6 +148,12 @@ steps:
           pwd
           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
           echo "--- PRE COMMAND HOOK, OIT STEP END"
+
+      pre-exit: |
+        echo "+++ CHECKING EXIT STATUS"; set -x
+        echo "Send status to github."
+        # status-update will magically override "success" with "failure" as appropriate!
+        ~/bin/status-update success
 
   commands:
   - |
