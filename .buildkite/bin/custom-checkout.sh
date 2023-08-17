@@ -108,6 +108,12 @@ update_repo=`git config --get remote.origin.url`
 # all the submodules and find which one can successfully checkout
 # the desired BUILKITE_COMMIT.
 
+# NOTE this is not necessary for pull requests, which embed the
+# repo information as BUILDKITE_PULL_REQUEST. Push requests have
+# no such mechanism however :(
+# In general we don't process push requests from submodules, but
+# this was useful for development etc.
+
 if [ "$PR_FROM_SUBMOD" ]; then
     echo "--- Handle PR"
     echo "+++ Looking for submod commit $BUILDKITE_COMMIT"
@@ -130,18 +136,5 @@ if [ "$PR_FROM_SUBMOD" ]; then
 else
     echo "--- NOT A PULL REQUEST"
 fi
-
-# echo "+++ NOTIFY GITHUB OF PENDING JOB"
-# echo "Sending update to repo $update_repo"
-# ~/bin/status-update $BUILDKITE_BUILD_NUMBER $update_repo $update_commit pending
-
-# I do a thing once; why do it again?
-# (
-#   # Force pending status even though EXIT_STATUS maybe not valid yet...
-#   export BUILDKITE_LAST_HOOK_EXIT_STATUS=0
-#   export BUILDKITE_COMMAND_EXIT_STATUS=0
-#   # Send status to github
-#   ~/bin/status-update pending
-# )
 
 echo "--- custom-checkout.sh END"
