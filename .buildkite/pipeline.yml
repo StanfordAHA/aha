@@ -115,7 +115,7 @@ steps:
         shell: ["/bin/bash", "-e", "-c"]
     - improbable-eng/metahook:
 
-      pre-checkout: |
+        pre-checkout: |
           set +x
           echo "+++ PRE CHECKOUT HOOK, OIT STEP BEGIN"
 
@@ -133,7 +133,7 @@ steps:
           set +x
           echo "--- PRE CHECKOUT HOOK, OIT STEP END"
 
-      pre-command: |
+        pre-command: |
           # Cannot run this as part of pre-checkout, because post-checkout removes temp dir :o
           echo "+++ PRE COMMAND HOOK, OIT STEP BEGIN"
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
@@ -149,11 +149,11 @@ steps:
           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
           echo "--- PRE COMMAND HOOK, OIT STEP END"
 
-      pre-exit: |
-        echo "+++ CHECKING EXIT STATUS"; set -x
-        echo "Send status to github."
-        # status-update will magically override "success" with "failure" as appropriate!
-        ~/bin/status-update success
+        pre-exit: |
+          echo "+++ CHECKING EXIT STATUS"; set -x
+          echo "Send status to github."
+          # status-update will magically override "success" with "failure" as appropriate!
+          ~/bin/status-update success
 
   commands:
   - |
