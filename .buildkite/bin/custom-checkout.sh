@@ -9,25 +9,12 @@
 # Setup
 set +u    # nounset? not on my watch!
 set +x    # debug OFF
-PS4="_"   # Prevents "+++" prefix during 3-deep set -x execution
+PS4="_"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 # Checkout
 echo "+++ custom-checkout.sh BEGIN"
 echo I am `whoami`     # Watch out if this ever says "I am root"
 echo I am in dir `pwd` # Watch out if this ever we are in root dir (/)
-
-# Maybe already did this in online steps...?
-# # FIXME only want to do status update in case of PULL_REQUEST...right???
-# # Early-alert to github for valid pull requests (not useful for pushes)
-# # Use parens sub-shell so as not to mess up env vars
-# (
-#     echo "+++ NOTIFY GITHUB OF PENDING JOB"
-#     echo "Sending update to repo '$BUILDKITE_PULL_REQUEST_REPO' commit '$BUILDKITE_COMMIT'"
-#     # Force pending status even though EXIT_STATUS maybe not valid yet...
-#     # Send status to github
-#     ~/bin/status-update --force pending
-# )
-
 
 echo "--- PREP AHA REPO and all its submodules"; set -x
 pwd
@@ -40,18 +27,15 @@ git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
 
-# Would this work for heroku maybe? Surely this would work for heroku.
-
 # Heroku always sets message to "PR from <repo>" with BUILDKITE_COMMIT="HEAD"
-# so as to checkout aha master. Heroku sends desired submod commit <repo>
+# so as to checkout aha master. Heroku also sends desired submod commit <repo>
 # hash as env var FLOW_HEAD_SHA.  In this new regime, we set BUILDKITE_COMMIT
 # as the desired submod commit, and auto-discover the repo that goes with the commit.
 
-if expr "$$BUILDKITE_MESSAGE" : "PR from "; then
+if expr "$$BUILDKITE_MESSAGE" : "PR from " 2> /dev/null; then
     BUILDKITE_COMMIT=$FLOW_HEAD_SHA
 fi
 
-AHA_DEFAULT_BRANCH=no-heroku
 echo "--- See if we need to update a submodule"
 unset PR_FROM_SUBMOD
 
@@ -77,8 +61,7 @@ else
     echo 'This must be a pull request from one of the submods'
     PR_FROM_SUBMOD=true
 
-    # FIXME don't need if-then-else below fter dev merges to master.
-    
+    # FIXME don't need if-then-else below after dev merges to master.
     # Use dev branch as default until it gets merged and deleted.
     AHA_DEFAULT_BRANCH=no-heroku
     echo "Meanwhile, will use default branch '$AHA_DEFAULT_BRANCH' for aha repo"
