@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # What this script does:
-# - Update and initialize all aha repo submodules
+# - Update and initialize all aha repo submodules.
 # - Check out aha branch BUILDKITE_COMMIT if build triggered from aha repo
-#   or AHA DEFAULT (no-heroku now, master later) if triggered from submod push/pull
-# - If triggered from submod, update submod to match commit hash of triggering repo
+#   or AHA DEFAULT (no-heroku now, master later) if triggered from submod push/pull.
+# - If triggered from submod, update submod to match commit hash of triggering repo.
 
 # Setup
 set +u    # nounset? not on my watch!
@@ -27,6 +27,7 @@ git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
 
+# FIXME can of course delete this after heroku is gone...
 # Heroku always sets message to "PR from <repo>" with BUILDKITE_COMMIT="HEAD"
 # so as to checkout aha master. Heroku also sends desired submod commit <repo>
 # hash as env var FLOW_HEAD_SHA.  In this new regime, we set BUILDKITE_COMMIT
@@ -58,7 +59,8 @@ if   git fetch -v --prune -- origin $BUILDKITE_COMMIT; then
 else
     echo '-------------------------------------------'
     echo 'REQUESTED COMMIT DOES NOT EXIST in aha repo'
-    echo 'This must be a pull request from one of the submods'
+    echo '(This must be a pull request from one of the submods)'
+    echo 'Will checkout aha default branch'
     PR_FROM_SUBMOD=true
 
     # FIXME don't need if-then-else below after dev merges to master.
@@ -84,7 +86,6 @@ echo '--- git submodule foreach --recursive "git reset --hard"'
 git submodule foreach --recursive "git reset --hard"
 set +x
 
-# update_repo=`git remote get-url origin` # huh.
 update_repo=`git config --get remote.origin.url`
 
 # To find out what repo triggered the commit, we iterate through
