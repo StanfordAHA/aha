@@ -18,6 +18,7 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
+        cd $$BUILDKITE_BUILD_CHECKOUT_PATH
         source .buildkite/bin/custom-checkout.sh
 
       pre-exit: |

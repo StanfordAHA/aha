@@ -15,8 +15,10 @@ echo "--- CHECKOUT FULL REPO, submodules and all"
 
 # Checkout
 echo "+++ custom-checkout.sh BEGIN"
-echo I am `whoami`     # Watch out if this ever says "I am root"
-echo I am in dir `pwd` # Watch out if this ever we are in root dir (/)
+echo I am `whoami`
+echo I am in dir `pwd`
+cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
+
 
 # Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
 # We want to rewrite that to be the sha of submod repo that
@@ -34,7 +36,6 @@ fi
 # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
 
 echo "--- Determine whether to do daily or pr regressions"
-cd $BUILDKITE_BUILD_CHECKOUT_PATH
 if git checkout -qf $BUILDKITE_COMMIT; then
     echo "+++ UNSET DO_PR"
     echo "BUILDKITE_COMMIT found in aha repo, we will do daily regressions."
