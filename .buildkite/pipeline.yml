@@ -14,7 +14,7 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
-        source .buildkite/bin/custom-checkout.sh
+        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
 
       pre-exit: |
         echo "+++ CHECKING EXIT STATUS"; set -x
@@ -137,9 +137,9 @@ steps:
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
           commdir=/var/lib/buildkite-agent/builds/DELETEME;
           if test -f $$commdir/DO_PR-$${BUILDKITE_BUILD_NUMBER}; then
-              echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
-          else
               echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+          else
+              echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
           fi
           pwd
           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
