@@ -1,14 +1,11 @@
 env:
   CONFIG: ${CONFIG:-daily}
-  # FIXME after dev is done, use "master" as default instead of no-heroku
 
 steps:
+
 - label: ":wrench: Build Docker Image"
-  # Build the docker image that "Integration Tests" step will use
   key: "docker-build"
-
   plugins:
-
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
 
@@ -17,7 +14,6 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
-        cd $$BUILDKITE_BUILD_CHECKOUT_PATH
         source .buildkite/bin/custom-checkout.sh
 
       pre-exit: |
