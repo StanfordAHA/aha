@@ -121,6 +121,13 @@ steps:
           # Cannot run this as part of pre-checkout, because post-checkout removes temp dir :o
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
+          # Use temp/.TEST to pass fail/success info into and out of docker container
+          # This duplicates what happens in existing aha/.buildkite/hooks/post-checkout,
+          # FIXME which can be deleted once this merges to master FIXME
+          # FIXME also can delete aha/.buildkite/hooks/pre-exit when/if heroku goes away FIXME
+          echo Renewing `pwd`/temp/.TEST
+          mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
+
           echo "--- Pass DO_PR info to docker"
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
@@ -138,7 +145,13 @@ steps:
         pre-exit: |
           echo "+++ CHECKING EXIT STATUS"; set -x
           echo "Send status to github."
+
+          # Docker removes temp/.TEST if all the tests passed
+          if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
+              test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
+          fi
           # status-update will magically override "success" with "failure" as appropriate!
+          # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
           ~/bin/status-update success
 
   commands:
