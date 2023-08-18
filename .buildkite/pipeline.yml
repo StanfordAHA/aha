@@ -19,6 +19,7 @@ steps:
       pre-exit: |
         echo "+++ CHECKING EXIT STATUS"; set -x
         echo "Send status to github, delete docker image if job failed"
+        # status-update exit status will tell us if this step has failed
         if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
             (set -x; docker image rm "garnet:$${BUILDKITE_BUILD_NUMBER}" --no-prune)
@@ -71,7 +72,6 @@ steps:
   agents:
     docker: true
 
-
 - label: ":hammer: Onyx Integration Tests"
   key: "integration-tests"
   depends_on: "docker-build"
@@ -99,10 +99,13 @@ steps:
 
           # I THINK we don't actually need an aha clone for this step!?
           # I THINK all we need is a path to the "temp" canary !!?
+          # FIXME/TODO use non-agent-specific path instead, e.g. $commdir FIXME
+          # FIXME then this hook can go away entirely, yes? FIXME
           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH/temp
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
 
-
+          # I THINK we don't actually need an aha clone for this step!?
+          # I THINK all we need is a path to the "temp" canary !!?
           #           echo "+++ CD to aha repo clone"
           #           if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
           #               echo "No aha clone in checkout dir (yet); I will build one"
@@ -123,6 +126,7 @@ steps:
 
         pre-command: |
           # Cannot run this as part of pre-checkout, because post-checkout removes temp dir :o
+          # Actually no I think all it does is delete temp/.TEST...
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
           # Use temp/.TEST to pass fail/success info into and out of docker container
@@ -132,6 +136,7 @@ steps:
           echo Renewing `pwd`/temp/.TEST
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
+          # FIXME there is an obvious much better way to do this FIXME
           echo "--- Pass DO_PR info to docker"
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
@@ -198,7 +203,6 @@ steps:
   agents:
     docker: true
 
-# BOOKMARK cleanup
 - wait: { continue_on_failure: true } # One step at a time + continue on failure
 
 - label: ":skull_and_crossbones: Delete Docker Image"
@@ -208,8 +212,7 @@ steps:
   - "integration-tests"
   - "goldcheck-amber"
   commands:
-  # '--no-prune' so it doesn't prune dangling images, we want to use
-  # them for the Docker cache.
+  # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
   - docker image rm "garnet:${BUILDKITE_BUILD_NUMBER}" --no-prune
   agents:
     docker: true
