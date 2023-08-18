@@ -26,7 +26,7 @@ steps:
         echo "Send status to github, delete docker image if job failed"
         if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
-            (set -x; docker image rm "garnet:$$BUILDKITE_COMMIT" --no-prune)
+            (set -x; docker image rm "garnet:$${BUILDKITE_BUILD_NUMBER}" --no-prune)
         fi
 
   commands:
@@ -36,7 +36,7 @@ steps:
   - set -x; docker images; docker ps;
 
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:$BUILDKITE_COMMIT"
+  - docker build . -t "garnet:${BUILDKITE_BUILD_NUMBER}"
 
   # Docker image successfully built. Remove
   # .TEST file to avoid reporting failure to
@@ -63,7 +63,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
     - docker#v3.2.0:
-        image: garnet:$BUILDKITE_COMMIT
+        image: garnet:${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"
@@ -85,7 +85,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone: # skip-checkout alone (below) did not do the trick!
     - docker#v3.2.0:
-        image: garnet:$BUILDKITE_COMMIT
+        image: garnet:${BUILDKITE_BUILD_NUMBER}
         # image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
@@ -192,7 +192,7 @@ steps:
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use
   # them for the Docker cache.
-  - docker image rm "garnet:$BUILDKITE_COMMIT" --no-prune
+  - docker image rm "garnet:${BUILDKITE_BUILD_NUMBER}" --no-prune
   agents:
     docker: true
   plugins:
