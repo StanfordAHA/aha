@@ -36,8 +36,7 @@ steps:
   # Docker image successfully built. Remove
   # .TEST file to avoid reporting failure to
   # aha-flow-app. This is a heroku thing I guess.
-  # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks
-
+  # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks FIXME
   - rm -rf temp/.TEST
 
   - echo "--- Pruning Docker Images"
@@ -54,7 +53,7 @@ steps:
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
   commands:
-  - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
+    - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
   plugins:
     - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
     - docker#v3.2.0:
@@ -98,21 +97,28 @@ steps:
           set +x
           echo "+++ OIT PRE CHECKOUT HOOK BEGIN"
 
-          echo "+++ CD to aha repo clone"
-          if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
-              echo "No aha clone in checkout dir (yet); I will build one"
-              mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-              git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-          fi
-
-          echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $$DEV_BRANCH, or master"
-          if expr "$$BUILDKITE_MESSAGE" : "PR from "; then BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
+          # I THINK we don't actually need an aha clone for this step!?
+          # I THINK all we need is a path to the "temp" canary !!?
+          mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH/temp
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-          # FIXME can delete DEV_BRANCH part once dev branch merges to master FIXME
-          DEV_BRANCH=remotes/origin/no-heroku
-          echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
-                git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
-          set +x
+
+
+          #           echo "+++ CD to aha repo clone"
+          #           if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
+          #               echo "No aha clone in checkout dir (yet); I will build one"
+          #               mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+          #               git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
+          #           fi
+          # 
+          #           echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $$DEV_BRANCH, or master"
+          #           if expr "$$BUILDKITE_MESSAGE" : "PR from "; then BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
+          #           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+          #           # FIXME can delete DEV_BRANCH part once dev branch merges to master FIXME
+          #           DEV_BRANCH=remotes/origin/no-heroku
+          #           echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
+          #                 git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
+          #           set +x
+
           echo "--- OIT PRE CHECKOUT HOOK END"
 
         pre-command: |
@@ -143,6 +149,7 @@ steps:
         pre-exit: |
           echo "+++ CHECKING EXIT STATUS"; set -x
           echo "Send status to github."
+          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
 
           # Docker removes temp/.TEST if all the tests passed
           if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
