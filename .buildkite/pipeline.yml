@@ -19,23 +19,36 @@ steps:
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK BEGIN"; set -x
 
-        # Before things get too muddled; write down whether we were
-        # triggered by an aha repo push/pull (in which case we will do
-        # "daily" regressions later); or if we were triggered by a
-        # submod pull (in which case we do "pr" regressions later).
+        # Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
+        # We want to rewrite that to be the sha of submod repo that
+        # originally triggered the build.
 
-        if ! git checkout -q $$BUILDKITE_COMMIT; then
-            commdir=/var/lib/buildkite-agent/builds/DELETEME;
-            mkdir-p $$commdir;
-            echo true > $$commdir/is-valid-aha-commit-$$BUILDKITE_BUILD_NUMBER
+        if expr "$$BUILDKITE_MESSAGE" : "PR from "; then
+            BUILDKITE_COMMIT=$$FLOW_HEAD_SHA;
         fi
 
-        echo "+++ CD to aha repo clone"
-        if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
-            echo "No aha clone in checkout dir (yet); I will build one"
-            mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-            git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
+        # If trigger came from a submod repo, we will do "pr" regressions.
+        # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+        # We use commdir to pass information to other steps.
+        # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
+
+        if git checkout -q $$BUILDKITE_COMMIT; then
+            echo "+++ UNSET DO_PR"
+            echo "BUILDKITE_COMMIT found in aha repo, we will do daily regressions."
+        else
+            echo "+++ UNSET DO_PR"
+            echo "BUILDKITE_COMMIT not found in aha repo, we will do pr regressions."
+            commdir=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $$commdir;
+            echo true > $$commdir/DO_PR-$${BUILDKITE_BUILD_NUMBER}
         fi
+
+        #         echo "+++ CD to aha repo clone"
+        #         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
+        #             echo "No aha clone in checkout dir (yet); I will build one"
+        #             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
+        #             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
+        #         fi
+
         echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $$DEV_BRANCH, or master"
         if expr "$$BUILDKITE_MESSAGE" : "PR from "; then BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
         cd $$BUILDKITE_BUILD_CHECKOUT_PATH
@@ -153,8 +166,8 @@ steps:
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
           commdir=/var/lib/buildkite-agent/builds/DELETEME;
-          if test -f $$commdir/is-valid-aha-commit-$$BUILDKITE_BUILD_NUMBER; then
-              echo "+++ UNSET DO_PR UNSET"; /bin/rm -rf temp/DO_PR
+          if test -f $$commdir/DO_PR-$${BUILDKITE_BUILD_NUMBER}; then
+              echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
           else
               echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
           fi
