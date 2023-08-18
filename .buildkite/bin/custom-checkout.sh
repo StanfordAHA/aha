@@ -11,10 +11,44 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="_"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
+echo "--- CHECKOUT FULL REPO, submodules and all"
+
 # Checkout
 echo "+++ custom-checkout.sh BEGIN"
 echo I am `whoami`     # Watch out if this ever says "I am root"
 echo I am in dir `pwd` # Watch out if this ever we are in root dir (/)
+
+# Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
+# We want to rewrite that to be the sha of submod repo that
+# originally triggered the build.
+# FIXME don't need this after heroku is gone!
+
+if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+    echo "Found heroku, rewriting BUILDKITE_COMMIT";
+    BUILDKITE_COMMIT=$FLOW_HEAD_SHA;
+fi
+
+# If trigger came from a submod repo, we will do "pr" regressions.
+# Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+# We use commdir to pass information to other steps.
+# THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
+
+echo "--- Determine whether to do daily or pr regressions"
+cd $BUILDKITE_BUILD_CHECKOUT_PATH
+if git checkout -qf $BUILDKITE_COMMIT; then
+    echo "+++ UNSET DO_PR"
+    echo "BUILDKITE_COMMIT found in aha repo, we will do daily regressions."
+else
+    echo "+++ UNSET DO_PR"
+    echo "BUILDKITE_COMMIT not found in aha repo, we will do pr regressions."
+    commdir=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $commdir;
+    echo true > $commdir/DO_PR-${BUILDKITE_BUILD_NUMBER}
+fi
+
+echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $DEV_BRANCH, or master"
+cd $BUILDKITE_BUILD_CHECKOUT_PATH
+echo 'git checkout -qf $BUILDKITE_COMMIT || git checkout -qf $DEV_BRANCH || git checkout -qf master'; set -x
+      git checkout -qf $BUILDKITE_COMMIT || git checkout -qf $DEV_BRANCH || git checkout -qf master
 
 echo "--- PREP AHA REPO and all its submodules"; set -x
 pwd
@@ -33,9 +67,10 @@ set +x
 # hash as env var FLOW_HEAD_SHA.  In this new regime, we set BUILDKITE_COMMIT
 # as the desired submod commit, and auto-discover the repo that goes with the commit.
 
-if expr "$$BUILDKITE_MESSAGE" : "PR from " 2> /dev/null; then
-    BUILDKITE_COMMIT=$FLOW_HEAD_SHA
-fi
+# # Maybe did this already...?
+# if expr "$BUILDKITE_MESSAGE" : "PR from " 2> /dev/null; then
+#     BUILDKITE_COMMIT=$FLOW_HEAD_SHA
+# fi
 
 echo "--- See if we need to update a submodule"
 unset PR_FROM_SUBMOD

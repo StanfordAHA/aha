@@ -9,62 +9,16 @@ steps:
   key: "docker-build"
 
   plugins:
+
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
+
+  # My hooks
   - improbable-eng/metahook:
 
-      # Must clone aha repo in the pre-checkout phase,
-      # so repo-based post-checkout hook will be ready for post-checkout phase.
-
       pre-checkout: |
-        echo "+++ BDI PRE CHECKOUT HOOK BEGIN"; set -x
-
-        # Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
-        # We want to rewrite that to be the sha of submod repo that
-        # originally triggered the build.
-
-        if expr "$$BUILDKITE_MESSAGE" : "PR from " 2> /dev/null; then
-            BUILDKITE_COMMIT=$$FLOW_HEAD_SHA;
-        fi
-
-        # If trigger came from a submod repo, we will do "pr" regressions.
-        # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
-        # We use commdir to pass information to other steps.
-        # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
-
-        cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-        if git checkout -qf $$BUILDKITE_COMMIT; then
-            echo "+++ UNSET DO_PR"
-            echo "BUILDKITE_COMMIT found in aha repo, we will do daily regressions."
-        else
-            echo "+++ UNSET DO_PR"
-            echo "BUILDKITE_COMMIT not found in aha repo, we will do pr regressions."
-            commdir=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $$commdir;
-            echo true > $$commdir/DO_PR-$${BUILDKITE_BUILD_NUMBER}
-        fi
-
-        #         echo "+++ CD to aha repo clone"
-        #         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
-        #             echo "No aha clone in checkout dir (yet); I will build one"
-        #             mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-        #             git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-        #         fi
-
-        echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $$DEV_BRANCH, or master"
-        cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-        echo 'git checkout -qf $$BUILDKITE_COMMIT || git checkout -qf $$DEV_BRANCH || git checkout -qf master'; set -x
-              git checkout -qf $$BUILDKITE_COMMIT || git checkout -qf $$DEV_BRANCH || git checkout -qf master
-        set +x
-
-        echo "--- DEBUG DOCKER TRASH"; set -x
-        docker images; docker ps
-        # docker kill deleteme_garnet_ci4114 || echo okay
-        set +x
-
-        echo "--- CHECKOUT FULL REPO, submodules and all"
+        echo "+++ BDI PRE CHECKOUT HOOK"
         source .buildkite/bin/custom-checkout.sh
-
-        echo "--- BDI PRE CHECKOUT HOOK END"
 
       pre-exit: |
         echo "+++ CHECKING EXIT STATUS"; set -x
@@ -76,6 +30,10 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
+
+  - echo "--- DEBUG DOCKER TRASH"
+  - set -x; docker images; docker ps;
+
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:$BUILDKITE_COMMIT"
 
