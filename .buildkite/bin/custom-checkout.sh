@@ -47,6 +47,8 @@ fi
 
 echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $DEV_BRANCH, or master"
 cd $BUILDKITE_BUILD_CHECKOUT_PATH
+# FIXME can delete DEV_BRANCH part once dev branch merges to master FIXME
+DEV_BRANCH=remotes/origin/no-heroku
 echo 'git checkout -qf $BUILDKITE_COMMIT || git checkout -qf $DEV_BRANCH || git checkout -qf master'; set -x
       git checkout -qf $BUILDKITE_COMMIT || git checkout -qf $DEV_BRANCH || git checkout -qf master
 

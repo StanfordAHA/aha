@@ -1,7 +1,6 @@
 env:
   CONFIG: ${CONFIG:-daily}
   # FIXME after dev is done, use "master" as default instead of no-heroku
-  DEV_BRANCH: remotes/origin/no-heroku
 
 steps:
 - label: ":wrench: Build Docker Image"
@@ -109,9 +108,12 @@ steps:
               mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
               git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
           fi
+
           echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $$DEV_BRANCH, or master"
           if expr "$$BUILDKITE_MESSAGE" : "PR from "; then BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+          # FIXME can delete DEV_BRANCH part once dev branch merges to master FIXME
+          DEV_BRANCH=remotes/origin/no-heroku
           echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
                 git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
           set +x
