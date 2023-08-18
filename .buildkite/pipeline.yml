@@ -18,6 +18,18 @@ steps:
 
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK BEGIN"; set -x
+
+        # Before things get too muddled; write down whether we were
+        # triggered by an aha repo push/pull (in which case we will do
+        # "daily" regressions later); or if we were triggered by a
+        # submod pull (in which case we do "pr" regressions later).
+
+        if ! git checkout -q $$BUILDKITE_COMMIT; then
+            commdir=/var/lib/buildkite-agent/builds/DELETEME;
+            mkdir-p $$commdir;
+            echo true > $$commdir/is-valid-aha-commit-$$BUILDKITE_BUILD_NUMBER
+        fi
+
         echo "+++ CD to aha repo clone"
         if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
             echo "No aha clone in checkout dir (yet); I will build one"
@@ -136,17 +148,19 @@ steps:
         pre-command: |
           # Cannot run this as part of pre-checkout, because post-checkout removes temp dir :o
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
+
+          echo "--- Pass DO_PR info to docker"
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
-          ap=`eval echo $$AHA_PUSHPULL`
-          if buildkite-agent artifact download $$ap . ; then
-              /bin/rm -rf temp/DO_PR
-              echo "+++ DO_PR UNSET (FALSE)"
+          echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
+          commdir=/var/lib/buildkite-agent/builds/DELETEME;
+          if test -f $$commdir/is-valid-aha-commit-$$BUILDKITE_BUILD_NUMBER; then
+              echo "+++ UNSET DO_PR UNSET"; /bin/rm -rf temp/DO_PR
           else
-              mkdir -p temp; touch temp/DO_PR
-              echo "+++ DO_PR SET (TRUE)"
+              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
           fi
           pwd
           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
+
           echo "--- OIT PRE COMMAND HOOK END"
 
         pre-exit: |
@@ -174,9 +188,6 @@ steps:
   - pip freeze
   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
   # Run regression tests
-  # - if [[ $$FLOW_REPO ]]; then
-  # - if buildkite-agent artifact download $$AHA_PUSHPULL . ; then
-  # - if [ "$$DO_PR" == "true" ]; then
   - if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config";
       export CONFIG=pr;
