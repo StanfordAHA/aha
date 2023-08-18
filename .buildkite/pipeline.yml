@@ -53,10 +53,10 @@ steps:
   agents:
     docker: true
 
-# Set soft_fail so that failing gold check does not fail pipeline.
 - label: ":hammer: Amber Gold RTL"
   key: "goldcheck-amber"
   depends_on: "docker-build"
+  # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
   commands:
   - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
@@ -183,8 +183,9 @@ steps:
 # BOOKMARK cleanup
 - wait: { continue_on_failure: true } # One step at a time + continue on failure
 
-# FIXME does docker image get removed even when dependence(s) fail? NO :(
 - label: ":skull_and_crossbones: Delete Docker Image"
+  # Set soft_fail so that failing cleanup does not fail pipeline.
+  soft_fail: true
   depends_on:
   - "integration-tests"
   - "goldcheck-amber"

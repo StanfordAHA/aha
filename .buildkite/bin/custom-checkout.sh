@@ -19,11 +19,10 @@ echo I am `whoami`
 echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
-
+# FIXME don't need this after heroku is gone! FIXME
 # Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
 # We want to rewrite that to be the sha of submod repo that
 # originally triggered the build.
-# FIXME don't need this after heroku is gone!
 
 if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     echo "Found heroku, rewriting BUILDKITE_COMMIT";
@@ -40,7 +39,7 @@ if git checkout -qf $BUILDKITE_COMMIT; then
     echo "+++ UNSET DO_PR"
     echo "BUILDKITE_COMMIT found in aha repo, we will do daily regressions."
 else
-    echo "+++ UNSET DO_PR"
+    echo "+++ SET DO_PR"
     echo "BUILDKITE_COMMIT not found in aha repo, we will do pr regressions."
     commdir=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $commdir;
     echo true > $commdir/DO_PR-${BUILDKITE_BUILD_NUMBER}
@@ -62,16 +61,11 @@ git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
 
-# FIXME can of course delete this after heroku is gone...
+# FIXME can of course delete this after heroku is gone FIXME
 # Heroku always sets message to "PR from <repo>" with BUILDKITE_COMMIT="HEAD"
 # so as to checkout aha master. Heroku also sends desired submod commit <repo>
 # hash as env var FLOW_HEAD_SHA.  In this new regime, we set BUILDKITE_COMMIT
 # as the desired submod commit, and auto-discover the repo that goes with the commit.
-
-# # Maybe did this already...?
-# if expr "$BUILDKITE_MESSAGE" : "PR from " 2> /dev/null; then
-#     BUILDKITE_COMMIT=$FLOW_HEAD_SHA
-# fi
 
 echo "--- See if we need to update a submodule"
 unset PR_FROM_SUBMOD
