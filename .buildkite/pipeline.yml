@@ -105,32 +105,16 @@ steps:
           # I THINK all we need is a path to the "temp" canary !!?
           # FIXME/TODO use non-agent-specific path instead, e.g. $commdir FIXME
           # FIXME then this hook can go away entirely, yes? FIXME
+          # FIXME but cannot do any of this until after heroku goes away...
           mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH/temp
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-
-          # I THINK we don't actually need an aha clone for this step!?
-          # I THINK all we need is a path to the "temp" canary !!?
-          #           echo "+++ CD to aha repo clone"
-          #           if ! test -e $$BUILDKITE_BUILD_CHECKOUT_PATH/.git; then
-          #               echo "No aha clone in checkout dir (yet); I will build one"
-          #               mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH
-          #               git clone $$BUILDKITE_REPO $$BUILDKITE_BUILD_CHECKOUT_PATH
-          #           fi
-          # 
-          #           echo "--- Check out appropriate AHA branch: $BUILDKITE_COMMIT, $$DEV_BRANCH, or master"
-          #           if expr "$$BUILDKITE_MESSAGE" : "PR from "; then BUILDKITE_COMMIT=$$FLOW_HEAD_SHA; fi
-          #           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-          #           # FIXME can delete DEV_BRANCH part once dev branch merges to master FIXME
-          #           DEV_BRANCH=remotes/origin/no-heroku
-          #           echo 'git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master'; set -x
-          #                 git checkout $$BUILDKITE_COMMIT || git checkout $$DEV_BRANCH || git checkout master
-          #           set +x
-
           echo "--- OIT PRE CHECKOUT HOOK END"
 
         pre-command: |
-          # Cannot run this as part of pre-checkout, because post-checkout removes temp dir :o
+          # Cannot run this as part of pre-checkout,
+          # because already have local post-checkout hook with odd co-dependence on temp dir
           # Actually no I think all it does is delete temp/.TEST...
+          # FIXME can simplify all this after heroku goes away
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
           # Use temp/.TEST to pass fail/success info into and out of docker container
@@ -140,7 +124,7 @@ steps:
           echo Renewing `pwd`/temp/.TEST
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
-          # FIXME there is an obvious much better way to do this FIXME
+          # FIXME/TODO there are obvious much better ways to do this FIXME
           echo "--- Pass DO_PR info to docker"
           echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
