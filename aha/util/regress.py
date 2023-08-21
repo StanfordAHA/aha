@@ -172,9 +172,7 @@ def dispatch(args, extra_args=None):
         resnet_tests = []
     elif args.config == "pr":
         width, height = 20, 8
-        # temporarily add failing test 'mat_vecmul_ij' to see what happens
         sparse_tests = [
-            "mat_vecmul_ij",
             "matmul_ijk",
             "mat_mattransmul",
             "vec_identity",
