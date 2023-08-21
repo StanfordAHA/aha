@@ -12,9 +12,9 @@ steps:
   # My hooks
   - improbable-eng/metahook:
 
-      # Clone aha repo and optionally update submod according to where build request originated
-      # request from aha repo:    check out aha commit BUILDKITE_COMMIT
-      # request from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
+      # Clone aha repo and optionally update submod according to where build request originated:
+      # Req from aha repo:    check out aha commit BUILDKITE_COMMIT
+      # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
         source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
