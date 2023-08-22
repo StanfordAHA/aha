@@ -11,88 +11,6 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="_"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
-
-
-
-
-echo "+++ LINKLABELS"
-set -x
-# buildkite-agent annotate "hello"
-# buildkite-agent annotate --style "info" "hello woild http://ibm.com" --context 1
-# buildkite-agent annotate --style "warning"  "hello woild https://ibm.com" --context 2
-# buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]" --context 3
-# buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]" --context 4
-
-
-echo 
-
-if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
-    # E.g.
-    # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
-    # BUILDKITE_PULL_REQUEST="166"
-    # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
-    # ----------------
-    # first7=  7c5e880
-    # repo=    https://github.com/StanfordAHA/lake'
-    # url_cm=  https://github.com/StanfordAHA/lake/commit/7c5...0b1f
-    # url_pr=  https://github.com/StanfordAHA/lake/pull/166
-
-    first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`
-    repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
-    r=`echo "$repo" | sed 's/http.*github.com.//'`
-    r1=`echo "$repo" | sed 's/http.*github.com.//'`
-    url_cm=${repo}/commit/${BUILDKITE_COMMIT}
-    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
-    mdlink_cm="[${first7}](${url_cm})"
-    mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
-
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo4
-E4
-Pull request from https://github.com/StanfordAHA/lake 
-[7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
-EOF
-
-     cat <<EOF | buildkite-agent annotate --style "info" --context foo3
-E3
-#### Pull Request from ${r1} ${mdlink_cm} (${mdlink_pr})
-EOF
-
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo2
-E2
-Pull request from ${r} ${mdlink_cm} (${mdlink_pr})
-EOF
-
-
-
-
-
-# FAIL
-#     cat <<EOF | buildkite-agent annotate --style "info" --context foo3
-#     E3
-#     PULL REQUEST FROM https://github.com/StanfordAHA/lake 
-#     Corrected links: [7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
-
-#     cat <<EOF | buildkite-agent annotate --style "info" --context foo1
-#     E1
-#     PULL REQUEST FROM ${repo} 
-#     Corrected links: ${mdlink_cm} (${mdlink_pr})
-
-#     cat <<EOF | buildkite-agent annotate --style "info" --context foo0 --debug 9
-#     E0
-#     PULL REQUEST FROM ${repo} 
-#     Corrected links: ${mdlink_cm} (${mdlink_pr})
-    
-
-
-
-
-fi
-set +x
-
-#     Corrected links: [${first7}](${url_cm}] ([Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr}))
-
-
-
 echo "--- CHECKOUT FULL REPO, submodules and all"
 
 # Checkout
@@ -100,6 +18,31 @@ echo "+++ custom-checkout.sh BEGIN"
 echo I am `whoami`
 echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
+
+# If pull request, show where request came from.
+if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
+    # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
+    # BUILDKITE_PULL_REQUEST="166"
+    # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
+
+    # E.g. repo="https://github.com/StanfordAHA/lake"
+    repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
+    r=`echo "$repo" | sed 's/http.*github.com.//'`
+
+    # E.g. url_cm="https://github.com/StanfordAHA/lake/commit/7c5...0b1f"
+    first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`  # 7c5e880
+    url_cm=${repo}/commit/${BUILDKITE_COMMIT}
+    mdlink_cm="[${first7}](${url_cm})"
+
+    # E.g. url_pr="https://github.com/StanfordAHA/lake/pull/166"
+    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
+    mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
+
+    # E.g. "Pull Request from StanfordAHA/canal ca602ef (Pull Request #58)"
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo3
+#### Pull Request from ${r} ${mdlink_cm} (${mdlink_pr})
+EOF
+fi
 
 # FIXME don't need this after heroku is gone! FIXME
 # Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
