@@ -8,35 +8,6 @@ buildkite-agent annotate --style "warning"  "hello woild https://ibm.com" --cont
 buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]" --context 3
 buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]" --context 4
 set +x
-exit 13
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # What this script does:
