@@ -38,17 +38,29 @@ if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
     first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`
     repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
     r=`echo "$repo" | sed 's/http.*github.com.//'`
+    r1=`echo "$repo" | sed 's/http.*github.com.//'`
     url_cm=${repo}/commit/${BUILDKITE_COMMIT}
     url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
     mdlink_cm="[${first7}](${url_cm})"
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
+    set -x
+    echo ${r}; echo $r
+    echo ${r1}; echo $r1
+
+    cat <<EOF
+1 ${r}
+2 $r
+3 ${r1}
+4 $r1
+EOF
+
      cat <<EOF | buildkite-agent annotate --style "info" --context foo3
 E3
-# Pull Request from ${r}
-## Pull Request from ${r}
-### Pull Request from ${r}
-#### Pull Request from ${r}
+# Pull Request from ${r1}
+## Pull Request from ${r1}
+### Pull Request from ${r1}
+#### Pull Request from ${r1}
 ${mdlink_cm} (${mdlink_pr})
 EOF
 
