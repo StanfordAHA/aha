@@ -1,5 +1,40 @@
 #!/bin/bash
 
+buildkite-agent annotate --style "info" "hello woild http://ibm.com"
+buildkite-agent annotate --style "warning"  "hello woild https://ibm.com"
+buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]"
+buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # What this script does:
 # - Update and initialize all aha repo submodules.
 # - Check out aha branch BUILDKITE_COMMIT if build triggered from aha repo
