@@ -1,15 +1,5 @@
 #!/bin/bash
 
-echo "+++ LINKLABELS"
-set -x
-buildkite-agent annotate "hello"
-buildkite-agent annotate --style "info" "hello woild http://ibm.com" --context 1
-buildkite-agent annotate --style "warning"  "hello woild https://ibm.com" --context 2
-buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]" --context 3
-buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]" --context 4
-set +x
-
-
 # What this script does:
 # - Update and initialize all aha repo submodules.
 # - Check out aha branch BUILDKITE_COMMIT if build triggered from aha repo
@@ -20,6 +10,49 @@ set +x
 set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="_"   # Prevents "+++" prefix during 3-deep "set -x" execution
+
+
+
+
+
+echo "+++ LINKLABELS"
+set -x
+# buildkite-agent annotate "hello"
+# buildkite-agent annotate --style "info" "hello woild http://ibm.com" --context 1
+# buildkite-agent annotate --style "warning"  "hello woild https://ibm.com" --context 2
+# buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]" --context 3
+# buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]" --context 4
+set +x
+
+
+if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
+    # E.g.
+    # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
+    # BUILDKITE_PULL_REQUEST="166"
+    # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
+    # ----------------
+    # first7=  7c5e880
+    # repo=    https://github.com/StanfordAHA/lake'
+    # url_cm=  https://github.com/StanfordAHA/lake/commit/7c5...0b1f
+    # url_pr=  https://github.com/StanfordAHA/lake/pull/166
+
+    first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`
+    repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
+    url_cm=${repo}/commit/${BUILDKITE_COMMIT}
+    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
+    mdlink_cm="[${first7}](${url_cm})"
+    mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
+
+    # cat <<EOF | cat -n
+    cat <<EOF | buildkite-agent annotate --style "info"
+    PULL REQUEST FROM ${repo} 
+    Corrected links: ${mdlink_cm} ($mdlink_pr)
+EOF
+fi
+
+#     Corrected links: [${first7}](${url_cm}] ([Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr}))
+
+
 
 echo "--- CHECKOUT FULL REPO, submodules and all"
 
