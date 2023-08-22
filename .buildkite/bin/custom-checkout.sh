@@ -24,7 +24,9 @@ set -x
 # buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]" --context 4
 
 
-if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
+echo 
+
+if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     # E.g.
     # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
     # BUILDKITE_PULL_REQUEST="166"
@@ -44,34 +46,20 @@ if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
     mdlink_cm="[${first7}](${url_cm})"
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
-    set -x
-    echo ${r}; echo $r
-    echo ${r1}; echo $r1
-
-    cat <<EOF
-1 ${r}
-2 $r
-3 ${r1}
-4 $r1
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo4
+E4
+Pull request from https://github.com/StanfordAHA/lake 
+[7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
 EOF
 
      cat <<EOF | buildkite-agent annotate --style "info" --context foo3
 E3
-# Pull Request from ${r1}
-## Pull Request from ${r1}
-### Pull Request from ${r1}
-#### Pull Request from ${r1}
-${mdlink_cm} (${mdlink_pr})
+#### Pull Request from ${r1} ${mdlink_cm} (${mdlink_pr})
 EOF
 
     cat <<EOF | buildkite-agent annotate --style "info" --context foo2
 E2
-This build was triggered by a pull request from ${r} ${mdlink_cm} (${mdlink_pr})
-EOF
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo4
-E1
-PULL REQUEST FROM https://github.com/StanfordAHA/lake 
-Corrected links: [7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
+Pull request from ${r} ${mdlink_cm} (${mdlink_pr})
 EOF
 
 
