@@ -43,9 +43,12 @@ if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
     mdlink_cm="[${first7}](${url_cm})"
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo3
+     cat <<EOF | buildkite-agent annotate --style "info" --context foo3
 E3
-This build was triggered by a pull request from ${r}
+# Pull Request from ${r}
+## Pull Request from ${r}
+### Pull Request from ${r}
+#### Pull Request from ${r}
 ${mdlink_cm} (${mdlink_pr})
 EOF
 
