@@ -1,10 +1,14 @@
 #!/bin/bash
 
-buildkite-agent annotate --style "info" "hello woild http://ibm.com"
-buildkite-agent annotate --style "warning"  "hello woild https://ibm.com"
-buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]"
-buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]"
-
+echo "+++ LINKLABELS"
+set -x
+buildkite-agent annotate "hello"
+buildkite-agent annotate --style "info" "hello woild http://ibm.com" --context 1
+buildkite-agent annotate --style "warning"  "hello woild https://ibm.com" --context 2
+buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]" --context 3
+buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]" --context 4
+set +x
+exit 13
 
 
 
