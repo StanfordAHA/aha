@@ -22,7 +22,6 @@ set -x
 # buildkite-agent annotate --style "warning"  "hello woild https://ibm.com" --context 2
 # buildkite-agent annotate --style "success" "_hello woild_ [IBM](http://ibm.com)]" --context 3
 # buildkite-agent annotate --style "error" "_hello woild_ [IBM](http://ibm.com)]" --context 4
-set +x
 
 
 if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
@@ -43,12 +42,46 @@ if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
     mdlink_cm="[${first7}](${url_cm})"
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
-    # cat <<EOF | cat -n
-    cat <<EOF | buildkite-agent annotate --style "info"
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo1
+    E1
     PULL REQUEST FROM ${repo} 
     Corrected links: ${mdlink_cm} ($mdlink_pr)
 EOF
+
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo2
+E2
+PULL REQUEST FROM ${repo} 
+Corrected links: ${mdlink_cm} ($mdlink_pr)
+EOF
+
+
+
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo3
+    E3
+    PULL REQUEST FROM https://github.com/StanfordAHA/lake 
+    Corrected links: [7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
+EOF
+
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo4
+E4
+PULL REQUEST FROM https://github.com/StanfordAHA/lake 
+Corrected links: [7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
+EOF
+
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo0 --debug 9
+    E0
+    PULL REQUEST FROM ${repo} 
+    Corrected links: ${mdlink_cm} ($mdlink_pr)
+EOF
+
+
+
+
+
+
+
 fi
+set +x
 
 #     Corrected links: [${first7}](${url_cm}] ([Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr}))
 
