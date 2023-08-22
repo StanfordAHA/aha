@@ -37,45 +37,48 @@ if [ "BUILDKITE_PULL_REQUEST_REPO" ]; then
 
     first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`
     repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
+    r=`echo "$repo" | sed 's/http.*github.com.//'`
     url_cm=${repo}/commit/${BUILDKITE_COMMIT}
     url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
     mdlink_cm="[${first7}](${url_cm})"
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo1
-    E1
-    PULL REQUEST FROM ${repo} 
-    Corrected links: ${mdlink_cm} ($mdlink_pr)
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo3
+E3
+This build was triggered by a pull request from ${r}
+${mdlink_cm} (${mdlink_pr})
 EOF
 
     cat <<EOF | buildkite-agent annotate --style "info" --context foo2
 E2
-PULL REQUEST FROM ${repo} 
-Corrected links: ${mdlink_cm} ($mdlink_pr)
+This build was triggered by a pull request from ${r} ${mdlink_cm} (${mdlink_pr})
 EOF
-
-
-
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo3
-    E3
-    PULL REQUEST FROM https://github.com/StanfordAHA/lake 
-    Corrected links: [7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
-EOF
-
     cat <<EOF | buildkite-agent annotate --style "info" --context foo4
-E4
+E1
 PULL REQUEST FROM https://github.com/StanfordAHA/lake 
 Corrected links: [7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
 EOF
 
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo0 --debug 9
-    E0
-    PULL REQUEST FROM ${repo} 
-    Corrected links: ${mdlink_cm} ($mdlink_pr)
-EOF
 
 
 
+
+# FAIL
+#     cat <<EOF | buildkite-agent annotate --style "info" --context foo3
+#     E3
+#     PULL REQUEST FROM https://github.com/StanfordAHA/lake 
+#     Corrected links: [7c5e880](https://github.com/StanfordAHA/lake/commit/7c5e88021a01fef1a04ea56b570563cae2050b1f) ([Pull Request #166](https://github.com/StanfordAHA/lake/pull/166))
+
+#     cat <<EOF | buildkite-agent annotate --style "info" --context foo1
+#     E1
+#     PULL REQUEST FROM ${repo} 
+#     Corrected links: ${mdlink_cm} (${mdlink_pr})
+
+#     cat <<EOF | buildkite-agent annotate --style "info" --context foo0 --debug 9
+#     E0
+#     PULL REQUEST FROM ${repo} 
+#     Corrected links: ${mdlink_cm} (${mdlink_pr})
+    
 
 
 
