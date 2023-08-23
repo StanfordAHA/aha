@@ -7,7 +7,8 @@ steps:
   label: "PR check"
   if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != ""
   build:
-    message: "PR from ${BUILDKITE_PULL_REQUEST_REPO}: ${BUILDKITE_MESSAGE}"
+    # E.g. BPPR_TAIL="StanfordAHA/canal"
+    message: "PR from ${BPPR_TAIL}: ${BUILDKITE_MESSAGE}"
     commit: "${BUILDKITE_COMMIT}"
     # branch: "${BUILDKITE_BRANCH}" # Let it default to master branch
 

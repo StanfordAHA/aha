@@ -38,7 +38,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
-    # E.g. "Pull Request from StanfordAHA/canal ca602ef (Pull Request #58)"
+    # E.g. "Triggered from StanfordAHA/canal ca602ef (Pull Request #58)"
     cat <<EOF | buildkite-agent annotate --style "info" --context foo3
 ### Triggered from ${r} ${mdlink_cm} (${mdlink_pr})
 EOF
