@@ -3,11 +3,16 @@ env:
 
 steps:
 
+- label: "pre-trigger"
+  commands:
+    - echo foo
+- wait  
+
 - trigger: "aha-flow"
   label: "triggered"
-  if: build.source != 'trigger_job'
+  if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != null
   build:
-    message: "PR from Canal: ${BUILDKITE_MESSAGE}"
+    message: "PR from Canalfoo: ${BUILDKITE_MESSAGE}"
     # commit: "${BUILDKITE_COMMIT}"
     # branch: "${BUILDKITE_BRANCH}"
 
@@ -15,16 +20,7 @@ steps:
       # BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
       # BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
       # BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
-
 - wait
-
-- label: "exit if trigger"
-  command: exit 0
-  if: build.source != 'trigger_job'
-
-- wait
-
-
 
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
