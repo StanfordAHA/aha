@@ -8,7 +8,7 @@ steps:
   if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != ""
   build:
     # E.g. BPPR_TAIL="StanfordAHA/canal"
-    message: "PR from ${BPPR_TAIL}: ${BUILDKITE_MESSAGE}"
+    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
     commit: "${BUILDKITE_COMMIT}"
     # branch: "${BUILDKITE_BRANCH}" # Let it default to master branch
 
