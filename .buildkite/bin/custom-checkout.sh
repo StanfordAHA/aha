@@ -49,7 +49,8 @@ fi
 # We want to rewrite that to be the sha of submod repo that
 # originally triggered the build.
 
-if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+# if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+if [ "$FLOW_HEAD_SHA" ]; then
     echo "Found heroku, rewriting BUILDKITE_COMMIT";
     BUILDKITE_COMMIT=$FLOW_HEAD_SHA;
 fi
