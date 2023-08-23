@@ -4,6 +4,9 @@ env:
 steps:
 
 - label: "pre-trigger"
+  plugins:
+  # Override standard checkout procedure with custom checkout script
+  - uber-workflow/run-without-clone:
   commands:
     - echo foo
 - wait  
