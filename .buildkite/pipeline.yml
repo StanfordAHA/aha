@@ -9,11 +9,13 @@ steps:
   - uber-workflow/run-without-clone:
   commands:
     - echo foo
+    - text -v BUILDKITE_PULL_REQUEST_REPO && echo BPR exists || echo BPR not exists
+    - echo BUILDKITE_PULL_REQUEST_REPO=$$BUILDKITE_PULL_REQUEST_REPO
 - wait  
 
 - trigger: "aha-flow"
   label: "triggered"
-  if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != null
+  if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != ""
   build:
     message: "PR from Canalfoo: ${BUILDKITE_MESSAGE}"
     # commit: "${BUILDKITE_COMMIT}"
