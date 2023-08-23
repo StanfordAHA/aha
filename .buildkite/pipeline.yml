@@ -9,7 +9,7 @@ steps:
   build:
     message: "PR from ${BUILDKITE_PULL_REQUEST_REPO}: ${BUILDKITE_MESSAGE}"
     commit: "${BUILDKITE_COMMIT}"
-    branch: "${BUILDKITE_BRANCH}"
+    # branch: "${BUILDKITE_BRANCH}" # Let it default to master branch
 
     env:
       BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
