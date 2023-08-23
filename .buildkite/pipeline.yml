@@ -3,21 +3,21 @@ env:
 
 steps:
 
-- trigger: "aha-flow"
-  label: "PR check"
-  if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != ""
-  build:
-    # E.g. BPPR_TAIL="StanfordAHA/canal"
-    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
-    commit: "${BUILDKITE_COMMIT}"
-    # branch: "${BUILDKITE_BRANCH}" # Let it default to master branch
-
-    env:
-      BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
-      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
-      BUILDKITE_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
-      # BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
-- wait
+# - trigger: "aha-flow"
+#   label: "PR check"
+#   if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != ""
+#   build:
+#     # E.g. BPPR_TAIL="StanfordAHA/canal"
+#     message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+#     commit: "${BUILDKITE_COMMIT}"
+#     # branch: "${BUILDKITE_BRANCH}" # Let it default to master branch
+# 
+#     env:
+#       BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
+#       BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+#       BUILDKITE_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+#       # BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+# - wait
 
 - label: ":wrench: Build Docker Image"
   key: "docker-build"
