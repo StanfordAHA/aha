@@ -3,28 +3,19 @@ env:
 
 steps:
 
-- label: "pre-trigger"
-  plugins:
-  # Override standard checkout procedure with custom checkout script
-  - uber-workflow/run-without-clone:
-  commands:
-    - echo foo
-    - text -v BUILDKITE_PULL_REQUEST_REPO && echo BPR exists || echo BPR not exists
-    - echo BUILDKITE_PULL_REQUEST_REPO=$$BUILDKITE_PULL_REQUEST_REPO
-- wait  
-
 - trigger: "aha-flow"
-  label: "triggered"
+  label: "PR check"
   if: build.source != 'trigger_job' && build.env("BUILDKITE_PULL_REQUEST_REPO") != ""
   build:
-    message: "PR from Canalfoo: ${BUILDKITE_MESSAGE}"
-    # commit: "${BUILDKITE_COMMIT}"
-    # branch: "${BUILDKITE_BRANCH}"
+    message: "PR from ${BUILDKITE_PULL_REQUEST_REPO}: ${BUILDKITE_MESSAGE}"
+    commit: "${BUILDKITE_COMMIT}"
+    branch: "${BUILDKITE_BRANCH}"
 
     env:
       # BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
       # BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
-      # BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
 - wait
 
 - label: ":wrench: Build Docker Image"
