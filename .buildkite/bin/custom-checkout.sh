@@ -40,7 +40,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
 
     # E.g. "Pull Request from StanfordAHA/canal ca602ef (Pull Request #58)"
     cat <<EOF | buildkite-agent annotate --style "info" --context foo3
-#### _Pull Request from ${r}_ ${mdlink_cm} (${mdlink_pr})
+#### *Pull Request from ${r}* ${mdlink_cm} (${mdlink_pr})
 EOF
 fi
 
