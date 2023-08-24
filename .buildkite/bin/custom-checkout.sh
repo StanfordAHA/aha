@@ -53,7 +53,7 @@ if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
 
     echo "Looking for pull request corresponding to BUILDKITE_COMMIT $BUILDKITE_COMMIT"
     # Should return e.g. "https://api.github.com/repos/StanfordAHA/lake/pulls/166"
-    pip install pyyaml
+    python3 -m pip install pyyaml
     url_pr=`curl --location --silent \
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
