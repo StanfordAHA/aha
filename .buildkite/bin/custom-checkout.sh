@@ -25,6 +25,7 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 # like "source annotate-w-pr-links.sh"
 echo "+++ BEGIN TRIGGERED-FROM LINKS"
 
+# BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
 pyscript=$(cat << EOF
 import yaml; import sys; data = yaml.safe_load(sys.stdin)
 for dict in data:
@@ -36,7 +37,7 @@ EOF
 if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
   # This can happen if we requild a triggered pipeline, i.e.
   # it's a pull request but PULL_REQUEST_REPO got reset to null :(
-  # We can recover by extractin pull request info from BUILDKITE_MESSAGE
+  # We can recover by extracting pull request info from BUILDKITE_MESSAGE
   if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     # If this breaks we'll never ever be able to fix it
     echo "OMG it's a pull request rebuild"
@@ -52,6 +53,7 @@ if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
 
     echo "Looking for pull request corresponding to BUILDKITE_COMMIT $BUILDKITE_COMMIT"
     # Should return e.g. "https://api.github.com/repos/StanfordAHA/lake/pulls/166"
+    pip install pyyaml
     url_pr=`curl --location --silent \
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
