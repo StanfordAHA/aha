@@ -58,6 +58,7 @@ if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
       https://api.github.com/repos/StanfordAHA/lake/pulls \
       | python3 -c "$pyscript"`
     echo "Found url_pr=$url_pr"
+  fi
 fi
 
 # If pull request, show where request came from.
