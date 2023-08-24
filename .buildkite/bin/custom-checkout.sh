@@ -20,7 +20,24 @@ echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 
-if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+##############################################################################
+# FIXME yeah okay this could be offloaded as a separate script maybe something
+# like "source annotate-w-pr-links.sh"
+echo "+++ BEGIN TRIGGERED-FROM LINKS"
+
+pyscript=$(cat << EOF
+import yaml; import sys; data = yaml.safe_load(sys.stdin)
+for dict in data:
+    if dict['head']['sha'] == "$BUILDKITE_COMMIT":
+        print(dict['url']); break
+EOF
+)  
+
+if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
+  # This can happen if we requild a triggered pipeline, i.e.
+  # it's a pull request but PULL_REQUEST_REPO got reset to null :(
+  # We can recover by extractin pull request info from BUILDKITE_MESSAGE
+  if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     # If this breaks we'll never ever be able to fix it
     echo "OMG it's a pull request rebuild"
     submod=`echo "$BUILDKITE_MESSAGE" | awk '{print $3}'`  # E.g. "lake"
@@ -29,6 +46,18 @@ if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     # => "https://github.com/stanfordaha/canal"
     u=`git config --file .gitmodules --get submodule.${submod}.url`
     BUILDKITE_PULL_REQUEST_REPO="$u"
+
+    # OMG also need to reconstruct the NUMBER of the pull request.
+    # Can find it by searching PR's for the appropriate commit SHA
+
+    echo "Looking for pull request corresponding to BUILDKITE_COMMIT $BUILDKITE_COMMIT"
+    # Should return e.g. "https://api.github.com/repos/StanfordAHA/lake/pulls/166"
+    url_pr=`curl --location --silent \
+      -H "Accept: application/vnd.github+json" \
+      -H "X-GitHub-Api-Version: 2022-11-28" \
+      https://api.github.com/repos/StanfordAHA/lake/pulls \
+      | python3 -c "$pyscript"`
+    echo "Found url_pr=$url_pr"
 fi
 
 # If pull request, show where request came from.
@@ -47,7 +76,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     mdlink_cm="[${first7}](${url_cm})"
 
     # E.g. url_pr="https://github.com/StanfordAHA/lake/pull/166"
-    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
+    if ! [ "$url_pr" ]; then url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}; fi
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
     # E.g. "Triggered from StanfordAHA/canal ca602ef (Pull Request #58)"
@@ -56,6 +85,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
 EOF
 fi
 
+echo "--- END TRIGGERED-FROM LINKS"
 
 
 
