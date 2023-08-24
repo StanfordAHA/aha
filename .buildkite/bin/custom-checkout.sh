@@ -19,6 +19,18 @@ echo I am `whoami`
 echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
+
+if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+    # If this breaks we'll never ever be able to fix it
+    echo "OMG it's a pull request rebuild"
+    submod=`echo "$BUILDKITE_MESSAGE" | awk '{print $3}'`  # E.g. "lake"
+
+    # E.g. `git config --file .gitmodules --get submodule.canal.url`
+    # => "https://github.com/stanfordaha/canal"
+    u=`git config --file .gitmodules --get submodule.${submod}.url`
+    BUILDKITE_PULL_REQUEST_REPO="$u"
+fi
+
 # If pull request, show where request came from.
 if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
@@ -43,6 +55,9 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
 ### Triggered from ${r} ${mdlink_cm} (${mdlink_pr})
 EOF
 fi
+
+
+
 
 # FIXME don't need this after heroku is gone! FIXME
 # Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
