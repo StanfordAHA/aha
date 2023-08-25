@@ -1,5 +1,6 @@
 #!/bin/bash
 # This script is designed to be SOURCED, obviously :)
+set +u
 
 echo "+++ BEGIN update-pr-repo.sh"
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
@@ -12,7 +13,10 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 # Also need to rediscover pull number BUILDKITE_PULL_REQUEST
 
-if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
+if [ "$FLOW_HEAD_SHA" ]; then
+    echo "- Heroku build, leave it alone for now"
+
+elif [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     echo "- BUILDKITE_PULL_REQUEST_REPO already set to '$BUILDKITE_PULL_REQUEST_REPO'"
     echo "- Nothing to do, returning to main script."
 
