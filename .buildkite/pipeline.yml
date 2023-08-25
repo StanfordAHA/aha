@@ -18,12 +18,17 @@ steps:
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
         source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
+        ~/bin/status-update pending   # Send "pending" status to github PR page
         source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
 
       # Send regression test pass-fail info to github pull request page
       pre-exit: |
         echo "+++ CHECKING EXIT STATUS"; set -x
         echo "Send status to github, delete docker image if job failed"
+
+        # Must have accurate env vars for status-update to work!
+        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
+
         # status-update exit status will tell us if this step has failed
         if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
@@ -149,6 +154,10 @@ steps:
           if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
               test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
           fi
+
+          # Must have accurate env vars for status-update to work!
+          source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
+
           # status-update will magically override "success" with "failure" as appropriate!
           # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
           ~/bin/status-update success
