@@ -78,7 +78,8 @@ if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
       | tr -d '",' | awk "$awkscript"`
     # => "https://api.github.com/repos/StanfordAHA/lake/pulls/166"
     echo "Found url_pr=$url_pr"
-
+    BUILDKITE_PULL_REQUEST=`echo $url_pr | awk -F '/' '{print $NF}'`
+    echo Found BUILDKITE_PULL_REQUEST=$BUILDKITE_PULL_REQUEST
 
   fi
 fi
@@ -99,7 +100,8 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     mdlink_cm="[${first7}](${url_cm})"
 
     # E.g. url_pr="https://github.com/StanfordAHA/lake/pull/166"
-    if ! [ "$url_pr" ]; then url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}; fi
+    # if ! [ "$url_pr" ]; then url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}; fi
+    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}; fi
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
     # E.g. "Triggered from StanfordAHA/canal ca602ef (Pull Request #58)"
