@@ -24,9 +24,10 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 # FIXME yeah okay this could be offloaded as a separate script maybe something
 # like "source annotate-w-pr-links.sh"
 echo "+++ BEGIN TRIGGERED-FROM LINKS"
-
+set -x
+echo BUILDKITE_PULL_REQUEST_REPO=$BUILDKITE_PULL_REQUEST_REPO
 # If pull request, show where request came from.
-if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
+if [ "$BUILDKITE_PULL_REQUEST_REPO" != "" ]; then
     # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
     # BUILDKITE_PULL_REQUEST="166"
     # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
