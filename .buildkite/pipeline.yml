@@ -17,6 +17,7 @@ steps:
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
+        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
         source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
 
       # Send regression test pass-fail info to github pull request page
