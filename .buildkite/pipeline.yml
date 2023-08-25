@@ -18,7 +18,7 @@ steps:
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
         source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
-        ~/bin/status-update pending   # Send "pending" status to github PR page
+        ~/bin/status-update --force pending   # Send "pending" status to github PR page
         source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
 
       # Send regression test pass-fail info to github pull request page
