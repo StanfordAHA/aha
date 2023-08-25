@@ -41,7 +41,6 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     mdlink_cm="[${first7}](${url_cm})"
 
     # E.g. url_pr="https://github.com/StanfordAHA/lake/pull/166"
-    # if ! [ "$url_pr" ]; then url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}; fi
     url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
@@ -52,8 +51,6 @@ EOF
 fi
 
 echo "--- END TRIGGERED-FROM LINKS"
-
-
 
 # FIXME don't need this after heroku is gone! FIXME
 # Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
@@ -170,7 +167,6 @@ update_repo=`git config --get remote.origin.url`
 if [ "$PR_FROM_SUBMOD" ]; then
     echo "--- Handle PR"
     echo "+++ Looking for submod commit $BUILDKITE_COMMIT"
-    echo "This is the new stuff (FIXME/delete this line)"
     unset FOUND_SUBMOD
     submods=`git submodule status | awk '{print $2}'` # canal lake hwtypes...
     for submod in $submods; do

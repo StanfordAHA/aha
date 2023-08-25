@@ -1,17 +1,15 @@
-# Can use this file to process incoming pull-request triggers from aha submods.
+# This file processes incoming pull-request triggers from aha submods..
 # It rewrites the build message to be more informative. E.g. a pull
-# request from the canal repo with a message "updated some files"
-# becomes a message more like: 'Pull Request from canal: "updated some files"'
+# request from the canal repo with a message 'updated some files'
+# becomes a message more like:
+# 'Pull Request from canal: "updated some files"'
 
 - trigger: "aha-flow"
   label: "PR check"
   build:
-
-    # E.g. BPPR_TAIL="StanfordAHA/canal"
+    # BPPR must exist as env var before uploading this file; e.g. BPPR_TAIL="canal"
     message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
     commit: "${BUILDKITE_COMMIT}"
-    # branch: "${BUILDKITE_BRANCH}" # aha-flow uses aha master branch, not submod PR branch
-
     env:
       BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
       BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
