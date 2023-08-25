@@ -25,14 +25,14 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 # like "source annotate-w-pr-links.sh"
 echo "+++ BEGIN TRIGGERED-FROM LINKS"
 
-# BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
-pyscript=$(cat << EOF
-import yaml; import sys; data = yaml.safe_load(sys.stdin)
-for dict in data:
-    if dict['head']['sha'] == "$BUILDKITE_COMMIT":
-        print(dict['url']); break
-EOF
-)  
+# # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
+# pyscript=$(cat << EOF
+# import yaml; import sys; data = yaml.safe_load(sys.stdin)
+# for dict in data:
+#     if dict['head']['sha'] == "$BUILDKITE_COMMIT":
+#         print(dict['url']); break
+# EOF
+# )  
 
 if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
   # This can happen if we requild a triggered pipeline, i.e.
@@ -48,18 +48,38 @@ if ! [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     u=`git config --file .gitmodules --get submodule.${submod}.url`
     BUILDKITE_PULL_REQUEST_REPO="$u"
 
+    user_repo=`echo $u | sed 's/http.*github.com.//'`
+
     # OMG also need to reconstruct the NUMBER of the pull request.
     # Can find it by searching PR's for the appropriate commit SHA
 
     echo "Looking for pull request corresponding to BUILDKITE_COMMIT $BUILDKITE_COMMIT"
     # Should return e.g. "https://api.github.com/repos/StanfordAHA/lake/pulls/166"
-    python3 -m pip install pyyaml
+    # https://api.github.com/repos/StanfordAHA/lake/pulls \
+
+#     python3 -m pip install pyyaml
+#     url_pr=`curl --location --silent \
+#       -H "Accept: application/vnd.github+json" \
+#       -H "X-GitHub-Api-Version: 2022-11-28" \
+#       https://api.github.com/repos/${user_repo}/pulls \
+#       | python3 -c "$pyscript"`
+#     echo "Found url_pr=$url_pr"
+
+    sha=$BUILDKITE_COMMIT
+    awkscript='
+      $1 == "url:" { url=$NF }
+      $1 == "head:" { head=1 }
+      /'$sha'/ { if (head==1) { print url; exit }}'
     url_pr=`curl --location --silent \
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/StanfordAHA/lake/pulls \
-      | python3 -c "$pyscript"`
+      https://api.github.com/repos/${user_repo}/pulls \
+      | egrep '"url.*pull|"head|"base|"sha' \
+      | tr -d '",' | awk "$awkscript"`
+    # => "https://api.github.com/repos/StanfordAHA/lake/pulls/166"
     echo "Found url_pr=$url_pr"
+
+
   fi
 fi
 
