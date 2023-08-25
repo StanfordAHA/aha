@@ -2,6 +2,7 @@
 # This script is designed to be SOURCED, obviously :)
 
 echo "+++ BEGIN update-pr-repo.sh"
+cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 # (Re)set env var BUILDKITE_PULL_REQUEST_REPO according to whether build
 # was triggered from a pull request. An actual pull request will set
@@ -22,9 +23,14 @@ elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
 
     echo '- Extract submod name from PR message e.g. "Pull from lake"'
     submod=`echo "$BUILDKITE_MESSAGE" | awk '{print $3}'`  # E.g. "lake"
+    echo "- Found submod '$submod'"
 
     echo '- Find full path of submod e.g. "https://github.com/stanfordaha/canal"'
-    u=`git config --file .gitmodules --get submodule.${submod}.url`
+    if ! u=`git config --file .gitmodules --get submodule.${submod}.url`; then
+        echo "- ERROR cannot find path for submodule '$submod'"
+        echo "- Could not (re)set BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST"
+        return
+    fi
     BUILDKITE_PULL_REQUEST_REPO="$u"
     echo '- Found BUILDKITE_PULL_REQUEST_REPO="$u"'
 
