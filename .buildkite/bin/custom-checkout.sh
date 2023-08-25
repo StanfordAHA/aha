@@ -230,7 +230,7 @@ if [ "$PR_FROM_SUBMOD" ]; then
     echo "+++ Looking for submod commit $BUILDKITE_COMMIT"
     echo "This is the new stuff (FIXME/delete this line)"
     unset FOUND_SUBMOD
-    submods=`git submodule status | awk "{print $2}"` # canal lake hwtypes...
+    submods=`git submodule status | awk '{print $2}'` # canal lake hwtypes...
     for submod in $submods; do
         echo "--- - " Looking in submod $submod
         # --- THIS IS WHERE THE CHECKOUT HAPPENS ---
