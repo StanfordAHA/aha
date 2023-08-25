@@ -25,7 +25,6 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 # like "source annotate-w-pr-links.sh"
 echo "+++ BEGIN TRIGGERED-FROM LINKS"
 
-
 # If pull request, show where request came from.
 if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
@@ -78,6 +77,7 @@ if git checkout -qf $BUILDKITE_COMMIT; then
 else
     echo "+++ SET DO_PR"
     echo "BUILDKITE_COMMIT not found in aha repo, we will do pr regressions."
+    # FIXME could combine this with env-BNO temp file used by update-pr-repo.sh
     commdir=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $commdir;
     echo true > $commdir/DO_PR-${BUILDKITE_BUILD_NUMBER}
 fi
@@ -174,10 +174,10 @@ if [ "$PR_FROM_SUBMOD" ]; then
     unset FOUND_SUBMOD
     submods=`git submodule status | awk '{print $2}'` # canal lake hwtypes...
     for submod in $submods; do
-        echo "--- - " Looking in submod $submod
+        echo "- " Looking in submod $submod
         # --- THIS IS WHERE THE CHECKOUT HAPPENS ---
         (set -x; cd $submod; git fetch origin && git checkout $BUILDKITE_COMMIT) && FOUND_SUBMOD=true || echo "NOT " $submod
-        [ "$FOUND_SUBMOD" ] && echo "--- -- FOUND " $submod
+        [ "$FOUND_SUBMOD" ] && echo "- FOUND valid commit in submod" $submod
         [ "$FOUND_SUBMOD" ] && break
     done
 
