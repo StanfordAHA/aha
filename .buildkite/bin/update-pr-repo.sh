@@ -60,5 +60,12 @@ elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     echo "- Found url_pr=$url_pr"
     BUILDKITE_PULL_REQUEST=`echo $url_pr | awk -F '/' '{print $NF}'`
     echo Found BUILDKITE_PULL_REQUEST=$BUILDKITE_PULL_REQUEST
+
+    # Squirrel away the info for later use
+    temp=/var/lib/buildkite-agent/builds/DELETEME
+    mkdir -p $temp
+    env=$temp/env-$BUILDKITE_BUILD_NUMBER
+    echo BUILDKITE_PULL_REQUEST=$BUILDKITE_PULL_REQUEST > $env
+    echo BUILDKITE_PULL_REQUEST_REPO=$BUILDKITE_PULL_REQUEST_REPO >> $env
 fi
 echo "--- END update-pr-repo.sh"
