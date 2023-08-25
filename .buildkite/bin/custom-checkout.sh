@@ -101,7 +101,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
 
     # E.g. url_pr="https://github.com/StanfordAHA/lake/pull/166"
     # if ! [ "$url_pr" ]; then url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}; fi
-    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}; fi
+    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
     mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
 
     # E.g. "Triggered from StanfordAHA/canal ca602ef (Pull Request #58)"
