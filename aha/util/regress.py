@@ -171,7 +171,7 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = []
     elif args.config == "pr":
-        width, height = 20, 8
+        width, height = 32, 16
         sparse_tests = [
             "matmul_ijk",
             "mat_mattransmul",
@@ -191,7 +191,7 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
         ]
-        resnet_tests = []
+        resnet_tests = ["conv5_1"]
     elif args.config == "daily":
         width, height = 32, 16
         sparse_tests = [
@@ -285,7 +285,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "resnet":
-        width, height = 24, 16
+        width, height = 32, 16
         sparse_tests = []
         glb_tests = []
         resnet_tests = [
