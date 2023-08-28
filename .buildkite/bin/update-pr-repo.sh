@@ -42,7 +42,7 @@ elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
         return
     fi
     BUILDKITE_PULL_REQUEST_REPO="$u"
-    echo '- Found BUILDKITE_PULL_REQUEST_REPO="$u"'
+    echo "- Found BUILDKITE_PULL_REQUEST_REPO '$u'"
 
     # OMG also need to reconstruct the NUMBER of the pull request.
     # Can find it by searching PR's for the appropriate commit SHA
@@ -62,7 +62,7 @@ elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     url_pr=`curl --location --silent \
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/${user_repo}/pulls \
+      "https://api.github.com/repos/${user_repo}/pulls?state=all" \
       | egrep '"url.*pull|"head|"base|"sha' \
       | tr -d '",' | awk "$awkscript"`
 
