@@ -32,7 +32,11 @@ elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     echo "- Found submod '$submod'"
 
     echo '- Find full path of submod e.g. "https://github.com/stanfordaha/canal"'
-    if ! u=`git config --file .gitmodules --get submodule.${submod}.url`; then
+    if [ "$submod" == "aha" ]; then
+        u="https://github.com/stanfordaha/aha"
+        echo '- Oops haha not a submod, this is the aha parent repo'
+
+    elif ! u=`git config --file .gitmodules --get submodule.${submod}.url`; then
         echo "- ERROR cannot find path for submodule '$submod'"
         echo "- Could not (re)set BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST"
         return
