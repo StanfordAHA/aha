@@ -1,6 +1,14 @@
 #!/bin/bash -e
+
+echo "+++ LOCAL POST CHECKOUT FROM AHA REPO"
+echo "PWD: " `pwd`
+
 if [[ ${BUILDKITE_STEP_KEY} =~ ^(docker-build|integration-tests)$ ]]; then
     mkdir -p temp
+    echo Renewing `pwd`/temp/.TEST
     rm -rf temp/.TEST
     touch temp/.TEST
+    set +x
+else
+    echo "Nothing to do, not the right step yet"
 fi
