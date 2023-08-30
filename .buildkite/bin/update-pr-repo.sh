@@ -32,13 +32,17 @@ elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     echo "- Found submod '$submod'"
 
     echo '- Find full path of submod e.g. "https://github.com/stanfordaha/canal"'
-    if ! u=`git config --file .gitmodules --get submodule.${submod}.url`; then
+    if [ "$submod" == "aha" ]; then
+        u="https://github.com/stanfordaha/aha"
+        echo '- Oops haha not a submod, this is the aha parent repo'
+
+    elif ! u=`git config --file .gitmodules --get submodule.${submod}.url`; then
         echo "- ERROR cannot find path for submodule '$submod'"
         echo "- Could not (re)set BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST"
         return
     fi
     BUILDKITE_PULL_REQUEST_REPO="$u"
-    echo '- Found BUILDKITE_PULL_REQUEST_REPO="$u"'
+    echo "- Found BUILDKITE_PULL_REQUEST_REPO '$u'"
 
     # OMG also need to reconstruct the NUMBER of the pull request.
     # Can find it by searching PR's for the appropriate commit SHA
@@ -58,7 +62,7 @@ elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     url_pr=`curl --location --silent \
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/${user_repo}/pulls \
+      "https://api.github.com/repos/${user_repo}/pulls?state=all" \
       | egrep '"url.*pull|"head|"base|"sha' \
       | tr -d '",' | awk "$awkscript"`
 
