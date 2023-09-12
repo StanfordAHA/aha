@@ -5,10 +5,7 @@ set +u
 function get_token {
     owner=`echo $OWNER | tr '[:upper:]' '[:lower:]'`
     case "$owner" in
-        stanfordaha) echo 'REDACTED!'; return ;;
-        leonardt) echo 'REDACTED!'; return ;;
-        cdonovick) echo 'REDACTED!'; return ;;
-        kuree) echo 'REDACTED!'; return ;;
+        stanfordaha) echo <REDACTED>; return ;;
     esac
 }
 
