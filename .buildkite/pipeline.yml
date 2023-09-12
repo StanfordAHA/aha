@@ -17,9 +17,18 @@ steps:
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
-        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
+        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+        source $$bin/update-pr-repo.sh
+
+        # If build was triggered by a pull request, annotate build with
+        #    links pointing to pull request on github.
+        # Set REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+        # Set PR_REPO_TAIL to submod associated with the PR, e.g. "canal"
+        # Add REQUEST_TYPE env temp file for use by later steps
+        source $$bin/set-trigfrom-and-reqtype.sh
+
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
-        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
+        source $$bin/custom-checkout.sh
 
       # Send regression test pass-fail info to github pull request page
       pre-exit: |
@@ -127,17 +136,21 @@ steps:
           echo Renewing `pwd`/temp/.TEST
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
-          # FIXME/TODO there are obvious much better ways to do this FIXME
+          # If trigger came from a submod repo, we will do "pr" regressions.
+          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+          # We use "env" file to pass information between steps.
+          # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
+
+          # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+          source /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER
+
           echo "--- Pass DO_PR info to docker"
-          echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
-          commdir=/var/lib/buildkite-agent/builds/DELETEME;
-          if test -f $$commdir/DO_PR-$${BUILDKITE_BUILD_NUMBER}; then
+          if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
               echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
           else
               echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
           fi
-          pwd
           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
           echo "--- OIT PRE COMMAND HOOK END"
