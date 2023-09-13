@@ -55,12 +55,6 @@ git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
 
-# FIXME can of course delete this after heroku is gone FIXME
-# Heroku always sets message to "PR from <repo>" with BUILDKITE_COMMIT="HEAD"
-# so as to checkout aha master. Heroku also sends desired submod commit <repo>
-# hash as env var FLOW_HEAD_SHA.  In this new regime, we set BUILDKITE_COMMIT
-# as the desired submod commit, and auto-discover the repo that goes with the commit.
-
 echo "--- See if we need to update a submodule"
 unset PR_FROM_SUBMOD
 
@@ -87,19 +81,11 @@ else
     echo 'Will checkout aha default branch'
     PR_FROM_SUBMOD=true
 
-    # FIXME don't need if-then-else below after dev merges to master.
-    # Use dev branch as default until it gets merged and deleted.
-    AHA_DEFAULT_BRANCH=no-heroku
-    echo "Meanwhile, will use default branch '$AHA_DEFAULT_BRANCH' for aha repo"
-    if git fetch -v --prune -- origin $AHA_DEFAULT_BRANCH; then
-        echo "Fetching aha branch '$AHA_DEFAULT_BRANCH'"
-        git checkout -f $AHA_DEFAULT_BRANCH
-    else
         echo "Aha branch '$AHA_DEFAULT_BRANCH' does not exist"
         echo "Fetching aha master branch"
         git fetch -v --prune -- origin master
         git checkout -f master
-    fi
+
 fi
 
 set -x
