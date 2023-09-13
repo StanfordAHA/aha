@@ -29,14 +29,13 @@ else
     git checkout -qf $BUILDKITE_COMMIT
 fi
 
-
+# This is maybe slow (ish) so don't do it at the beginning...
 echo "--- PREP AHA REPO and all its submodules"; set -x
 pwd
 # E.g. CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
 cd $BUILDKITE_BUILD_CHECKOUT_PATH # Actually I think we're already there but whatevs
-
-git submodule update --checkout # This is probably unnecessary but whatevs
 git remote set-url origin https://github.com/StanfordAHA/aha
+git submodule update --checkout # This is probably unnecessary but whatevs
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
@@ -74,6 +73,7 @@ else
 
 fi
 
+echo "--- Initialize submodules YES THIS TAKES AWHILE"
 set -x
 git submodule sync --recursive
 echo "--- git submodule update --init --recursive --force"
