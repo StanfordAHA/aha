@@ -19,6 +19,16 @@ echo I am `whoami`
 echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
+if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
+    echo "Pull request from a submod repo: check out aha master branch"
+    git fetch -v --prune -- origin master
+    git checkout -qf master
+else
+    echo "Push or PR from aha repo: check out requested aha branch"
+    git fetch -v --prune -- origin $BUILDKITE_COMMIT
+    git checkout -qf $BUILDKITE_COMMIT
+fi
+
 
 # If trigger came from a submod repo, we will do "pr" regressions.
 # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
