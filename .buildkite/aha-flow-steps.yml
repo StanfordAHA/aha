@@ -1,0 +1,28 @@
+env:
+  # For heroku
+  FLOW_URL: "https://shielded-temple-72016.herokuapp.com"
+  AHA_FLOW_TOKEN: "xgCSpqtxmn94wU2BqS6g"
+
+steps:
+- label: ":pipeline:"
+  agents: { docker: true }
+  plugins:
+      # Turn off normal/slow repo+submods checkout b/c all we need is pipeline.yml
+      - uber-workflow/run-without-clone:
+  commands:
+  - 'echo "+++ Must have a (empty!) working directory"; set -x;
+     d=$$BUILDKITE_BUILD_CHECKOUT_PATH;
+     /bin/rm -rf $$d; mkdir -p $$d; ls -ld $$d; cd $$d'
+
+     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+     # Also see ~steveri/bin/status-update on kiwi
+  - 'echo "+++ Notify github of pending status"; ~/bin/status-update --force pending'
+
+  - 'echo "--- CUSTOM CHECKOUT BEGIN"; set -x;
+     echo "Fast checkout w/ no submod loads (yet)";
+     aha_clone=$$BUILDKITE_BUILD_CHECKOUT_PATH;
+     git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
+     git checkout -q $$BUILDKITE_COMMIT || echo "Submod commit hash found, using aha master branch";
+     buildkite-agent pipeline upload .buildkite/pipeline.yml;'
+  - echo "--- CUSTOM CHECKOUT END"
+
