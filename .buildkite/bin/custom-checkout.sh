@@ -110,40 +110,11 @@ echo '--- git submodule foreach --recursive "git reset --hard"'
 git submodule foreach --recursive "git reset --hard"
 set +x
 
-update_repo=`git config --get remote.origin.url`
+# update_repo=`git config --get remote.origin.url`
 
-# To find out what repo triggered the commit, we iterate through
-# all the submodules and find which one can successfully checkout
-# the desired BUILKITE_COMMIT.
-
-# NOTE this is not necessary for pull requests, which embed the
-# repo information as BUILDKITE_PULL_REQUEST. Push requests have
-# no such mechanism however :(
-# In general we don't process push requests from submodules, but
-# this was useful for development etc.
-
-if [ "$PR_FROM_SUBMOD" ]; then
-    echo "--- Handle PR"
-    echo "+++ Looking for submod commit $BUILDKITE_COMMIT"
-    unset FOUND_SUBMOD
-    submods=`git submodule status | awk '{print $2}'` # canal lake hwtypes...
-    for submod in $submods; do
-        echo "- " Looking in submod $submod
-        # --- THIS IS WHERE THE CHECKOUT HAPPENS ---
-        (set -x; cd $submod; git fetch origin && git checkout $BUILDKITE_COMMIT) && FOUND_SUBMOD=true || echo "NOT " $submod
-        [ "$FOUND_SUBMOD" ] && echo "- FOUND valid commit in submod" $submod
-        [ "$FOUND_SUBMOD" ] && break
-    done
-
-    if [ "$FOUND_SUBMOD" ]; then
-        echo "--- Updated submodule '$submod' w commit '$BUILDKITE_COMMIT'"
-        update_repo=`cd $submod; git config --get remote.origin.url`
-    else
-        echo "ERROR could not find requesting submod"; exit 13
-    fi
-    set +x
-else
-    echo "--- NOT A PULL REQUEST"
+if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
+    echo "--- Update submodule '$PR_REPO_TAIL' w commit '$BUILDKITE_COMMIT'"
+    (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $BUILDKITE_COMMIT)
 fi
 
 echo "--- custom-checkout.sh END"
