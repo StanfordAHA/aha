@@ -108,19 +108,6 @@ steps:
         shell: ["/bin/bash", "-e", "-c"]
     - improbable-eng/metahook:
 
-        pre-checkout: |
-          set +x
-          echo "+++ OIT PRE CHECKOUT HOOK BEGIN"
-
-          # I THINK we don't actually need an aha clone for this step!?
-          # I THINK all we need is a path to the "temp" canary !!?
-          # FIXME/TODO use non-agent-specific path instead, e.g. $commdir FIXME
-          # FIXME then this hook can go away entirely, yes? FIXME
-          # FIXME but cannot do any of this until after heroku goes away...
-          mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH/temp
-          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-          echo "--- OIT PRE CHECKOUT HOOK END"
-
         pre-command: |
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
