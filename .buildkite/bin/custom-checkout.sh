@@ -18,7 +18,7 @@ echo I am in dir `pwd`
 
 # Clone the aha repo
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-/bin/rm -rf $aha_clone
+/bin/rm -rf $aha_clone; mkdir -p $aha_clone
 git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
 git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
 git clean -ffxdq
