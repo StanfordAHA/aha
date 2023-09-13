@@ -17,7 +17,7 @@ set -x
 
 # Checkout master or BUILDKITE_COMMIT
 
-cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+cd $BUILDKITE_BUILD_CHECKOUT_PATH
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     echo "Pull request from a submod repo: check out aha master branch"
     git fetch -v --prune -- origin master
