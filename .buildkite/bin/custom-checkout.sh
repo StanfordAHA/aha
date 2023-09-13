@@ -20,48 +20,6 @@ echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 
-##############################################################################
-# FIXME yeah okay this could be offloaded as a separate script maybe something
-# like "source annotate-w-pr-links.sh"
-echo "+++ BEGIN TRIGGERED-FROM LINKS"
-
-# If pull request, show where request came from.
-if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
-    # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
-    # BUILDKITE_PULL_REQUEST="166"
-    # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
-
-    # E.g. repo="https://github.com/StanfordAHA/lake"
-    repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
-    r=`echo "$repo" | sed 's/http.*github.com.//'`
-
-    # E.g. url_cm="https://github.com/StanfordAHA/lake/commit/7c5...0b1f"
-    first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`  # 7c5e880
-    url_cm=${repo}/commit/${BUILDKITE_COMMIT}
-    mdlink_cm="[${first7}](${url_cm})"
-
-    # E.g. url_pr="https://github.com/StanfordAHA/lake/pull/166"
-    url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
-    mdlink_pr="[Pull Request #${BUILDKITE_PULL_REQUEST}](${url_pr})"
-
-    # E.g. "Triggered from StanfordAHA/canal ca602ef (Pull Request #58)"
-    cat <<EOF | buildkite-agent annotate --style "info" --context foo3
-### Triggered from ${r} ${mdlink_cm} (${mdlink_pr})
-EOF
-fi
-
-echo "--- END TRIGGERED-FROM LINKS"
-
-# FIXME don't need this after heroku is gone! FIXME
-# Heroku sets BUILDKITE_COMMIT to sha of aha master branch.
-# We want to rewrite that to be the sha of submod repo that
-# originally triggered the build.
-
-if [ "$FLOW_HEAD_SHA" ]; then
-    echo "Found heroku, rewriting BUILDKITE_COMMIT";
-    BUILDKITE_COMMIT=$FLOW_HEAD_SHA;
-fi
-
 # If trigger came from a submod repo, we will do "pr" regressions.
 # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
 # We use commdir to pass information to other steps.
