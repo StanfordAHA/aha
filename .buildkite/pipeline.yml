@@ -23,10 +23,10 @@ steps:
         if [ "$$FLOW_HEAD_SHA" ]; then
             echo "+++ ERROR Not processing heroku requests anymore"; exit 13; fi
 
-        # Clone the aha repo
+        # Clone the aha repo; starting in root dir '/' I think
         echo I am in dir `pwd`
-        set -x
         aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+        set -x
         /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
         git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
         git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
@@ -34,9 +34,12 @@ steps:
         set +x
 
         # FIXME Temporary hack, remove after dev is complete
+        git fetch -v --prune -- origin aha-no-heroku-cleanup || echo maybe dev time is over
         git checkout aha-no-heroku-cleanup || echo maybe dev time is over
 
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+
+        # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
         source $$bin/update-pr-repo.sh
 
         # If build was triggered by a pull request, annotate build with
@@ -47,6 +50,8 @@ steps:
         source $$bin/set-trigfrom-and-reqtype.sh
 
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
+
+        # Checkout and update correct aha branch and submodules
         source $$bin/custom-checkout.sh
 
       # Send regression test pass-fail info to github pull request page

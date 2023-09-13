@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # What this script does:
-# - Clone the aha repo locally.
 # - Check out aha branch BUILDKITE_COMMIT if build triggered from aha repo.
 # - Else check out master if triggered from submod push/pull.
 # - Update and initialize all submodules.
@@ -14,11 +13,11 @@ PS4="_"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 echo "+++ custom-checkout.sh BEGIN"
 echo I am in dir `pwd`
-
 set -x
 
 # Checkout master or BUILDKITE_COMMIT
 
+cd $$BUILDKITE_BUILD_CHECKOUT_PATH
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     echo "Pull request from a submod repo: check out aha master branch"
     git fetch -v --prune -- origin master
