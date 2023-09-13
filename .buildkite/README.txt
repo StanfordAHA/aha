@@ -75,7 +75,7 @@ do:
     => add webhook
 
     Payload URL:
-    https://webhook.buildkite.com/deliver/55a73168ea77ff241be03cacddf5a26637e0cd49930982b1da
+    https://webhook.buildkite.com/deliver/55a73...
 
     Content type: application/json
 
