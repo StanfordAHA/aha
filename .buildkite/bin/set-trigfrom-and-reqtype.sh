@@ -10,10 +10,6 @@
 echo "+++ set-trigfrom-and-reqtype.sh BEGIN"
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
-if [ "$FLOW_HEAD_SHA" ]; then
-    echo "+++ ERROR Not processing heroku requests anymore"; exit 13
-fi
-
 echo "+++ BEGIN TRIGGERED-FROM LINKS"
 
 # If pull request, show where request came from.
