@@ -33,6 +33,9 @@ steps:
         git clean -ffxdq
         set +x
 
+        # FIXME Temporary hack, remove after dev is complete
+        git checkout aha-no-heroku-cleanup || echo maybe dev time is over
+
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
         source $$bin/update-pr-repo.sh
 
