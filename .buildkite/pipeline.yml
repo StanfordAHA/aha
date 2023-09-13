@@ -1,0 +1,212 @@
+env:
+  CONFIG: ${CONFIG:-daily}
+
+steps:
+
+- label: ":wrench: Build Docker Image"
+  key: "docker-build"
+  plugins:
+  # Override standard checkout procedure with custom checkout script
+  - uber-workflow/run-without-clone:
+
+  # My hooks
+  - improbable-eng/metahook:
+
+      # Clone aha repo and optionally update submod according to where build request originated:
+      # Req from aha repo:    check out aha commit BUILDKITE_COMMIT
+      # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
+      pre-checkout: |
+        echo "+++ BDI PRE CHECKOUT HOOK"
+        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
+        ~/bin/status-update --force pending   # Send "pending" status to github PR page
+        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
+
+      # Send regression test pass-fail info to github pull request page
+      pre-exit: |
+        echo "+++ CHECKING EXIT STATUS"; set -x
+        echo "Send status to github, delete docker image if job failed"
+
+        # status-update exit status will tell us if this step has failed
+        if ! ~/bin/status-update pending; then
+            # Build failed already, remove the docker image and begone
+            (set -x; docker image rm "garnet:aha-flow-build-$${BUILDKITE_BUILD_NUMBER}" --no-prune)
+        fi
+
+  commands:
+  - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
+
+  - echo "--- DEBUG DOCKER TRASH"
+  - set -x; docker images; docker ps;
+
+  - echo "--- Creating garnet Image"
+  - docker build . -t "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}"
+
+  # Docker image successfully built. Remove
+  # .TEST file to avoid reporting failure to
+  # aha-flow-app. This is a heroku thing I guess.
+  # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks FIXME
+  - rm -rf temp/.TEST
+
+  - echo "--- Pruning Docker Images"
+  - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
+
+  - echo "--- BDI PIPELINE.XML COMMANDS END"
+
+  agents:
+    docker: true
+
+- label: ":hammer: Amber Gold RTL"
+  key: "goldcheck-amber"
+  depends_on: "docker-build"
+  # Set soft_fail so that failing gold check does not fail pipeline.
+  soft_fail: true
+  commands:
+    - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
+  plugins:
+    - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes:
+          - "/cad/:/cad"
+          - "./temp:/buildkite:rw"
+        # skip-checkout: true
+        mount-checkout: false
+        propagate-environment: true
+        environment:
+          - CONFIG
+          - FLOW_REPO
+        shell: ["/bin/bash", "-e", "-c"]
+  agents:
+    docker: true
+
+- label: ":hammer: Onyx Integration Tests"
+  key: "integration-tests"
+  depends_on: "docker-build"
+
+  plugins:
+    - uber-workflow/run-without-clone: # skip-checkout alone (below) did not do the trick!
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        # image: stanfordaha/garnet:latest
+        volumes:
+          - "/cad/:/cad"
+          - "./temp:/buildkite:rw"
+        mount-checkout: false
+        skip-checkout: true
+        propagate-environment: true
+        environment:
+          - CONFIG
+          - FLOW_REPO
+        shell: ["/bin/bash", "-e", "-c"]
+    - improbable-eng/metahook:
+
+        pre-checkout: |
+          set +x
+          echo "+++ OIT PRE CHECKOUT HOOK BEGIN"
+
+          # I THINK we don't actually need an aha clone for this step!?
+          # I THINK all we need is a path to the "temp" canary !!?
+          # FIXME/TODO use non-agent-specific path instead, e.g. $commdir FIXME
+          # FIXME then this hook can go away entirely, yes? FIXME
+          # FIXME but cannot do any of this until after heroku goes away...
+          mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH/temp
+          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+          echo "--- OIT PRE CHECKOUT HOOK END"
+
+        pre-command: |
+          # Cannot run this as part of pre-checkout,
+          # because already have local post-checkout hook with odd co-dependence on temp dir
+          # Actually no I think all it does is delete temp/.TEST...
+          # FIXME can simplify all this after heroku goes away
+          echo "+++ OIT PRE COMMAND HOOK BEGIN"
+
+          # Use temp/.TEST to pass fail/success info into and out of docker container
+          # This duplicates what happens in existing aha/.buildkite/hooks/post-checkout,
+          # FIXME which can be deleted once this merges to master FIXME
+          # FIXME also can delete aha/.buildkite/hooks/pre-exit when/if heroku goes away FIXME
+          echo Renewing `pwd`/temp/.TEST
+          mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
+
+          # FIXME/TODO there are obvious much better ways to do this FIXME
+          echo "--- Pass DO_PR info to docker"
+          echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
+          echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
+          commdir=/var/lib/buildkite-agent/builds/DELETEME;
+          if test -f $$commdir/DO_PR-$${BUILDKITE_BUILD_NUMBER}; then
+              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+          else
+              echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
+          fi
+          pwd
+          test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
+
+          echo "--- OIT PRE COMMAND HOOK END"
+
+        pre-exit: |
+          echo "+++ CHECKING EXIT STATUS"; set -x
+          echo "Send status to github."
+          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+
+          # Docker removes temp/.TEST if all the tests passed
+          if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
+              test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
+          fi
+
+          # status-update will magically override "success" with "failure" as appropriate!
+          # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
+          ~/bin/status-update success
+
+  commands:
+  - |
+    if test -e /buildkite/DO_PR; then
+        echo "--- DO_PR SET (TRUE)"
+    else
+        echo "--- DO_PR UNSET (FALSE)"
+    fi
+  - source /aha/bin/activate
+  - source /cad/modules/tcl/init/sh
+  - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
+  # make /bin/sh symlink to bash instead of dash:
+  - echo "dash dash/sh boolean false" | debconf-set-selections
+  - DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+  - apt update
+  - apt install time
+  - ls /aha
+  - pip freeze
+  - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
+  # Run regression tests
+  - if test -e /buildkite/DO_PR; then
+      echo "Trigger came from submod repo pull request; use pr config";
+      export CONFIG=pr;
+    else
+      echo "Trigger came from aha repo; use default config";
+    fi;
+  - aha regress $$CONFIG
+  # We report success to the aha-flow app by removing the .TEST file,
+  # which is created in the post-checkout hook and checked for in the
+  # pre-exit hook.
+
+  # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
+  - echo "--- Removing Failure Canary"
+  - ls -al /buildkite
+  - rm -rf /buildkite/.TEST
+  - ls -al /buildkite
+
+  agents:
+    docker: true
+
+- wait: { continue_on_failure: true } # One step at a time + continue on failure
+
+- label: ":skull_and_crossbones: Delete Docker Image"
+  # Set soft_fail so that failing cleanup does not fail pipeline.
+  soft_fail: true
+  depends_on:
+  - "integration-tests"
+  - "goldcheck-amber"
+  commands:
+  # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
+  - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
+  agents:
+    docker: true
+  plugins:
+  - uber-workflow/run-without-clone:
