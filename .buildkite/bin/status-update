@@ -3,10 +3,7 @@ set +u
 
 # Here be secrets! This file must be read-protected against outside eyes!
 function get_token {
-    owner=`echo $OWNER | tr '[:upper:]' '[:lower:]'`
-    case "$owner" in
-        stanfordaha) echo <REDACTED>; return ;;
-    esac
+    echo <TOKEN-REDACTED>; return ;;
 }
 
 USAGE="
@@ -42,7 +39,7 @@ USAGE="
 # Update env with latest pull-request info
 # BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST
 temp=/var/lib/buildkite-agent/builds/DELETEME
-env=$temp/env-${BUILDKITE_BUILD_NUMBER}
+env=$temp/env-$BUILDKITE_BUILD_NUMBER
 test -e $env && source $env
 
 # Only need status updates if BUILDKITE_PULL_REQUEST_REPO is valid
