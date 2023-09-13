@@ -55,12 +55,6 @@ steps:
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}"
 
-  # Docker image successfully built. Remove
-  # .TEST file to avoid reporting failure to
-  # aha-flow-app. This is a heroku thing I guess.
-  # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks FIXME
-  - rm -rf temp/.TEST
-
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
 
@@ -128,16 +122,9 @@ steps:
           echo "--- OIT PRE CHECKOUT HOOK END"
 
         pre-command: |
-          # Cannot run this as part of pre-checkout,
-          # because already have local post-checkout hook with odd co-dependence on temp dir
-          # Actually no I think all it does is delete temp/.TEST...
-          # FIXME can simplify all this after heroku goes away
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
           # Use temp/.TEST to pass fail/success info into and out of docker container
-          # This duplicates what happens in existing aha/.buildkite/hooks/post-checkout,
-          # FIXME which can be deleted once this merges to master FIXME
-          # FIXME also can delete aha/.buildkite/hooks/pre-exit when/if heroku goes away FIXME
           echo Renewing `pwd`/temp/.TEST
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
@@ -165,7 +152,7 @@ steps:
           echo "Send status to github."
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
 
-          # Docker removes temp/.TEST if all the tests passed
+          # Docker will have removed temp/.TEST if all the tests passed
           if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
               test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
           fi
