@@ -13,15 +13,9 @@ set +x    # debug OFF
 PS4="_"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 echo "+++ custom-checkout.sh BEGIN"
-echo I am `whoami`
 echo I am in dir `pwd`
 
-# Clone the aha repo
-aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-/bin/rm -rf $aha_clone; mkdir -p $aha_clone
-git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
-git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
-git clean -ffxdq
+set -x
 
 # Checkout master or BUILDKITE_COMMIT
 
