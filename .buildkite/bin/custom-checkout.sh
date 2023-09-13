@@ -30,23 +30,6 @@ else
 fi
 
 
-# If trigger came from a submod repo, we will do "pr" regressions.
-# Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
-# We use commdir to pass information to other steps.
-# THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
-
-echo "--- Determine whether to do daily or pr regressions"
-if git checkout -qf $BUILDKITE_COMMIT; then
-    echo "+++ UNSET DO_PR"
-    echo "BUILDKITE_COMMIT found in aha repo, we will do daily regressions."
-else
-    echo "+++ SET DO_PR"
-    echo "BUILDKITE_COMMIT not found in aha repo, we will do pr regressions."
-    # FIXME could combine this with env-BNO temp file used by update-pr-repo.sh
-    commdir=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $commdir;
-    echo true > $commdir/DO_PR-${BUILDKITE_BUILD_NUMBER}
-fi
-
 echo "--- PREP AHA REPO and all its submodules"; set -x
 pwd
 # E.g. CHECKOUT_PATH=/var/lib/buildkite-agent/builds/r7cad-docker-1/stanford-aha/aha-flow
