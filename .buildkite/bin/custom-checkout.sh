@@ -40,39 +40,6 @@ git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
 
-echo "--- See if we need to update a submodule"
-unset PR_FROM_SUBMOD
-
-# PR_FROM_SUBMOD means build was triggered by foreign (non-aha) repo,
-# i.e. one of the submods. The submod sends its commit hash BUT DOES
-# NOT TELL US WHAT REPO IT IS. :(
-
-# We detect this by attempting to fetch BUILDKITE_COMMIT from aha repo.
-# Success means this is an aha-triggered build. Failure means we need to
-# find what repo actually did trigger the commit.
-
-echo git fetch -v --prune -- origin $BUILDKITE_COMMIT
-if   git fetch -v --prune -- origin $BUILDKITE_COMMIT; then
-
-    # Pretty sure we already did this, in pipeline.xml BDI step pre-checkout hook
-    # But what the heck, let's do it again, don't break what is working already.
-    git checkout -f $BUILDKITE_COMMIT
-    echo "Found aha commit '$BUILDKITE_COMMIT'; no need to update submodule"
-
-else
-    echo '-------------------------------------------'
-    echo 'REQUESTED COMMIT DOES NOT EXIST in aha repo'
-    echo '(This must be a pull request from one of the submods)'
-    echo 'Will checkout aha default branch'
-    PR_FROM_SUBMOD=true
-
-        echo "Aha branch '$AHA_DEFAULT_BRANCH' does not exist"
-        echo "Fetching aha master branch"
-        git fetch -v --prune -- origin master
-        git checkout -f master
-
-fi
-
 echo "--- Initialize submodules YES THIS TAKES AWHILE"
 set -x
 git submodule sync --recursive
