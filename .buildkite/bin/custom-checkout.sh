@@ -50,7 +50,7 @@ pwd
 cd $BUILDKITE_BUILD_CHECKOUT_PATH # Actually I think we're already there but whatevs
 
 git submodule update --checkout # This is probably unnecessary but whatevs
-git remote set-url origin https://github.com/hofstee/aha
+git remote set-url origin https://github.com/StanfordAHA/aha
 git submodule foreach --recursive "git clean -ffxdq"
 git clean -ffxdq
 set +x
