@@ -24,6 +24,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
     r=`echo "$repo" | sed 's/http.*github.com.//'`               # "StanfordAHA/lake"
     PR_REPO_TAIL=`echo "$repo" | sed "s,http.*github.com/.*/,,"` # "lake"
+    echo "Found PR from submod $PR_REPO_TAIL"
 
     # E.g. url_cm="https://github.com/StanfordAHA/lake/commit/7c5...0b1f"
     first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`  # 7c5e880

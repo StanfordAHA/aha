@@ -19,7 +19,6 @@ steps:
         echo "+++ BDI PRE CHECKOUT HOOK"
         set +u     # nounset? not on my watch!
 
-        # FIXME/TODO can remove this after heroku is gone forever
         if [ "$$FLOW_HEAD_SHA" ]; then
             echo "+++ ERROR Not processing heroku requests anymore"; exit 13; fi
 
@@ -33,7 +32,7 @@ steps:
         git clean -ffxdq
         set +x
 
-        # FIXME Temporary hack, remove after dev is complete
+        # Use this hack to prepare dev branches for pull to master
         git fetch -v --prune -- origin aha-no-heroku-cleanup || echo maybe dev time is over
         git checkout aha-no-heroku-cleanup || echo maybe dev time is over
 
