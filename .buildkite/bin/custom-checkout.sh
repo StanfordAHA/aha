@@ -9,11 +9,10 @@
 # Setup
 set +u    # nounset? not on my watch!
 set +x    # debug OFF
-PS4="_"   # Prevents "+++" prefix during 3-deep "set -x" execution
+PS4=">"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 echo "+++ custom-checkout.sh BEGIN"
 echo I am in dir `pwd`
-set -x
 
 # Checkout master or BUILDKITE_COMMIT
 
