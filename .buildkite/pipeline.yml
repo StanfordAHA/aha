@@ -39,7 +39,7 @@ steps:
             git checkout $$DEV                   || USING_MASTER=true
             if ! [ "$$USING_MASTER" ]; then
                 msg="### WARNING Using dev branch '$${DEV}' instead of master"
-                echo $msg | buildkite-agent annotate --style "info" --context foo3
+                buildkite-agent annotate --style "warning" --context dev "$msg"
             fi
         fi
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
