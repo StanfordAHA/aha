@@ -17,6 +17,7 @@ echo I am in dir `pwd`
 # Checkout master or BUILDKITE_COMMIT
 
 cd $BUILDKITE_BUILD_CHECKOUT_PATH
+# REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     echo "Pull request from a submod repo: check out aha master branch"
     git fetch -v --prune -- origin master
@@ -41,6 +42,7 @@ set +x
 
 # Update submod
 
+# Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     echo "--- Update submodule '$PR_REPO_TAIL' w commit '$BUILDKITE_COMMIT'"
     (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $BUILDKITE_COMMIT)
