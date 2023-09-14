@@ -175,6 +175,7 @@ def dispatch(args, extra_args=None):
         sparse_tests = [
             "matmul_ijk",
             "mat_mattransmul",
+            "mat_vecmul_ij",
             "vec_identity",
             "vec_elemadd",
             "vec_elemmul",
@@ -199,6 +200,7 @@ def dispatch(args, extra_args=None):
             "vec_elemmul",
             "vec_identity",
             "vec_scalar_mul",
+            "mat_vecmul_ij",
             "mat_elemadd",
             "mat_elemadd3",
             "mat_elemmul",
