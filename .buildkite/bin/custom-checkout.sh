@@ -11,7 +11,7 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4=">"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
-echo "+++ custom-checkout.sh BEGIN"
+echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 
 # Checkout master or BUILDKITE_COMMIT
@@ -22,7 +22,7 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     git fetch -v --prune -- origin master
     git checkout -qf master
 else
-    echo "Push or PR from aha repo: check out requested aha branch"
+    echo "Push or PR from aha repo: check out requested aha branch $BUILDKITE_COMMIT"
     git fetch -v --prune -- origin $BUILDKITE_COMMIT
     git checkout -qf $BUILDKITE_COMMIT
 fi
@@ -46,4 +46,4 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $BUILDKITE_COMMIT)
 fi
 
-echo "--- custom-checkout.sh END"
+echo "--- END custom-checkout.sh"
