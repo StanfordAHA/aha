@@ -34,7 +34,7 @@ steps:
 
         # Use this hack to (temporarily) use dev branches during development
         USING_MASTER=; DEV=aha-no-heroku-cleanup
-        if [ "$DEV" ]; then
+        if [ "$$DEV" ]; then
             git fetch -v --prune -- origin $$DEV || USING_MASTER=true
             git checkout $$DEV                   || USING_MASTER=true
             if ! [ "$$USING_MASTER" ]; then
