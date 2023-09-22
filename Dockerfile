@@ -118,6 +118,7 @@ WORKDIR /aha
 RUN mkdir -p /aha/tmp/torch_install/
 ENV TMPDIR=/aha/tmp/torch_install/
 RUN source /aha/bin/activate && pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN rm -rf $TMPDIR
 
 WORKDIR /aha
 RUN source bin/activate && pip install urllib3==1.26.15 && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && pip install -e ./pono/deps/smt-switch/build/python && pip install -e pono/build/python/ && aha deps install
