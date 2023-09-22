@@ -17,9 +17,47 @@ steps:
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
         echo "+++ BDI PRE CHECKOUT HOOK"
-        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/update-pr-repo.sh
+        set +u     # nounset? not on my watch!
+
+        if [ "$$FLOW_HEAD_SHA" ]; then
+            echo "+++ ERROR Not processing heroku requests anymore"; exit 13; fi
+
+        # Clone the aha repo; starting in root dir '/' I think
+        echo I am in dir `pwd`
+        aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+        set -x
+        /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
+        git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
+        git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
+        git clean -ffxdq
+        set +x
+
+        # Use this hack to (temporarily) use dev branches during development
+        USING_MASTER=; DEV=aha-no-heroku-cleanup
+        if [ "$$DEV" ]; then
+            git fetch -v --prune -- origin $$DEV || USING_MASTER=true
+            git checkout $$DEV                   || USING_MASTER=true
+            if ! [ "$$USING_MASTER" ]; then
+                msg="### WARNING Using dev branch '$${DEV}' instead of master"
+                buildkite-agent annotate --style "warning" --context dev "$$msg"
+            fi
+        fi
+        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+
+        # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
+        source $$bin/update-pr-repo.sh
+
+        # If build was triggered by a pull request, annotate build with
+        #    links pointing to pull request on github.
+        # Set REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+        # Set PR_REPO_TAIL to submod associated with the PR, e.g. "canal"
+        # Add REQUEST_TYPE env temp file for use by later steps
+        source $$bin/set-trigfrom-and-reqtype.sh
+
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
-        source $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/custom-checkout.sh
+
+        # Checkout and update correct aha branch and submodules
+        source $$bin/custom-checkout.sh
 
       # Send regression test pass-fail info to github pull request page
       pre-exit: |
@@ -40,12 +78,6 @@ steps:
 
   - echo "--- Creating garnet Image"
   - docker build . -t "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}"
-
-  # Docker image successfully built. Remove
-  # .TEST file to avoid reporting failure to
-  # aha-flow-app. This is a heroku thing I guess.
-  # FIXME remove heroku, remove this, along with pre-exit and post-checkout hooks FIXME
-  - rm -rf temp/.TEST
 
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
@@ -100,44 +132,28 @@ steps:
         shell: ["/bin/bash", "-e", "-c"]
     - improbable-eng/metahook:
 
-        pre-checkout: |
-          set +x
-          echo "+++ OIT PRE CHECKOUT HOOK BEGIN"
-
-          # I THINK we don't actually need an aha clone for this step!?
-          # I THINK all we need is a path to the "temp" canary !!?
-          # FIXME/TODO use non-agent-specific path instead, e.g. $commdir FIXME
-          # FIXME then this hook can go away entirely, yes? FIXME
-          # FIXME but cannot do any of this until after heroku goes away...
-          mkdir -p $$BUILDKITE_BUILD_CHECKOUT_PATH/temp
-          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-          echo "--- OIT PRE CHECKOUT HOOK END"
-
         pre-command: |
-          # Cannot run this as part of pre-checkout,
-          # because already have local post-checkout hook with odd co-dependence on temp dir
-          # Actually no I think all it does is delete temp/.TEST...
-          # FIXME can simplify all this after heroku goes away
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
           # Use temp/.TEST to pass fail/success info into and out of docker container
-          # This duplicates what happens in existing aha/.buildkite/hooks/post-checkout,
-          # FIXME which can be deleted once this merges to master FIXME
-          # FIXME also can delete aha/.buildkite/hooks/pre-exit when/if heroku goes away FIXME
           echo Renewing `pwd`/temp/.TEST
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
-          # FIXME/TODO there are obvious much better ways to do this FIXME
+          # If trigger came from a submod repo, we will do "pr" regressions.
+          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+          # We use "env" file to pass information between steps.
+          # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
+
+          # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+          source /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER
+
           echo "--- Pass DO_PR info to docker"
-          echo "Use file 'DO_PR' as a signal to do pr tests or not omg"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
-          commdir=/var/lib/buildkite-agent/builds/DELETEME;
-          if test -f $$commdir/DO_PR-$${BUILDKITE_BUILD_NUMBER}; then
+          if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
               echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
           else
               echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
           fi
-          pwd
           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
           echo "--- OIT PRE COMMAND HOOK END"
@@ -147,7 +163,7 @@ steps:
           echo "Send status to github."
           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
 
-          # Docker removes temp/.TEST if all the tests passed
+          # Docker will have removed temp/.TEST if all the tests passed
           if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
               test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
           fi
