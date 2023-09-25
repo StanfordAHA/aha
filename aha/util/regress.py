@@ -232,7 +232,7 @@ def dispatch(args, extra_args=None):
             "mat_mattransmul",
             # Turned off until SUB ordering fixed in mapping
             # 'mat_residual',
-            "mat_sddmm",
+            #"mat_sddmm",
             "mat_vecmul_ij",
             "matmul_ijk",
             "matmul_jik",
