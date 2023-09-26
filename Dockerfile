@@ -77,7 +77,10 @@ RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
 WORKDIR /aha
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
-RUN cmake .. && make && make install
+RUN cmake .. && make && make install && \
+  echo -n "BEFORE CLEANUP: " && du -hs /aha/coreir/build && \
+  /bin/rm -rf src bin tests && \
+  echo -n "AFTER  CLEANUP: " && du -hs /aha/coreir/build
 
 # Lake
 COPY ./BufferMapping /aha/BufferMapping
