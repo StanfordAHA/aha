@@ -76,8 +76,8 @@ RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
   cd /aha/pono && ./configure.sh --python && \
   cd /aha/pono/build && make -j4 && pip install -e ./python && \
   source /aha/bin/activate && \
-  pip install -e ./pono/deps/smt-switch/build/python && \
-  pip install -e pono/build/python/ && \
+  pip install -e /aha/pono/deps/smt-switch/build/python && \
+  pip install -e /aha/pono/build/python/ && \
   /bin/rm -rf /aha/pono/deps && \
   /bin/rm -rf /aha/pono/build/tests/ /aha/pono/build/CMakefiles/ /aha/pono/build/CMakeTmp/
 
