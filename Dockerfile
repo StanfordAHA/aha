@@ -100,7 +100,11 @@ RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
     make all -j4 && \
     source misc/copy_cgralib.sh && \
-    rm -rf ntl*
+    rm -rf ntl* && \
+    echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
+    /bin/rm -rf /aha/clockwork/barvinok-0.41/ /aha/clockwork/bin/soda_codes/ && \
+    echo -n "AFTER  CLEANUP: " && du -hs /aha/clockwork && \
+    echo DONE
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
@@ -124,8 +128,12 @@ RUN mkdir -p /aha/tmp/torch_install/
 # Save (and later restore) existing value for TMPDIR, if any
 ENV TMPTMPDIR=$TMPDIR
 ENV TMPDIR=/aha/tmp/torch_install/
-RUN source /aha/bin/activate && pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
-RUN rm -rf $TMPDIR
+RUN source /aha/bin/activate && \
+  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  echo -n "BEFORE CLEANUP: " && du -hs /aha && \
+  /bin/rm -rf $TMPDIR && \
+  echo -n "AFTER  CLEANUP: " && du -hs /aha
+# Restore original value of TMPDIR
 ENV TMPDIR=$TMPTMPDIR
 
 WORKDIR /aha
