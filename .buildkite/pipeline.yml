@@ -100,7 +100,6 @@ steps:
         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
-          - "./temp:/buildkite:rw"
         # skip-checkout: true
         mount-checkout: false
         propagate-environment: true
@@ -167,6 +166,7 @@ steps:
           if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
               test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
           fi
+          /bin/rm -rf temp
 
           # status-update will magically override "success" with "failure" as appropriate!
           # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
