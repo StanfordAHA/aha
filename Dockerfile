@@ -73,6 +73,11 @@ RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
   /bin/rm -rf /aha/pono/deps && \
   /bin/rm -rf /aha/pono/build/tests/ /aha/pono/build/CMakefiles/ /aha/pono/build/CMakeTmp/
 
+# Maybe cannot yet do e.g.
+# "pip install -e ./pono/deps/smt-switch/build/python"
+# b/c did not yet build venv at aha top level.
+# FIXME: why not do top-level setup FIRST??
+
 # CoreIR
 WORKDIR /aha
 COPY ./coreir /aha/coreir
@@ -137,7 +142,15 @@ RUN source /aha/bin/activate && \
 ENV TMPDIR=$TMPTMPDIR
 
 WORKDIR /aha
-RUN source bin/activate && pip install urllib3==1.26.15 && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && pip install -e ./pono/deps/smt-switch/build/python && pip install -e pono/build/python/ && aha deps install
+RUN source bin/activate && \
+  pip install urllib3==1.26.15 && \
+  pip install wheel six && \
+  pip install systemrdl-compiler peakrdl-html && \
+  pip install -e . && \
+  pip install packaging==21.3 && \
+  pip install -e ./pono/deps/smt-switch/build/python && \
+  pip install -e pono/build/python/ && \
+  aha deps install
 
 WORKDIR /aha
 
