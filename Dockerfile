@@ -61,39 +61,21 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Install AHA Tools
-COPY . /aha
-WORKDIR /aha
-RUN python -m venv .
-
 # Pono
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
 WORKDIR /aha/pono
-RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
-  ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && \
-  ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh && \
-  cd /aha/pono && ./configure.sh --python && \
-  cd /aha/pono/build && make -j4 && pip install -e ./python && \
-  source /aha/bin/activate && \
-  pip install -e /aha/pono/deps/smt-switch/build/python && \
-  pip install -e /aha/pono/build/python/ && \
-  /bin/rm -rf /aha/pono/deps && \
-  /bin/rm -rf /aha/pono/build/tests/ /aha/pono/build/CMakefiles/ /aha/pono/build/CMakeTmp/
-
-# Maybe cannot yet do e.g.
-# "pip install -e ./pono/deps/smt-switch/build/python"
-# b/c did not yet build venv at aha top level.
-# FIXME: why not do top-level setup FIRST??
+RUN pip install Cython==0.29 pytest toml scikit-build==0.13.0
+RUN ./contrib/setup-bison.sh && ./contrib/setup-flex.sh && ./contrib/setup-smt-switch.sh --python && ./contrib/setup-btor2tools.sh
+RUN ./configure.sh --python
+WORKDIR /aha/pono/build
+RUN make -j4 && pip install -e ./python
+WORKDIR /aha
 
 # CoreIR
-WORKDIR /aha
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
-RUN cmake .. && make && make install && \
-  echo -n "BEFORE CLEANUP: " && du -hs /aha/coreir/build && \
-  /bin/rm -rf src bin tests && \
-  echo -n "AFTER  CLEANUP: " && du -hs /aha/coreir/build
+RUN cmake .. && make && make install
 
 # Lake
 COPY ./BufferMapping /aha/BufferMapping
@@ -113,17 +95,18 @@ RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
     make all -j4 && \
     source misc/copy_cgralib.sh && \
-    rm -rf ntl* && \
-    echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
-    /bin/rm -rf /aha/clockwork/barvinok-0.41/ /aha/clockwork/bin/soda_codes/ && \
-    echo -n "AFTER  CLEANUP: " && du -hs /aha/clockwork && \
-    echo DONE
+    rm -rf ntl*
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
     rm -rf lib/*
+
+# Install AHA Tools
+COPY . /aha
+WORKDIR /aha
+RUN python -m venv .
 
 # Sam
 WORKDIR /aha/sam
@@ -136,22 +119,12 @@ RUN mkdir -p /aha/tmp/torch_install/
 # Save (and later restore) existing value for TMPDIR, if any
 ENV TMPTMPDIR=$TMPDIR
 ENV TMPDIR=/aha/tmp/torch_install/
-RUN source /aha/bin/activate && \
-  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
-  echo -n "BEFORE CLEANUP: " && du -hs /aha && \
-  /bin/rm -rf $TMPDIR && \
-  echo -n "AFTER  CLEANUP: " && du -hs /aha
-# Restore original value of TMPDIR
+RUN source /aha/bin/activate && pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN rm -rf $TMPDIR
 ENV TMPDIR=$TMPTMPDIR
 
 WORKDIR /aha
-RUN source bin/activate && \
-  pip install urllib3==1.26.15 && \
-  pip install wheel six && \
-  pip install systemrdl-compiler peakrdl-html && \
-  pip install -e . && \
-  pip install packaging==21.3 && \
-  aha deps install
+RUN source bin/activate && pip install urllib3==1.26.15 && pip install wheel six && pip install systemrdl-compiler peakrdl-html && pip install -e . && pip install packaging==21.3 && pip install -e ./pono/deps/smt-switch/build/python && pip install -e pono/build/python/ && aha deps install
 
 WORKDIR /aha
 
