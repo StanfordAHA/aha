@@ -89,13 +89,14 @@ RUN \
       echo "# smt-switch cleanup2 /aha/pono 800M => 200M" && \
       /bin/rm -rf /aha/pono/deps/smt-switch/deps          && \
   : BTOR2TOOLS && \
-      echo # btortools is small (1.5M) && \
-    ./contrib/setup-btor2tools.sh && \
+      echo '# btortools is small (1.5M)' && \
+     ./contrib/setup-btor2tools.sh && \
   : PIP INSTALL && \
-    cd /aha/pono && ./configure.sh --python && \
-    cd /aha/pono/build && make -j4 && pip install -e ./python && \
-    pip install -e /aha/pono/deps/smt-switch/build/python && \
-    pip install -e /aha/pono/build/python/
+      cd /aha/pono && ./configure.sh --python && \
+      cd /aha/pono/build && make -j4 && pip install -e ./python && \
+      cd /aha && \
+        pip install -e ./pono/deps/smt-switch/build/python && \
+        pip install -e pono/build/python/
 
 # CoreIR
 WORKDIR /aha
