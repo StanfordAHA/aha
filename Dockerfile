@@ -75,13 +75,9 @@ RUN \
   : SETUP && \
       source /aha/bin/activate && \
       pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
-  : FLEX && \
-      ./contrib/setup-flex.sh                          && \
-      echo "# flex is small (12M), no need to cleanup" && \
-  : BISON && \
-      ./contrib/setup-bison.sh && \
-      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
-      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
+  : FLEX and BISON && \
+      apt-get update && apt-get install -y flex && \
+      apt-get update && apt-get install -y bison && \
   : SMT-SWITCH && \
       ./contrib/setup-smt-switch.sh --python                && \
       echo "# smt-switch wow okay this tests dir is 1.3GB"  && \
@@ -103,6 +99,16 @@ RUN \
 
 # No! Have to keep e.g. smt-switch/build/python, that's where smt-switch is pip-installed
 #       (cd /aha/pono/deps/smt-switch/build; make clean)    && \
+
+
+#   : FLEX && \
+#       ./contrib/setup-flex.sh                          && \
+#       echo "# flex is small (12M), no need to cleanup" && \
+#   : BISON && \
+#       ./contrib/setup-bison.sh && \
+#       echo "# bison cleanup /aha/pono 77M => 48M"                  && \
+#       (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
+
 
 
 # CoreIR
