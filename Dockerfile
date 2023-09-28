@@ -84,9 +84,7 @@ RUN \
       (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
   : SMT-SWITCH && \
       ./contrib/setup-smt-switch.sh --python              && \
-      echo "# smt-switch cleanup1 /aha/pono 2G => 800M"   && \
-      (cd /aha/pono/deps/smt-switch/build; make clean)    && \
-      echo "# smt-switch cleanup2 /aha/pono 800M => 200M" && \
+      echo "# smt-switch cleanup2 /aha/pono 880M? => 280M?" && \
       /bin/rm -rf /aha/pono/deps/smt-switch/deps          && \
   : BTOR2TOOLS && \
       echo '# btortools is small (1.5M)' && \
@@ -97,6 +95,11 @@ RUN \
       cd /aha && \
         pip install -e ./pono/deps/smt-switch/build/python && \
         pip install -e pono/build/python/
+
+# No! Somehow this queers the deal.
+#       echo "# smt-switch cleanup1 /aha/pono 2G => 800M"   && \
+#       (cd /aha/pono/deps/smt-switch/build; make clean)    && \
+
 
 # CoreIR
 WORKDIR /aha
