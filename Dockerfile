@@ -83,9 +83,11 @@ RUN \
       echo "# bison cleanup /aha/pono 77M => 48M"                  && \
       (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
   : SMT-SWITCH && \
-      ./contrib/setup-smt-switch.sh --python              && \
-      echo "# smt-switch cleanup2 /aha/pono 880M? => 280M?" && \
-      /bin/rm -rf /aha/pono/deps/smt-switch/deps          && \
+      ./contrib/setup-smt-switch.sh --python                && \
+      echo "# smt-switch cleanup2 /aha/pono  2G?  => 900M?" && \
+      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests     && \
+      echo "# smt-switch cleanup2 /aha/pono 900M? => 280M?" && \
+      /bin/rm -rf /aha/pono/deps/smt-switch/deps            && \
   : BTOR2TOOLS && \
       echo '# btortools is small (1.5M)' && \
      ./contrib/setup-btor2tools.sh && \
