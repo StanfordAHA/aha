@@ -84,10 +84,13 @@ RUN \
       (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
   : SMT-SWITCH && \
       ./contrib/setup-smt-switch.sh --python                && \
-      echo "# smt-switch cleanup2 /aha/pono  2G?  => 900M?" && \
+      echo "# smt-switch wow okay this tests dir is 1.3GB"  && \
+      echo "# smt-switch cleanup2 /aha/pono 2.1G? => 800M?" && \
       /bin/rm -rf /aha/pono/deps/smt-switch/build/tests     && \
-      echo "# smt-switch cleanup2 /aha/pono 900M? => 280M?" && \
+      echo "# smt-switch cleanup2 /aha/pono 800M? => 400M?" && \
       /bin/rm -rf /aha/pono/deps/smt-switch/deps            && \
+      echo "# smt-switch cleanup3 /aha/pono 400M? => 300M?" && \
+      /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
   : BTOR2TOOLS && \
       echo '# btortools is small (1.5M)' && \
      ./contrib/setup-btor2tools.sh && \
@@ -98,8 +101,7 @@ RUN \
         pip install -e ./pono/deps/smt-switch/build/python && \
         pip install -e pono/build/python/
 
-# No! Somehow this queers the deal.
-#       echo "# smt-switch cleanup1 /aha/pono 2G => 800M"   && \
+# No! Have to keep e.g. smt-switch/build/python, that's where smt-switch is pip-installed
 #       (cd /aha/pono/deps/smt-switch/build; make clean)    && \
 
 
@@ -182,5 +184,9 @@ WORKDIR /aha
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
 
+# Create a /root/.modules so as to avoid this warning on startup:
+#     "+(0):WARN:0: Directory '/root/.modules' not found"
+
 RUN echo "source /aha/bin/activate" >> /root/.bashrc && \
+    mkdir -p /root/.modules >> /root/.bashrc && \
     echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc
