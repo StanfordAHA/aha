@@ -130,9 +130,16 @@ RUN ./misc/install_deps_ahaflow.sh && \
     source misc/copy_cgralib.sh && \
     rm -rf ntl* && \
     echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
-    /bin/rm -rf /aha/clockwork/barvinok-0.41/ /aha/clockwork/bin/soda_codes/ && \
+    (cd /aha/clockwork/barvinok-0.41; make clean) && \
+    /bin/rm -rf /aha/clockwork/bin/soda_codes/ && \
     echo -n "AFTER  CLEANUP: " && du -hs /aha/clockwork && \
     echo DONE
+
+# okay so maybe we need barvinok
+#     /bin/rm -rf /aha/clockwork/barvinok-0.41/ /aha/clockwork/bin/soda_codes/ && \
+# Specifically: need e.g. /aha/clockwork/barvinok-0.41/isl/isl_ast_build_expr.h
+# (cd /aha/clockwork/barvinok-0.41; make clean) # 500M => 50M
+
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
