@@ -83,13 +83,15 @@ RUN \
       echo "# bison cleanup /aha/pono 77M => 48M"                  && \
       (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
   : SMT-SWITCH && \
-      ./contrib/setup-smt-switch.sh --python                && \
-      echo "# smt-switch wow okay this tests dir is 1.3GB"  && \
-      echo "# smt-switch cleanup2 /aha/pono 2.1G? => 800M?" && \
-      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests     && \
-      echo "# smt-switch cleanup2 /aha/pono 800M? => 400M?" && \
-      /bin/rm -rf /aha/pono/deps/smt-switch/deps            && \
-      echo "# smt-switch cleanup3 /aha/pono 400M? => 300M?" && \
+      ./contrib/setup-smt-switch.sh --python && \
+      :                                                 && \
+      echo "# cleanup: 1.3GB smt-switch build tests"    && \
+      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
+      :                                                           && \
+      echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
+      /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
+      :                                                                 && \
+      echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
       /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
   : BTOR2TOOLS && \
       echo '# btortools is small (1.5M)' && \
@@ -101,16 +103,14 @@ RUN \
         pip install -e ./pono/deps/smt-switch/build/python && \
         pip install -e pono/build/python/
 
-# No! Have to keep e.g. smt-switch/build/python, that's where smt-switch is pip-installed
-#       (cd /aha/pono/deps/smt-switch/build; make clean)    && \
-
 # CoreIR
 WORKDIR /aha
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
 RUN cmake .. && make && make install && \
+  echo "coreir cleanup: 200M build/{src,bin,tests}"      && \
   echo -n "BEFORE CLEANUP: " && du -hs /aha/coreir/build && \
-  /bin/rm -rf src bin tests && \
+  /bin/rm -rf src bin tests                              && \
   echo -n "AFTER  CLEANUP: " && du -hs /aha/coreir/build
 
 # Lake
@@ -133,16 +133,12 @@ RUN ./misc/install_deps_ahaflow.sh && \
     source misc/copy_cgralib.sh && \
     rm -rf ntl* && \
     echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
+    echo "# cleanup: 440M removed with barvinok 'make clean'" && \
     (cd /aha/clockwork/barvinok-0.41; make clean) && \
-    /bin/rm -rf /aha/clockwork/bin/soda_codes/ && \
+    echo "# cleanup: 140M soda_codes removed" && \
+    /bin/rm -rf /aha/clockwork/soda_codes/ && \
     echo -n "AFTER  CLEANUP: " && du -hs /aha/clockwork && \
     echo DONE
-
-# okay so maybe we need barvinok
-#     /bin/rm -rf /aha/clockwork/barvinok-0.41/ /aha/clockwork/bin/soda_codes/ && \
-# Specifically: need e.g. /aha/clockwork/barvinok-0.41/isl/isl_ast_build_expr.h
-# (cd /aha/clockwork/barvinok-0.41; make clean) # 500M => 50M
-
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
@@ -187,5 +183,18 @@ ENV USER=docker
 #     "+(0):WARN:0: Directory '/root/.modules' not found"
 
 RUN echo "source /aha/bin/activate" >> /root/.bashrc && \
-    mkdir -p /root/.modules >> /root/.bashrc && \
+    echo "mkdir -p /root/.modules" >> /root/.bashrc && \
     echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc
+
+# Cleanup / image-size-reduction notes:
+# 
+# - cannot delete `clockwork/barvinok` directory entirely because
+#   regression tests use e.g. `barvinok-0.41/isl/isl_ast_build_expr.h`
+# 
+# - if you don't delete files in the same layer (RUN command) where
+#   they were created, you don't get any space savings in the image.
+#
+# - cannot do "make delete" in `/aha/pono/deps/smt-switch/build`,
+#   because it deletes `smt-switch/build/python`, which is where
+#   smt-switch is pip-installed :(
+#   This should probably be an issue or a FIXME in pono or something.
