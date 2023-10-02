@@ -135,17 +135,25 @@ RUN ./misc/install_deps_ahaflow.sh && \
     echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
     echo "# cleanup: 440M removed with barvinok 'make clean'" && \
     (cd /aha/clockwork/barvinok-0.41; make clean) && \
-    echo -n "AFTER  CLEANUP: " && du -hs /aha/clockwork && \
+    echo -n "AFTER  CLEANUP/barvinok: " && du -hs /aha/clockwork && \
+    /bin/rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
+    echo -n "AFTER  CLEANUP/dot-oh: " && du -hs /aha/clockwork && \
     echo DONE
-
-# AFTER  CLEANUP: 970M	/aha/clockwork
-
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
-    rm -rf lib/*
+    echo -n "BEFORE CLEANUP: " && du -hs /aha/Halide-to-Hardware && \
+    rm -rf lib/* && \
+    echo -n "AFTER  CLEANUP/lib: " && du -hs /aha/Halide-to-Hardware && \
+    /bin/rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/ && \
+    echo -n "AFTER  CLEANUP/gch: " && du -hs /aha/Halide-to-Hardware && \
+    /bin/rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}; touch /tmp/restore_once && \
+    echo -n "AFTER  CLEANUP/dist: " && du -hs /aha/Halide-to-Hardware && \
+    /bin/rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+    echo -n "AFTER  CLEANUP/llvm: " && du -hs /aha/Halide-to-Hardware && \
+    echo DONE    
 
 # Sam
 WORKDIR /aha/sam
