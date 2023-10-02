@@ -66,10 +66,10 @@ COPY . /aha
 WORKDIR /aha
 RUN \
   echo foo && \
-  du -sh /aha/* | egrep '^[0-9.]*[GM] ' | sort -rn && \
-  ls -lhd /aha/clockwork/soda_codes                && \
-  /bin/rm -rf /aha/clockwork                       && \
-  du -sh /aha/* | egrep '^[0-9.]*[GM] ' | sort -rn && \
+  du -sh /aha/* | egrep '^[0-9.]*[GM]' | sort -rn && \
+  ls -lhd /aha/clockwork/soda_codes               && \
+  /bin/rm -rf /aha/clockwork                      && \
+  du -sh /aha/* | egrep '^[0-9.]*[GM]' | sort -rn && \
   echo DONE
 RUN python -m venv .
 
