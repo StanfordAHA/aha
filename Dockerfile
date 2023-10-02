@@ -65,6 +65,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 COPY . /aha
 WORKDIR /aha
 RUN \
+  echo foo && \
   du -sh /aha/* | egrep '^[0-9.]*[GM] ' | sort -rn && \
   ls -lhd /aha/clockwork/soda_codes                && \
   /bin/rm -rf /aha/clockwork                       && \

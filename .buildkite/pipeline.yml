@@ -67,7 +67,7 @@ steps:
   - set -x; docker images; docker ps;
 
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}"
+  - docker build . --progress=plain -t "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}"
 
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
