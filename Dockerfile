@@ -64,6 +64,12 @@ SHELL ["/bin/bash", "--login", "-c"]
 # Install AHA Tools
 COPY . /aha
 WORKDIR /aha
+RUN \
+  du -sh /aha/* | egrep '^[0-9.]*[GM] ' | sort -rn && \
+  ls -lhd /aha/clockwork/soda_codes                && \
+  /bin/rm -rf /aha/clockwork                       && \
+  du -sh /aha/* | egrep '^[0-9.]*[GM] ' | sort -rn && \
+  echo DONE
 RUN python -m venv .
 
 # Pono
@@ -135,10 +141,13 @@ RUN ./misc/install_deps_ahaflow.sh && \
     echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
     echo "# cleanup: 440M removed with barvinok 'make clean'" && \
     (cd /aha/clockwork/barvinok-0.41; make clean) && \
-    echo "# cleanup: 140M soda_codes removed" && \
+    echo "# cleanup: removing 140M soda_codes?" && \
     /bin/rm -rf /aha/clockwork/soda_codes/ && \
     echo -n "AFTER  CLEANUP: " && du -hs /aha/clockwork && \
     echo DONE
+
+# AFTER  CLEANUP: 970M	/aha/clockwork
+
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
