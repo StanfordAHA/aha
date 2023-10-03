@@ -31,3 +31,7 @@ else
 fi
 ls -lh /aha/Halide-to-Hardware/distrib/{bin,lib}/*
 echo ""
+
+# When this script runs as a Dockerfile ENTRYPOINT, this next line
+# allows execution of further commands passed via e.g. "docker run"
+exec "$@"
