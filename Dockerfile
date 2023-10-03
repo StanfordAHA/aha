@@ -192,6 +192,7 @@ ENV USER=docker
 #     "+(0):WARN:0: Directory '/root/.modules' not found"
 
 RUN echo "source /aha/bin/activate" >> /root/.bashrc && \
+    echo "/aha/aha/bin/restore-halide-distrib.sh" >> /root/.bashrc
     echo "mkdir -p /root/.modules" >> /root/.bashrc && \
     echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc
 
