@@ -61,7 +61,7 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Install AHA Tools
+# Bring in aha repo, prepare python environment
 COPY . /aha
 WORKDIR /aha
 RUN python -m venv .
@@ -70,7 +70,6 @@ RUN python -m venv .
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
 WORKDIR /aha/pono
-# FIXME why are we building flex and bison from scratch? Shouldn't this be an apt install??
 RUN \
   : SETUP && \
       source /aha/bin/activate && \
@@ -94,7 +93,6 @@ RUN \
       echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
       /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
   : BTOR2TOOLS && \
-      echo '# btortools is small (1.5M)' && \
      ./contrib/setup-btor2tools.sh && \
   : PIP INSTALL && \
       cd /aha/pono && ./configure.sh --python && \
@@ -107,11 +105,7 @@ RUN \
 WORKDIR /aha
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
-RUN cmake .. && make && make install && \
-  echo "coreir cleanup: 200M build/{src,bin,tests}"      && \
-  echo -n "BEFORE CLEANUP: " && du -hs /aha/coreir/build && \
-  /bin/rm -rf src bin tests                              && \
-  echo -n "AFTER  CLEANUP: " && du -hs /aha/coreir/build
+RUN cmake .. && make && make install && /bin/rm -rf src bin tests
 
 # Lake
 COPY ./BufferMapping /aha/BufferMapping
@@ -131,28 +125,21 @@ RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
     make all -j4 && \
     source misc/copy_cgralib.sh && \
-    rm -rf ntl* && \
-    echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
-    echo "# cleanup: 440M removed with barvinok 'make clean'" && \
-    (cd /aha/clockwork/barvinok-0.41; make clean) && \
-    echo -n "AFTER  CLEANUP/barvinok: " && du -hs /aha/clockwork && \
-    /bin/rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
-    echo -n "AFTER  CLEANUP/dot-oh: " && du -hs /aha/clockwork && \
+    echo "Cleanup: ntl, 440M barvinok, 390M dot-o files" && \
+      rm -rf ntl* && \
+      (cd /aha/clockwork/barvinok-0.41; make clean) && \
+      rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
     echo DONE
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
-    echo -n "BEFORE CLEANUP: " && du -hs /aha/Halide-to-Hardware && \
-    rm -rf lib/* && \
-    echo -n "AFTER  CLEANUP/lib: " && du -hs /aha/Halide-to-Hardware && \
-    /bin/rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/ && \
-    echo -n "AFTER  CLEANUP/gch: " && du -hs /aha/Halide-to-Hardware && \
-    /bin/rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}; touch /tmp/restore_once && \
-    echo -n "AFTER  CLEANUP/dist: " && du -hs /aha/Halide-to-Hardware && \
-    /bin/rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
-    echo -n "AFTER  CLEANUP/llvm: " && du -hs /aha/Halide-to-Hardware && \
+    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
+      rm -rf lib/* && \
+      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/ && \
+      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}; touch /tmp/restore_once && \
+      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
     echo DONE    
 
 # Sam
@@ -162,18 +149,13 @@ RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e
 
 # Install torch (need big tmp folder)
 WORKDIR /aha
-RUN mkdir -p /aha/tmp/torch_install/
-# Save (and later restore) existing value for TMPDIR, if any
-ENV TMPTMPDIR=$TMPDIR
-ENV TMPDIR=/aha/tmp/torch_install/
 RUN source /aha/bin/activate && \
+  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
   pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
-  echo -n "BEFORE CLEANUP: " && du -hs /aha && \
-  /bin/rm -rf $TMPDIR && \
-  echo -n "AFTER  CLEANUP: " && du -hs /aha
-# Restore original value of TMPDIR
-ENV TMPDIR=$TMPTMPDIR
+  echo "# Remove 700M tmp files created during install" && \
+  rm -rf $TMPDIR
 
+# Final pip installs: AHA Tools etc.
 WORKDIR /aha
 RUN source bin/activate && \
   pip install urllib3==1.26.15 && \
