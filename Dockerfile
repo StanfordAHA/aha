@@ -180,7 +180,7 @@ RUN echo "source /aha/bin/activate"               >> /root/.bashrc && \
 
 # Restore halide distrib files on every container startup
 # (bashrc only happens on interactive login)
-ENTRYPOINT /aha/aha/bin/restore-halide-distrib.sh
+ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
 
 
 # Cleanup / image-size-reduction notes:
