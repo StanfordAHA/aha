@@ -175,6 +175,7 @@ def dispatch(args, extra_args=None):
         sparse_tests = [
             "matmul_ijk",
             "mat_mattransmul",
+            "mat_sddmm",
             "vec_identity",
             "vec_elemadd",
             "vec_elemmul",
@@ -204,6 +205,7 @@ def dispatch(args, extra_args=None):
             "mat_elemmul",
             "mat_identity",
             "mat_mattransmul",
+            "mat_sddmm",
             "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
@@ -232,7 +234,7 @@ def dispatch(args, extra_args=None):
             "mat_mattransmul",
             # Turned off until SUB ordering fixed in mapping
             # 'mat_residual',
-            #"mat_sddmm",
+            "mat_sddmm",
             "mat_vecmul_ij",
             "matmul_ijk",
             "matmul_jik",
