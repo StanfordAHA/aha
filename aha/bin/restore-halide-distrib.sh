@@ -13,10 +13,10 @@
 # (This script is designed to be run from the aha docker container's ".bashrc")
 
 echo "--- Restore /aha/Halide-to-Hardware/distrib/{bin,lib}"
+pwd
 f=/tmp/restore_once
 d=/aha/Halide-to-Hardware/distrib
-if test -e $f; then
-    cd $d;
+if test -e $f; then (
     tar xvf halide.tgz halide/bin; mv halide/bin bin
     tar xvf halide.tgz halide/lib; mv halide/lib lib
     rm $f
@@ -26,11 +26,16 @@ if test -e $f; then
     echo "    cd /aha/Halide-to-Hardware"
     echo "    rm include/Halide.h"
     echo "    make include/Halide.h"
+  )
 else
     echo "Already restored, nothing to do."
 fi
 ls -lh /aha/Halide-to-Hardware/distrib/{bin,lib}/*
 echo ""
+
+echo foo
+pwd
+test -e /aha && cd /aha || echo okay
 
 echo "Executing '$@'"
 # # When this script runs as a Dockerfile ENTRYPOINT, this next line
