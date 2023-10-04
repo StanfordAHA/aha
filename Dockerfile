@@ -137,8 +137,8 @@ WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
     echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
       rm -rf lib/* && \
-      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/ && \
-      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}; touch /tmp/restore_once && \
+      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
+      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
     echo DONE    
 
@@ -176,10 +176,15 @@ ENV USER=docker
 RUN echo "source /aha/bin/activate"               >> /root/.bashrc && \
     echo "mkdir -p /root/.modules"                >> /root/.bashrc && \
     echo "source /cad/modules/tcl/init/sh"        >> /root/.bashrc && \
+    echo 'echo ""                                      ' >> /root/.bashrc && \
+    echo 'echo "For pre-compiled Halide 'gch' headers:"' >> /root/.bashrc && \
+    echo 'echo "    cd /aha/Halide-to-Hardware"        ' >> /root/.bashrc && \
+    echo 'echo "    rm include/Halide.h"               ' >> /root/.bashrc && \
+    echo 'echo "    make include/Halide.h"             ' >> /root/.bashrc && \
+    echo 'echo ""                                      ' >> /root/.bashrc && \
     echo DONE
 
 # Restore halide distrib files on every container startup
-# (bashrc only happens on interactive login)
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
 
 
@@ -191,7 +196,7 @@ ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
 # - if you don't delete files in the same layer (RUN command) where
 #   they were created, you don't get any space savings in the image.
 #
-# - cannot do "make delete" in `/aha/pono/deps/smt-switch/build`,
+# - cannot do "make clean" in `/aha/pono/deps/smt-switch/build`,
 #   because it deletes `smt-switch/build/python`, which is where
 #   smt-switch is pip-installed :(
 #   This should probably be an issue or a FIXME in pono or something.
