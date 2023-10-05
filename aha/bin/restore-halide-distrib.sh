@@ -19,7 +19,6 @@ echo "--- Restore /aha/Halide-to-Hardware/distrib/{bin,lib}"
     cd /aha/Halide-to-Hardware/distrib
     tar xvf halide.tgz halide/bin; mv halide/bin bin
     tar xvf halide.tgz halide/lib; mv halide/lib lib
-    rm $f
 )
 echo "halide/distrib restored:"
 ls -lh /aha/Halide-to-Hardware/distrib/{bin,lib}/*
