@@ -142,7 +142,8 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
     echo DONE    
 
 # Sam
-COPY ./sam /aha/sam
+# don't need this, we copy all of /aha just down there a bit, see?
+# COPY ./sam /aha/sam
 
 # did not work
 # COPY ./.git /aha/.git
