@@ -151,7 +151,7 @@ COPY ./sam /aha/sam
 COPY . /aha
 
 WORKDIR /aha/sam
-RUN make sam && /bin/rm -rf /aha/.git
+RUN make sam
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 # Install torch (need big tmp folder)
