@@ -145,7 +145,7 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
 COPY ./sam /aha/sam
 COPY ./.git /aha/.git
 WORKDIR /aha/sam
-RUN make sam
+RUN make sam && /bin/rm -rf /aha/.git
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 # Install torch (need big tmp folder)
