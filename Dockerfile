@@ -62,9 +62,8 @@ RUN apt-get update && \
 SHELL ["/bin/bash", "--login", "-c"]
 
 # Bring in aha repo, prepare python environment
-COPY . /aha
-WORKDIR /aha
-RUN python -m venv .
+WORKDIR /
+RUN mkdir /aha && cd /aha && python -m venv .
 
 # Pono
 COPY ./pono /aha/pono
