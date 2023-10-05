@@ -143,7 +143,13 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
 
 # Sam
 COPY ./sam /aha/sam
-COPY ./.git /aha/.git
+
+# did not work
+# COPY ./.git /aha/.git
+
+# try this intead :(
+COPY . /aha
+
 WORKDIR /aha/sam
 RUN make sam && /bin/rm -rf /aha/.git
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
@@ -167,7 +173,7 @@ RUN source bin/activate && \
 
 # Bring in aha repo. Do this as late as possible,
 # since nothing after this will be cached probably.
-COPY . /aha
+# COPY . /aha
 WORKDIR /aha
 RUN source bin/activate && \
   pip install -e . && \
