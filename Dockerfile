@@ -61,9 +61,9 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Bring in aha repo, prepare python environment
+# Prepare python environment
 WORKDIR /
-RUN mkdir /aha && cd /aha && python -m venv .
+RUN mkdir -p /aha && cd /aha && python -m venv .
 
 # Pono
 COPY ./pono /aha/pono
@@ -99,10 +99,6 @@ RUN \
         source /aha/bin/activate && \
         pip install -e ./pono/deps/smt-switch/build/python && \
         pip install -e pono/build/python/
-
-COPY . /aha
-WORKDIR /aha
-RUN echo hello
 
 # CoreIR
 WORKDIR /aha
@@ -164,9 +160,19 @@ RUN source bin/activate && \
   pip install urllib3==1.26.15 && \
   pip install wheel six && \
   pip install systemrdl-compiler peakrdl-html && \
-  pip install -e . && \
   pip install packaging==21.3 && \
+  echo DONE
+
+# Bring in aha repo. Do this as late as possible,
+# since nothing after this will be cached probably.
+COPY . /aha
+WORKDIR /aha
+RUN source bin/activate && \
+  pip install -e . && \
   aha deps install
+
+
+
 
 WORKDIR /aha
 
