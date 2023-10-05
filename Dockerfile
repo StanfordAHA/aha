@@ -100,6 +100,10 @@ RUN \
         pip install -e ./pono/deps/smt-switch/build/python && \
         pip install -e pono/build/python/
 
+COPY . /aha
+WORKDIR /aha
+RUN echo hello
+
 # CoreIR
 WORKDIR /aha
 COPY ./coreir /aha/coreir
