@@ -64,6 +64,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 # Bring in aha repo, prepare python environment
 COPY . /aha
 WORKDIR /aha
+RUN pip install Cython==0.29 
 RUN python -m venv .
 
 # Pono
@@ -73,7 +74,7 @@ WORKDIR /aha/pono
 RUN \
   : SETUP && \
       source /aha/bin/activate && \
-      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
+      pip install pytest toml scikit-build==0.13.0 && \
   : FLEX && \
       apt-get update && apt-get install -y flex && \
   : BISON && \
