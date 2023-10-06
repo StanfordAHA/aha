@@ -3,16 +3,12 @@
 # What does this script do?
 
 # To save space (400M!), Dockerfile deletes halide bin and lib
-# "distrib" files before building the final docker image.  When
-# someone uses the image to launch a container, this script restores
-# them from a compressed tar file that conveniently already exists(!)
-
-# 2. Dockerfile also deletes 400M worth of "Halide.h.gch" header files, which
-# I'm not sure if anyone needs or uses. This script, on first container launch,
-# tells how to quickly restore them (takes about a minute).
+# "distrib" files before building the final docker image.
+# This script restores them from a compressed tar file
+# that conveniently already exists(!)
 
 # This script is designed to be run as the docker image's "ENTRYPOINT",
-# i.e. it should run exactly *once* whenever a container is launched.
+# so that it will run exactly *once*, at initial container launch.
 
 echo "--- Restore /aha/Halide-to-Hardware/distrib/{bin,lib}"
 (

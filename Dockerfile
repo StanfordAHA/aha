@@ -62,6 +62,7 @@ RUN apt-get update && \
 SHELL ["/bin/bash", "--login", "-c"]
 
 # Prepare python environment
+# Don't copy all of aha else cannot cache subsequent layers...
 WORKDIR /
 RUN mkdir -p /aha && cd /aha && python -m venv .
 
@@ -69,6 +70,7 @@ RUN mkdir -p /aha && cd /aha && python -m venv .
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
 WORKDIR /aha/pono
+# Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
 RUN \
   : SETUP && \
       pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
@@ -124,7 +126,7 @@ RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
     make all -j4 && \
     source misc/copy_cgralib.sh && \
-    echo "Cleanup: ntl, 440M barvinok, 390M dot-o files" && \
+    echo "Cleanup: 10M ntl, 440M barvinok, 390M dot-o files" && \
       rm -rf ntl* && \
       (cd /aha/clockwork/barvinok-0.41; make clean) && \
       rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
@@ -141,16 +143,8 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
     echo DONE    
 
-# Sam
-# don't need this, we copy all of /aha just down there a bit, see?
-# COPY ./sam /aha/sam
-
-# did not work
-# COPY ./.git /aha/.git
-
-# try this intead :(
+# Sam - uses aha .git directory (1GB) so may as well just bring in all of aha here
 COPY . /aha
-
 WORKDIR /aha/sam
 RUN make sam
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
@@ -172,28 +166,25 @@ RUN source bin/activate && \
   pip install packaging==21.3 && \
   echo DONE
 
-# Bring in aha repo. Do this as late as possible,
-# since nothing after this will be cached probably.
-# COPY . /aha
+# Install aha tools etc.
 WORKDIR /aha
 RUN source bin/activate && \
   pip install -e . && \
   aha deps install
-
-
-
 
 WORKDIR /aha
 
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
 
-# Create a /root/.modules so as to avoid this warning on startup:
-#     "+(0):WARN:0: Directory '/root/.modules' not found"
+# bashrc
+# 1. Create a /root/.modules so as to avoid this warning on startup:
+#    "+(0):WARN:0: Directory '/root/.modules' not found"
+# 2. Tell user how to restore gch headers.
 
-RUN echo "source /aha/bin/activate"               >> /root/.bashrc && \
-    echo "mkdir -p /root/.modules"                >> /root/.bashrc && \
-    echo "source /cad/modules/tcl/init/sh"        >> /root/.bashrc && \
+RUN echo "source /aha/bin/activate"        >> /root/.bashrc && \
+    echo "mkdir -p /root/.modules"         >> /root/.bashrc && \
+    echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc && \
     echo 'echo ""                                      ' >> /root/.bashrc && \
     echo 'echo "For pre-compiled Halide 'gch' headers:"' >> /root/.bashrc && \
     echo 'echo "    cd /aha/Halide-to-Hardware"        ' >> /root/.bashrc && \
