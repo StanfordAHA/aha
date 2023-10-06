@@ -61,19 +61,18 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Install AHA Tools
-COPY . /aha
-WORKDIR /aha
-RUN python -m venv .
+# Prepare python environment
+# Don't copy all of aha else cannot cache subsequent layers...
+WORKDIR /
+RUN mkdir -p /aha && cd /aha && python -m venv .
 
 # Pono
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
 WORKDIR /aha/pono
-# FIXME why are we building flex and bison from scratch? Shouldn't this be an apt install??
+# Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
 RUN \
   : SETUP && \
-      source /aha/bin/activate && \
       pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
   : FLEX && \
       apt-get update && apt-get install -y flex && \
@@ -94,12 +93,12 @@ RUN \
       echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
       /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
   : BTOR2TOOLS && \
-      echo '# btortools is small (1.5M)' && \
      ./contrib/setup-btor2tools.sh && \
   : PIP INSTALL && \
       cd /aha/pono && ./configure.sh --python && \
       cd /aha/pono/build && make -j4 && pip install -e ./python && \
       cd /aha && \
+        source /aha/bin/activate && \
         pip install -e ./pono/deps/smt-switch/build/python && \
         pip install -e pono/build/python/
 
@@ -107,11 +106,7 @@ RUN \
 WORKDIR /aha
 COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
-RUN cmake .. && make && make install && \
-  echo "coreir cleanup: 200M build/{src,bin,tests}"      && \
-  echo -n "BEFORE CLEANUP: " && du -hs /aha/coreir/build && \
-  /bin/rm -rf src bin tests                              && \
-  echo -n "AFTER  CLEANUP: " && du -hs /aha/coreir/build
+RUN cmake .. && make && make install && /bin/rm -rf src bin tests
 
 # Lake
 COPY ./BufferMapping /aha/BufferMapping
@@ -131,47 +126,50 @@ RUN ./misc/install_deps_ahaflow.sh && \
     source user_settings/aha_settings.sh && \
     make all -j4 && \
     source misc/copy_cgralib.sh && \
-    rm -rf ntl* && \
-    echo -n "BEFORE CLEANUP: " && du -hs /aha/clockwork && \
-    echo "# cleanup: 440M removed with barvinok 'make clean'" && \
-    (cd /aha/clockwork/barvinok-0.41; make clean) && \
-    echo "# cleanup: 140M soda_codes removed" && \
-    /bin/rm -rf /aha/clockwork/soda_codes/ && \
-    echo -n "AFTER  CLEANUP: " && du -hs /aha/clockwork && \
+    echo "Cleanup: 10M ntl, 440M barvinok, 390M dot-o files" && \
+      rm -rf ntl* && \
+      (cd /aha/clockwork/barvinok-0.41; make clean) && \
+      rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
     echo DONE
 
 # Halide-to-Hardware
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
 RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
-    rm -rf lib/*
+    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
+      rm -rf lib/* && \
+      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
+      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
+      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+    echo DONE    
 
-# Sam
+# Sam - uses aha .git directory (1GB) so may as well just bring in all of aha here
+COPY . /aha
 WORKDIR /aha/sam
 RUN make sam
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 # Install torch (need big tmp folder)
 WORKDIR /aha
-RUN mkdir -p /aha/tmp/torch_install/
-# Save (and later restore) existing value for TMPDIR, if any
-ENV TMPTMPDIR=$TMPDIR
-ENV TMPDIR=/aha/tmp/torch_install/
 RUN source /aha/bin/activate && \
+  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
   pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
-  echo -n "BEFORE CLEANUP: " && du -hs /aha && \
-  /bin/rm -rf $TMPDIR && \
-  echo -n "AFTER  CLEANUP: " && du -hs /aha
-# Restore original value of TMPDIR
-ENV TMPDIR=$TMPTMPDIR
+  echo "# Remove 700M tmp files created during install" && \
+  rm -rf $TMPDIR
 
+# Final pip installs: AHA Tools etc.
 WORKDIR /aha
 RUN source bin/activate && \
   pip install urllib3==1.26.15 && \
   pip install wheel six && \
   pip install systemrdl-compiler peakrdl-html && \
-  pip install -e . && \
   pip install packaging==21.3 && \
+  echo DONE
+
+# Install aha tools etc.
+WORKDIR /aha
+RUN source bin/activate && \
+  pip install -e . && \
   aha deps install
 
 WORKDIR /aha
@@ -179,12 +177,25 @@ WORKDIR /aha
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
 
-# Create a /root/.modules so as to avoid this warning on startup:
-#     "+(0):WARN:0: Directory '/root/.modules' not found"
+# bashrc
+# 1. Create a /root/.modules so as to avoid this warning on startup:
+#    "+(0):WARN:0: Directory '/root/.modules' not found"
+# 2. Tell user how to restore gch headers.
 
-RUN echo "source /aha/bin/activate" >> /root/.bashrc && \
-    echo "mkdir -p /root/.modules" >> /root/.bashrc && \
-    echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc
+RUN echo "source /aha/bin/activate"        >> /root/.bashrc && \
+    echo "mkdir -p /root/.modules"         >> /root/.bashrc && \
+    echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc && \
+    echo 'echo ""                                      ' >> /root/.bashrc && \
+    echo 'echo "For pre-compiled Halide 'gch' headers:"' >> /root/.bashrc && \
+    echo 'echo "    cd /aha/Halide-to-Hardware"        ' >> /root/.bashrc && \
+    echo 'echo "    rm include/Halide.h"               ' >> /root/.bashrc && \
+    echo 'echo "    make include/Halide.h"             ' >> /root/.bashrc && \
+    echo 'echo ""                                      ' >> /root/.bashrc && \
+    echo DONE
+
+# Restore halide distrib files on every container startup
+ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
+
 
 # Cleanup / image-size-reduction notes:
 # 
@@ -194,7 +205,7 @@ RUN echo "source /aha/bin/activate" >> /root/.bashrc && \
 # - if you don't delete files in the same layer (RUN command) where
 #   they were created, you don't get any space savings in the image.
 #
-# - cannot do "make delete" in `/aha/pono/deps/smt-switch/build`,
+# - cannot do "make clean" in `/aha/pono/deps/smt-switch/build`,
 #   because it deletes `smt-switch/build/python`, which is where
 #   smt-switch is pip-installed :(
 #   This should probably be an issue or a FIXME in pono or something.
