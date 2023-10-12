@@ -179,6 +179,8 @@ def dispatch(args, extra_args=None):
             "vec_identity",
             "vec_elemadd",
             "vec_elemmul",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
         ]
         glb_tests = [
             "apps/pointwise",
@@ -209,6 +211,9 @@ def dispatch(args, extra_args=None):
             "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
+            "matmul_ijk",
         ]
         glb_tests = [
             "apps/gaussian",
@@ -249,6 +254,8 @@ def dispatch(args, extra_args=None):
             "vec_elemmul",
             "vec_identity",
             "vec_scalar_mul",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
         ]
         glb_tests = [
             "apps/pointwise",
