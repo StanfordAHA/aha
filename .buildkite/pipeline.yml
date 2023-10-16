@@ -10,7 +10,8 @@ steps:
   - uber-workflow/run-without-clone:
 
   commands:
-  - echo hello world; exit 0
+  - echo hello world
+  - docker pull stanfordaha/garnet:latest
 
   agents:
     docker: true
@@ -69,7 +70,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
   commands:
-  - echo hello world; exit 0
+  - echo goodbye cruel world; exit -1
 
   agents:
     docker: true
