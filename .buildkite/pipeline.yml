@@ -26,7 +26,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
-        image: garnet:latest
+        image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
@@ -49,7 +49,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
-        image: garnet:latest
+        image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
@@ -69,7 +69,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
   commands:
-  - hello world; exit 0
+  - echo hello world; exit 0
 
   agents:
     docker: true
