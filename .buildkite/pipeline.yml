@@ -102,7 +102,7 @@ steps:
 
 # ------------------------------------------------------------------------
 - label: ":hammer: Onyx Gold RTL 1m"
-  key: "goldcheck-amber"
+  key: "goldcheck-onyx"
   depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
@@ -233,6 +233,7 @@ steps:
   depends_on:
   - "integration-tests"
   - "goldcheck-amber"
+  - "goldcheck-onyx"
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
   - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
