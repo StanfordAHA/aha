@@ -77,7 +77,8 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Amber Gold RTL"
+# ------------------------------------------------------------------------
+- label: ":hammer: Amber Gold RTL 1m"
   key: "goldcheck-amber"
   depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
@@ -85,12 +86,11 @@ steps:
   commands:
     - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
   plugins:
-    - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
+    - uber-workflow/run-without-clone:
     - docker#v3.2.0:
         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
-        # skip-checkout: true
         mount-checkout: false
         propagate-environment: true
         environment:
@@ -100,6 +100,30 @@ steps:
   agents:
     docker: true
 
+# ------------------------------------------------------------------------
+- label: ":hammer: Onyx Gold RTL 1m"
+  key: "goldcheck-amber"
+  depends_on: "docker-build"
+  # Set soft_fail so that failing gold check does not fail pipeline.
+  soft_fail: true
+  commands:
+    - set -x; /aha/aha/bin/rtl-goldcheck.sh onyx
+  plugins:
+    - uber-workflow/run-without-clone:
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes:
+          - "/cad/:/cad"
+        mount-checkout: false
+        propagate-environment: true
+        environment:
+          - CONFIG
+          - FLOW_REPO
+        shell: ["/bin/bash", "-e", "-c"]
+  agents:
+    docker: true
+
+# ------------------------------------------------------------------------
 - label: ":hammer: Onyx Integration Tests"
   key: "integration-tests"
   depends_on: "docker-build"
