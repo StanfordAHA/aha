@@ -9,14 +9,74 @@ steps:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
 
+  # My hooks
+  - improbable-eng/metahook:
+
+      # Clone aha repo and optionally update submod according to where build request originated:
+      # Req from aha repo:    check out aha commit BUILDKITE_COMMIT
+      # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
+      pre-checkout: |
+        echo "+++ BDI PRE CHECKOUT HOOK"
+        set +u     # nounset? not on my watch!
+
+        if [ "$$FLOW_HEAD_SHA" ]; then
+            echo "+++ ERROR Not processing heroku requests anymore"; exit 13; fi
+
+        # Clone the aha repo; starting in root dir '/' I think
+        echo I am in dir `pwd`
+        aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+        set -x
+        /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
+        git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
+        git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
+        git clean -ffxdq
+        set +x
+
+        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+
+        # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
+        source $$bin/update-pr-repo.sh
+
+        # If build was triggered by a pull request, annotate build with
+        #    links pointing to pull request on github.
+        # Set REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+        # Set PR_REPO_TAIL to submod associated with the PR, e.g. "canal"
+        # Add REQUEST_TYPE env temp file for use by later steps
+        source $$bin/set-trigfrom-and-reqtype.sh
+
+        ~/bin/status-update --force pending   # Send "pending" status to github PR page
+
+        # Checkout and update correct aha branch and submodules
+        source $$bin/custom-checkout.sh
+
+      # Send regression test pass-fail info to github pull request page
+      pre-exit: |
+        echo "+++ CHECKING EXIT STATUS"; set -x
+        echo "Send status to github, delete docker image if job failed"
+
+        # status-update exit status will tell us if this step has failed
+        if ! ~/bin/status-update pending; then
+            # Build failed already, remove the docker image and begone
+            (set -x; docker image rm "garnet:aha-flow-build-$${BUILDKITE_BUILD_NUMBER}" --no-prune)
+        fi
+
   commands:
-  - echo hello world
-  - docker pull stanfordaha/garnet:latest
+  - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
+
+  - echo "--- DEBUG DOCKER TRASH"
+  - set -x; docker images; docker ps;
+
+  - echo "--- Creating garnet Image"
+  - docker build . -t "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}"
+
+  - echo "--- Pruning Docker Images"
+  - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
+
+  - echo "--- BDI PIPELINE.XML COMMANDS END"
 
   agents:
     docker: true
 
-# ------------------------------------------------------------------------
 - label: ":hammer: Amber Gold RTL 1m"
   key: "goldcheck-amber"
   depends_on: "docker-build"
@@ -27,7 +87,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
-        image: stanfordaha/garnet:latest
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
@@ -39,7 +99,6 @@ steps:
   agents:
     docker: true
 
-# ------------------------------------------------------------------------
 - label: ":hammer: Onyx Gold RTL 1m"
   key: "goldcheck-onyx"
   depends_on: "docker-build"
@@ -50,7 +109,6 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
-        image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
@@ -62,15 +120,102 @@ steps:
   agents:
     docker: true
 
-# ------------------------------------------------------------------------
 - label: ":hammer: Onyx Integration Tests"
   key: "integration-tests"
   depends_on: "docker-build"
 
   plugins:
     - uber-workflow/run-without-clone:
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes:
+          - "/cad/:/cad"
+          - "./temp:/buildkite:rw"
+        mount-checkout: false
+        skip-checkout: true
+        propagate-environment: true
+        environment:
+          - CONFIG
+          - FLOW_REPO
+        shell: ["/bin/bash", "-e", "-c"]
+    - improbable-eng/metahook:
+
+        pre-command: |
+          echo "+++ OIT PRE COMMAND HOOK BEGIN"
+
+          # Use temp/.TEST to pass fail/success info into and out of docker container
+          echo Renewing `pwd`/temp/.TEST
+          mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
+
+          # If trigger came from a submod repo, we will do "pr" regressions.
+          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+          # We use "env" file to pass information between steps.
+          # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
+
+          # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+          source /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER
+
+          echo "--- Pass DO_PR info to docker"
+          echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
+          if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
+              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+          else
+              echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
+          fi
+          test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
+
+          echo "--- OIT PRE COMMAND HOOK END"
+
+        pre-exit: |
+          echo "+++ CHECKING EXIT STATUS"; set -x
+          echo "Send status to github."
+          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+
+          # Docker will have removed temp/.TEST if all the tests passed
+          if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
+              test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
+          fi
+          /bin/rm -rf temp
+
+          # status-update will magically override "success" with "failure" as appropriate!
+          # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
+          ~/bin/status-update success
+
   commands:
-  - echo goodbye cruel world; exit -1
+  - |
+    if test -e /buildkite/DO_PR; then
+        echo "--- DO_PR SET (TRUE)"
+    else
+        echo "--- DO_PR UNSET (FALSE)"
+    fi
+  - source /aha/bin/activate
+  - source /cad/modules/tcl/init/sh
+  - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
+  # make /bin/sh symlink to bash instead of dash:
+  - echo "dash dash/sh boolean false" | debconf-set-selections
+  - DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+  - apt update
+  - apt install time
+  - ls /aha
+  - pip freeze
+  - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
+  # Run regression tests
+  - if test -e /buildkite/DO_PR; then
+      echo "Trigger came from submod repo pull request; use pr config";
+      export CONFIG=pr;
+    else
+      echo "Trigger came from aha repo; use default config";
+    fi;
+  - aha regress $$CONFIG
+  # We report success to the aha-flow app by removing the .TEST file,
+  # which is created in the post-checkout hook and checked for in the
+  # pre-exit hook.
+
+  # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
+  - echo "--- Removing Failure Canary"
+  - ls -al /buildkite
+  - rm -rf /buildkite/.TEST
+  - ls -al /buildkite
 
   agents:
     docker: true
@@ -85,7 +230,8 @@ steps:
   - "goldcheck-amber"
   - "goldcheck-onyx"
   commands:
-  - echo hello world; exit 0
+  # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
+  - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
   agents:
     docker: true
   plugins:
