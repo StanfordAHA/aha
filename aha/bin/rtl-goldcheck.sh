@@ -149,7 +149,9 @@ if [ "$ndiffs" != "0" ]; then
     # ------------------------------------------------------------------------
     # TEST FAILED
 
-    printf "Test FAILED with $ndiffs diffs\n\n"
+    printf "Test FAILED with $ndiffs diffs\n"
+    printf '(To update gold verilog, see $GARNET_REPO/bin/rtl-goldfetch.sh --help)'
+    printf "\n"
     printf "Top 40 diffs:"
     diff -I Date <(vcompare $f1) <(vcompare $f2) | head -40
     exit 13
