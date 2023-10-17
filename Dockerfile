@@ -167,9 +167,34 @@ RUN source bin/activate && \
   pip install packaging==21.3 && \
   echo DONE
 
+# For "aha deps install"; copy all the modules that not yet been copied
+COPY ./aha/archipelago /aha/archipelago
+COPY ./aha/ast_tools /aha/ast_tools
+# COPY ./aha/BufferMapping /aha/BufferMapping
+COPY ./aha/canal /aha/canal
+# COPY ./aha/cgra_pnr/cyclone /aha/cgra_pnr/cyclone
+# COPY ./aha/cgra_pnr/thunder /aha/cgra_pnr/thunder
+COPY ./aha/cgra_pnr /aha/cgra_pnr
+COPY ./aha/cosa /aha/cosa
+COPY ./aha/fault /aha/fault
+COPY ./aha/garnet /aha/garnet
+COPY ./aha/gemstone /aha/gemstone
+COPY ./aha/hwtypes /aha/hwtypes
+COPY ./aha/kratos /aha/kratos
+COPY ./aha/lake /aha/lake
+COPY ./aha/lassen /aha/lassen
+COPY ./aha/magma /aha/magma
+COPY ./aha/mantle /aha/mantle
+COPY ./aha/MetaMapper /aha/MetaMapper
+COPY ./aha/mflowgen /aha/mflowgen
+COPY ./aha/peak /aha/peak
+COPY ./aha/peak_generator /aha/peak_generator
+COPY ./aha/pycoreir /aha/pycoreir
+
 # Install aha tools /aha/aha/
 COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
+
 WORKDIR /aha
 RUN source bin/activate && \
   pip install -e . && \
