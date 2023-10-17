@@ -143,11 +143,13 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
     echo DONE    
 
-# Sam - uses aha .git directory (1GB) so may as well just bring in all of aha here
-COPY . /aha
-WORKDIR /aha/sam
-RUN make sam
-RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+# Sam
+WORKDIR /
+COPY ./.git/modules/sam /aha/.git/modules/sam
+COPY ./sam /aha/sam
+RUN cd /aha/sam && \
+  make sam && \
+  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 # Install torch (need big tmp folder)
 WORKDIR /aha
@@ -167,6 +169,7 @@ RUN source bin/activate && \
   echo DONE
 
 # Install aha tools etc.
+COPY . /aha
 WORKDIR /aha
 RUN source bin/activate && \
   pip install -e . && \
