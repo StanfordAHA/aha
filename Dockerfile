@@ -144,12 +144,11 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
     echo DONE    
 
 # Sam
-WORKDIR /
 COPY ./.git/modules/sam /aha/.git/modules/sam
 COPY ./sam /aha/sam
-RUN cd /aha/sam && \
-  make sam && \
-  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+WORKDIR /aha/sam
+RUN make sam
+RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 # Install torch (need big tmp folder)
 WORKDIR /aha
@@ -168,13 +167,16 @@ RUN source bin/activate && \
   pip install packaging==21.3 && \
   echo DONE
 
-# Install aha tools in /aha/aha/
+# Install aha tools /aha/aha/
 WORKDIR /aha
 COPY ./aha /aha
+COPY ./setup.py /aha
 RUN source bin/activate && \
   pip install -e . && \
   aha deps install
 
+# This should go as late in Docker file as possible;
+# anything from here on down CANNOT BE CACHED
 WORKDIR /aha
 COPY . /aha
 
