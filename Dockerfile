@@ -168,9 +168,9 @@ RUN source bin/activate && \
   echo DONE
 
 # Install aha tools /aha/aha/
+COPY ./setup.py /aha/setup.py
+COPY ./aha /aha/aha
 WORKDIR /aha
-COPY ./aha /aha
-COPY ./setup.py /aha
 RUN source bin/activate && \
   pip install -e . && \
   aha deps install
