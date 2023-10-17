@@ -168,14 +168,15 @@ RUN source bin/activate && \
   pip install packaging==21.3 && \
   echo DONE
 
-# Install aha tools etc.
-COPY . /aha
+# Install aha tools in /aha/aha/
 WORKDIR /aha
+COPY ./aha /aha
 RUN source bin/activate && \
   pip install -e . && \
   aha deps install
 
 WORKDIR /aha
+COPY . /aha
 
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
