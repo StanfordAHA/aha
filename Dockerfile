@@ -168,28 +168,28 @@ RUN source bin/activate && \
   echo DONE
 
 # For "aha deps install"; copy all the modules that not yet been copied
-COPY ./aha/archipelago /aha/archipelago
-COPY ./aha/ast_tools /aha/ast_tools
-# COPY ./aha/BufferMapping /aha/BufferMapping
-COPY ./aha/canal /aha/canal
-# COPY ./aha/cgra_pnr/cyclone /aha/cgra_pnr/cyclone
-# COPY ./aha/cgra_pnr/thunder /aha/cgra_pnr/thunder
-COPY ./aha/cgra_pnr /aha/cgra_pnr
-COPY ./aha/cosa /aha/cosa
-COPY ./aha/fault /aha/fault
-COPY ./aha/garnet /aha/garnet
-COPY ./aha/gemstone /aha/gemstone
-COPY ./aha/hwtypes /aha/hwtypes
-COPY ./aha/kratos /aha/kratos
-COPY ./aha/lake /aha/lake
-COPY ./aha/lassen /aha/lassen
-COPY ./aha/magma /aha/magma
-COPY ./aha/mantle /aha/mantle
-COPY ./aha/MetaMapper /aha/MetaMapper
-COPY ./aha/mflowgen /aha/mflowgen
-COPY ./aha/peak /aha/peak
-COPY ./aha/peak_generator /aha/peak_generator
-COPY ./aha/pycoreir /aha/pycoreir
+COPY ./archipelago /aha/archipelago
+COPY ./ast_tools /aha/ast_tools
+# COPY ./BufferMapping /aha/BufferMapping
+COPY ./canal /aha/canal
+# COPY ./cgra_pnr/cyclone /aha/cgra_pnr/cyclone
+# COPY ./cgra_pnr/thunder /aha/cgra_pnr/thunder
+COPY ./cgra_pnr /aha/cgra_pnr
+COPY ./cosa /aha/cosa
+COPY ./fault /aha/fault
+COPY ./garnet /aha/garnet
+COPY ./gemstone /aha/gemstone
+COPY ./hwtypes /aha/hwtypes
+COPY ./kratos /aha/kratos
+COPY ./lake /aha/lake
+COPY ./lassen /aha/lassen
+COPY ./magma /aha/magma
+COPY ./mantle /aha/mantle
+COPY ./MetaMapper /aha/MetaMapper
+COPY ./mflowgen /aha/mflowgen
+COPY ./peak /aha/peak
+COPY ./peak_generator /aha/peak_generator
+COPY ./pycoreir /aha/pycoreir
 
 # Install aha tools /aha/aha/
 COPY ./setup.py /aha/setup.py
