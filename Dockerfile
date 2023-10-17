@@ -168,28 +168,28 @@ RUN source bin/activate && \
   echo DONE
 
 # For "aha deps install"; copy all the modules that not yet been copied
-COPY ./archipelago /aha/archipelago
-COPY ./ast_tools /aha/ast_tools
-# COPY ./BufferMapping /aha/BufferMapping
-COPY ./canal /aha/canal
+COPY ./archipelago /aha
+COPY ./ast_tools /aha
+# COPY ./BufferMapping /aha
+COPY ./canal /aha
 # COPY ./cgra_pnr/cyclone /aha/cgra_pnr/cyclone
 # COPY ./cgra_pnr/thunder /aha/cgra_pnr/thunder
-COPY ./cgra_pnr /aha/cgra_pnr
-COPY ./cosa /aha/cosa
-COPY ./fault /aha/fault
-COPY ./garnet /aha/garnet
-COPY ./gemstone /aha/gemstone
-COPY ./hwtypes /aha/hwtypes
-COPY ./kratos /aha/kratos
-COPY ./lake /aha/lake
-COPY ./lassen /aha/lassen
-COPY ./magma /aha/magma
-COPY ./mantle /aha/mantle
-COPY ./MetaMapper /aha/MetaMapper
-COPY ./mflowgen /aha/mflowgen
-COPY ./peak /aha/peak
-COPY ./peak_generator /aha/peak_generator
-COPY ./pycoreir /aha/pycoreir
+COPY ./cgra_pnr /aha
+COPY ./cosa /aha
+COPY ./fault /aha
+COPY ./garnet /aha
+COPY ./gemstone /aha
+COPY ./hwtypes /aha
+COPY ./kratos /aha
+COPY ./lake /aha
+COPY ./lassen /aha
+COPY ./magma /aha
+COPY ./mantle /aha
+COPY ./MetaMapper /aha
+COPY ./mflowgen /aha
+COPY ./peak /aha
+COPY ./peak_generator /aha
+COPY ./pycoreir /aha
 
 # Install aha tools /aha/aha/
 COPY ./setup.py /aha/setup.py
