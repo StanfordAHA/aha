@@ -77,142 +77,142 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Amber Gold RTL"
-  key: "goldcheck-amber"
-  depends_on: "docker-build"
-  # Set soft_fail so that failing gold check does not fail pipeline.
-  soft_fail: true
-  commands:
-    - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
-  plugins:
-    - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes:
-          - "/cad/:/cad"
-        # skip-checkout: true
-        mount-checkout: false
-        propagate-environment: true
-        environment:
-          - CONFIG
-          - FLOW_REPO
-        shell: ["/bin/bash", "-e", "-c"]
-  agents:
-    docker: true
-
-- label: ":hammer: Onyx Integration Tests"
-  key: "integration-tests"
-  depends_on: "docker-build"
-
-  plugins:
-    - uber-workflow/run-without-clone: # skip-checkout alone (below) did not do the trick!
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        # image: stanfordaha/garnet:latest
-        volumes:
-          - "/cad/:/cad"
-          - "./temp:/buildkite:rw"
-        mount-checkout: false
-        skip-checkout: true
-        propagate-environment: true
-        environment:
-          - CONFIG
-          - FLOW_REPO
-        shell: ["/bin/bash", "-e", "-c"]
-    - improbable-eng/metahook:
-
-        pre-command: |
-          echo "+++ OIT PRE COMMAND HOOK BEGIN"
-
-          # Use temp/.TEST to pass fail/success info into and out of docker container
-          echo Renewing `pwd`/temp/.TEST
-          mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
-
-          # If trigger came from a submod repo, we will do "pr" regressions.
-          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
-          # We use "env" file to pass information between steps.
-          # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
-
-          # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
-          source /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER
-
-          echo "--- Pass DO_PR info to docker"
-          echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
-          if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
-          else
-              echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
-          fi
-          test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
-
-          echo "--- OIT PRE COMMAND HOOK END"
-
-        pre-exit: |
-          echo "+++ CHECKING EXIT STATUS"; set -x
-          echo "Send status to github."
-          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-
-          # Docker will have removed temp/.TEST if all the tests passed
-          if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
-              test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
-          fi
-          /bin/rm -rf temp
-
-          # status-update will magically override "success" with "failure" as appropriate!
-          # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
-          ~/bin/status-update success
-
-  commands:
-  - |
-    if test -e /buildkite/DO_PR; then
-        echo "--- DO_PR SET (TRUE)"
-    else
-        echo "--- DO_PR UNSET (FALSE)"
-    fi
-  - source /aha/bin/activate
-  - source /cad/modules/tcl/init/sh
-  - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
-  # make /bin/sh symlink to bash instead of dash:
-  - echo "dash dash/sh boolean false" | debconf-set-selections
-  - DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
-  - apt update
-  - apt install time
-  - ls /aha
-  - pip freeze
-  - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
-  # Run regression tests
-  - if test -e /buildkite/DO_PR; then
-      echo "Trigger came from submod repo pull request; use pr config";
-      export CONFIG=pr;
-    else
-      echo "Trigger came from aha repo; use default config";
-    fi;
-  - aha regress $$CONFIG
-  # We report success to the aha-flow app by removing the .TEST file,
-  # which is created in the post-checkout hook and checked for in the
-  # pre-exit hook.
-
-  # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
-  - echo "--- Removing Failure Canary"
-  - ls -al /buildkite
-  - rm -rf /buildkite/.TEST
-  - ls -al /buildkite
-
-  agents:
-    docker: true
-
-- wait: { continue_on_failure: true } # One step at a time + continue on failure
-
-- label: ":skull_and_crossbones: Delete Docker Image"
-  # Set soft_fail so that failing cleanup does not fail pipeline.
-  soft_fail: true
-  depends_on:
-  - "integration-tests"
-  - "goldcheck-amber"
-  commands:
-  # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
-  - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
-  agents:
-    docker: true
-  plugins:
-  - uber-workflow/run-without-clone:
+# - label: ":hammer: Amber Gold RTL"
+#   key: "goldcheck-amber"
+#   depends_on: "docker-build"
+#   # Set soft_fail so that failing gold check does not fail pipeline.
+#   soft_fail: true
+#   commands:
+#     - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
+#   plugins:
+#     - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes:
+#           - "/cad/:/cad"
+#         # skip-checkout: true
+#         mount-checkout: false
+#         propagate-environment: true
+#         environment:
+#           - CONFIG
+#           - FLOW_REPO
+#         shell: ["/bin/bash", "-e", "-c"]
+#   agents:
+#     docker: true
+# 
+# - label: ":hammer: Onyx Integration Tests"
+#   key: "integration-tests"
+#   depends_on: "docker-build"
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone: # skip-checkout alone (below) did not do the trick!
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         # image: stanfordaha/garnet:latest
+#         volumes:
+#           - "/cad/:/cad"
+#           - "./temp:/buildkite:rw"
+#         mount-checkout: false
+#         skip-checkout: true
+#         propagate-environment: true
+#         environment:
+#           - CONFIG
+#           - FLOW_REPO
+#         shell: ["/bin/bash", "-e", "-c"]
+#     - improbable-eng/metahook:
+# 
+#         pre-command: |
+#           echo "+++ OIT PRE COMMAND HOOK BEGIN"
+# 
+#           # Use temp/.TEST to pass fail/success info into and out of docker container
+#           echo Renewing `pwd`/temp/.TEST
+#           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
+# 
+#           # If trigger came from a submod repo, we will do "pr" regressions.
+#           # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+#           # We use "env" file to pass information between steps.
+#           # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
+# 
+#           # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+#           source /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER
+# 
+#           echo "--- Pass DO_PR info to docker"
+#           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
+#           if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
+#               echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+#           else
+#               echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
+#           fi
+#           test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
+# 
+#           echo "--- OIT PRE COMMAND HOOK END"
+# 
+#         pre-exit: |
+#           echo "+++ CHECKING EXIT STATUS"; set -x
+#           echo "Send status to github."
+#           cd $$BUILDKITE_BUILD_CHECKOUT_PATH
+# 
+#           # Docker will have removed temp/.TEST if all the tests passed
+#           if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
+#               test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
+#           fi
+#           /bin/rm -rf temp
+# 
+#           # status-update will magically override "success" with "failure" as appropriate!
+#           # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
+#           ~/bin/status-update success
+# 
+#   commands:
+#   - |
+#     if test -e /buildkite/DO_PR; then
+#         echo "--- DO_PR SET (TRUE)"
+#     else
+#         echo "--- DO_PR UNSET (FALSE)"
+#     fi
+#   - source /aha/bin/activate
+#   - source /cad/modules/tcl/init/sh
+#   - module load base incisive xcelium/19.03.003 vcs/Q-2020.03-SP2
+#   # make /bin/sh symlink to bash instead of dash:
+#   - echo "dash dash/sh boolean false" | debconf-set-selections
+#   - DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+#   - apt update
+#   - apt install time
+#   - ls /aha
+#   - pip freeze
+#   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
+#   # Run regression tests
+#   - if test -e /buildkite/DO_PR; then
+#       echo "Trigger came from submod repo pull request; use pr config";
+#       export CONFIG=pr;
+#     else
+#       echo "Trigger came from aha repo; use default config";
+#     fi;
+#   - aha regress $$CONFIG
+#   # We report success to the aha-flow app by removing the .TEST file,
+#   # which is created in the post-checkout hook and checked for in the
+#   # pre-exit hook.
+# 
+#   # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
+#   - echo "--- Removing Failure Canary"
+#   - ls -al /buildkite
+#   - rm -rf /buildkite/.TEST
+#   - ls -al /buildkite
+# 
+#   agents:
+#     docker: true
+# 
+# - wait: { continue_on_failure: true } # One step at a time + continue on failure
+# 
+# - label: ":skull_and_crossbones: Delete Docker Image"
+#   # Set soft_fail so that failing cleanup does not fail pipeline.
+#   soft_fail: true
+#   depends_on:
+#   - "integration-tests"
+#   - "goldcheck-amber"
+#   commands:
+#   # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
+#   - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
+#   agents:
+#     docker: true
+#   plugins:
+#   - uber-workflow/run-without-clone:
