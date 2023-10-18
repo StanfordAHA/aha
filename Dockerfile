@@ -156,9 +156,9 @@ RUN source /aha/bin/activate && \
 COPY ./sam /aha/sam
 COPY ./.git/modules/sam /aha/.git/modules/sam
 WORKDIR /aha/sam
-# RUN echo hello world
-RUN make sam && \
-  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+RUN echo hello world
+# RUN make sam && \
+#   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 
 
