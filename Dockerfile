@@ -220,8 +220,8 @@ RUN source bin/activate && \
   pip install -e . && \
   aha deps install
 
-# This should go as late in Docker file as possible;
-# anything from here on down CANNOT BE CACHED
+# This should go as late in Docker file as possible; it brings
+# in EVERYTHING. Anything from here on down CANNOT BE CACHED.
 WORKDIR /aha
 COPY . /aha
 
