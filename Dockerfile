@@ -152,16 +152,8 @@ RUN source /aha/bin/activate && \
   echo "# Remove 700M tmp files created during install" && \
   rm -rf $TMPDIR
 
-# Halide-to-Hardware
-COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
-WORKDIR /aha/Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
-    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
-      rm -rf lib/* && \
-      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
-      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
-      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
-    echo DONE    
+# I think maybe clockwork has to be installed before Halide;
+# I think maybe clockwork builds/installs coreir-cgralib, which Halide seems to need...
 
 # clockwork
 COPY clockwork /aha/clockwork
@@ -177,6 +169,17 @@ RUN ./misc/install_deps_ahaflow.sh && \
       (cd /aha/clockwork/barvinok-0.41; make clean) && \
       rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
     echo DONE
+
+# Halide-to-Hardware
+COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
+WORKDIR /aha/Halide-to-Hardware
+RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
+    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
+      rm -rf lib/* && \
+      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
+      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
+      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+    echo DONE    
 
 # Sam
 COPY ./.git/modules/sam /aha/.git/modules/sam
