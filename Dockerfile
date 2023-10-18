@@ -152,13 +152,22 @@ RUN source /aha/bin/activate && \
   echo "# Remove 700M tmp files created during install" && \
   rm -rf $TMPDIR
 
-# Sam
+# # Sam
 # COPY ./sam /aha/sam
 # COPY ./.git/modules/sam /aha/.git/modules/sam
-WORKDIR /aha/sam
-RUN echo hello world
+# WORKDIR /aha/sam
+# RUN echo hello world
 # RUN make sam && \
 #   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
-
-
+COPY ./.git/modules/sam/HEAD /tmp/HEAD
+RUN \
+  mkdir /aha/sam && git clone https://github.com/weiya711/sam.git && \
+  cd /aha/sam && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/sam/ && \
+  ln -s /aha/.git/modules/sam/ .git && \
+  git checkout `cat /tmp/HEAD`
+COPY ./sam /aha/sam
+RUN make sam && \
+  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
