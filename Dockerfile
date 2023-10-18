@@ -169,5 +169,5 @@ RUN \
   ln -s /aha/.git/modules/sam/ .git && \
   git checkout `cat /tmp/HEAD`
 COPY ./sam /aha/sam
-RUN make sam && \
+RUN cd /aha/sam && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
