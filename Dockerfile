@@ -84,6 +84,13 @@ SHELL ["/bin/bash", "--login", "-c"]
 WORKDIR /
 RUN mkdir -p /aha && cd /aha && python -m venv .
 
+# Sam
+COPY ./sam /aha/sam
+COPY ./.git/modules/sam /aha/.git/modules/sam
+WORKDIR /aha/sam
+RUN make sam && \
+  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
 # # These packages seem stable/cacheable, put them near the BEGINNING
 # WORKDIR /aha
 # RUN source bin/activate && \
@@ -151,11 +158,3 @@ RUN mkdir -p /aha && cd /aha && python -m venv .
 #   pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
 #   echo "# Remove 700M tmp files created during install" && \
 #   rm -rf $TMPDIR
-
-# Sam
-COPY ./sam /aha/sam
-COPY ./.git/modules/sam /aha/.git/modules/sam
-WORKDIR /aha/sam
-RUN make sam && \
-  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
-
