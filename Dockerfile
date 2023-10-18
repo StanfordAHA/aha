@@ -152,6 +152,13 @@ RUN source /aha/bin/activate && \
   echo "# Remove 700M tmp files created during install" && \
   rm -rf $TMPDIR
 
+# Sam
+COPY ./sam /aha/sam
+COPY ./.git/modules/sam /aha/.git/modules/sam
+WORKDIR /aha/sam
+RUN make sam && \
+  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
 # I think maybe clockwork has to be installed before Halide;
 # I think maybe clockwork builds/installs coreir-cgralib, which Halide seems to need...
 
@@ -181,12 +188,6 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
     echo DONE    
 
-# Sam
-COPY ./.git/modules/sam /aha/.git/modules/sam
-COPY ./sam /aha/sam
-WORKDIR /aha/sam
-RUN make sam
-RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 # Final pip installs: AHA Tools etc.
 
