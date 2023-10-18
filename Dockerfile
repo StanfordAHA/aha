@@ -1,3 +1,21 @@
+# 10/17/2023
+# If we put most-likely-to change submodules LAST in Dockerfile, we can
+# maximize cache usage and minimize average build time.  A histogram of
+# most-recent 256 submodule changes came up with this list.
+# 
+#       ..<others w lower frequency occluded>..
+#       6 kratos <kratos was responsible for 6 of the last 256 changes>
+#       8 gemstone
+#       8 Halide-to-Hardware
+#       8 MetaMapper
+#      16 canal
+#      16 clockwork
+#      16 sam
+#      35 lake
+#      36 archipelago
+#      85 garnet
+#      ..<garnet is the submodule that changed the most>..
+
 FROM docker.io/ubuntu:20.04
 LABEL description="garnet"
 
@@ -61,10 +79,19 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Prepare python environment
-# Don't copy all of aha else cannot cache subsequent layers...
+# Create an aha directory and prep a python environment. 
+# Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
 RUN mkdir -p /aha && cd /aha && python -m venv .
+
+# These packages seem stable/cacheable, put them near the BEGINNING
+WORKDIR /aha
+RUN source bin/activate && \
+  pip install urllib3==1.26.15 && \
+  pip install wheel six && \
+  pip install systemrdl-compiler peakrdl-html && \
+  pip install packaging==21.3 && \
+  echo DONE
 
 # Pono
 COPY ./pono /aha/pono
@@ -117,6 +144,25 @@ RUN export COREIR_DIR=/aha/coreir && make lib
 ENV GARNET_HOME=/aha/garnet
 ENV MFLOWGEN=/aha/mflowgen
 
+# Install torch (need big tmp folder)
+WORKDIR /aha
+RUN source /aha/bin/activate && \
+  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
+  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  echo "# Remove 700M tmp files created during install" && \
+  rm -rf $TMPDIR
+
+# Halide-to-Hardware
+COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
+WORKDIR /aha/Halide-to-Hardware
+RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
+    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
+      rm -rf lib/* && \
+      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
+      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
+      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+    echo DONE    
+
 # clockwork
 COPY clockwork /aha/clockwork
 WORKDIR /aha/clockwork
@@ -132,17 +178,6 @@ RUN ./misc/install_deps_ahaflow.sh && \
       rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
     echo DONE
 
-# Halide-to-Hardware
-COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
-WORKDIR /aha/Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
-    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
-      rm -rf lib/* && \
-      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
-      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
-      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
-    echo DONE    
-
 # Sam
 COPY ./.git/modules/sam /aha/.git/modules/sam
 COPY ./sam /aha/sam
@@ -150,22 +185,7 @@ WORKDIR /aha/sam
 RUN make sam
 RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
-# Install torch (need big tmp folder)
-WORKDIR /aha
-RUN source /aha/bin/activate && \
-  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
-  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
-  echo "# Remove 700M tmp files created during install" && \
-  rm -rf $TMPDIR
-
 # Final pip installs: AHA Tools etc.
-WORKDIR /aha
-RUN source bin/activate && \
-  pip install urllib3==1.26.15 && \
-  pip install wheel six && \
-  pip install systemrdl-compiler peakrdl-html && \
-  pip install packaging==21.3 && \
-  echo DONE
 
 # For "aha deps install"; copy all the modules that not yet been copied
 COPY ./archipelago /aha/archipelago
