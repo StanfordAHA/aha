@@ -220,6 +220,7 @@ COPY ./aha /aha/aha
 
 WORKDIR /aha
 RUN source bin/activate && \
+  echo "--- Final aha deps install" && \
   pip install -e . && \
   aha deps install
 
