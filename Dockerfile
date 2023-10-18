@@ -153,8 +153,8 @@ RUN source /aha/bin/activate && \
   rm -rf $TMPDIR
 
 # Sam
-COPY ./sam /aha/sam
-COPY ./.git/modules/sam /aha/.git/modules/sam
+# COPY ./sam /aha/sam
+# COPY ./.git/modules/sam /aha/.git/modules/sam
 WORKDIR /aha/sam
 RUN echo hello world
 # RUN make sam && \
