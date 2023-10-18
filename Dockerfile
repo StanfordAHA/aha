@@ -190,6 +190,8 @@ RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e
 
 # Final pip installs: AHA Tools etc.
 
+# Note kratos is slow but stable; maybe it should be installed much earlier in dockerfile
+
 # For "aha deps install"; copy all the modules that not yet been copied
 COPY ./archipelago /aha/archipelago
 COPY ./ast_tools /aha/ast_tools
