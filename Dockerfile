@@ -180,8 +180,7 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
 
 # Sam 1 - clone and set up sam
 COPY ./.git/modules/sam/HEAD /tmp/HEAD
-RUN \
-  mkdir /aha/sam && git clone https://github.com/weiya711/sam.git && \
+RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   cd /aha/sam && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/sam/ && \
