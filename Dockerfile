@@ -167,7 +167,8 @@ RUN \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/sam/ && \
   ln -s /aha/.git/modules/sam/ .git && \
-  git checkout `cat /tmp/HEAD`
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
 COPY ./sam /aha/sam
-RUN cd /aha/sam && make sam && \
+RUN cd /aha/sam && ls -l .git && ls -l .git/ && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
