@@ -174,3 +174,4 @@ RUN cd /aha/sam && \
   (ls -l .git || echo okay) && (cat .git || echo okay2) && (ls ../.git/modules/sam || echo okay3) && \
   make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
