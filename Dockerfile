@@ -257,7 +257,6 @@ RUN echo "source /aha/bin/activate"        >> /root/.bashrc && \
 # Restore halide distrib files on every container startup
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
 
-
 # Cleanup / image-size-reduction notes:
 # 
 # - cannot delete `clockwork/barvinok` directory entirely because
