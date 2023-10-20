@@ -171,7 +171,7 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = []
     elif args.config == "pr":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = [
             "matmul_ijk",
             "mat_mattransmul",
@@ -196,7 +196,7 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = ["conv5_1"]
     elif args.config == "daily":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
             "vec_elemmul",
@@ -230,7 +230,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "full":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = [
             "mat_elemadd",
             "mat_elemadd3",
@@ -294,7 +294,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "resnet":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = []
         glb_tests = []
         resnet_tests = [
