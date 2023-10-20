@@ -32,16 +32,6 @@ steps:
         git clean -ffxdq
         set +x
 
-        # Use this hack to (temporarily) use dev branches during development
-        USING_MASTER=; DEV=aha-no-heroku-cleanup
-        if [ "$$DEV" ]; then
-            git fetch -v --prune -- origin $$DEV || USING_MASTER=true
-            git checkout $$DEV                   || USING_MASTER=true
-            if ! [ "$$USING_MASTER" ]; then
-                msg="### WARNING Using dev branch '$${DEV}' instead of master"
-                buildkite-agent annotate --style "warning" --context dev "$$msg"
-            fi
-        fi
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
         # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
@@ -100,7 +90,6 @@ steps:
         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
-          - "./temp:/buildkite:rw"
         # skip-checkout: true
         mount-checkout: false
         propagate-environment: true
@@ -167,6 +156,7 @@ steps:
           if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
               test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
           fi
+          /bin/rm -rf temp
 
           # status-update will magically override "success" with "failure" as appropriate!
           # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
