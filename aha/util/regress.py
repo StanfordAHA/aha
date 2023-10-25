@@ -171,7 +171,7 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = []
     elif args.config == "pr":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = [
             "matmul_ijk",
             "mat_mattransmul",
@@ -179,6 +179,8 @@ def dispatch(args, extra_args=None):
             "vec_identity",
             "vec_elemadd",
             "vec_elemmul",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
         ]
         glb_tests = [
             "apps/pointwise",
@@ -194,7 +196,7 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = ["conv5_1"]
     elif args.config == "daily":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
             "vec_elemmul",
@@ -209,6 +211,9 @@ def dispatch(args, extra_args=None):
             "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
+            "matmul_ijk",
         ]
         glb_tests = [
             "apps/gaussian",
@@ -225,7 +230,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "full":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = [
             "mat_elemadd",
             "mat_elemadd3",
@@ -249,6 +254,8 @@ def dispatch(args, extra_args=None):
             "vec_elemmul",
             "vec_identity",
             "vec_scalar_mul",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
         ]
         glb_tests = [
             "apps/pointwise",
@@ -287,7 +294,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "resnet":
-        width, height = 32, 16
+        width, height = 28, 16
         sparse_tests = []
         glb_tests = []
         resnet_tests = [

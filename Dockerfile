@@ -1,3 +1,21 @@
+# 10/17/2023
+# If we put most-likely-to change submodules LAST in Dockerfile, we can
+# maximize cache usage and minimize average build time.  A histogram of
+# most-recent 256 submodule changes came up with this list.
+# 
+#       ..<others w lower frequency occluded>..
+#       6 kratos <kratos was responsible for 6 of the last 256 changes>
+#       8 gemstone
+#       8 Halide-to-Hardware
+#       8 MetaMapper
+#      16 canal
+#      16 clockwork
+#      16 sam
+#      35 lake
+#      36 archipelago
+#      85 garnet
+#      ..<garnet is the submodule that changed the most>..
+
 FROM docker.io/ubuntu:20.04
 LABEL description="garnet"
 
@@ -61,10 +79,19 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Prepare python environment
-# Don't copy all of aha else cannot cache subsequent layers...
+# Create an aha directory and prep a python environment. 
+# Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
 RUN mkdir -p /aha && cd /aha && python -m venv .
+
+# These packages seem stable/cacheable, put them near the BEGINNING
+WORKDIR /aha
+RUN source bin/activate && \
+  pip install urllib3==1.26.15 && \
+  pip install wheel six && \
+  pip install systemrdl-compiler peakrdl-html && \
+  pip install packaging==21.3 && \
+  echo DONE
 
 # Pono
 COPY ./pono /aha/pono
@@ -117,6 +144,14 @@ RUN export COREIR_DIR=/aha/coreir && make lib
 ENV GARNET_HOME=/aha/garnet
 ENV MFLOWGEN=/aha/mflowgen
 
+# Install torch (need big tmp folder)
+WORKDIR /aha
+RUN source /aha/bin/activate && \
+  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
+  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  echo "# Remove 700M tmp files created during install" && \
+  rm -rf $TMPDIR
+
 # clockwork
 COPY clockwork /aha/clockwork
 WORKDIR /aha/clockwork
@@ -141,38 +176,64 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
       rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
       rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
-    echo DONE    
+    echo DONE
 
-# Sam - uses aha .git directory (1GB) so may as well just bring in all of aha here
-COPY . /aha
-WORKDIR /aha/sam
-RUN make sam
-RUN source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+# Sam 1 - clone and set up sam
+COPY ./.git/modules/sam/HEAD /tmp/HEAD
+RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
+  cd /aha/sam && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/sam/ && \
+  ln -s /aha/.git/modules/sam/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
-# Install torch (need big tmp folder)
-WORKDIR /aha
-RUN source /aha/bin/activate && \
-  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
-  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
-  echo "# Remove 700M tmp files created during install" && \
-  rm -rf $TMPDIR
+# Sam 2 - build sam
+COPY ./sam /aha/sam
+RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
+  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
 # Final pip installs: AHA Tools etc.
-WORKDIR /aha
-RUN source bin/activate && \
-  pip install urllib3==1.26.15 && \
-  pip install wheel six && \
-  pip install systemrdl-compiler peakrdl-html && \
-  pip install packaging==21.3 && \
-  echo DONE
 
-# Install aha tools etc.
+# Note kratos is slow but stable; maybe it should be installed much earlier in dockerfile
+
+# For "aha deps install"; copy all the modules that not yet been copied
+COPY ./archipelago /aha/archipelago
+COPY ./ast_tools /aha/ast_tools
+# COPY ./BufferMapping /aha/BufferMapping
+COPY ./canal /aha/canal
+# COPY ./cgra_pnr/cyclone /aha/cgra_pnr/cyclone
+# COPY ./cgra_pnr/thunder /aha/cgra_pnr/thunder
+COPY ./cgra_pnr /aha/cgra_pnr
+COPY ./cosa /aha/cosa
+COPY ./fault /aha/fault
+COPY ./garnet /aha/garnet
+COPY ./gemstone /aha/gemstone
+COPY ./hwtypes /aha/hwtypes
+COPY ./kratos /aha/kratos
+COPY ./lake /aha/lake
+COPY ./lassen /aha/lassen
+COPY ./magma /aha/magma
+COPY ./mantle /aha/mantle
+COPY ./MetaMapper /aha/MetaMapper
+COPY ./mflowgen /aha/mflowgen
+COPY ./peak /aha/peak
+COPY ./peak_generator /aha/peak_generator
+COPY ./pycoreir /aha/pycoreir
+
+# Install aha tools /aha/aha/
+COPY ./setup.py /aha/setup.py
+COPY ./aha /aha/aha
+
 WORKDIR /aha
 RUN source bin/activate && \
+  echo "--- ..Final aha deps install" && \
   pip install -e . && \
   aha deps install
 
+# This should go as late in Docker file as possible; it brings
+# in EVERYTHING. Anything from here on down CANNOT BE CACHED.
 WORKDIR /aha
+COPY . /aha
 
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
@@ -195,7 +256,6 @@ RUN echo "source /aha/bin/activate"        >> /root/.bashrc && \
 
 # Restore halide distrib files on every container startup
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
-
 
 # Cleanup / image-size-reduction notes:
 # 
