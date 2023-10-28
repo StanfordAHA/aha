@@ -77,7 +77,7 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Amber Gold RTL"
+- label: ":hammer: Amber Gold RTL 1m"
   key: "goldcheck-amber"
   depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
@@ -85,12 +85,32 @@ steps:
   commands:
     - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
   plugins:
-    - uber-workflow/run-without-clone: # skip-checkout (below) does not suffice!
+    - uber-workflow/run-without-clone:
     - docker#v3.2.0:
         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
-        # skip-checkout: true
+        mount-checkout: false
+        propagate-environment: true
+        environment:
+          - CONFIG
+          - FLOW_REPO
+        shell: ["/bin/bash", "-e", "-c"]
+  agents:
+    docker: true
+
+- label: ":hammer: Onyx Gold RTL 1m"
+  key: "goldcheck-onyx"
+  depends_on: "docker-build"
+  # Set soft_fail so that failing gold check does not fail pipeline.
+  soft_fail: true
+  commands:
+    - set -x; /aha/aha/bin/rtl-goldcheck.sh onyx
+  plugins:
+    - uber-workflow/run-without-clone:
+    - docker#v3.2.0:
+        volumes:
+          - "/cad/:/cad"
         mount-checkout: false
         propagate-environment: true
         environment:
@@ -105,10 +125,9 @@ steps:
   depends_on: "docker-build"
 
   plugins:
-    - uber-workflow/run-without-clone: # skip-checkout alone (below) did not do the trick!
+    - uber-workflow/run-without-clone:
     - docker#v3.2.0:
         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        # image: stanfordaha/garnet:latest
         volumes:
           - "/cad/:/cad"
           - "./temp:/buildkite:rw"
@@ -209,6 +228,7 @@ steps:
   depends_on:
   - "integration-tests"
   - "goldcheck-amber"
+  - "goldcheck-onyx"
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
   - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
