@@ -214,6 +214,10 @@ def dispatch(args, extra_args=None):
             "mat_mask_tri",
             "mat_vecmul_iter",
             "matmul_ijk",
+            "matmul_ijk_crddrop",
+            "spmm_ijk_crddrop",
+            "masked_broadcast",
+            "trans_masked_broadcast"
         ]
         glb_tests = [
             "apps/gaussian",
