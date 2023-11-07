@@ -46,6 +46,7 @@ def gen_garnet(width, height):
                 "--rv",
                 "--sparse-cgra",
                 "--sparse-cgra-combined",
+                "--glb_tile_mem_size", str(128),
             ]
         )
     return time.time() - start
