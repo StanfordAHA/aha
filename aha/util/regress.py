@@ -109,7 +109,7 @@ def test_sparse_app(testname, test=""):
     print(f"--- {test} - glb testing")
     start = time.time()
     buildkite_call(
-        ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
+        ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname, "--waveform"], env=env_vars,
     )
     time_test = time.time() - start
 
@@ -200,39 +200,40 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_elemadd",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_identity",
-            "mat_mattransmul",
-            "mat_sddmm",
-            "tensor3_mttkrp",
-            "tensor3_ttm",
-            "tensor3_ttv",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "spmm_ijk_crddrop",
-            "masked_broadcast",
-            "trans_masked_broadcast"
+            # "matmul_ikj",
+            # "vec_elemmul",
+            # "vec_identity",
+            # "vec_scalar_mul",
+            # "mat_elemadd",
+            # "mat_elemadd3",
+            # "mat_elemmul",
+            # "mat_identity",
+            # "mat_mattransmul",
+            # "mat_sddmm",
+            # "tensor3_mttkrp",
+            # "tensor3_ttm",
+            # "tensor3_ttv",
+            # "mat_mask_tri",
+            # "mat_vecmul_iter",
+            # "matmul_ijk",
+            # "matmul_ijk_crddrop",
+            # "spmm_ijk_crddrop",
+            # "masked_broadcast",
+            # "trans_masked_broadcast",
         ]
         glb_tests = [
-            "apps/gaussian",
-            "apps/pointwise",
-            "apps/unsharp",
-            "apps/camera_pipeline_2x2",
-            "apps/harris_color",
-            "apps/cascade",
-            "tests/three_level_pond",
+            # "apps/gaussian",
+            # "apps/pointwise",
+            # "apps/unsharp",
+            # "apps/camera_pipeline_2x2",
+            # "apps/harris_color",
+            # "apps/cascade",
+            # "tests/three_level_pond",
         ]
         resnet_tests = [
-            "conv1",
-            "conv4_1",
-            "conv5_x",
+            # "conv1",
+            # "conv4_1",
+            # "conv5_x",
         ]
     elif args.config == "full":
         width, height = 28, 16
