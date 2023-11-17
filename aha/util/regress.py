@@ -109,7 +109,7 @@ def test_sparse_app(testname, test=""):
     print(f"--- {test} - glb testing")
     start = time.time()
     buildkite_call(
-        ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname, "--waveform"], env=env_vars,
+        ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
     )
     time_test = time.time() - start
 
