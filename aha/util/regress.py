@@ -218,7 +218,7 @@ def dispatch(args, extra_args=None):
             "mat_vecmul_iter",
             "matmul_ijk",
             "matmul_ijk_crddrop",
-            "matmul_ijk_crddrop_matmul",
+            "matmul_ijk_crddrop_relu",
             "spmm_ijk_crddrop",
             "spmm_ijk_crdddrop_relu",
             "masked_broadcast",
