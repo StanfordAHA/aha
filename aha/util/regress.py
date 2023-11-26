@@ -220,7 +220,7 @@ def dispatch(args, extra_args=None):
             "matmul_ijk_crddrop",
             "matmul_ijk_crddrop_relu",
             "spmm_ijk_crddrop",
-            "spmm_ijk_crdddrop_relu",
+            "spmm_ijk_crddrop_relu",
             "masked_broadcast",
             "trans_masked_broadcast",
         ]
