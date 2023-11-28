@@ -200,10 +200,12 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
+            "matmul_ikj",
             "vec_elemmul",
             "vec_identity",
             "vec_scalar_mul",
             "mat_elemadd",
+            "mat_elemadd_relu",
             "mat_elemadd3",
             "mat_elemmul",
             "mat_identity",
@@ -215,6 +217,12 @@ def dispatch(args, extra_args=None):
             "mat_mask_tri",
             "mat_vecmul_iter",
             "matmul_ijk",
+            "matmul_ijk_crddrop",
+            "matmul_ijk_crddrop_relu",
+            "spmm_ijk_crddrop",
+            "spmm_ijk_crddrop_relu",
+            "masked_broadcast",
+            "trans_masked_broadcast",
         ]
         glb_tests = [
             "apps/gaussian",
