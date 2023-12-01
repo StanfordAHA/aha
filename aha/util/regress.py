@@ -32,7 +32,7 @@ def buildkite_call(command, env={}):
 
 
 def gen_garnet(width, height):
-    print("--- Generating Garnet")
+    print("--- Generating Garnet", flush=True)
     start = time.time()
     if not os.path.exists("/aha/garnet/garnet.v"):
         buildkite_call(
@@ -56,7 +56,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height):
     if len(sparse_tests) == 0:
         return 0
     
-    print(f"--- mapping all tests")
+    print(f"--- mapping all tests", flush=True)
     start = time.time()
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
@@ -99,14 +99,14 @@ def test_sparse_app(testname, test=""):
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
 
     app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
-    print(app_path)
+    print(app_path, flush=True)
 
     try:
         subprocess.call(["make", "clean"], cwd=app_path)
     except:
         pass
 
-    print(f"--- {test} - glb testing")
+    print(f"--- {test} - glb testing", flush=True)
     start = time.time()
     buildkite_call(
         ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
@@ -121,7 +121,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
     print(f"--- {testname}")
     print(f"--- {testname} - compiling and mapping")
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
-    print(app_path)
+    print(app_path, flush=True)
 
     if layer is not None:
         layer_array = ["--layer", layer]
@@ -137,7 +137,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array)
     time_compile = time.time() - start
 
-    print(f"--- {testname} - pnr and pipelining")
+    print(f"--- {testname} - pnr and pipelining", flush=True)
     start = time.time()
 
     buildkite_call(
@@ -152,7 +152,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
     )
     time_map = time.time() - start
 
-    print(f"--- {testname} - glb testing")
+    print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
     buildkite_call(["aha", "test", test])
     time_test = time.time() - start
@@ -323,7 +323,7 @@ def dispatch(args, extra_args=None):
     else:
         raise NotImplementedError(f"Unknown test config: {args.config}")
 
-    print(f"--- Running regression: {args.config}")
+    print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
@@ -342,7 +342,7 @@ def dispatch(args, extra_args=None):
         t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, layer=test, env_parameters=str(args.env_parameters))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
-    print(tabulate(info, headers=["step", "total", "compile", "map", "test"]))
+    print(tabulate(info, headers=["step", "total", "compile", "map", "test"]), flush=True)
 
 
 def gather_tests(tags):
