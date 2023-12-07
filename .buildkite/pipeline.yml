@@ -197,6 +197,7 @@ steps:
   - apt update
   - apt install time
   - ls /aha
+  - echo "--- PIP INSTALL importlib_resources"; pip install importlib_resources
   - pip freeze
   - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
   # Run regression tests
