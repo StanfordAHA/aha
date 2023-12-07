@@ -198,8 +198,9 @@ steps:
   - apt install time
   - ls /aha
   - echo "--- PIP INSTALL importlib_resources"; pip install importlib_resources
-  - pip freeze
-  - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
+  - echo "--- PIP FREEZE"; pip freeze
+  - echo "--- GARNET UPDATE"; (cd garnet; git fetch origin; git checkout refactor)
+  - (cd garnet && echo -n "garnet " && git rev-parse --verify HEAD)
   # Run regression tests
   - if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config";
