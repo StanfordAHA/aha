@@ -16,12 +16,14 @@ def add_subparser(subparser):
     parser.set_defaults(dispatch=dispatch)
 
 
-def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log"):
+def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log", do_cmd=subprocess.check_call):
+    if do_cmd == subprocess.check_call: print('--- PNR/scl: check_call (run) garnet.py')
+    elif do_cmd == subprocess.Popen:    print('--- PNR/scl: Popen (background) garnet.py')
     if log:
         print("[log] Command  : {}".format(" ".join(cmd)))
         print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
         with open(log_file_path, "a") as flog:
-            subprocess.check_call(
+            do_cmd(
                 cmd,
                 cwd=cwd,
                 env=env,
@@ -30,7 +32,7 @@ def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log"):
             )
         print("done")
     else:
-        subprocess.check_call(
+        do_cmd(
             cmd,
             env=env,
             cwd=cwd
@@ -114,14 +116,26 @@ def dispatch(args, extra_args=None):
         "--pipeline-pnr"
     ]
 
+    # When running as daemon, must use non-blocking "Popen" and not "check_call"
+    if '--daemon' in extra_args and not 'use' in extra_args:
+        do_cmd = subprocess.Popen
+    else:
+        do_cmd = subprocess.check_call
+
     subprocess_call_log (
         cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
         cwd=args.aha_dir / "garnet",
         log=args.log,
         log_file_path=log_file_path,
-        env=env
+        env=env,
+        do_cmd=do_cmd,
     )
-    
+
+    # When running as a daemon, this will tell us when the PNR is done
+    if '--daemon' in extra_args:
+        print(f'--- BEGIN DAEMON FOUND in pnr; waiting now...')
+        subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
+
     # generate meta_data.json file
     if not args.no_parse:
         if not str(args.app).startswith("handcrafted"):
@@ -139,3 +153,4 @@ def dispatch(args, extra_args=None):
                 env=env
             )
 
+    print('--- DONE PNR'); sys.stdout.flush(); sys.stderr.flush(); sys.stdin.flush()
