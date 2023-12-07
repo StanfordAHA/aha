@@ -359,6 +359,7 @@ def dispatch(args, extra_args=None):
         t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, layer=test, env_parameters=str(args.env_parameters))
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
+    print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"]), flush=True)
 
 
