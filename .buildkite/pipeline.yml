@@ -208,7 +208,7 @@ steps:
     else
       echo "Trigger came from aha repo; use default config";
     fi;
-  - aha regress $$CONFIG
+  - aha regress $$CONFIG --daemon auto
   # We report success to the aha-flow app by removing the .TEST file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
