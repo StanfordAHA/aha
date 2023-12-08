@@ -127,7 +127,7 @@ def dispatch(args, extra_args=None):
         print(f"--- found the --daemon", flush=True)
         print(f"--- does daemon exist yet?", flush=True)
         cmd = [sys.executable, "garnet.py", "--daemon", "status"]
-        p = subprocess.run(cmd, text=True,
+        p = subprocess.run(cmd, text=True, cwd=args.aha_dir / "garnet",
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         print(f"--- daemon status returned: {p.stdout}", flush=True)
 
