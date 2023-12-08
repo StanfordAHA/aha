@@ -140,7 +140,6 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
     print(f"--- {testname} - pnr and pipelining", flush=True)
     start = time.time()
 
-    print(f"env_parameters={env_parameters}", flush=True)
     buildkite_call(
         [
             "aha",
