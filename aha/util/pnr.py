@@ -17,8 +17,8 @@ def add_subparser(subparser):
 
 
 def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log", do_cmd=subprocess.check_call):
-    if do_cmd == subprocess.check_call: print('--- PNR/scl: check_call (run) garnet.py')
-    elif do_cmd == subprocess.Popen:    print('--- PNR/scl: Popen (background) garnet.py')
+    # if do_cmd == subprocess.check_call: print('--- PNR/scl: check_call (run) garnet.py')
+    # elif do_cmd == subprocess.Popen:    print('--- PNR/scl: Popen (background) garnet.py')
     if log:
         print("[log] Command  : {}".format(" ".join(cmd)))
         print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
