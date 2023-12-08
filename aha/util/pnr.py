@@ -129,6 +129,8 @@ def dispatch(args, extra_args=None):
         cmd = [sys.executable, "garnet.py", "--daemon", "status"]
         p = subprocess.run(cmd, text=True,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        print(f"--- daemon status returned: {p.stdout}", flush=True)
+
         launch_daemon = 'no daemon found' in p.stdout
         if launch_daemon:
             print(f"--- found no daemon, setting do_cmd to Popen", flush=True)
