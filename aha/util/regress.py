@@ -148,7 +148,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
             test,
             "--width", str(width),
             "--height", str(height),
-            "--daemon auto",
+            "--daemon", "auto",
             "--env-parameters", env_parameters,
         ] + layer_array
     )
