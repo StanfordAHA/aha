@@ -117,10 +117,16 @@ def dispatch(args, extra_args=None):
     ]
 
     # When running as daemon, must use non-blocking "Popen" and not "check_call"
-    if '--daemon' in extra_args and not 'use' in extra_args:
-        do_cmd = subprocess.Popen
-    else:
-        do_cmd = subprocess.check_call
+    # if '--daemon' in extra_args and not 'use' in extra_args:
+
+    launch_daemon = False
+    do_cmd = subprocess.check_call
+    if '--daemon' in extra_args:
+        cmd = [sys.executable, "garnet.py", "--daemon", "status"]
+        p = subprocess.run(cmd, text=True,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        launch_daemon = 'no daemon found' in p.stdout
+        if launch_daemon: do_cmd = subprocess.Popen
 
     subprocess_call_log (
         cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
@@ -131,9 +137,9 @@ def dispatch(args, extra_args=None):
         do_cmd=do_cmd,
     )
 
-    # When running as a daemon, this will tell us when the PNR is done
-    if '--daemon' in extra_args:
-        print(f'--- BEGIN DAEMON FOUND in pnr; waiting now...')
+    # When launching a new daemon, this will tell us when the PNR is done
+    if launch_daemon:
+        print(f'--- BEGIN LAUNCHED NEW DAEMON in pnr; waiting now...')
         subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
 
     # generate meta_data.json file
