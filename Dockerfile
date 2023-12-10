@@ -91,6 +91,7 @@ RUN source bin/activate && \
   pip install wheel six && \
   pip install systemrdl-compiler peakrdl-html && \
   pip install packaging==21.3 && \
+  pip install importlib_resources && \
   echo DONE
 
 # Pono
