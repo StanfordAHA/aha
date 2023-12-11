@@ -327,22 +327,6 @@ def dispatch(args, extra_args=None):
 
 
     print(f"--- Running regression: {args.config}", flush=True)
-    ##################################################################
-
-    print(f"--- TEMPORARY OVERRIDE, running quick-dev regressions instead", flush=True)
-    width, height = 28, 16
-    sparse_tests = [
-            "matmul_ijk",
-    ]
-    glb_tests = [
-            "apps/pointwise",
-            "tests/ushift",
-            "tests/arith",
-            "tests/absolute",
-    ]
-    resnet_tests = []
-
-    ##################################################################
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
