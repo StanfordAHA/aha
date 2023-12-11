@@ -197,8 +197,6 @@ steps:
   - apt update
   - apt install time
   - ls /aha
-  # Temporarily(?) install importlib_resources until we can update dockerfile maybe?
-  - echo "--- PIP INSTALL importlib_resources"; pip install importlib_resources
   - echo "--- PIP FREEZE"; pip freeze
   - echo "--- GARNET UPDATE"; (cd garnet; git fetch origin; git checkout refactor)
   - (cd garnet && echo -n "garnet " && git rev-parse --verify HEAD)
