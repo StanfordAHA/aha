@@ -143,7 +143,7 @@ def dispatch(args, extra_args=None):
         do_cmd=do_cmd,
     )
 
-    # Daemon runs in the background; this tells us when the PNR is done
+    # Daemon runs in the background; need this to tell us when the PNR is done
     if need_daemon:
         print(f'--- BEGIN LAUNCHED NEW DAEMON in pnr; waiting now...')
         subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
