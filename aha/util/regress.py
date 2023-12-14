@@ -222,6 +222,8 @@ def dispatch(args, extra_args=None):
             "matmul_ijk_crddrop_relu",
             "spmm_ijk_crddrop",
             "spmm_ijk_crddrop_relu",
+            "spmv",
+            "spmv_relu",
             "masked_broadcast",
             "trans_masked_broadcast",
         ]
@@ -232,11 +234,13 @@ def dispatch(args, extra_args=None):
             "apps/camera_pipeline_2x2",
             "apps/harris_color",
             "apps/cascade",
+            "apps/maxpooling",
             "tests/three_level_pond",
         ]
         resnet_tests = [
             "conv1",
             "conv4_1",
+            "conv4_x",
             "conv5_x",
         ]
     elif args.config == "full":
@@ -292,6 +296,7 @@ def dispatch(args, extra_args=None):
             "apps/unsharp",
             "apps/harris_color",
             "apps/camera_pipeline_2x2",
+            "apps/maxpooling",
         ]
         resnet_tests = [
             "conv1",
