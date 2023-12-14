@@ -206,6 +206,7 @@ def dispatch(args, extra_args=None):
             "vec_scalar_mul",
             "mat_elemadd",
             "mat_elemadd_relu",
+            "mat_elemadd_leakyrelu_exp",
             "mat_elemadd3",
             "mat_elemmul",
             "mat_identity",

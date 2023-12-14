@@ -105,6 +105,8 @@ def dispatch(args, extra_args=None):
         elif gold_matrix.dtype == numpy.float32:
             # truncating to bfloat16 here again just to be extra extra save
             for idx, x in numpy.ndenumerate(gold_matrix):
+                if x == 0.0:
+                    continue
                 gold_matrix[idx] = bfbin2float(float2bfbin(x))
 
         name_line = None
