@@ -121,10 +121,11 @@ def dispatch(args, extra_args=None):
     need_daemon = False
     do_cmd = subprocess.check_call
     if '--daemon' in extra_args:
+
+        # Do a '--daemon status' to see if daemon exists yet
         cmd = [sys.executable, "garnet.py", "--daemon", "status"]
         p = subprocess.run(cmd, text=True, cwd=args.aha_dir / "garnet",
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # print(f"--- daemon status returned: {p.stdout}", flush=True)
 
         # When running as daemon, must use non-blocking "Popen" and not "check_call"
         need_daemon = 'no daemon found' in p.stdout
