@@ -3,7 +3,6 @@ import subprocess
 import sys
 import os
 import numpy
-from lassen.utils import float2bfbin, bfbin2float
 
 
 def add_subparser(subparser):
@@ -103,11 +102,8 @@ def dispatch(args, extra_args=None):
         if gold_matrix.dtype == int:
             gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
         elif gold_matrix.dtype == numpy.float32:
-            # truncating to bfloat16 here again just to be extra extra save
-            for idx, x in numpy.ndenumerate(gold_matrix):
-                if x == 0.0:
-                    continue
-                gold_matrix[idx] = bfbin2float(float2bfbin(x))
+            # the gold matrix were already in bf16, no need to truncate again
+            pass
 
         name_line = None
         with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
