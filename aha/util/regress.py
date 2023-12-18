@@ -6,7 +6,6 @@ import sys
 import os
 from tabulate import tabulate
 import time
-from sam.onyx.generate_matrices import *
 import tempfile
 
 
