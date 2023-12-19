@@ -296,6 +296,7 @@ def dispatch(args, extra_args=None):
             "apps/harris_color",
             "apps/camera_pipeline_2x2",
             "apps/maxpooling",
+            "apps/matrix_multiplication"
         ]
         resnet_tests = [
             "conv1",
