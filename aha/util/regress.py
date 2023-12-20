@@ -52,7 +52,7 @@ def gen_garnet(width, height):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data):
     if len(sparse_tests) == 0:
         return 0
     
@@ -62,35 +62,59 @@ def generate_sparse_bitstreams(sparse_tests, width, height):
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
-    buildkite_call(
-        [
-            "python",
-            "/aha/garnet/tests/test_memory_core/build_tb.py",
-            "--ic_fork",
-            "--sam_graph", *all_sam_graphs,
-            "--seed", f"{0}",
-            "--dump_bitstream",
-            "--add_pond",
-            "--combined",
-            "--pipeline_scanner",
-            "--base_dir",
-            "/aha/garnet/SPARSE_TESTS/",
-            "--just_glb",
-            "--dump_glb",
-            "--fiber_access",
-            #"--give_tensor",
-            #"--tensor_locs",
-            #"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
-            "--width", str(width),
-            "--height", str(height),
-        ],
-        env=env_vars,
-    )
+    if(seed_flow):
+        buildkite_call(
+            [
+                "python",
+                "/aha/garnet/tests/test_memory_core/build_tb.py",
+                "--ic_fork",
+                "--sam_graph", *all_sam_graphs,
+                "--seed", f"{0}",
+                "--dump_bitstream",
+                "--add_pond",
+                "--combined",
+                "--pipeline_scanner",
+                "--base_dir",
+                "/aha/garnet/SPARSE_TESTS/",
+                "--just_glb",
+                "--dump_glb",
+                "--fiber_access",
+                "--width", str(width),
+                "--height", str(height),
+            ],
+            env=env_vars,
+        )
+    else: 
+        buildkite_call(
+            [
+                "python",
+                "/aha/garnet/tests/test_memory_core/build_tb.py",
+                "--ic_fork",
+                "--sam_graph", *all_sam_graphs,
+                "--seed", f"{0}",
+                "--dump_bitstream",
+                "--add_pond",
+                "--combined",
+                "--pipeline_scanner",
+                "--base_dir",
+                "/aha/garnet/SPARSE_TESTS/",
+                "--just_glb",
+                "--dump_glb",
+                "--fiber_access",
+                "--give_tensor",
+                "--tensor_locs",
+                "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
+                "--width", str(width),
+                "--height", str(height),
+                "--suitesparse_data", *suitesparse_data,
+            ],
+            env=env_vars,
+        )
     time_map = time.time() - start
     return time_map
 
 
-def test_sparse_app(testname, test=""):
+def test_sparse_app(testname, seed_flow, suitesparse_data, test=""):
     if test == "":
         test = testname
 
@@ -99,6 +123,7 @@ def test_sparse_app(testname, test=""):
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
 
     app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    #app_path = f" ../../../garnet/SPARSE_TESTS/matmul_ijk_ch3-3-b1/GLB_DIR/matmul_ijk_combined_seed_ch3-3-b1"
     print(app_path)
 
     try:
@@ -107,12 +132,34 @@ def test_sparse_app(testname, test=""):
         pass
 
     print(f"--- {test} - glb testing")
-    start = time.time()
-    buildkite_call(
-        ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
-    )
-    time_test = time.time() - start
+    if(seed_flow):
+        print("RUNNING SEED FLOW")
+        start = time.time()
+        buildkite_call(
+            ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
+        )
+        #buildkite_call(
+        #    ["aha", "test", app_path, "--sparse", "--sparse-test-name", "matmul_ijk", "--sparse-comparison", "/aha/garnet/SPARSE_TESTS/matmul_ijk_ch3-3-b1/GLB_DIR/matmul_ijk_combined_seed_ch3-3-b1"], env=env_vars,
+        #)
+        time_test = time.time() - start
+    else:
+        print("RUNNING SS FLOW")
+        start = time.time()
+        for suitesparse_datum in suitesparse_data:
+            buildkite_call(
+                ["aha", 
+                "test", 
+                f"../../../garnet/SPARSE_TESTS/{test}_{suitesparse_datum}/GLB_DIR/{test}_combined_seed_{suitesparse_datum}",  
+                "--sparse", 
+                "--sparse-test-name", 
+                f"{test}", 
+                "--sparse-comparison", 
+                f"/aha/garnet/SPARSE_TESTS/{test}_{suitesparse_datum}/GLB_DIR/{test}_combined_seed_{suitesparse_datum}/"
 
+                ], env=env_vars,
+            )
+
+        time_test = time.time() - start
     return 0, 0, time_test
 
 
@@ -161,6 +208,8 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 
 
 def dispatch(args, extra_args=None):
+    seed_flow = True
+    suitesparse_data = ["ch3-3-b1"]
     sparse_tests = []
     if args.config == "fast":
         width, height = 4, 4
@@ -175,27 +224,13 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "matmul_ijk",
-            "mat_mattransmul",
-            "mat_sddmm",
-            "vec_identity",
-            "vec_elemadd",
-            "vec_elemmul",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
+            "matmul_ikj",
+            "mat_elemadd",
+            "mat_elemadd3",
+            "mat_identity",
         ]
-        glb_tests = [
-            "apps/pointwise",
-            "tests/ushift",
-            "tests/arith",
-            "tests/absolute",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/uminmax",
-            "tests/rom",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-        ]
-        resnet_tests = ["conv5_1"]
+        glb_tests = []
+        resnet_tests = []
     elif args.config == "daily":
         width, height = 28, 16
         sparse_tests = [
@@ -328,10 +363,10 @@ def dispatch(args, extra_args=None):
     t = gen_garnet(width, height)
     info.append(["garnet", t])
 
-    generate_sparse_bitstreams(sparse_tests, width, height)
+    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data)
 
     for test in sparse_tests:
-        t0, t1, t2 = test_sparse_app(test)
+        t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
