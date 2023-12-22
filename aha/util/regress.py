@@ -8,6 +8,7 @@ from tabulate import tabulate
 import time
 from sam.onyx.generate_matrices import *
 import tempfile
+import glob
 
 
 def add_subparser(subparser):
@@ -52,7 +53,7 @@ def gen_garnet(width, height):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs):
     if len(sparse_tests) == 0:
         return 0
     
@@ -106,7 +107,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
                 "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
                 "--width", str(width),
                 "--height", str(height),
-                "--suitesparse_data", *suitesparse_data,
+                "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
             ],
             env=env_vars,
         )
@@ -114,7 +115,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     return time_map
 
 
-def test_sparse_app(testname, seed_flow, suitesparse_data, test=""):
+def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
     if test == "":
         test = testname
 
@@ -123,7 +124,6 @@ def test_sparse_app(testname, seed_flow, suitesparse_data, test=""):
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
 
     app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
-    #app_path = f" ../../../garnet/SPARSE_TESTS/matmul_ijk_ch3-3-b1/GLB_DIR/matmul_ijk_combined_seed_ch3-3-b1"
     print(app_path)
 
     try:
@@ -138,23 +138,24 @@ def test_sparse_app(testname, seed_flow, suitesparse_data, test=""):
         buildkite_call(
             ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
         )
-        #buildkite_call(
-        #    ["aha", "test", app_path, "--sparse", "--sparse-test-name", "matmul_ijk", "--sparse-comparison", "/aha/garnet/SPARSE_TESTS/matmul_ijk_ch3-3-b1/GLB_DIR/matmul_ijk_combined_seed_ch3-3-b1"], env=env_vars,
-        #)
         time_test = time.time() - start
     else:
         print("RUNNING SS FLOW")
         start = time.time()
-        for suitesparse_datum in suitesparse_data:
+        for ss_tile_pair in suitesparse_data_tile_pairs:
+            ss_tile_pair = ss_tile_pair.split("MAT_TMP_DIR/")[1]
+            ss_tile_pair_sparse_testname = ss_tile_pair.split("-")[0]
+            if ss_tile_pair_sparse_testname != testname:
+                continue
             buildkite_call(
                 ["aha", 
                 "test", 
-                f"../../../garnet/SPARSE_TESTS/{test}_{suitesparse_datum}/GLB_DIR/{test}_combined_seed_{suitesparse_datum}",  
+                f"../../../garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
                 "--sparse", 
                 "--sparse-test-name", 
                 f"{test}", 
                 "--sparse-comparison", 
-                f"/aha/garnet/SPARSE_TESTS/{test}_{suitesparse_datum}/GLB_DIR/{test}_combined_seed_{suitesparse_datum}/"
+                f"/aha/garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}/"
 
                 ], env=env_vars,
             )
@@ -209,7 +210,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 
 def dispatch(args, extra_args=None):
     seed_flow = True
-    suitesparse_data = ["ch3-3-b1"]
+    suitesparse_data = ["cage5", "ch3-3-b1"]
     sparse_tests = []
     if args.config == "fast":
         width, height = 4, 4
@@ -224,10 +225,7 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "matmul_ijk",
-            "matmul_ikj",
-            "mat_elemadd",
-            "mat_elemadd3",
-            "mat_identity",
+            "mat_elemadd"
         ]
         glb_tests = []
         resnet_tests = []
@@ -363,10 +361,34 @@ def dispatch(args, extra_args=None):
     t = gen_garnet(width, height)
     info.append(["garnet", t])
 
-    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data)
+    suitesparse_data_tile_pairs = []
+
+    if not(seed_flow):
+        if not os.path.exists("/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR"):
+            os.mkdir("/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR")
+
+        # Remove whatever is in MAT_TMP_DIR first
+        exit_status = os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/*")
+        if os.WEXITSTATUS(exit_status) != 0:
+            raise RuntimeError(f"Command 'rm -rf /aha/garnet/SPARSE_TESTS//MAT_TMP_DIR/*' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+        
+        for test in sparse_tests:
+            for suitesparse_datum in suitesparse_data:
+                command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                subprocess.call(command, shell=True)
+            this_sparse_test_tile_pairs = glob.glob(f"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/{test}*")
+            suitesparse_data_tile_pairs.extend(this_sparse_test_tile_pairs)
+
+    #if not(seed_flow):
+    #    suitesparse_data_tile_pairs = os.listdir("/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR")
+
+    print("HERE ARE THE SS DATA TILE PAIRS!")
+    print(suitesparse_data_tile_pairs)
+
+    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs)
 
     for test in sparse_tests:
-        t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data)
+        t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
