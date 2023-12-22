@@ -39,7 +39,6 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
             check=True,
             text=True,
             env=env,
-            capture_output=False,
     )
 
 
