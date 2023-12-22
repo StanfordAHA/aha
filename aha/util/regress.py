@@ -9,6 +9,7 @@ import time
 from sam.onyx.generate_matrices import *
 import tempfile
 import glob
+from collections import defaultdict
 
 
 def add_subparser(subparser):
@@ -22,13 +23,23 @@ def buildkite_filter(s):
     return re.sub("^---", " ---", s, flags=re.MULTILINE)
 
 
-def buildkite_call(command, env={}):
+def buildkite_call(command, env={}, return_output=False, out_file=None):
     env = {**os.environ.copy(), **env}
-    app = subprocess.run(
-        command,
-        check=True,
-        text=True,
-        env=env,
+    if return_output:
+        app = subprocess.run(
+            command,
+            check=True,
+            text=True,
+            env=env,
+            stdout=out_file,
+        )
+    else: 
+        app = subprocess.run(
+            command,
+            check=True,
+            text=True,
+            env=env,
+            capture_output=False,
     )
 
 
@@ -142,23 +153,38 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
     else:
         print("RUNNING SS FLOW")
         start = time.time()
+        dataset_runtime_dict = defaultdict(float)
         for ss_tile_pair in suitesparse_data_tile_pairs:
             ss_tile_pair = ss_tile_pair.split("MAT_TMP_DIR/")[1]
             ss_tile_pair_sparse_testname = ss_tile_pair.split("-")[0]
             if ss_tile_pair_sparse_testname != testname:
                 continue
-            buildkite_call(
-                ["aha", 
-                "test", 
-                f"../../../garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
-                "--sparse", 
-                "--sparse-test-name", 
-                f"{test}", 
-                "--sparse-comparison", 
-                f"/aha/garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}/"
+            with open("/aha/garnet/aha_test_out.txt", 'w') as test_out_file:
+                buildkite_call(
+                    ["aha", 
+                    "test", 
+                    f"../../../garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
+                    "--sparse", 
+                    "--sparse-test-name", 
+                    f"{test}", 
+                    "--sparse-comparison", 
+                    f"/aha/garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}/"
+                    ], env=env_vars,
+                    return_output=True,
+                    out_file = test_out_file
+                )
+            command = "grep \"total time\" /aha/garnet/aha_test_out.txt"
+            result = subprocess.check_output(command, shell=True, encoding='utf-8')
+            total_time_line = result.split("\n")[0]
+            time_str = total_time_line.split(" ns")[0].split(" ")[-1]
+            time_value = float(time_str)
+            dataset = total_time_line.split("-")[2].split("_")[0]
+            dataset_runtime_dict[dataset] += time_value
 
-                ], env=env_vars,
-            )
+        with open("/aha/garnet/suitesparse_perf_out.txt", 'a') as perf_out_file:
+            for dataset, time_value in dataset_runtime_dict.items():
+                perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")    
+
 
         time_test = time.time() - start
     return 0, 0, time_test
@@ -209,8 +235,8 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = True
-    suitesparse_data = ["cage5", "ch3-3-b1"]
+    seed_flow = False
+    suitesparse_data = ["cage5", "football"]
     sparse_tests = []
     if args.config == "fast":
         width, height = 4, 4
@@ -225,7 +251,7 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "matmul_ijk",
-            "mat_elemadd"
+            "matmul_ikj"
         ]
         glb_tests = []
         resnet_tests = []
@@ -386,6 +412,12 @@ def dispatch(args, extra_args=None):
     print(suitesparse_data_tile_pairs)
 
     generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs)
+
+    if not(seed_flow):
+        if os.path.exists("/aha/garnet/suitesparse_perf_out.txt"):
+            os.system("rm /aha/garnet/suitesparse_perf_out.txt")
+        with open("/aha/garnet/suitesparse_perf_out.txt", 'w') as perf_out_file:
+            perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
     for test in sparse_tests:
         t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs)
