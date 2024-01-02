@@ -162,12 +162,11 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 def dispatch(args, extra_args=None):
     sparse_tests = []
     if args.config == "fast":
-        width, height = 4, 4
+        width, height = 32, 16
         sparse_tests = [
-            "vec_identity"
         ]
         glb_tests = [
-            "apps/pointwise"
+            "apps/matrix_multiplication"
         ]
         resnet_tests = []
     elif args.config == "pr":
