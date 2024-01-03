@@ -177,7 +177,8 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
             total_time_line = result.split("\n")[0]
             time_str = total_time_line.split(" ns")[0].split(" ")[-1]
             time_value = float(time_str)
-            dataset = total_time_line.split("-")[2].split("_")[0]
+            split_str = f"{testname}-"
+            dataset = total_time_line.split(split_str)[1].split("_")[0]
             dataset_runtime_dict[dataset] += time_value
 
         with open("/aha/garnet/suitesparse_perf_out.txt", 'a') as perf_out_file:
@@ -235,8 +236,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 
 def dispatch(args, extra_args=None):
     seed_flow = False
-    suitesparse_data = ["cage5", "football"]
-    sparse_tests = []
+    suitesparse_data = ["ch3-3-b1"]
     if args.config == "fast":
         width, height = 4, 4
         sparse_tests = [
@@ -250,7 +250,7 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "matmul_ijk",
-            "matmul_ikj"
+            "mat_elemadd"
         ]
         glb_tests = []
         resnet_tests = []
