@@ -329,7 +329,26 @@ def dispatch(args, extra_args=None):
         raise NotImplementedError(f"Unknown test config: {args.config}")
 
 
-    print(f"--- Running regression: {args.config}", flush=True)
+    # print(f"--- Running regression: {args.config}", flush=True)
+    # ------------------------------------------------------------------------
+
+
+
+    print(f"--- Running regression: DAEMONTEST", flush=True)
+    if True:
+        width, height = 28, 16
+        sparse_tests = [
+        ]
+        glb_tests = [
+            "apps/pointwise",
+            "apps/pointwise",
+        ]
+        resnet_tests = []
+
+
+
+
+    # ------------------------------------------------------------------------
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
