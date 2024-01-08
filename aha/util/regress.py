@@ -169,6 +169,15 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 def dispatch(args, extra_args=None):
     print(f"--- extra_args={extra_args}", flush=True)
     sparse_tests = []
+    # ------------------------------------------------------------------------
+    # 
+    # 
+    # 
+    args.config = "pr"
+    # 
+    # 
+    # 
+    # ------------------------------------------------------------------------
     if args.config == "fast":
         width, height = 4, 4
         sparse_tests = [
@@ -335,26 +344,7 @@ def dispatch(args, extra_args=None):
         raise NotImplementedError(f"Unknown test config: {args.config}")
 
 
-    # print(f"--- Running regression: {args.config}", flush=True)
-    # ------------------------------------------------------------------------
-
-
-
-    print(f"--- Running regression: DAEMONTEST", flush=True)
-    if True:
-        width, height = 28, 16
-        sparse_tests = [
-        ]
-        glb_tests = [
-            "apps/pointwise",
-            "apps/pointwise",
-        ]
-        resnet_tests = []
-
-
-
-
-    # ------------------------------------------------------------------------
+    print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height)
     info.append(["garnet", t])
