@@ -152,7 +152,6 @@ def test_dense_app(test, width, height, layer=None, env_parameters="", extra_arg
             test,
             "--width", str(width),
             "--height", str(height),
-            "--daemon", "auto",
             "--env-parameters", env_parameters,
         ] + use_daemon + layer_array
     )
