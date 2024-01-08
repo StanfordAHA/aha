@@ -142,8 +142,9 @@ def test_dense_app(test, width, height, layer=None, env_parameters="", extra_arg
     # To use daemon, call regress.py with args '--daemon auto'
     # --- extra_args=['--daemon', 'auto']
     use_daemon = []
-    if ('--daemon' in extra_args) and ('auto' in extra_args):
-        use_daemon = [ "--daemon", "auto" ]
+    if (extra_args):
+        if ('--daemon' in extra_args) and ('auto' in extra_args):
+            use_daemon = [ "--daemon", "auto" ]
 
     buildkite_call(
         [
