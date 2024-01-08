@@ -115,7 +115,7 @@ def test_sparse_app(testname, test=""):
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, layer=None, env_parameters=""):
+def test_dense_app(test, width, height, layer=None, env_parameters="", extra_args=None):
     testname = layer if layer is not None else test
     print(f"--- {testname}")
     print(f"--- {testname} - compiling and mapping")
@@ -356,7 +356,7 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
-        t0, t1, t2 = test_dense_app(test, width, height, env_parameters=str(args.env_parameters))
+        t0, t1, t2 = test_dense_app(test, width, height, env_parameters=str(args.env_parameters), extra_args=extra_args)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
