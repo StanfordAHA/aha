@@ -139,6 +139,12 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
     print(f"--- {testname} - pnr and pipelining", flush=True)
     start = time.time()
 
+    # To use daemon, call regress.py with args '--daemon auto'
+    # --- extra_args=['--daemon', 'auto']
+    use_daemon = []
+    if ('--daemon' in extra_args) and ('auto' in extra_args):
+        use_daemon = [ "--daemon", "auto" ]
+
     buildkite_call(
         [
             "aha",
@@ -148,7 +154,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
             "--height", str(height),
             "--daemon", "auto",
             "--env-parameters", env_parameters,
-        ] + layer_array
+        ] + use_daemon + layer_array
     )
     time_map = time.time() - start
 
