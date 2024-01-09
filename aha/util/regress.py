@@ -6,7 +6,6 @@ import sys
 import os
 from tabulate import tabulate
 import time
-from sam.onyx.generate_matrices import *
 import tempfile
 import glob
 from collections import defaultdict
@@ -264,6 +263,7 @@ def dispatch(args, extra_args=None):
             "vec_scalar_mul",
             "mat_elemadd",
             "mat_elemadd_relu",
+            "mat_elemadd_leakyrelu_exp",
             "mat_elemadd3",
             "mat_elemmul",
             "mat_identity",
@@ -279,6 +279,8 @@ def dispatch(args, extra_args=None):
             "matmul_ijk_crddrop_relu",
             "spmm_ijk_crddrop",
             "spmm_ijk_crddrop_relu",
+            "spmv",
+            "spmv_relu",
             "masked_broadcast",
             "trans_masked_broadcast",
         ]
@@ -353,6 +355,7 @@ def dispatch(args, extra_args=None):
             "apps/harris_color",
             "apps/camera_pipeline_2x2",
             "apps/maxpooling",
+            "apps/matrix_multiplication"
         ]
         resnet_tests = [
             "conv1",
