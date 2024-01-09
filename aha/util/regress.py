@@ -248,8 +248,23 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr":
         width, height = 28, 16
         sparse_tests = [
+            "vec_elemadd",
+            "vec_elemmul",
+            "vec_identity",
+            "vec_scalar_mul",
+            "mat_vecmul_ij",
+            "mat_elemadd",
+            "mat_elemadd_relu",
             "matmul_ijk",
-            "mat_elemadd"
+            "matmul_ijk_crddrop",
+            "matmul_ijk_crddrop_relu",
+            # Turned off until SUB ordering fixed in mapping
+            # 'mat_residual',
+            "mat_vecmul_iter",
+            "tensor3_elemadd",
+            "tensor3_ttm",
+            "tensor3_ttv",
+
         ]
         glb_tests = []
         resnet_tests = []
@@ -257,10 +272,10 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
-            "matmul_ikj",
             "vec_elemmul",
             "vec_identity",
             "vec_scalar_mul",
+            "mat_vecmul_ij",
             "mat_elemadd",
             "mat_elemadd_relu",
             "mat_elemadd_leakyrelu_exp",
@@ -268,21 +283,30 @@ def dispatch(args, extra_args=None):
             "mat_elemmul",
             "mat_identity",
             "mat_mattransmul",
-            "mat_sddmm",
-            "tensor3_mttkrp",
-            "tensor3_ttm",
-            "tensor3_ttv",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
             "matmul_ijk",
             "matmul_ijk_crddrop",
             "matmul_ijk_crddrop_relu",
+            "matmul_ikj",
+            "matmul_jik",
             "spmm_ijk_crddrop",
             "spmm_ijk_crddrop_relu",
             "spmv",
             "spmv_relu",
             "masked_broadcast",
             "trans_masked_broadcast",
+            # Turned off until SUB ordering fixed in mapping
+            # 'mat_residual',
+            "mat_sddmm",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
+            "tensor3_elemadd",
+            "tensor3_elemmul",
+            "tensor3_identity",
+            "tensor3_innerprod",
+            "tensor3_mttkrp",
+            "tensor3_ttm",
+            "tensor3_ttv",
+
         ]
         glb_tests = [
             "apps/gaussian",
@@ -303,18 +327,34 @@ def dispatch(args, extra_args=None):
     elif args.config == "full":
         width, height = 28, 16
         sparse_tests = [
+            "vec_elemadd",
+            "vec_elemmul",
+            "vec_identity",
+            "vec_scalar_mul",
+            "mat_vecmul_ij",
             "mat_elemadd",
+            "mat_elemadd_relu",
+            "mat_elemadd_leakyrelu_exp",
             "mat_elemadd3",
             "mat_elemmul",
             "mat_identity",
             "mat_mattransmul",
+            "matmul_ijk",
+            "matmul_ijk_crddrop",
+            "matmul_ijk_crddrop_relu",
+            "matmul_ikj",
+            "matmul_jik",
+            "spmm_ijk_crddrop",
+            "spmm_ijk_crddrop_relu",
+            "spmv",
+            "spmv_relu",
+            "masked_broadcast",
+            "trans_masked_broadcast",
             # Turned off until SUB ordering fixed in mapping
             # 'mat_residual',
             "mat_sddmm",
-            "mat_vecmul_ij",
-            "matmul_ijk",
-            "matmul_ikj",
-            "matmul_jik",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
             "tensor3_elemadd",
             "tensor3_elemmul",
             "tensor3_identity",
@@ -322,12 +362,7 @@ def dispatch(args, extra_args=None):
             "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
+
         ]
         glb_tests = [
             "apps/pointwise",
