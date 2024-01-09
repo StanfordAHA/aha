@@ -235,8 +235,8 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = False
-    suitesparse_data = ["ch3-3-b1"]
+    seed_flow = True 
+    suitesparse_data = ["football"]
     if args.config == "fast":
         width, height = 4, 4
         sparse_tests = [
@@ -311,6 +311,7 @@ def dispatch(args, extra_args=None):
             "mat_sddmm",
             "mat_vecmul_ij",
             "matmul_ijk",
+            "matmul_ikj",
             "matmul_jik",
             "tensor3_elemadd",
             "tensor3_elemmul",
