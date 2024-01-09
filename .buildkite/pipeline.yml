@@ -202,7 +202,7 @@ steps:
   - apt install time
   - ls /aha
   - echo    "--- PIP FREEZE"; pip freeze
-  - echo    "--- GARNET UPDATE";   (cd garnet; git fetch origin; git checkout master)
+  # - echo    "--- GARNET UPDATE";   (cd garnet; git fetch origin; git checkout master)
   - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
   - if test -e /buildkite/DO_PR; then
