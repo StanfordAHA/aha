@@ -115,7 +115,8 @@ def test_sparse_app(testname, test=""):
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, layer=None, env_parameters="", extra_args=None):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,):
+    env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
     print(f"--- {testname} - compiling and mapping")
@@ -167,17 +168,7 @@ def test_dense_app(test, width, height, layer=None, env_parameters="", extra_arg
 
 
 def dispatch(args, extra_args=None):
-    print(f"--- extra_args={extra_args}", flush=True)
     sparse_tests = []
-    # ------------------------------------------------------------------------
-    # 
-    # 
-    # 
-    args.config = "pr"
-    # 
-    # 
-    # 
-    # ------------------------------------------------------------------------
     if args.config == "fast":
         width, height = 4, 4
         sparse_tests = [
@@ -356,11 +347,13 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
-        t0, t1, t2 = test_dense_app(test, width, height, env_parameters=str(args.env_parameters), extra_args=extra_args)
+        t0, t1, t2 = test_dense_app(test, 
+                                    width, height, args.env_parameters, extra_args)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, layer=test, env_parameters=str(args.env_parameters))
+        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+                                    width, height, args.env_parameters, extra_args, layer=test)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
     print(f"+++ TIMING INFO", flush=True)

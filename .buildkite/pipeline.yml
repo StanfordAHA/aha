@@ -1,6 +1,6 @@
-# Now using daemon. To turn off daemon, search code below and change
-#   < aha regress $$CONFIG --daemon auto
-#   > aha regress $$CONFIG
+# To turn daemon on or off, search code below and change to one of:
+#   aha regress $$CONFIG --daemon auto  # Use daemon
+#   aha regress $$CONFIG                # No daemon
 
 env:
   CONFIG: ${CONFIG:-daily}
@@ -202,7 +202,6 @@ steps:
   - apt install time
   - ls /aha
   - echo    "--- PIP FREEZE"; pip freeze
-  # - echo    "--- GARNET UPDATE";   (cd garnet; git fetch origin; git checkout master)
   - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
   - if test -e /buildkite/DO_PR; then
