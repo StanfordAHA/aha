@@ -95,15 +95,10 @@ def dispatch(args, extra_args=None):
         if sparse_comp is None:
             sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0/"
 
+
+        tiles = 1
         # This is where we do the fallback comparison...
         # First get gold matrix from the output...
-        gold_matrix = numpy.load(f"{sparse_comp}/output_gold_0.npy")
-        # Process according to the data type of the gold matrix 
-        if gold_matrix.dtype == int:
-            gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
-        elif gold_matrix.dtype == numpy.float32:
-            # the gold matrix were already in bf16, no need to truncate again
-            pass
 
         name_line = None
         with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
@@ -115,20 +110,26 @@ def dispatch(args, extra_args=None):
         all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
         just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
         for file__ in just_out_files_sim:
-            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/")
-        # get_tensor_from_file returns the fibertree data structure, we want the data array itself
-        # which can be obtained from FiberTree.get_matrix()
-        sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
-                                            format="CSF",
-                                            shape=gold_matrix.shape, base=16, early_terminate='x',
-                                            use_fp=(gold_matrix.dtype == numpy.float32)).get_matrix()
+            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles)
+        for i in range(tiles):
+            gold_matrix = numpy.load(f"{sparse_comp}/output_gold_{i}.npy")
+            # Process according to the data type of the gold matrix 
+            if gold_matrix.dtype == int:
+                gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+            elif gold_matrix.dtype == numpy.float32:
+                # the gold matrix were already in bf16, no need to truncate again
+                pass
+            sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                                format="CSF",
+                                                shape=gold_matrix.shape, base=16, early_terminate='x',
+                                                use_fp=(gold_matrix.dtype == numpy.float32), suffix=f"_tile{i}").get_matrix()
 
-        # Set up numpy so it doesn't print in scientific notation
-        numpy.set_printoptions(suppress=True)
-        print(f"GOLD")
-        print(gold_matrix)
-        print(f"SIM")
-        print(sim_matrix)
+            # Set up numpy so it doesn't print in scientific notation
+            numpy.set_printoptions(suppress=True)
+            print(f"GOLD")
+            print(gold_matrix)
+            print(f"SIM")
+            print(sim_matrix)
         # for comparing floating point  
         assert numpy.allclose(gold_matrix, sim_matrix)
     else:
