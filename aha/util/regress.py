@@ -302,7 +302,7 @@ def dispatch(args, extra_args=None):
             "matmul_ikj",
             "matmul_jik",
             "spmm_ijk_crddrop",
-            #"spmm_ijk_crddrop_relu",
+            "spmm_ijk_crddrop_relu",
             "spmv",
             "spmv_relu",
             "masked_broadcast",
