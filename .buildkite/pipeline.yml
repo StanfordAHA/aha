@@ -1,3 +1,7 @@
+# To turn daemon on or off, search code below and change to one of:
+#   aha regress $$CONFIG --daemon auto  # Use daemon
+#   aha regress $$CONFIG                # No daemon
+
 env:
   CONFIG: ${CONFIG:-daily}
 
@@ -197,8 +201,8 @@ steps:
   - apt update
   - apt install time
   - ls /aha
-  - pip freeze
-  - (cd garnet && echo "garnet" && git rev-parse --verify HEAD)
+  - echo    "--- PIP FREEZE"; pip freeze
+  - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
   - if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config";
@@ -206,7 +210,7 @@ steps:
     else
       echo "Trigger came from aha repo; use default config";
     fi;
-  - aha regress $$CONFIG
+  - aha regress $$CONFIG --daemon auto
   # We report success to the aha-flow app by removing the .TEST file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
