@@ -291,7 +291,7 @@ def dispatch(args, extra_args=None):
             "mat_vecmul_ij",
             "mat_elemadd",
             "mat_elemadd_relu",
-            #"mat_elemadd_leakyrelu_exp",
+            "mat_elemadd_leakyrelu_exp",
             "mat_elemadd3",
             "mat_elemmul",
             "mat_identity",
