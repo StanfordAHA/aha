@@ -246,6 +246,56 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
     return time_compile, time_map, time_test
 
 
+def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None,):
+    env_parameters = str(env_parameters)
+    testname = test
+    print(f"--- {testname}")
+    print(f"--- {testname} - skip compiling and mapping")
+    app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
+    print(app_path, flush=True)
+    start = time.time()
+    time_compile = time.time() - start
+
+    print(f"--- {testname} - pnr and pipelining", flush=True)
+    start = time.time()
+    try:
+        subprocess.call(["make", "clean"], cwd=app_path)
+    except:
+        pass
+
+    try:
+        subprocess.call(["cp", "-rf", "bin_hardcoded", "bin"], cwd=app_path)
+    except:
+        print(f"please don't delete hardcoded bin folder")
+
+    # To use daemon, call regress.py with args '--daemon auto'
+    # --- extra_args=['--daemon', 'auto']
+    use_daemon = []
+    if (extra_args):
+        if ('--daemon' in extra_args) and ('auto' in extra_args):
+            use_daemon = [ "--daemon", "auto" ]
+
+    buildkite_call(
+        [
+            "aha",
+            "pnr",
+            test,
+            "--width", str(width),
+            "--height", str(height),
+            "--generate-bitstream-only",
+            "--env-parameters", env_parameters,
+        ] + use_daemon
+    )
+    time_map = time.time() - start
+
+    print(f"--- {testname} - glb testing", flush=True)
+    start = time.time()
+    buildkite_call(["aha", "test", test])
+    time_test = time.time() - start
+
+    return time_compile, time_map, time_test
+
+
 def dispatch(args, extra_args=None):
     seed_flow = True 
     suitesparse_data = ["football"]
@@ -258,6 +308,7 @@ def dispatch(args, extra_args=None):
             "apps/pointwise"
         ]
         resnet_tests = []
+        hardcoded_dense_tests = []
     elif args.config == "pr":
         width, height = 28, 16
         sparse_tests = [
@@ -281,6 +332,9 @@ def dispatch(args, extra_args=None):
         ]
         glb_tests = []
         resnet_tests = []
+        hardcoded_dense_tests = [
+            "apps/depthwise_conv"
+        ]
     elif args.config == "daily":
         width, height = 28, 16
         sparse_tests = [
@@ -336,6 +390,9 @@ def dispatch(args, extra_args=None):
             "conv4_1",
             "conv4_x",
             "conv5_x",
+        ]
+        hardcoded_dense_tests = [
+            "apps/depthwise_conv"
         ]
     elif args.config == "full":
         width, height = 28, 16
@@ -415,6 +472,9 @@ def dispatch(args, extra_args=None):
             "conv5_1",
             "conv5_x",
         ]
+        hardcoded_dense_tests = [
+            "apps/depthwise_conv"
+        ]
     elif args.config == "resnet":
         width, height = 28, 16
         sparse_tests = []
@@ -429,6 +489,7 @@ def dispatch(args, extra_args=None):
             "conv5_1",
             "conv5_x",
         ]
+        hardcoded_dense_tests = []
 
     else:
         raise NotImplementedError(f"Unknown test config: {args.config}")
@@ -483,6 +544,11 @@ def dispatch(args, extra_args=None):
     for test in resnet_tests:
         t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
                                     width, height, args.env_parameters, extra_args, layer=test)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+    for test in hardcoded_dense_tests:
+        t0, t1, t2 = test_hardcoded_dense_app(test,
+                                    width, height, args.env_parameters, extra_args)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
     print(f"+++ TIMING INFO", flush=True)
