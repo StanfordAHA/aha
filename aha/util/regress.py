@@ -268,13 +268,6 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
     except:
         print(f"please don't delete hardcoded bin folder")
 
-    # To use daemon, call regress.py with args '--daemon auto'
-    # --- extra_args=['--daemon', 'auto']
-    use_daemon = []
-    if (extra_args):
-        if ('--daemon' in extra_args) and ('auto' in extra_args):
-            use_daemon = [ "--daemon", "auto" ]
-
     buildkite_call(
         [
             "aha",
@@ -284,7 +277,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
             "--height", str(height),
             "--generate-bitstream-only",
             "--env-parameters", env_parameters,
-        ] + use_daemon
+        ]
     )
     time_map = time.time() - start
 
