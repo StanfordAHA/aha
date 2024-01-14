@@ -249,11 +249,17 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
 
 def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None,):
     env_parameters = str(env_parameters)
-    testname = test
+    testname = layer if layer is not None else test
     print(f"--- {testname}")
     print(f"--- {testname} - skip compiling and mapping")
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
     print(app_path, flush=True)
+
+    if layer is not None:
+        layer_array = ["--layer", layer]
+    else:
+        layer_array = []
+
     start = time.time()
     time_compile = time.time() - start
 
@@ -265,10 +271,17 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         pass
 
     try:
-        print(f"copying hardcoded bin folder")
+        print(f"copying hardcoded bin folder", flush=True)
         shutil.copytree(f"{app_path}/bin_hardcoded", f"{app_path}/bin")
     except:
-        print(f"please don't delete hardcoded bin folder")
+        print(f"please don't delete hardcoded bin folder", flush=True)
+
+    # To use daemon, call regress.py with args '--daemon auto'
+    # --- extra_args=['--daemon', 'auto']
+    use_daemon = []
+    if (extra_args):
+        if ('--daemon' in extra_args) and ('auto' in extra_args):
+            use_daemon = [ "--daemon", "auto" ]
 
     buildkite_call(
         [
@@ -279,7 +292,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
             "--height", str(height),
             "--generate-bitstream-only",
             "--env-parameters", env_parameters,
-        ]
+        ] + use_daemon + layer_array
     )
     time_map = time.time() - start
 
