@@ -97,7 +97,10 @@ def dispatch(args, extra_args=None):
 
         # This is where we do the fallback comparison...
         # First get gold matrix from the output...
-        gold_matrix = numpy.load(f"{sparse_comp}/output_gold_0.npy")
+
+        tiles = 1
+
+
         name_line = None
         with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
             name_line = output_name_h_.readlines()[0].strip()
@@ -108,19 +111,26 @@ def dispatch(args, extra_args=None):
         all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
         just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
         for file__ in just_out_files_sim:
-            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/")
-        sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
-                                            format="CSF",
-                                            shape=gold_matrix.shape, base=16, early_terminate='x')
-        sim_matrix_np = sim_matrix.get_matrix()
+            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles)
+        for i in range(tiles):
+            gold_matrix = numpy.load(f"{sparse_comp}/output_gold_{i}.npy")
+        
+            sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                                format="CSF",
+                                                shape=gold_matrix.shape, base=16, early_terminate='x', suffix=f"_tile{i}")
+            sim_matrix_np = sim_matrix.get_matrix()
 
-        print(f"GOLD")
-        gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
-        print(gold_matrix)
-        print(f"SIM")
-        sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
-        print(sim_matrix)
-        assert numpy.array_equal(gold_matrix, sim_matrix_np)
+            print(f"GOLD")
+            gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+            print(gold_matrix)
+            print(f"SIM")
+            sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
+            print(sim_matrix)
+            assert numpy.array_equal(gold_matrix, sim_matrix_np)
+            #if numpy.array_equal(gold_matrix, sim_matrix_np):
+            #    print("Equal!!")
+            #else: 
+            #    print("Not Equal!!")
     else:
 
         if args.run:
