@@ -127,6 +127,7 @@ def dispatch(args, extra_args=None):
             sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
             print(sim_matrix)
             assert numpy.array_equal(gold_matrix, sim_matrix_np)
+            print("test", i)
             #if numpy.array_equal(gold_matrix, sim_matrix_np):
             #    print("Equal!!")
             #else: 

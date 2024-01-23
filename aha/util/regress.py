@@ -57,7 +57,7 @@ def gen_garnet(width, height):
                 "--rv",
                 "--sparse-cgra",
                 "--sparse-cgra-combined",
-                "--glb_tile_mem_size", str(128),
+                "--glb_tile_mem_size", str(256),
             ]
         )
     return time.time() - start
@@ -158,6 +158,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
             ss_tile_pair_sparse_testname = ss_tile_pair.split("-")[0]
             if ss_tile_pair_sparse_testname != testname:
                 continue
+            print(f"--- {test} - glb testing - {ss_tile_pair}")
             with open("/aha/garnet/aha_test_out.txt", 'w') as test_out_file:
                 buildkite_call(
                     ["aha", 
@@ -175,6 +176,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
             command = "grep \"total time\" /aha/garnet/aha_test_out.txt"
             result = subprocess.check_output(command, shell=True, encoding='utf-8')
             total_time_line = result.split("\n")[0]
+            print(total_time_line)
             time_str = total_time_line.split(" ns")[0].split(" ")[-1]
             time_value = float(time_str)
             dataset = total_time_line.split("-")[2].split("_")[0]
@@ -234,8 +236,8 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = False
-    suitesparse_data = ["qiulp"]
+    seed_flow = False 
+    suitesparse_data = ["rand_large_sp98_1"]
     #suitesparse_data = ["cage5", "football"]
     sparse_tests = []
     if args.config == "fast":
@@ -300,7 +302,7 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "full":
-        width, height = 20, 16
+        width, height = 32, 16
         sparse_tests = [
             #"mat_elemadd",
             #"mat_elemadd3",
@@ -311,13 +313,15 @@ def dispatch(args, extra_args=None):
             ## 'mat_residual',
             #"mat_sddmm",
             #"mat_vecmul_ij",
-            "matmul_ijk",
+            #"matmul_ijk",
             #"matmul_ijk_crddrop",
             #"tensor3_elemadd",
             #"tensor3_elemmul",
             #"tensor3_identity",
             #"tensor3_innerprod",
             #"tensor3_mttkrp",
+            "tensor3_mttkrp_unfused1",
+            #"tensor3_mttkrp_unfused2",
             #"tensor3_ttm",
             #"tensor3_ttv",
             #"vec_elemadd",
@@ -398,7 +402,10 @@ def dispatch(args, extra_args=None):
         
         for test in sparse_tests:
             for suitesparse_datum in suitesparse_data:
-                command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                if "tensor" not in test:
+                    command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                else:
+                    command = "python3 /aha/garnet/copy_formatted_tensor_tiling.py " + test + " " + suitesparse_datum
                 subprocess.call(command, shell=True)
             this_sparse_test_tile_pairs = glob.glob(f"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/{test}*")
             suitesparse_data_tile_pairs.extend(this_sparse_test_tile_pairs)
