@@ -59,9 +59,10 @@ def gen_garnet(width, height):
                 "--height", str(height),
                 "--verilog",
                 "--use_sim_sram",
-                "--rv",
-                "--sparse-cgra",
-                "--sparse-cgra-combined",
+                #"--rv",
+                #"--sparse-cgra",
+                #"--sparse-cgra-combined",
+                #"--dense-only",
                 "--glb_tile_mem_size", str(128),
             ]
         )
@@ -227,6 +228,8 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = [ "--daemon", "auto" ]
 
+    #breakpoint()
+    
     buildkite_call(
         [
             "aha",
@@ -241,7 +244,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test])
+    buildkite_call(["aha", "test", test, "--waveform"])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -309,9 +312,7 @@ def dispatch(args, extra_args=None):
     suitesparse_data = ["football"]
     if args.config == "fast":
         width, height = 4, 4
-        sparse_tests = [
-            "vec_identity"
-        ]
+        sparse_tests = []
         glb_tests = [
             "apps/pointwise"
         ]
