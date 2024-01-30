@@ -363,6 +363,7 @@ def dispatch(args, extra_args=None):
             "matmul_ijk_crddrop_relu",
             "matmul_ikj",
             "matmul_jik",
+            "concat_matmul",
             "spmm_ijk_crddrop",
             "spmm_ijk_crddrop_relu",
             "spmv",
