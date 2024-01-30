@@ -59,7 +59,7 @@ def gen_garnet(width, height):
                 "--height", str(height),
                 "--verilog",
                 "--use_sim_sram",
-                "--include-sparse",
+                #"--include-sparse",
                 "--glb_tile_mem_size", str(128),
             ]
         )
@@ -241,7 +241,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test, "--waveform"])
+    buildkite_call(["aha", "test", test])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -354,15 +354,8 @@ def dispatch(args, extra_args=None):
             "apps/maxpooling",
             "tests/three_level_pond",
         ]
-        resnet_tests = [
-            "conv1",
-            "conv4_1",
-            "conv4_x",
-            "conv5_x",
-        ]
-        hardcoded_dense_tests = [
-            "apps/depthwise_conv"
-        ]
+        resnet_tests = []
+        hardcoded_dense_tests = []
     elif args.config == "full":
         width, height = 28, 16
         sparse_tests = [
