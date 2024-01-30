@@ -112,10 +112,7 @@ def dispatch(args, extra_args=None):
         str(app_dir / f"bin/gold{ext}"),
         "--input-broadcast-branch-factor", "2",
         "--input-broadcast-max-leaves", "4",
-        # "--rv",
-        # "--sparse-cgra",
-        # "--sparse-cgra-combined",
-        #"--dense-only",
+        "--include-sparse",
         "--pipeline-pnr"
     ]
 

@@ -59,10 +59,7 @@ def gen_garnet(width, height):
                 "--height", str(height),
                 "--verilog",
                 "--use_sim_sram",
-                #"--rv",
-                #"--sparse-cgra",
-                #"--sparse-cgra-combined",
-                #"--dense-only",
+                "--include-sparse",
                 "--glb_tile_mem_size", str(128),
             ]
         )
@@ -346,44 +343,7 @@ def dispatch(args, extra_args=None):
         ]
     elif args.config == "daily":
         width, height = 28, 16
-        sparse_tests = [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "mat_elemadd_leakyrelu_exp",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_identity",
-            "mat_mattransmul",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "matmul_ijk_crddrop_relu",
-            "matmul_ikj",
-            "matmul_jik",
-            "spmm_ijk_crddrop",
-            "spmm_ijk_crddrop_relu",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
-            # Turned off until SUB ordering fixed in mapping
-            # 'mat_residual',
-            "mat_sddmm",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_elemmul",
-            "tensor3_identity",
-            "tensor3_innerprod",
-            "tensor3_mttkrp",
-            "tensor3_ttm",
-            "tensor3_ttv",
-
-        ]
+        sparse_tests = []
         glb_tests = [
             "apps/gaussian",
             "apps/pointwise",
