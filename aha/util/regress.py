@@ -59,7 +59,7 @@ def gen_garnet(width, height):
                 "--height", str(height),
                 "--verilog",
                 "--use_sim_sram",
-                #"--include-sparse",
+                "--include-sparse",
                 "--glb_tile_mem_size", str(128),
             ]
         )
@@ -343,7 +343,43 @@ def dispatch(args, extra_args=None):
         ]
     elif args.config == "daily":
         width, height = 28, 16
-        sparse_tests = []
+        sparse_tests = [
+            "vec_elemadd",
+            "vec_elemmul",
+            "vec_identity",
+            "vec_scalar_mul",
+            "mat_vecmul_ij",
+            "mat_elemadd",
+            "mat_elemadd_relu",
+            "mat_elemadd_leakyrelu_exp",
+            "mat_elemadd3",
+            "mat_elemmul",
+            "mat_identity",
+            "mat_mattransmul",
+            "matmul_ijk",
+            "matmul_ijk_crddrop",
+            "matmul_ijk_crddrop_relu",
+            "matmul_ikj",
+            "matmul_jik",
+            "spmm_ijk_crddrop",
+            "spmm_ijk_crddrop_relu",
+            "spmv",
+            "spmv_relu",
+            "masked_broadcast",
+            "trans_masked_broadcast",
+            # Turned off until SUB ordering fixed in mapping
+            # 'mat_residual',
+            "mat_sddmm",
+            "mat_mask_tri",
+            "mat_vecmul_iter",
+            "tensor3_elemadd",
+            "tensor3_elemmul",
+            "tensor3_identity",
+            "tensor3_innerprod",
+            "tensor3_mttkrp",
+            "tensor3_ttm",
+            "tensor3_ttv",
+            ]
         glb_tests = [
             "apps/gaussian",
             "apps/pointwise",
@@ -354,8 +390,15 @@ def dispatch(args, extra_args=None):
             "apps/maxpooling",
             "tests/three_level_pond",
         ]
-        resnet_tests = []
-        hardcoded_dense_tests = []
+        resnet_tests = [
+            "conv1",
+            "conv4_1",
+            "conv4_x",
+            "conv5_x",
+        ]
+        hardcoded_dense_tests = [
+            "apps/depthwise_conv"
+        ]
     elif args.config == "full":
         width, height = 28, 16
         sparse_tests = [
