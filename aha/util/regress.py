@@ -438,6 +438,8 @@ def dispatch(args, extra_args=None):
             "tensor3_identity",
             "tensor3_innerprod",
             "tensor3_mttkrp",
+            "tensor3_mttkrp_unfused1",
+            "tensor3_mttkrp_unfused2",
             "tensor3_ttm",
             "tensor3_ttv",
 
