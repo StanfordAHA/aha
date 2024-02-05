@@ -275,7 +275,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     return time_compile, time_map, time_test
 
 
-def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None,):
+def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, include_sparse=True):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -311,17 +311,31 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = [ "--daemon", "auto" ]
 
-    buildkite_call(
-        [
-            "aha",
-            "pnr",
-            test,
-            "--width", str(width),
-            "--height", str(height),
-            "--generate-bitstream-only",
-            "--env-parameters", env_parameters,
-        ] + use_daemon + layer_array
-    )
+    if include_sparse:
+        buildkite_call(
+            [
+                "aha",
+                "pnr",
+                test,
+                "--width", str(width),
+                "--height", str(height),
+                "--include-sparse",
+                "--generate-bitstream-only",
+                "--env-parameters", env_parameters,
+            ] + use_daemon + layer_array
+        )
+    else:
+        buildkite_call(
+            [
+                "aha",
+                "pnr",
+                test,
+                "--width", str(width),
+                "--height", str(height),
+                "--generate-bitstream-only",
+                "--env-parameters", env_parameters,
+            ] + use_daemon + layer_array
+        )
     time_map = time.time() - start
 
     print(f"--- {testname} - glb testing", flush=True)
