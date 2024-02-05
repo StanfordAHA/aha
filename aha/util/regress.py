@@ -620,8 +620,8 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args, include_sparse=False)
+        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+                                    width, height, args.env_parameters, extra_args, layer=test, include_sparse=False)
         info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
  
     print(f"+++ TIMING INFO", flush=True)
