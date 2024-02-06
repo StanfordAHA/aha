@@ -340,7 +340,11 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test])
+    try: 
+        buildkite_call(["aha", "test", test, "--waveform"])
+    except:
+        pass
+
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
