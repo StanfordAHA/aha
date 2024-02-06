@@ -194,7 +194,7 @@ steps:
     fi
   - source /aha/bin/activate
   - source /cad/modules/tcl/init/sh
-  - module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2 verdi/T-2022.06-SP2
+  - module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2
   # make /bin/sh symlink to bash instead of dash:
   - echo "dash dash/sh boolean false" | debconf-set-selections
   - DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
