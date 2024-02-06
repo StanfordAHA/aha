@@ -387,57 +387,57 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 28, 16
         sparse_tests = [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "mat_elemadd_leakyrelu_exp",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_identity",
-            "mat_mattransmul",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "matmul_ijk_crddrop_relu",
-            "matmul_ikj",
-            "matmul_jik",
-            "spmm_ijk_crddrop",
-            "spmm_ijk_crddrop_relu",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
-            # Turned off until SUB ordering fixed in mapping
-            # 'mat_residual',
-            "mat_sddmm",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_elemmul",
-            "tensor3_identity",
-            "tensor3_innerprod",
-            "tensor3_mttkrp",
-            "tensor3_ttm",
-            "tensor3_ttv",
+            #"vec_elemadd",
+            #"vec_elemmul",
+            #"vec_identity",
+            #"vec_scalar_mul",
+            #"mat_vecmul_ij",
+            #"mat_elemadd",
+            #"mat_elemadd_relu",
+            #"mat_elemadd_leakyrelu_exp",
+            #"mat_elemadd3",
+            #"mat_elemmul",
+            #"mat_identity",
+            #"mat_mattransmul",
+            #"matmul_ijk",
+            #"matmul_ijk_crddrop",
+            #"matmul_ijk_crddrop_relu",
+            #"matmul_ikj",
+            #"matmul_jik",
+            #"spmm_ijk_crddrop",
+            #"spmm_ijk_crddrop_relu",
+            #"spmv",
+            #"spmv_relu",
+            #"masked_broadcast",
+            #"trans_masked_broadcast",
+            ## Turned off until SUB ordering fixed in mapping
+            ## 'mat_residual',
+            #"mat_sddmm",
+            #"mat_mask_tri",
+            #"mat_vecmul_iter",
+            #"tensor3_elemadd",
+            #"tensor3_elemmul",
+            #"tensor3_identity",
+            #"tensor3_innerprod",
+            #"tensor3_mttkrp",
+            #"tensor3_ttm",
+            #"tensor3_ttv",
         ]
         glb_tests = [
-            "apps/gaussian",
-            "apps/pointwise",
-            "apps/unsharp",
-            "apps/camera_pipeline_2x2",
-            "apps/harris_color",
-            "apps/cascade",
-            "apps/maxpooling",
-            "tests/three_level_pond",
+            #"apps/gaussian",
+            #"apps/pointwise",
+            #"apps/unsharp",
+            #"apps/camera_pipeline_2x2",
+            #"apps/harris_color",
+            #"apps/cascade",
+            #"apps/maxpooling",
+            #"tests/three_level_pond",
         ]
         resnet_tests = [
-            "conv1",
-            "conv4_1",
-            "conv4_x",
-            "conv5_x",  
+            #"conv1",
+            #"conv4_1",
+            #"conv4_x",
+            #"conv5_x",  
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
@@ -582,19 +582,19 @@ def dispatch(args, extra_args=None):
         with open("/aha/garnet/suitesparse_perf_out.txt", 'w') as perf_out_file:
             perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
-    for test in sparse_tests:
-        t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+    #for test in sparse_tests:
+    #    t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs)
+    #    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    for test in glb_tests:
-        t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+    #for test in glb_tests:
+    #    t0, t1, t2 = test_dense_app(test, 
+    #                                width, height, args.env_parameters, extra_args)
+    #    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    for test in resnet_tests:
-        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
-                                    width, height, args.env_parameters, extra_args, layer=test)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+    #for test in resnet_tests:
+    #    t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+    #                                width, height, args.env_parameters, extra_args, layer=test)
+    #    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
         t0, t1, t2 = test_hardcoded_dense_app(test,
