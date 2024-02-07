@@ -112,9 +112,6 @@ def dispatch(args, extra_args=None):
         str(app_dir / f"bin/gold{ext}"),
         "--input-broadcast-branch-factor", "2",
         "--input-broadcast-max-leaves", "4",
-        "--rv",
-        "--sparse-cgra",
-        "--sparse-cgra-combined",
         "--pipeline-pnr"
     ]
 
@@ -134,7 +131,7 @@ def dispatch(args, extra_args=None):
             do_cmd = subprocess.Popen
         else:
             print(f"--- found the daemon, leaving do_cmd alone", flush=True)
-
+            
     subprocess_call_log (
         cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
         cwd=args.aha_dir / "garnet",
