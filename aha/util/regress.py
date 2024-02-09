@@ -42,7 +42,7 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
     )
 
 
-def gen_garnet(width, height):
+def gen_garnet(width, height, include_sparse=True):
     print("--- Generating Garnet", flush=True)
     start = time.time()
     if not os.path.exists("/aha/garnet/garnet.v"):
@@ -51,20 +51,34 @@ def gen_garnet(width, height):
         buildkite_call("aha garnet --daemon kill".split())
         
         # No garnet verilog yet, so build it now.
-        buildkite_call(
-            [
-                "aha",
-                "garnet",
-                "--width", str(width),
-                "--height", str(height),
-                "--verilog",
-                "--use_sim_sram",
-                "--rv",
-                "--sparse-cgra",
-                "--sparse-cgra-combined",
-                "--glb_tile_mem_size", str(128),
-            ]
-        )
+
+        if include_sparse:
+            print("---GENERATING SPARSE+DENSE CGRA---")
+            buildkite_call(
+                [
+                    "aha",
+                    "garnet",
+                    "--width", str(width),
+                    "--height", str(height),
+                    "--verilog",
+                    "--use_sim_sram",
+                    "--include-sparse",
+                    "--glb_tile_mem_size", str(128),
+                ]
+            )
+        else:
+            print("---GENERATING DENSE-ONLY CGRA---")
+            buildkite_call(
+                [
+                    "aha",
+                    "garnet",
+                    "--width", str(width),
+                    "--height", str(height),
+                    "--verilog",
+                    "--use_sim_sram",
+                    "--glb_tile_mem_size", str(128),
+                ]
+            )
     return time.time() - start
 
 
@@ -195,7 +209,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, include_sparse=True):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -227,16 +241,30 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = [ "--daemon", "auto" ]
 
-    buildkite_call(
-        [
-            "aha",
-            "pnr",
-            test,
-            "--width", str(width),
-            "--height", str(height),
-            "--env-parameters", env_parameters,
-        ] + use_daemon + layer_array
-    )
+    if include_sparse:
+        buildkite_call(
+            [
+                "aha",
+                "pnr",
+                test,
+                "--width", str(width),
+                "--height", str(height),
+                "--include-sparse",
+                "--env-parameters", env_parameters,
+            ] + use_daemon + layer_array
+        )
+    else:
+        buildkite_call(
+            [
+                "aha",
+                "pnr",
+                test,
+                "--width", str(width),
+                "--height", str(height),
+                "--env-parameters", env_parameters,
+            ] + use_daemon + layer_array
+        )
+
     time_map = time.time() - start
 
     print(f"--- {testname} - glb testing", flush=True)
@@ -247,7 +275,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
     return time_compile, time_map, time_test
 
 
-def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None,):
+def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, include_sparse=True):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -283,17 +311,31 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = [ "--daemon", "auto" ]
 
-    buildkite_call(
-        [
-            "aha",
-            "pnr",
-            test,
-            "--width", str(width),
-            "--height", str(height),
-            "--generate-bitstream-only",
-            "--env-parameters", env_parameters,
-        ] + use_daemon + layer_array
-    )
+    if include_sparse:
+        buildkite_call(
+            [
+                "aha",
+                "pnr",
+                test,
+                "--width", str(width),
+                "--height", str(height),
+                "--include-sparse",
+                "--generate-bitstream-only",
+                "--env-parameters", env_parameters,
+            ] + use_daemon + layer_array
+        )
+    else:
+        buildkite_call(
+            [
+                "aha",
+                "pnr",
+                test,
+                "--width", str(width),
+                "--height", str(height),
+                "--generate-bitstream-only",
+                "--env-parameters", env_parameters,
+            ] + use_daemon + layer_array
+        )
     time_map = time.time() - start
 
     print(f"--- {testname} - glb testing", flush=True)
@@ -336,7 +378,6 @@ def dispatch(args, extra_args=None):
             "tensor3_elemadd",
             "tensor3_ttm",
             "tensor3_ttv",
-
         ]
         glb_tests = []
         resnet_tests = []
@@ -381,7 +422,6 @@ def dispatch(args, extra_args=None):
             "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
-
         ]
         glb_tests = [
             "apps/gaussian",
@@ -397,7 +437,7 @@ def dispatch(args, extra_args=None):
             "conv1",
             "conv4_1",
             "conv4_x",
-            "conv5_x",
+            "conv5_x",  
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
@@ -508,8 +548,8 @@ def dispatch(args, extra_args=None):
 
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
-    t = gen_garnet(width, height)
-    info.append(["garnet", t])
+    t = gen_garnet(width, height, include_sparse=True)
+    info.append(["garnet with sparse and dense", t])
 
     suitesparse_data_tile_pairs = []
 
@@ -561,7 +601,30 @@ def dispatch(args, extra_args=None):
         t0, t1, t2 = test_hardcoded_dense_app(test,
                                     width, height, args.env_parameters, extra_args)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-        
+
+
+    # DENSE ONLY TESTS
+    # Remove sparse+dense garnet.v first 
+    exit_status = os.system(f"rm /aha/garnet/garnet.v")
+    if os.WEXITSTATUS(exit_status) != 0:
+        raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+    
+    t = gen_garnet(width, height, include_sparse=False)
+    info.append(["garnet with dense only", t])
+
+    num_dense_only_glb_tests = 5
+    for test_index, test in enumerate(glb_tests):
+        if test_index == num_dense_only_glb_tests:
+            break
+        t0, t1, t2 = test_dense_app(test, 
+                                    width, height, args.env_parameters, extra_args, include_sparse=False)
+        info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
+
+    for test in resnet_tests:
+        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+                                    width, height, args.env_parameters, extra_args, layer=test, include_sparse=False)
+        info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
+ 
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"]), flush=True)
 
