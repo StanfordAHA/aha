@@ -379,7 +379,18 @@ def dispatch(args, extra_args=None):
             "tensor3_ttm",
             "tensor3_ttv",
         ]
-        glb_tests = []
+        glb_tests = [
+            "apps/pointwise",
+            "tests/ushift",
+            "tests/arith",
+            "tests/absolute",
+            "tests/scomp",
+            "tests/ucomp",
+            "tests/uminmax",
+            "tests/rom",
+            "tests/conv_1_2",
+            "tests/conv_2_1",
+        ]
         resnet_tests = []
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
