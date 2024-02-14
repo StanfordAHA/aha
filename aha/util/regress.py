@@ -449,6 +449,7 @@ def dispatch(args, extra_args=None):
             "conv4_1",
             "conv4_x",
             "conv5_x",  
+            "conv5_x_residual",
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
@@ -532,6 +533,7 @@ def dispatch(args, extra_args=None):
             "conv4_x",
             "conv5_1",
             "conv5_x",
+            "conv5_x_residual",
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
@@ -549,6 +551,7 @@ def dispatch(args, extra_args=None):
             "conv4_x",
             "conv5_1",
             "conv5_x",
+            "conv5_x_residual",
         ]
         hardcoded_dense_tests = []
 
@@ -603,9 +606,14 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
-                                    width, height, args.env_parameters, extra_args, layer=test)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        if "residual" in test:
+            t0, t1, t2 = test_dense_app("apps/resnet_residual",
+                                        width, height, args.env_parameters, extra_args, layer=test)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        else:
+            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+                                        width, height, args.env_parameters, extra_args, layer=test)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
         t0, t1, t2 = test_hardcoded_dense_app(test,
@@ -631,9 +639,11 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
-                                    width, height, args.env_parameters, extra_args, layer=test, include_sparse=False)
-        info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
+        # residual resnet test is not working with dense only mode
+        if "residual" not in test:
+            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+                                        width, height, args.env_parameters, extra_args, layer=test)
+            info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
  
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"]), flush=True)
