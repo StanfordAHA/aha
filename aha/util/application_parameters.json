@@ -310,5 +310,27 @@
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"    
         }
+    },
+    "conv5_x_residual":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "PNR_PLACER_EXP":"1",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "GLB_LEVEL_PE":"1"
+        }
     }
 }
