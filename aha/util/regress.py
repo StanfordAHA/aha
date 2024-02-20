@@ -16,7 +16,7 @@ def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("config")
     parser.add_argument("--env-parameters", default="", type=str)
-    parser.add_argument("--test-dense-only", action="store_true")
+    parser.add_argument("--include-dense-only-tests", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -588,7 +588,7 @@ def dispatch(args, extra_args=None):
                                     width, height, args.env_parameters, extra_args)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    if args.test_dense_only:
+    if args.include_dense_only_tests:
         # DENSE ONLY TESTS
         # Remove sparse+dense garnet.v first 
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
