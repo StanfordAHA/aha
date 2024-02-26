@@ -417,6 +417,7 @@ def dispatch(args, extra_args=None):
             "conv4_1",
             "conv4_x",
             "conv5_x",  
+            "conv2_x_residual",
             "conv5_x_residual",
         ]
         hardcoded_dense_tests = [
@@ -501,6 +502,7 @@ def dispatch(args, extra_args=None):
             "conv4_x",
             "conv5_1",
             "conv5_x",
+            "conv2_x_residual",
             "conv5_x_residual",
         ]
         hardcoded_dense_tests = [
@@ -519,6 +521,9 @@ def dispatch(args, extra_args=None):
             "conv4_x",
             "conv5_1",
             "conv5_x",
+            "conv2_x_residual",
+            "conv3_x_residual",
+            "conv4_x_residual",
             "conv5_x_residual",
         ]
         hardcoded_dense_tests = []
