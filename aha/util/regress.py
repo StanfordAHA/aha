@@ -589,31 +589,31 @@ def dispatch(args, extra_args=None):
                                     width, height, args.env_parameters, extra_args)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-#    if args.include_dense_only_tests:
-#        # DENSE ONLY TESTS
-#        # Remove sparse+dense garnet.v first 
-#        exit_status = os.system(f"rm /aha/garnet/garnet.v")
-#        if os.WEXITSTATUS(exit_status) != 0:
-#            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
-#        
-#        t = gen_garnet(width, height, dense_only=True)
-#        info.append(["garnet with dense only", t])
-#
-#        num_dense_only_glb_tests = 5
-#        for test_index, test in enumerate(glb_tests):
-#            if test_index == num_dense_only_glb_tests:
-#                break
-#            t0, t1, t2 = test_dense_app(test, 
-#                                        width, height, args.env_parameters, extra_args, dense_only=True)
-#            info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
-#
-#        for test in resnet_tests:
-#            # residual resnet test is not working with dense only mode
-#            if "residual" not in test:
-#                t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
-#                                            width, height, args.env_parameters, extra_args, layer=test)
-#                info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
-# 
+    if args.include_dense_only_tests:
+        # DENSE ONLY TESTS
+        # Remove sparse+dense garnet.v first 
+        exit_status = os.system(f"rm /aha/garnet/garnet.v")
+        if os.WEXITSTATUS(exit_status) != 0:
+            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+        
+        t = gen_garnet(width, height, dense_only=True)
+        info.append(["garnet with dense only", t])
+
+        num_dense_only_glb_tests = 5
+        for test_index, test in enumerate(glb_tests):
+            if test_index == num_dense_only_glb_tests:
+                break
+            t0, t1, t2 = test_dense_app(test, 
+                                        width, height, args.env_parameters, extra_args, dense_only=True)
+            info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
+
+        for test in resnet_tests:
+            # residual resnet test is not working with dense only mode
+            if "residual" not in test:
+                t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+                                            width, height, args.env_parameters, extra_args, layer=test)
+                info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
+ 
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"]), flush=True)
 
