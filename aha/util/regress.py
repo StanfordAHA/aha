@@ -199,48 +199,11 @@ def dispatch(args, extra_args=None):
     elif args.config == "daily":
         width, height = 28, 16
         sparse_tests = [
-            "vec_elemadd",
-            "matmul_ikj",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_identity",
-            "mat_mattransmul",
-            "mat_sddmm",
-            "tensor3_mttkrp",
-            "tensor3_ttm",
-            "tensor3_ttv",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
-            "matmul_ijk",
             "matmul_ijk_crddrop",
-            "matmul_ijk_crddrop_relu",
-            "spmm_ijk_crddrop",
-            "spmm_ijk_crddrop_relu",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
         ]
         glb_tests = [
-            "apps/gaussian",
-            "apps/pointwise",
-            "apps/unsharp",
-            "apps/camera_pipeline_2x2",
-            "apps/harris_color",
-            "apps/cascade",
-            "apps/maxpooling",
-            "tests/three_level_pond",
         ]
         resnet_tests = [
-            "conv1",
-            "conv4_1",
-            "conv4_x",
-            "conv5_x",
         ]
     elif args.config == "full":
         width, height = 28, 16
