@@ -13,12 +13,7 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 # Also need to rediscover pull number BUILDKITE_PULL_REQUEST
 
-# FIXME delete this clause after heroku is gone forever
-if [ "$FLOW_HEAD_SHA" ]; then
-    echo "- Heroku build, leave it alone for now"
-    echo "- Nothing to do, returning to main script."
-
-elif [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
+if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     echo "- BUILDKITE_PULL_REQUEST_REPO already set, to '$BUILDKITE_PULL_REQUEST_REPO'"
     echo "- Nothing to do, returning to main script."
 
