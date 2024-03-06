@@ -76,7 +76,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
