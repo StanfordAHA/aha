@@ -197,7 +197,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -247,7 +247,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test])
+    if use_fp:
+        buildkite_call(["aha", "test", test, "--dense-fp"])
+    else:
+        buildkite_call(["aha", "test", test])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -325,6 +328,9 @@ def dispatch(args, extra_args=None):
         glb_tests = [
             "apps/pointwise"
         ]
+        glb_tests_fp = [
+            "tests/fp_pointwise",
+        ]
         resnet_tests = []
         hardcoded_dense_tests = []
     elif args.config == "pr":
@@ -359,6 +365,12 @@ def dispatch(args, extra_args=None):
             "tests/conv_1_2",
             "tests/conv_2_1",
         ]
+        glb_tests_fp = [
+            "tests/fp_pointwise",
+            "tests/fp_arith",
+            "tests/fp_comp",
+            "tests/fp_conv_7_7",
+        ]
         resnet_tests = []
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
@@ -383,6 +395,7 @@ def dispatch(args, extra_args=None):
             "matmul_ijk_crddrop_relu",
             "matmul_ikj",
             "matmul_jik",
+            "spmm_ijk_crddrop_fp",
             "spmm_ijk_crddrop",
             "spmm_ijk_crddrop_relu",
             "spmv",
@@ -411,6 +424,12 @@ def dispatch(args, extra_args=None):
             "apps/cascade",
             "apps/maxpooling",
             "tests/three_level_pond",
+        ]
+        glb_tests_fp = [
+            "tests/fp_pointwise",
+            "tests/fp_arith",
+            "tests/fp_comp",
+            "tests/fp_conv_7_7",
         ]
         resnet_tests = [
             "conv1",
@@ -493,6 +512,12 @@ def dispatch(args, extra_args=None):
             "apps/maxpooling",
             "apps/matrix_multiplication"
         ]
+        glb_tests_fp = [
+            "tests/fp_pointwise",
+            "tests/fp_arith",
+            "tests/fp_comp",
+            "tests/fp_conv_7_7",
+        ]
         resnet_tests = [
             "conv1",
             "conv2_x",
@@ -512,6 +537,7 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = []
         glb_tests = []
+        glb_tests_fp = []
         resnet_tests = [
             "conv1",
             "conv2_x",
@@ -576,6 +602,11 @@ def dispatch(args, extra_args=None):
     for test in glb_tests:
         t0, t1, t2 = test_dense_app(test, 
                                     width, height, args.env_parameters, extra_args)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+    for test in glb_tests_fp:
+        t0, t1, t2 = test_dense_app(test, 
+                                    width, height, args.env_parameters, extra_args, use_fp=True)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
