@@ -162,26 +162,25 @@ def dispatch(args, extra_args=None):
             print(sim_matrix)
         # for comparing floating point  
         assert numpy.allclose(gold_matrix, sim_matrix)
+
     else:
-        try:
-            if args.run:
-                subprocess_call_log (
-                    cmd=["make", "run"] + extra_args,
-                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-                    env=env,
-                    log=args.log,
-                    log_file_path=log_file_path
-                )
-            else:
-                subprocess_call_log (
-                    cmd=["make", "sim"] + extra_args,
-                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-                    env=env,
-                    log=args.log,
-                    log_file_path=log_file_path
-                )
-        except:
-            print("Failed as expected...move to offsite comparison...")
+
+        if args.run:
+            subprocess_call_log (
+                cmd=["make", "run"] + extra_args,
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
+        else:
+            subprocess_call_log (
+                cmd=["make", "sim"] + extra_args,
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
 
         # Do offsite comparison similar to sparse flow
         # First get RTL simulation outputs
@@ -202,6 +201,11 @@ def dispatch(args, extra_args=None):
 
         # Load gold output array from raw file with big-endian
         gold_array = numpy.fromfile(gold_output_path, dtype='>u2')
+
+        print(f"-------------- Dense Test Result --------------")
+
+        assert gold_array.shape == sim_array.shape, "\033[91mThe shape of the gold and sim arrays do not match.\033[0m"
+
         if args.dense_fp:
 
             # define custom absolute tolerance for floating point comparison
@@ -224,10 +228,12 @@ def dispatch(args, extra_args=None):
                 print("The max absolute difference is:", max_diff)
 
             # assertion to enforce the check
-            assert numpy.allclose(gold_array_fp, sim_array_fp, atol=custom_atol, rtol=custom_rtol), "Floating point comparison failed."
+            assert numpy.allclose(gold_array_fp, sim_array_fp, atol=custom_atol, rtol=custom_rtol), "\033[91mFloating point comparison failed.\033[0m"
 
             # print pass message and maximum difference
-            print("The floating point comparison passed. The max absolute difference is:", max_diff)
+            print("\033[92mFloating point comparison passed.\033[0m")
+            print("Max absolute difference is:", max_diff)
+
         else:
 
             # check diff array and print wrong pixels
@@ -240,5 +246,5 @@ def dispatch(args, extra_args=None):
                 print(f"Total differing: {len(diff_indices)}")
 
             # Assertion for the integer case
-            assert numpy.array_equal(gold_array, sim_array), "Integer comparison failed."
-            print("The integer comparison passed.")
+            assert numpy.array_equal(gold_array, sim_array), "\033[91mInteger comparison failed.\033[0m"
+            print("\033[92mInteger comparison passed.\033[0m")
