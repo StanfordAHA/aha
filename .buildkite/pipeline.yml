@@ -36,6 +36,20 @@ steps:
         git clean -ffxdq
         set +x
 
+
+
+
+        echo "+++ TEMPORARY HACK FOR TESTING PURPOSES"
+        set -x
+        git fetch origin; git checkout origin/aha-flow-garnet-pr-bypass
+        set +x
+        echo "--- Continue..."
+
+
+
+
+
+
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
         # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
@@ -157,12 +171,19 @@ steps:
           # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
 
           # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
+          # also sets "PR_TAIL_REPO" to requesting submod e.g. "garnet"
+          set -x; cat /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER; set +x
           source /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER
 
           echo "--- Pass DO_PR info to docker"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
           if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+              if [ "$$PR_REPO_TAIL" == "garnet" ]; then
+                  echo "+++ Garnet PR detected, so skip redundant regressions."
+                  exit
+              else
+                  echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+              fi
           else
               echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
           fi
