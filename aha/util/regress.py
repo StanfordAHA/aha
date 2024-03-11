@@ -428,8 +428,8 @@ def dispatch(args, extra_args=None):
         glb_tests_fp = [
             "tests/fp_pointwise",
             "tests/fp_arith",
-            "tests/fp_comp",
             "tests/fp_conv_7_7",
+            "apps/maxpooling_fp",
         ]
         resnet_tests = [
             "conv1",
@@ -517,6 +517,7 @@ def dispatch(args, extra_args=None):
             "tests/fp_arith",
             "tests/fp_comp",
             "tests/fp_conv_7_7",
+            "apps/maxpooling_fp",
         ]
         resnet_tests = [
             "conv1",

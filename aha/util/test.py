@@ -227,6 +227,10 @@ def dispatch(args, extra_args=None):
                 print(f"Total exceeding tolerance: {len(exceed_indices)}")
                 print("The max absolute difference is:", max_diff)
 
+            # save gold and sim array as npy files
+            numpy.save(f'{app_dir}/bin/gold_output_array_fp.npy', gold_array_fp)
+            numpy.save(f'{app_dir}/bin/sim_output_array_fp.npy', sim_array_fp)
+
             # assertion to enforce the check
             assert numpy.allclose(gold_array_fp, sim_array_fp, atol=custom_atol, rtol=custom_rtol), "\033[91mFloating point comparison failed.\033[0m"
 
@@ -244,6 +248,10 @@ def dispatch(args, extra_args=None):
                 for idx in diff_indices[:20]:  # Limit to first 20 differences
                     print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
                 print(f"Total differing: {len(diff_indices)}")
+
+            # save gold and sim array as npy files
+            numpy.save(f'{app_dir}/bin/gold_output_array.npy', gold_array)
+            numpy.save(f'{app_dir}/bin/sim_output_array.npy', sim_array)
 
             # Assertion for the integer case
             assert numpy.array_equal(gold_array, sim_array), "\033[91mInteger comparison failed.\033[0m"
