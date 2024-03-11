@@ -24,7 +24,6 @@ steps:
         set +u     # nounset? not on my watch!
 
         set -x
-        buildkite-agent step get "label"
         buildkite-agent step update "label" "New Label"
         buildkite-agent step update "command" "exit"
         buildkite-agent step update "commands" "exit"
