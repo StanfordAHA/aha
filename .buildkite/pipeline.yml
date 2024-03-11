@@ -180,7 +180,10 @@ steps:
           if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
               if [ "$$PR_REPO_TAIL" == "garnet" ]; then
                   echo "+++ Garnet PR detected, so skip redundant regressions."
-                  exit
+                  set -x
+                  rm -rf temp/.TEST
+                  buildkite-agent step update "commands" "exit"
+                  set +x
               else
                   echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
               fi
