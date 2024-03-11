@@ -41,7 +41,7 @@ steps:
 
         echo "+++ TEMPORARY HACK FOR TESTING PURPOSES"
         set -x
-        git fetch origin; git checkout origin/aha-flow-garnet-pr-bypass
+        git pull; git checkout aha-flow-garnet-pr-bypass
         set +x
         echo "--- Continue..."
 
