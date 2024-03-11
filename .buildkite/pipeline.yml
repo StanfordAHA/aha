@@ -178,15 +178,20 @@ steps:
           echo "--- Pass DO_PR info to docker"
           echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
           if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-              if [ "$$PR_REPO_TAIL" == "garnet" ]; then
-                  echo "+++ Garnet PR detected, so skip redundant regressions."
-                  set -x
-                  rm -rf temp/.TEST
-                  buildkite-agent step update "commands" "exit"
-                  set +x
-              else
-                  echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
-              fi
+
+              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+
+
+#               if [ "$$PR_REPO_TAIL" == "garnet" ]; then
+#                   echo "+++ Garnet PR detected, so skip redundant regressions."
+#                   set -x
+#                   rm -rf temp/.TEST
+#                   buildkite-agent step update "commands" "exit"
+#                   set +x
+#               else
+#                   echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+#               fi
+
           else
               echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
           fi
