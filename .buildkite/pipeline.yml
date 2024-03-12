@@ -180,9 +180,10 @@ steps:
           if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
               echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
               if [ "$$PR_REPO_TAIL" == "garnet" ]; then
-                  echo "+++ (TBD) Garnet PR detected, so skip redundant regressions (TBD)."
+                  # Delete .TEST as a sign to skip tests
+                  echo "+++ Garnet PR detected, so skip redundant regressions"
+                  rm -rf temp/.TEST
               fi
-              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
           else
               echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
           fi
@@ -206,6 +207,11 @@ steps:
           ~/bin/status-update success
 
   commands:
+  - |
+    if ! test -e /buildkite/.TEST; then
+        echo "+++ No .TEST detected, so skip redundant regressions"
+        exit
+    fi
   - |
     if test -e /buildkite/DO_PR; then
         echo "--- DO_PR SET (TRUE)"
