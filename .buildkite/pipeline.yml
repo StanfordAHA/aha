@@ -35,21 +35,6 @@ steps:
         git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
         git clean -ffxdq
         set +x
-
-
-
-
-        echo "+++ TEMPORARY HACK FOR TESTING PURPOSES"
-        set -x
-        git pull; git checkout aha-flow-garnet-pr-bypass
-        set +x
-        echo "--- Continue..."
-
-
-
-
-
-
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
         # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
