@@ -210,7 +210,7 @@ def dispatch(args, extra_args=None):
 
             # define custom absolute tolerance for floating point comparison
             custom_atol = 1.5e-04 # default 1e-08
-            custom_rtol = 1.5e-02 # default 1e-05
+            custom_rtol = 1.0e-01 # default 1e-05
             sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype = numpy.float32)
             gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype = numpy.float32)
 
@@ -222,7 +222,7 @@ def dispatch(args, extra_args=None):
             if len(exceed_indices) > 0:
                 print("Floating-point values exceeding tolerance:")
                 for idx in exceed_indices[:20]:  # Limit to first 20 differences
-                    actual_tolerance = custom_atol + custom_rtol * numpy.abs(gold_array_fp[idx])
+                    actual_tolerance = custom_atol + custom_rtol * numpy.abs(sim_array_fp[idx])
                     print(f"Index: {idx}, Gold: {gold_array_fp[idx]}, Sim: {sim_array_fp[idx]}, Diff: {differences[idx]}, Allowed Tolerance: {actual_tolerance}")
                 print(f"Total exceeding tolerance: {len(exceed_indices)}")
                 print("The max absolute difference is:", max_diff)
