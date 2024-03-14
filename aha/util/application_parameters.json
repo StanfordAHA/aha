@@ -419,18 +419,18 @@
     },
     "conv2_x_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=32 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1"
         },
         "fastest":{
-            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=32 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "PNR_PLACER_EXP":"1",
             "DISABLE_GP":"1"
         },
         "sweep":{
-            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=32 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"
