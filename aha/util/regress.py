@@ -332,6 +332,7 @@ def dispatch(args, extra_args=None):
             "tests/fp_pointwise",
         ]
         resnet_tests = []
+        resnet_tests_fp = []
         hardcoded_dense_tests = []
     elif args.config == "pr":
         width, height = 28, 16
@@ -372,6 +373,7 @@ def dispatch(args, extra_args=None):
             "tests/fp_conv_7_7",
         ]
         resnet_tests = []
+        resnet_tests_fp = []
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
         ]
@@ -430,6 +432,7 @@ def dispatch(args, extra_args=None):
             "tests/fp_arith",
             "tests/fp_conv_7_7",
             "apps/maxpooling_fp",
+            "apps/matrix_multiplication_fp",
         ]
         resnet_tests = [
             "conv1",
@@ -438,6 +441,9 @@ def dispatch(args, extra_args=None):
             "conv5_x",  
             "conv2_x_residual",
             "conv5_x_residual",
+        ]
+        resnet_tests_fp = [
+            "conv2_x_fp",
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
@@ -518,6 +524,7 @@ def dispatch(args, extra_args=None):
             "tests/fp_comp",
             "tests/fp_conv_7_7",
             "apps/maxpooling_fp",
+            "apps/matrix_multiplication_fp",
         ]
         resnet_tests = [
             "conv1",
@@ -530,6 +537,9 @@ def dispatch(args, extra_args=None):
             "conv5_x",
             "conv2_x_residual",
             "conv5_x_residual",
+        ]
+        resnet_tests_fp = [
+            "conv2_x_fp"
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
@@ -553,6 +563,7 @@ def dispatch(args, extra_args=None):
             "conv4_x_residual",
             "conv5_x_residual",
         ]
+        resnet_tests_fp = []
         hardcoded_dense_tests = []
 
     else:
@@ -618,6 +629,16 @@ def dispatch(args, extra_args=None):
         else:
             t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
                                         width, height, args.env_parameters, extra_args, layer=test)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+    for test in resnet_tests_fp:
+        if "residual" in test:
+            t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp",
+                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        else:
+            t0, t1, t2 = test_dense_app("apps/conv2D_fp",
+                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
