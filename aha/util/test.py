@@ -17,6 +17,7 @@ def add_subparser(subparser):
     parser.add_argument("--sparse-test-name", type=str, default=None)
     parser.add_argument("--sparse-comparison", type=str, default=None)
     parser.add_argument("--dense-fp", action="store_true")
+    parser.add_argument("--multiles", type=int, default=None)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -127,6 +128,8 @@ def dispatch(args, extra_args=None):
 
 
         tiles = 1
+        if args.multiles:
+            tiles = args.multiles
         # This is where we do the fallback comparison...
         # First get gold matrix from the output...
 
