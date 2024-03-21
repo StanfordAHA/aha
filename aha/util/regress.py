@@ -132,7 +132,59 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     return time_map
 
 
-def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num=1, test=""):
+def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num=64):
+    script_path = "/aha/garnet/"
+    pairs_cpy = suitesparse_data_tile_pairs.copy()
+    all_tiles = []
+    num_list = []
+    for suitesparse_datum in suitesparse_data:
+        pairs_cpy_tmp = pairs_cpy.copy()
+        pairs_cpy = []
+        test_l = []
+        tile_format = ""
+        for tile in pairs_cpy_tmp:
+            if test in tile and suitesparse_datum in tile:
+                test_l.append(int(tile.split("_")[-1][4:]))
+                if tile_format == "":
+                    tile_format = tile
+            else:
+                pairs_cpy.append(tile)
+        test_l.sort()
+        test_l = [str(x) for x in test_l]
+
+        for i in range(0, len(test_l), pipeline_num):
+            test_l_str = f"concat{i}"
+            tile_format_t = tile_format.split("/")
+            tile_format_name = tile_format_t[-1]
+            tile_format_name = tile_format_name.split("_")
+            tile_format_name[-1] = "tile_" + test_l_str
+            tile_format_name = "_".join(tile_format_name)
+            tile_format_t[-1] = tile_format_name
+            tile_format_t = "/".join(tile_format_t)
+            all_tiles.append(tile_format_t)
+
+            if i + pipeline_num < len(test_l):
+                test_l_s = test_l[i:i+pipeline_num]
+            else:
+                test_l_s = test_l[i:]
+            true_pipeline_num = len(test_l_s)
+            num_list.append(true_pipeline_num)
+            print(f"CONCATENATING TILES {test_l_s}")
+            subprocess.call(
+                [
+                    "python",
+                    "/aha/garnet/concat_tiles.py",
+                    test,
+                    suitesparse_datum,
+                    test_l_str,
+                    *test_l_s,
+                ],
+                cwd = script_path
+            )
+    return all_tiles, num_list
+
+
+def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num_l=[1], test=""):
     if test == "":
         test = testname
 
@@ -158,9 +210,17 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
         time_test = time.time() - start
     else:
         print("RUNNING SS FLOW", flush=True)
+        use_pipeline = False
+        if len(pipeline_num_l) != 1:
+            assert len(pipeline_num_l) == len(suitesparse_data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
+            use_pipeline = True
         start = time.time()
         dataset_runtime_dict = defaultdict(float)
         for ss_tile_pair in suitesparse_data_tile_pairs:
+            pipeline_num = 1
+            if use_pipeline:
+                index = suitesparse_data_tile_pairs.index(ss_tile_pair)
+                pipeline_num = pipeline_num_l[index]
             ss_tile_pair = ss_tile_pair.split("MAT_TMP_DIR/")[1]
             ss_tile_pair_sparse_testname = ss_tile_pair.split("-")[0]
             if ss_tile_pair_sparse_testname != testname:
@@ -321,6 +381,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 def dispatch(args, extra_args=None):
     seed_flow = True 
     use_pipeline = False
+    pipeline_num = 64
     suitesparse_data = ["football"]
     if args.config == "fast":
         width, height = 4, 4
@@ -609,60 +670,13 @@ def dispatch(args, extra_args=None):
         with open("/aha/garnet/suitesparse_perf_out.txt", 'w') as perf_out_file:
             perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
-    if use_pipeline: # TODO: not exactly the same as the test_sparse_app
-        script_path = "/aha/garnet/"
-        assert not(seed_flow), "Pipeline mode only works without seed flow"
-        pairs_cpy = suitesparse_data_tile_pairs.copy()
-        for test in sparse_tests:
-            for suitesparse_datum in suitesparse_data:
-                pairs_cpy_tmp = pairs_cpy.copy()
-                pairs_cpy = []
-                test_l = []
-                tile_format = ""
-                for tile in pairs_cpy_tmp: # very slow, but should work
-                    if test in tile and suitesparse_datum in tile:
-                        test_l.append(int(tile.split("_")[-1][4:]))
-                        if tile_format == "":
-                            tile_format = tile
-                    else:
-                        pairs_cpy.append(tile)
-                test_l.sort()
-                test_l = [str(x) for x in test_l]
-
-                pipeline_num = 64
-
-                test_l_str = "_concat"
-                tile_format = tile_format.split("/")
-                tile_format_name = tile_format[-1]
-                tile_format_name = tile_format_name.split("_")
-                tile_format_name[-1] = "tile" + test_l_str
-                tile_format_name = "_".join(tile_format_name)
-                tile_format[-1] = tile_format_name
-                tile_format = "/".join(tile_format)
-                tile_format = [tile_format]
-
-                for i in range(0, len(test_l), pipeline_num):
-                    if i + pipeline_num < len(test_l):
-                        test_l_s = test_l[i:i+pipeline_num]
-                    else:
-                        test_l_s = test_l[i:]
-                    true_pipeline_num = len(test_l_s)
-                    print(f"CONCATENATING TILES {test_l_s}")
-                    subprocess.call(
-                        [
-                            "python",
-                            "/aha/garnet/concat_tiles.py",
-                            test,
-                            suitesparse_datum,
-                            *test_l_s,
-                        ],
-                        cwd = script_path
-                    )
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_format, pipeline_num=true_pipeline_num)
-                    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
-    else:
-        for test in sparse_tests:
+    for test in sparse_tests:
+        if use_pipeline:
+            assert (not seed_flow), "Pipeline mode is not supported with seed flow"
+            tile_pairs, pipeline_num_l = format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num)
+            t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        else:
             t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
