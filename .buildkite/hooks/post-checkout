@@ -1,6 +1,0 @@
-#!/bin/bash -e
-if [[ ${BUILDKITE_STEP_KEY} =~ ^(docker-build|integration-tests)$ ]]; then
-    mkdir -p temp
-    rm -rf temp/.TEST
-    touch temp/.TEST
-fi

@@ -25,4 +25,4 @@ jobs:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        cache: ${{ github.event_name != 'schedule' }}
+        cache: false
