@@ -651,7 +651,10 @@ def dispatch(args, extra_args=None):
         
         for test in sparse_tests:
             for suitesparse_datum in suitesparse_data:
-                command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                if "tensor" not in test:
+                    command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                else:
+                    command = "python3 /aha/garnet/copy_formatted_tensor_tiling.py " + test + " " + suitesparse_datum
                 subprocess.call(command, shell=True)
             this_sparse_test_tile_pairs = glob.glob(f"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/{test}*")
             suitesparse_data_tile_pairs.extend(this_sparse_test_tile_pairs)
