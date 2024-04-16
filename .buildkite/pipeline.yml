@@ -112,6 +112,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
