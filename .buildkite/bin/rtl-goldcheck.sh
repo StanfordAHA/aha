@@ -129,6 +129,8 @@ cp $refdir/$ref.gz . || exit 13
 gunzip $ref.gz
 f1=design.v; f2=$ref
 
+echo foo > foo.deleteme; f1=foo.deleteme
+
 function vcompare { /aha/.buildkite/bin/vcompare.sh $*; }
 
 printf "\n"
