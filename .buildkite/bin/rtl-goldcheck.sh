@@ -129,7 +129,7 @@ cp $refdir/$ref.gz . || exit 13
 gunzip $ref.gz
 f1=design.v; f2=$ref
 
-function vcompare { ../.buildkite/bin/vcompare $*; }
+function vcompare { ../.buildkite/bin/vcompare.sh $*; }
 
 printf "\n"
 echo "Comparing `vcompare $f1 | wc -l` lines of $f1"
