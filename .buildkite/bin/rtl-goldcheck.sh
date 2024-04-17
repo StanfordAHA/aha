@@ -137,7 +137,8 @@ echo "versus    `vcompare $f2 | wc -l` lines of $f2"
 printf "\n"
 
 echo "diff $f1 $f2"
-ndiffs=`diff -Bb -I Date <(vcompare $f1) <(vcompare $f2) | wc -l`
+# ndiffs=`diff -Bb -I Date <(vcompare $f1) <(vcompare $f2) | wc -l`
+ndiffs=`vcompare $f1 $f2 | wc -l`
 
 if [ "$ndiffs" != "0" ]; then
 
@@ -148,7 +149,8 @@ if [ "$ndiffs" != "0" ]; then
     printf '(To update gold verilog, see $GARNET_REPO/bin/rtl-goldfetch.sh --help)'
     printf "\n"
     printf "Top 40 diffs:"
-    diff -I Date <(vcompare $f1) <(vcompare $f2) | head -40
+    # diff -I Date <(vcompare $f1) <(vcompare $f2) | head -40
+    vcompare $f1 $f2 | head -40
     exit 13
 fi
 
