@@ -86,6 +86,9 @@ steps:
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
   commands:
+    - set -x; ls -l /aha/.buildkite
+    - set -x; ls -l /aha/.buildkite/bin
+    - set -x; ls -l /aha/.buildkite/bin/rtl-goldcheck.sh
     - set -x; /aha/.buildkite/bin/rtl-goldcheck.sh amber
   plugins:
     - uber-workflow/run-without-clone:
