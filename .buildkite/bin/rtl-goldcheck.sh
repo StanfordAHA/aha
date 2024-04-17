@@ -129,7 +129,7 @@ cp $refdir/$ref.gz . || exit 13
 gunzip $ref.gz
 f1=design.v; f2=$ref
 
-function vcompare { set -x; /aha/.buildkite/bin/vcompare.sh $*; }
+function vcompare { /aha/.buildkite/bin/vcompare.sh $*; }
 
 printf "\n"
 echo "Comparing `vcompare $f1 | wc -l` lines of $f1"
@@ -137,7 +137,6 @@ echo "versus    `vcompare $f2 | wc -l` lines of $f2"
 printf "\n"
 
 echo "diff $f1 $f2"
-# ndiffs=`diff -Bb -I Date <(vcompare $f1) <(vcompare $f2) | wc -l`
 set -x
 ndiffs=`vcompare $f1 $f2 | wc -l`
 
@@ -150,7 +149,6 @@ if [ "$ndiffs" != "0" ]; then
     printf '(To update gold verilog, see $GARNET_REPO/bin/rtl-goldfetch.sh --help)'
     printf "\n"
     printf "Top 40 diffs:"
-    # diff -I Date <(vcompare $f1) <(vcompare $f2) | head -40
     vcompare $f1 $f2 | head -40
     exit 13
 fi
