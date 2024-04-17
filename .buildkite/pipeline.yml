@@ -23,10 +23,10 @@ steps:
 
 
         msg="ERROR you FAILED 1"
-        echo "$msg" | buildkite-agent annotate --style "error"
+        echo "$msg" | buildkite-agent annotate --style "error" --context 1
 
         msg="ERROR you FAILED 2"
-        echo "$msg" | buildkite-agent annotate --style "error"
+        echo "$msg" | buildkite-agent annotate --style "error" --context 1
 
         exit 13
 
