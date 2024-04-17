@@ -26,6 +26,11 @@ else
     echo "Push or PR from aha repo: check out requested aha branch $BUILDKITE_COMMIT"
     git fetch -v --prune -- origin $BUILDKITE_COMMIT
     git checkout -qf $BUILDKITE_COMMIT
+    set -x
+    ls -l /aha
+    ls -l /aha/.buildkite
+    ls -l /aha/.buildkite/bin
+    set +x
 fi
 
 echo "--- Initialize all submodules YES THIS TAKES AWHILE"
