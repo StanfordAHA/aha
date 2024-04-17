@@ -39,15 +39,16 @@ echo "--- Found GARNET_HOME=$GARNET_HOME"
 ########################################################################
 # Assemble the generation command-lie flags, env vars, etc.
 
-# width=32  # slow 32x16
-width=4     # quick 4x2
-height=$((width/2))
+width=32; height=$((width/2))  # slow 32x16
+width=4;  height=$((width/2))  # quick 4x2
+wh="--width $width --height $height"
 
 # FIXME should really use garnet's gen_rtl.sh to generate the RTL and flags etc.
 # This would require some kind of --no-docker flag for gen_rtl.sh or some such...
 
-# RTL-build flags
-flags="--width $width --height $height --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
+# RTL-build flags (flags are very different b/c divergence of garnet.py, garnet_amber.py
+amber_flags="$wh --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
+onyx_flags=" $wh --verilog --use_sim_sram        --glb_tile_mem_size 128"
 
 export WHICH_SOC=$1
 ref=$1-4x2.v
@@ -59,11 +60,14 @@ if [ "$1" == "amber" ]; then
     # Update docker to match necessary amber environment
     $GARNET_HOME/mflowgen/common/rtl/gen_rtl.sh -u | tee tmp-amber-updates.sh
     bash -c 'set -x; source tmp-amber-updates.sh'
+    flags="$amber_flags"
 
 elif [ "$1" == "onyx" ]; then
-    flags="$flags --include-sparse"
+    flags="$onyx_flags"
 
-else echo "$HELP" && exit 13; fi
+else
+    echo "$HELP" && exit 13
+fi
 
 
 ########################################################################
