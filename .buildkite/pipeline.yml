@@ -86,7 +86,7 @@ steps:
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
   commands:
-    - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
+    - set -x; /aha/.buildkite/bin/rtl-goldcheck.sh amber
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
@@ -108,7 +108,7 @@ steps:
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
   commands:
-    - set -x; /aha/aha/bin/rtl-goldcheck.sh onyx
+    - set -x; /aha/.buildkite/bin/rtl-goldcheck.sh onyx
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
