@@ -15,6 +15,7 @@
 #
 # Need 's/_O._value_O/...' because generator seems e.g. to randomly assign
 # the equivalent values 'PE_onyx_inst_onyxpeintf_O3_value_O' and '...O4_value_O' :(
+
 function vcompare {
     cat $1 |
     sed 's/_O._value_O/_Ox_value_O/g' | # Treat all zeroes as equivalent
@@ -24,9 +25,11 @@ function vcompare {
     sort                   | # Out-of-order is okay
     cat
 }
-# Two arguments: apply vcompare filter to both files and diff them
+
 if [ "$2" ]; then
+    # Two args: apply vcompare filter to both files and diff them
     diff -Bb -I Date <(vcompare $1) <(vcompare $2)
 else
+    # One arg: apply vcompare filter to input file
     vcompare $1
 fi

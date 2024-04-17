@@ -137,7 +137,6 @@ echo "versus    `vcompare $f2 | wc -l` lines of $f2"
 printf "\n"
 
 echo "diff $f1 $f2"
-set -x
 ndiffs=`vcompare $f1 $f2 | wc -l`
 
 if [ "$ndiffs" != "0" ]; then
