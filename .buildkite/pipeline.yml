@@ -24,12 +24,11 @@ steps:
         set -x
         echo foo | buildkite-agent annotate --style "info" --context foo3
 
-
         msg="ERROR you FAILED 1"
-        echo "$msg" | buildkite-agent annotate --style "error" --context 1
+        echo "$$msg" | buildkite-agent annotate --style "error"
 
         msg="ERROR you FAILED 2"
-        echo "$msg" | buildkite-agent annotate --style "error" --context 1
+        echo "$$msg" | buildkite-agent annotate --style "error" --context 1
 
         exit 13
 
