@@ -21,6 +21,9 @@ steps:
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
 
+        set -x
+        echo foo | buildkite-agent annotate --style "info" --context foo3
+
 
         msg="ERROR you FAILED 1"
         echo "$msg" | buildkite-agent annotate --style "error" --context 1
