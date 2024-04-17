@@ -22,7 +22,12 @@ steps:
       pre-checkout: |
 
 
-        echo FOO | buildkite-agent annotate --style "info" --context foo3
+        msg="ERROR you FAILED 1"
+        echo "$msg" | buildkite-agent annotate --style "error"
+
+        msg="ERROR you FAILED 2"
+        echo "$msg" | buildkite-agent annotate --style "error"
+
         exit 13
 
 
