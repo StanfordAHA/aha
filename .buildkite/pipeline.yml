@@ -20,21 +20,6 @@ steps:
       # Req from aha repo:    check out aha commit BUILDKITE_COMMIT
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
-
-        set -x
-        echo foo | buildkite-agent annotate --style "info" --context foo3
-
-        msg="ERROR you FAILED 1"
-        echo "$$msg" | buildkite-agent annotate --style "error"
-
-        msg="ERROR you FAILED 2"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context 1
-
-        exit 13
-
-
-
-
         echo "+++ BDI PRE CHECKOUT HOOK"
         set +u     # nounset? not on my watch!
 
