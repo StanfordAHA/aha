@@ -71,7 +71,7 @@ fi
 
 
 ########################################################################
-echo '--- RTL test BEGIN ($1)' `date`
+echo "--- RTL test BEGIN ($1)" `date`
 echo "WHICH_SOC: $WHICH_SOC"
 echo "FLAGS: $flags"
 
@@ -89,23 +89,29 @@ rm -f  garnet/garnet.v
 source /aha/bin/activate; # Set up the build environment
 aha garnet $flags
 
-# Assemble final design.v
-cd /aha/garnet
-cp garnet.v genesis_verif/garnet.v
-cat genesis_verif/* > design.v
-cat global_buffer/systemRDL/output/glb_pio.sv >> design.v
-cat global_buffer/systemRDL/output/glb_jrdl_decode.sv >> design.v
-cat global_buffer/systemRDL/output/glb_jrdl_logic.sv >> design.v
-cat global_controller/systemRDL/output/*.sv >> design.v
+if [ "$1" == "amber" ]; then
 
-# For better or worse: I put this in gen_rtl.sh
-# Hack it up! FIXME should use same mechanism as onyx...define AO/AN_CELL
-# Also see: garnet/mflowgen/common/rtl/gen_rtl.sh, gemstone/tests/common/rtl/{AN_CELL.sv,AO_CELL.sv}
-cat design.v \
-    | sed 's/AN_CELL inst/AN2D0BWP16P90 inst/' \
-    | sed 's/AO_CELL inst/AO22D0BWP16P90 inst/' \
-          > /tmp/tmp.v
-mv -f /tmp/tmp.v design.v
+    # Assemble final design.v
+    cd /aha/garnet
+    cp garnet.v genesis_verif/garnet.v
+    cat genesis_verif/* > design.v
+    cat global_buffer/systemRDL/output/glb_pio.sv >> design.v
+    cat global_buffer/systemRDL/output/glb_jrdl_decode.sv >> design.v
+    cat global_buffer/systemRDL/output/glb_jrdl_logic.sv >> design.v
+    cat global_controller/systemRDL/output/*.sv >> design.v
+
+    # For better or worse: I put this in gen_rtl.sh
+    # Hack it up! FIXME should use same mechanism as onyx...define AO/AN_CELL
+    # Also see: garnet/mflowgen/common/rtl/gen_rtl.sh, gemstone/tests/common/rtl/{AN_CELL.sv,AO_CELL.sv}
+    cat design.v \
+        | sed 's/AN_CELL inst/AN2D0BWP16P90 inst/' \
+        | sed 's/AO_CELL inst/AO22D0BWP16P90 inst/' \
+              > /tmp/tmp.v
+    mv -f /tmp/tmp.v design.v
+else
+    cd /aha/garnet
+    cp garnet.v design.v
+fi
 
 printf "\n"
 
