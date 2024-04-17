@@ -124,12 +124,12 @@ test -f $ref && rm $ref
 
 # I guess the most recent cd left us in "/aha/garnet" :(
 
-refdir=../.buildkite/bin/ref
+refdir=/aha/.buildkite/bin/ref
 cp $refdir/$ref.gz . || exit 13
 gunzip $ref.gz
 f1=design.v; f2=$ref
 
-function vcompare { ../.buildkite/bin/vcompare.sh $*; }
+function vcompare { set -x; /aha/.buildkite/bin/vcompare.sh $*; }
 
 printf "\n"
 echo "Comparing `vcompare $f1 | wc -l` lines of $f1"
@@ -138,6 +138,7 @@ printf "\n"
 
 echo "diff $f1 $f2"
 # ndiffs=`diff -Bb -I Date <(vcompare $f1) <(vcompare $f2) | wc -l`
+set -x
 ndiffs=`vcompare $f1 $f2 | wc -l`
 
 if [ "$ndiffs" != "0" ]; then
