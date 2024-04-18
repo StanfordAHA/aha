@@ -148,6 +148,7 @@ steps:
 
         pre-command: |
           echo "+++ OIT PRE COMMAND HOOK BEGIN"
+          exit 13
 
           # Use temp/.TEST to pass fail/success info into and out of docker container
           echo Renewing `pwd`/temp/.TEST
@@ -196,6 +197,7 @@ steps:
 
   commands:
   - |
+    exit 13
     if ! test -e /buildkite/.TEST; then
         echo "+++ No .TEST detected, so skip redundant regressions"
         exit
