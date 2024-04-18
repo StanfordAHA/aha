@@ -90,6 +90,7 @@ steps:
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
         msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
         echo "$$msg" | buildkite-agent annotate --style "error"
+        exit 13
     fi
   plugins:
     - uber-workflow/run-without-clone:
@@ -112,6 +113,7 @@ steps:
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
         msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
         echo "$$msg" | buildkite-agent annotate --style "error"
+        exit 13
     fi
   plugins:
     - uber-workflow/run-without-clone:
