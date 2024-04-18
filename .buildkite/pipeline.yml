@@ -192,7 +192,7 @@ steps:
           # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
           ~/bin/status-update success
 
-commands:
+  commands:
   - |
     if ! test -e /buildkite/.TEST; then
         echo "+++ No .TEST detected, so skip redundant regressions"
