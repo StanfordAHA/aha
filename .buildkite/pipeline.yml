@@ -5,6 +5,10 @@
 env:
   CONFIG: ${CONFIG:-daily}
 
+# You can update an existing annotation's body by running the annotate
+# command again with the same context as the one you want to update.
+# Or if you leave the context blank, it will use the default context.
+
 steps:
 - label: "TEST1"
   commands: |
@@ -17,7 +21,7 @@ steps:
   commands: |
         msg="TEST2 gold check FAILED. This is not fatal. But it really should be fixed."
         echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context test2
+        echo "$$msg" | buildkite-agent annotate --style "error" --context amber
 
 
 
