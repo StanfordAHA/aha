@@ -53,7 +53,6 @@ amber_flags="$wh --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
 onyx_flags=" $wh --verilog --use_sim_sram        --glb_tile_mem_size 128"
 
 export WHICH_SOC=$1
-ref=$1-4x2.v
 
 # Amber needs a slightly different versions for some of the submodules
 # Onyx needs extra gen flags
@@ -91,10 +90,10 @@ rm -f  garnet/garnet.v
 source /aha/bin/activate; # Set up the build environment
 aha garnet $flags
 
+cd /aha/garnet  # Everything we built and/or need is in /aha/garnet
 if [ "$1" == "amber" ]; then
 
     # Assemble final design.v
-    cd /aha/garnet
     cp garnet.v genesis_verif/garnet.v
     cat genesis_verif/* > design.v
     cat global_buffer/systemRDL/output/glb_pio.sv >> design.v
@@ -111,7 +110,6 @@ if [ "$1" == "amber" ]; then
               > /tmp/tmp.v
     mv -f /tmp/tmp.v design.v
 else
-    cd /aha/garnet
     cp garnet.v design.v
 fi
 
@@ -121,17 +119,19 @@ printf "\n"
 ########################################################################
 echo "+++ Compare result to reference build"
 
-# Reference designs are gzipped to save space
-test -f $ref && rm $ref
+cd /aha/garnet  # This is where design.v lives
 
-# I guess the most recent cd left us in "/aha/garnet" :(
+# Reference designs are gzipped to save space
+ref=${WHICH_SOC}-4x2.v
 
 refdir=/aha/.buildkite/bin/ref
 cp $refdir/$ref.gz . || exit 13
+test -f $ref && rm $ref  # Just in case there's a stale copy, I guess
 gunzip $ref.gz
 f1=design.v; f2=$ref
 
-echo foo > foo.deleteme; f1=foo.deleteme
+# Use this to test failure mode
+# echo foo > foo.deleteme; f1=foo.deleteme
 
 function vcompare { /aha/.buildkite/bin/vcompare.sh $*; }
 
