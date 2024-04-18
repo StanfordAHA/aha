@@ -14,14 +14,14 @@ steps:
   commands: |
         msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
         echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context amber
+        echo "$$msg" | buildkite-agent annotate --style "error" --context amber --append
 
 
 - label: "TEST2"
   commands: |
         msg="TEST2 gold check FAILED. This is not fatal. But it really should be fixed."
         echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context amber
+        echo "$$msg" | buildkite-agent annotate --style "error" --context amber --append
 
 
 
