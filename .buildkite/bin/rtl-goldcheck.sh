@@ -12,7 +12,9 @@
 cmd=$0
 
 HELP="
-DESCRIPTION: Builds RTL for a 4x2 amber or onyx SoC, compares to reference build.
+DESCRIPTION:
+  Builds '/aha/garnet/design.v' RTL for a 4x2 amber or onyx SoC.
+  Compares to reference build.
 
 USAGE:
    $cmd amber      # Build and compare amber RTL
