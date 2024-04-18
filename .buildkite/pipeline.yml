@@ -12,14 +12,14 @@ env:
 steps:
 - label: "TEST1"
   commands: |
-        msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
+        msg="Amber gold check FAILED. This is not fatal. But it really should be fixed.<br/>"
         echo "++ $$msg"
         echo "$$msg" | buildkite-agent annotate --style "error" --context amber --append
 
 
 - label: "TEST2"
   commands: |
-        msg="TEST2 gold check FAILED. This is not fatal. But it really should be fixed."
+        msg="TEST2 gold check FAILED. This is not fatal. But it really should be fixed.<br/>"
         echo "++ $$msg"
         echo "$$msg" | buildkite-agent annotate --style "error" --context amber --append
 
