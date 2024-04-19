@@ -85,8 +85,14 @@ steps:
   depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
-  commands:
-    - set -x; /aha/aha/bin/rtl-goldcheck.sh amber
+  commands: |
+    echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
+    if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
+        msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
+        echo "++ $$msg"
+        echo "$$msg" | buildkite-agent annotate --style "error" --context amber
+        exit 13
+    fi
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
@@ -94,10 +100,6 @@ steps:
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
-        propagate-environment: true
-        environment:
-          - CONFIG
-          - FLOW_REPO
         shell: ["/bin/bash", "-e", "-c"]
   agents:
     docker: true
@@ -107,18 +109,21 @@ steps:
   depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
-  commands:
-    - set -x; /aha/aha/bin/rtl-goldcheck.sh onyx
+  commands: |
+    echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
+    if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
+        msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
+        echo "++ $$msg"
+        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+        exit 13
+    fi
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
           - "/cad/:/cad"
         mount-checkout: false
-        propagate-environment: true
-        environment:
-          - CONFIG
-          - FLOW_REPO
         shell: ["/bin/bash", "-e", "-c"]
   agents:
     docker: true
