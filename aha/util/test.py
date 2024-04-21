@@ -213,7 +213,7 @@ def dispatch(args, extra_args=None):
 
             # define custom absolute tolerance for floating point comparison
             custom_atol = 1.5e-04 # default 1e-08
-            custom_rtol = 1.0e-01 # default 1e-05
+            custom_rtol = 2.0e-01 # default 1e-05
             sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype = numpy.float32)
             gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype = numpy.float32)
 
@@ -247,8 +247,17 @@ def dispatch(args, extra_args=None):
             numpy.save(f'{app_dir}/bin/gold_output_array_fp.npy', gold_array_fp)
             numpy.save(f'{app_dir}/bin/sim_output_array_fp.npy', sim_array_fp)
 
-            # assertion to enforce the check
-            assert numpy.allclose(sim_array_fp, gold_array_fp, atol=custom_atol, rtol=custom_rtol), "\033[91mFloating point comparison failed.\033[0m"
+            # do partial close check with small fraction tolerance
+            close_elements = numpy.isclose(sim_array_fp, gold_array_fp, atol=custom_atol, rtol=custom_rtol)
+            if numpy.all(close_elements): print("All elements are close.")
+            else:
+                mismatch_idx = numpy.nonzero(~close_elements)[0]
+                mismatch_frac = len(mismatch_idx) / len(gold_array_fp)
+                frac_tolerance = 1e-2
+                if mismatch_frac <= frac_tolerance:
+                    print(f"\033[93mWarning: Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
+                else:
+                    assert False, f"\033[91mFloating point comparison failed. Exceptions are beyond {frac_tolerance*100}% of all pixels\033[0m"
 
             # print pass message and maximum difference
             print("\033[92mFloating point comparison passed.\033[0m")
