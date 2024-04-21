@@ -383,6 +383,11 @@ def dispatch(args, extra_args=None):
     use_pipeline = False
     pipeline_num = 64
     suitesparse_data = ["football"]
+
+    # Doing this for now until things get sorted...
+    # if args.config == "daily": args.config = "pr"  # Style guide (pep8) doesn't like this
+    args.config = "pr" if args.config == "daily" else args.config  # HOW is this better.
+
     if args.config == "fast":
         width, height = 4, 4
         sparse_tests = [
@@ -397,49 +402,49 @@ def dispatch(args, extra_args=None):
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
+
+
+
     elif args.config == "pr":
         width, height = 28, 16
+        width, height = 28, 16
         sparse_tests = [
-            "vec_elemadd",
             "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
             "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
+            "mat_elemadd_leakyrelu_exp",
+            "mat_mattransmul",
             "matmul_ijk_crddrop_relu",
-            # Turned off until SUB ordering fixed in mapping
-            # 'mat_residual',
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_ttm",
-            "tensor3_ttv",
-        ]
+            "matmul_ikj",
+            "matmul_jik",
+            "spmm_ijk_crddrop_relu",
+            "spmv_relu",
+            "masked_broadcast",
+            "mat_sddmm",
+            "tensor3_mttkrp",
+            "tensor3_ttv",        ]
         glb_tests = [
             "apps/pointwise",
-            "tests/ushift",
-            "tests/arith",
-            "tests/absolute",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/uminmax",
-            "tests/rom",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
+            "apps/gaussian",
+            "apps/camera_pipeline_2x2",
         ]
         glb_tests_fp = [
-            "tests/fp_pointwise",
-            "tests/fp_arith",
-            "tests/fp_comp",
-            "tests/fp_conv_7_7",
+            "apps/matrix_multiplication_fp",
         ]
-        resnet_tests = []
-        resnet_tests_fp = []
+        resnet_tests = [
+            "conv1",
+            "conv2_x",
+            "conv5_1",
+            "conv5_x",
+        ]
+        resnet_tests_fp = [
+            "conv2_x_fp"
+        ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
         ]
+
+
+
     elif args.config == "daily":
         width, height = 28, 16
         sparse_tests = [
