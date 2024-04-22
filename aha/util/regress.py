@@ -588,6 +588,7 @@ def dispatch(args, extra_args=None):
             "tests/fp_conv_7_7",
             "apps/maxpooling_fp",
             "apps/matrix_multiplication_fp",
+            "apps/mcunet_in_sequential_0_fp",
         ]
         resnet_tests = [
             "conv1",
