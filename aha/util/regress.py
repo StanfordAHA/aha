@@ -384,9 +384,9 @@ def dispatch(args, extra_args=None):
     pipeline_num = 64
     suitesparse_data = ["football"]
 
-    # Doing this for now until things get sorted...
-    # if args.config == "daily": args.config = "pr"  # Style guide (pep8) doesn't like this
-    args.config = "pr" if args.config == "daily" else args.config  # HOW is this better.
+    # Preserve backward compatibility
+    if args.config == "daily": args.config = "pr_aha"  # noqa
+    if args.config == "pr": args.config = "pr_submod"  # noqa
 
     if args.config == "fast":
         width, height = 4, 4
@@ -403,10 +403,7 @@ def dispatch(args, extra_args=None):
         resnet_tests_fp = []
         hardcoded_dense_tests = []
 
-
-
-    elif args.config == "pr":
-        width, height = 28, 16
+    elif args.config == "pr_aha":  # For aha-repo push/pull
         width, height = 28, 16
         sparse_tests = [
             "vec_elemmul",
@@ -443,9 +440,7 @@ def dispatch(args, extra_args=None):
             "apps/depthwise_conv"
         ]
 
-
-
-    elif args.config == "daily":
+    elif args.config == "pr_submod":  # For push/pull from aha submod repos
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
