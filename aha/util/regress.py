@@ -448,16 +448,16 @@ def dispatch(args, extra_args=None):
             "apps/depthwise_conv"
         ]
 
-    elif args.config == "conv2_dense":
-        skip_sparse_resnet = True
-        resnet_tests = [ "conv2_x" ]
-
     elif args.config == "quickquick":
         sparse_tests = [ "vec_elemmul" ]
 
+    elif args.config == "conv2_dense":
+        resnet_tests = [ "conv2_x" ]
+        args.include_dense_only_tests = True; skip_sparse_resnet = True
+
     elif args.config == "conv1_dense":
-        skip_sparse_resnet = True
         resnet_tests = [ "conv1" ]
+        args.include_dense_only_tests = True; skip_sparse_resnet = True
 
     elif args.config == "conv1_sparse":
         skip_sparse_resnet = False
