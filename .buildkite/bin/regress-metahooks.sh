@@ -45,7 +45,7 @@ elif [ "$1" == '--commands' ]; then
 
     cat <<'EOF' | sed "s/--BENCHMARK--/$2/" # Single-quotes prevent var expansion etc.
 
-    echo $foo `echo bar`
+    set -x
     if ! test -e /buildkite/.TEST; then
         echo "+++ No .TEST detected, so skip redundant regressions"
         exit
@@ -79,6 +79,7 @@ elif [ "$1" == '--commands' ]; then
     # Cleanup
     # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
     echo "--- Removing Failure Canary"; rm -rf /buildkite/.TEST
+
 EOF
 
 
