@@ -145,28 +145,13 @@ steps:
           - FLOW_REPO
         shell: ["/bin/bash", "-e", "-c"]
 
-    - improbable-eng/metahook:
-
     # Offload OIT metahooks to like $$bin/pipeline-metahooks.sh
     # - $$bin/pipeline-metahooks.sh --pre-command
     # - $$bin/pipeline-metahooks.sh --pre-command
 
+    - improbable-eng/metahook:
         pre-command: $REGRESS_METAHOOKS --pre-command
-
-        pre-exit: |
-          echo "+++ CHECKING EXIT STATUS"; set -x
-          echo "Send status to github."
-          cd $$BUILDKITE_BUILD_CHECKOUT_PATH
-
-          # Docker will have removed temp/.TEST if all the tests passed
-          if [ "$$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
-              test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
-          fi
-          /bin/rm -rf temp
-
-          # status-update will magically override "success" with "failure" as appropriate!
-          # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
-          ~/bin/status-update success
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
   - |

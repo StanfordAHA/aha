@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This is where we offload meta-hook commands for pipeline.yml
-# Note these commands are designed to run INSIDE a docker container
+# These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
 if [ "$1" == '--pre-command' ]; then
     echo "+++ OIT PRE COMMAND HOOK BEGIN"
@@ -35,5 +35,26 @@ if [ "$1" == '--pre-command' ]; then
     test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
     echo "--- OIT PRE COMMAND HOOK END"
+
+elif [ "$1" == '--pre-exit' ]; then
+
+    echo "+++ CHECKING EXIT STATUS"; set -x
+    echo "Send status to github."
+    cd $BUILDKITE_BUILD_CHECKOUT_PATH
+
+    # Docker will have removed temp/.TEST if all the tests passed
+    if [ "$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
+        test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
+    fi
+    /bin/rm -rf temp
+
+    # FIXME
+    # OMG! OH no you di'nt! ~/bin??? what are you THINKING
+    # Looks like ~/bin devolves to e.g. /var/lib/buildkite-agent/bin
+
+    # status-update will magically override "success" with "failure" as appropriate!
+    # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
+    ~/bin/status-update success
+
 fi
 
