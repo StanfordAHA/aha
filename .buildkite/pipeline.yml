@@ -77,11 +77,19 @@ steps:
   agents:
     docker: true
 
+# Set soft_fail so that failing gold check does not fail pipeline.
 - label: ":hammer: Amber Gold RTL 1m"
+  agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
   key: "goldcheck-amber"
   depends_on: "docker-build"
-  # Set soft_fail so that failing gold check does not fail pipeline.
-  soft_fail: true
+  soft_fail: true  
+  plugins:
+    - uber-workflow/run-without-clone:  # Don't need clone if using docker
+    - docker#v3.2.0:
+        image:   garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes: ["/cad/:/cad"]
+        shell:   ["/bin/bash", "-e", "-c"]
+        mount-checkout: false
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
@@ -90,22 +98,20 @@ steps:
         echo "$$msg" | buildkite-agent annotate --style "error" --context amber
         exit 13
     fi
-  plugins:
-    - uber-workflow/run-without-clone:
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes:
-          - "/cad/:/cad"
-        mount-checkout: false
-        shell: ["/bin/bash", "-e", "-c"]
-  agents:
-    docker: true
 
+# Set soft_fail so that failing gold check does not fail pipeline.
 - label: ":hammer: Onyx Gold RTL 1m"
+  agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
   key: "goldcheck-onyx"
   depends_on: "docker-build"
-  # Set soft_fail so that failing gold check does not fail pipeline.
-  soft_fail: true
+  soft_fail: true  
+  plugins:
+    - uber-workflow/run-without-clone:  # Don't need clone if using docker
+    - docker#v3.2.0:
+        image:   garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes: ["/cad/:/cad"]
+        shell:   ["/bin/bash", "-e", "-c"]
+        mount-checkout: false
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
@@ -114,23 +120,15 @@ steps:
         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
     fi
-  plugins:
-    - uber-workflow/run-without-clone:
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes:
-          - "/cad/:/cad"
-        mount-checkout: false
-        shell: ["/bin/bash", "-e", "-c"]
-  agents:
-    docker: true
 
 - label: ":hammer: Onyx Integration Tests"
   key: "integration-tests"
   depends_on: "docker-build"
+  agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
 
   plugins:
     - uber-workflow/run-without-clone:
+
     - docker#v3.2.0:
         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes:
@@ -143,40 +141,17 @@ steps:
           - CONFIG
           - FLOW_REPO
         shell: ["/bin/bash", "-e", "-c"]
+
     - improbable-eng/metahook:
 
+    # Offload OIT metahooks to like $$bin/pipeline-metahooks.sh
+    # - $$bin/pipeline-metahooks.sh --pre-command
+    # - $$bin/pipeline-metahooks.sh --pre-command
+
         pre-command: |
-          echo "+++ OIT PRE COMMAND HOOK BEGIN"
-
-          # Use temp/.TEST to pass fail/success info into and out of docker container
-          echo Renewing `pwd`/temp/.TEST
-          mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
-
-          # If trigger came from a submod repo, we will do "pr" regressions.
-          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
-          # We use "env" file to pass information between steps.
-          # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
-
-          # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
-          # also sets "PR_TAIL_REPO" to requesting submod e.g. "garnet"
-          set -x; cat /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER; set +x
-          source /var/lib/buildkite-agent/builds/DELETEME/env-$$BUILDKITE_BUILD_NUMBER
-
-          echo "--- Pass DO_PR info to docker"
-          echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
-          if [ "$$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-              echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
-              if [ "$$PR_REPO_TAIL" == "garnet" ]; then
-                  # Delete .TEST as a sign to skip tests
-                  echo "+++ Garnet PR detected, so skip redundant regressions"
-                  rm -rf temp/.TEST
-              fi
-          else
-              echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
-          fi
-          test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
-
-          echo "--- OIT PRE COMMAND HOOK END"
+          set +x
+          bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+          $$bin/regress-metahooks.sh --pre-command
 
         pre-exit: |
           echo "+++ CHECKING EXIT STATUS"; set -x
@@ -250,9 +225,6 @@ steps:
   - ls -al /buildkite
   - rm -rf /buildkite/.TEST
   - ls -al /buildkite
-
-  agents:
-    docker: true
 
 - wait: { continue_on_failure: true } # One step at a time + continue on failure
 
