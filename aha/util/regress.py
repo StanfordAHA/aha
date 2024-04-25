@@ -452,9 +452,11 @@ def dispatch(args, extra_args=None):
         skip_sparse_resnet = True
         resnet_tests = [ "conv2_x" ]
 
+    elif args.config == "quickquick":
+        sparse_tests = [ "vec_elemmul" ]
+
     elif args.config == "conv1_dense":
         skip_sparse_resnet = True
-        # sparse_tests = [ "vec_elemmul" ]
         resnet_tests = [ "conv1" ]
 
     elif args.config == "conv1_sparse":
