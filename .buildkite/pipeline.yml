@@ -23,9 +23,6 @@ steps:
         echo "+++ BDI PRE CHECKOUT HOOK"
         set +u     # nounset? not on my watch!
 
-        if [ "$$FLOW_HEAD_SHA" ]; then
-            echo "+++ ERROR Not processing heroku requests anymore"; exit 13; fi
-
         # Clone the aha repo; starting in root dir '/' I think
         echo I am in dir `pwd`
         aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
