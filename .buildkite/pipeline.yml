@@ -4,6 +4,7 @@
 
 env:
   CONFIG: ${CONFIG:-daily}
+  REGRESS_METAHOOKS: $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh
 
 steps:
 
@@ -121,6 +122,8 @@ steps:
         exit 13
     fi
 
+# Instead of multiple similar OIT steps, could maybe do some kind of $$bin/gen-steps | docker-agent upload
+
 - label: ":hammer: Onyx Integration Tests"
   key: "integration-tests"
   depends_on: "docker-build"
@@ -148,10 +151,7 @@ steps:
     # - $$bin/pipeline-metahooks.sh --pre-command
     # - $$bin/pipeline-metahooks.sh --pre-command
 
-        pre-command: |
-          set +x
-          bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
-          $$bin/regress-metahooks.sh --pre-command
+        pre-command: $REGRESS_METAHOOKS --pre-command
 
         pre-exit: |
           echo "+++ CHECKING EXIT STATUS"; set -x
