@@ -173,10 +173,10 @@ steps:
   # - aha regress $$CONFIG --daemon auto --include-dense-only-tests
 
   # EXPERIMENTS:
-  - aha regress quickquick
+  # - aha regress quickquick
   # - aha regress conv1_dense --include-dense-only-tests
   # - aha regress conv1_sparse  # this worked, see aha-flow build 10120
-  # - aha regress conv2_dense  # (hardwired include-dense on the regress.py conv2_dense side...)
+  - aha regress conv2_sparse
 
 
 
