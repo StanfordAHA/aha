@@ -36,6 +36,48 @@ if [ "$1" == '--pre-command' ]; then
 
     echo "--- OIT PRE COMMAND HOOK END"
 
+elif [ "$1" == '--commands' ]; then
+
+    # These commands run INSIDE the docker container
+    # Also need to be sourced maybe?
+    # So maybe do something like...?
+    #    $0 --commands > tmp; source tmp
+
+    cat <<'EOF'  # Single-quotes prevent var expansion etc.
+
+    echo $foo `echo bar`
+    if ! test -e /buildkite/.TEST; then
+        echo "+++ No .TEST detected, so skip redundant regressions"
+        exit
+    fi
+    test -e /buildkite/DO_PR && echo "--- DO_PR SET (TRUE)"
+    test -e /buildkite/DO_PR || echo "--- DO_PR UNSET (FALSE)"
+
+    source /aha/bin/activate
+    source /cad/modules/tcl/init/sh
+    module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2
+
+    # make /bin/sh symlink to bash instead of dash:
+    echo "dash dash/sh boolean false" | debconf-set-selections
+    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+
+    # Istall time (what? why?)
+    apt update
+    apt install time
+
+    echo    "--- PIP FREEZE"; pip freeze  # ??? okay ???
+    echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
+
+    # Prepare to run regression tests according to whether it's a submod PR
+    if test -e /buildkite/DO_PR; then
+      echo "Trigger came from submod repo pull request; use pr config"; export CONFIG=pr;
+    else
+      echo "Trigger came from aha repo; use default config"; fi
+
+
+EOF
+
+
 elif [ "$1" == '--pre-exit' ]; then
 
     echo "+++ CHECKING EXIT STATUS"; set -x

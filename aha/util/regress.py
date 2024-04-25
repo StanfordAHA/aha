@@ -449,13 +449,13 @@ def dispatch(args, extra_args=None):
         ]
 
     elif args.config == "quickquick":
-        sparse_tests = [ "vec_elemmul" ]
+        sparse_tests = [ "vec_elemmul" ]  # Maybe 20m, maybe ten min faster than conv1
 
     elif args.config == "conv2_dense":
         resnet_tests = [ "conv2_x" ]
         args.include_dense_only_tests = True; skip_sparse_resnet = True
 
-    elif args.config == "conv1_dense":
+    elif args.config == "conv1_dense":  # Maybe 30m ish
         resnet_tests = [ "conv1" ]
         args.include_dense_only_tests = True; skip_sparse_resnet = True
 
