@@ -43,7 +43,7 @@ elif [ "$1" == '--commands' ]; then
     # So maybe do something like...?
     #    $0 --commands > tmp; source tmp
 
-    cat <<'EOF'  # Single-quotes prevent var expansion etc.
+    cat <<'EOF' | sed "s/--BENCHMARK--/$2/" # Single-quotes prevent var expansion etc.
 
     echo $foo `echo bar`
     if ! test -e /buildkite/.TEST; then
@@ -74,7 +74,11 @@ elif [ "$1" == '--commands' ]; then
     else
       echo "Trigger came from aha repo; use default config"; fi
 
+    aha regress --BENCHMARK--  # Magic happens here...
 
+    # Cleanup
+    # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
+    echo "--- Removing Failure Canary"; rm -rf /buildkite/.TEST
 EOF
 
 
