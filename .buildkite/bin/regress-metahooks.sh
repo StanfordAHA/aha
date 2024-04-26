@@ -45,7 +45,6 @@ elif [ "$1" == '--commands' ]; then
 
     cat <<'EOF' | sed "s/--BENCHMARK--/$2/" # Single-quotes prevent var expansion etc.
 
-    set -x
     if ! test -e /buildkite/.TEST; then
         echo "+++ No .TEST detected, so skip redundant regressions"
         exit
@@ -74,6 +73,7 @@ elif [ "$1" == '--commands' ]; then
     else
       echo "Trigger came from aha repo; use default config"; fi
 
+    set -x
     aha regress --BENCHMARK--  # Magic happens here...
 
     # Cleanup

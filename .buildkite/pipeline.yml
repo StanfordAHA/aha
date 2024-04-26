@@ -138,54 +138,70 @@ steps:
 # Instead of multiple similar OIT steps, could maybe do some kind of
 # $$bin/gen-steps | docker-agent upload
 
-- label: ":hammer: Onyx Regression: conv1"
-  key: "integration-tests-conv1"
+- label: ":hammer: Onyx Regression: conv2"
+  key: "integration-tests-conv2"
   depends_on: "docker-build"
   agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
 
   plugins:
-
     - uber-workflow/run-without-clone:
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes:
-          - "/cad/:/cad"
-          - "./temp:/buildkite:rw"
-        mount-checkout: false
-        skip-checkout: true
-        propagate-environment: true
-        environment:
-          - CONFIG
-          - FLOW_REPO
-        shell: ["/bin/bash", "-e", "-c"]
 
     - improbable-eng/metahook:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
-    - source <(/aha/.buildkite/bin/regress-metahooks.sh --commands conv1_dense)
-    # - source <(/aha/.buildkite/bin/regress-metahooks.sh --commands conv2_sparse)
+    - image=garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+    - container=deleteme-conv2-${BUILDKITE_BUILD_NUMBER}
+    - docker run -id --name $$container --rm -v /cad:/cad -v ./temp:/buildkite:rw $$image bash
+    - script="$($REGRESS_METAHOOKS --commands conv2_sparse)"
+    - set -x; docker exec $$container /bin/bash -c "$$script"
+    - set -x; docker kill $$container || echo okay
 
-#     - aha regress conv1_dense
+# - label: ":hammer: Onyx Regression: conv1"
+#   key: "integration-tests-conv1"
+#   depends_on: "docker-build"
+#   agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
 # 
-#     # Cleanup
-#     # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
-#     - echo "--- Removing Failure Canary"; rm -rf /buildkite/.TEST
+#   plugins:
+# 
+#     - uber-workflow/run-without-clone:
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes:
+#           - "/cad/:/cad"
+#           - "./temp:/buildkite:rw"
+#         mount-checkout: false
+#         skip-checkout: true
+#         propagate-environment: true
+#         environment:
+#           - CONFIG
+#           - FLOW_REPO
+#         shell: ["/bin/bash", "-e", "-c"]
+# 
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_METAHOOKS --pre-command
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   commands:
+#     # - source <(/aha/.buildkite/bin/regress-metahooks.sh --commands conv1_dense)
+#     - source <(/aha/.buildkite/bin/regress-metahooks.sh --commands conv2_sparse)
 
 - wait: { continue_on_failure: true } # One step at a time + continue on failure
 
 - label: ":skull_and_crossbones: Delete Docker Image"
+
+  # FIXME use readyam to make this into a one-liner
+  plugins:
+  - uber-workflow/run-without-clone:
+
   # Set soft_fail so that failing cleanup does not fail pipeline.
   soft_fail: true
-  depends_on:
-  - "integration-tests-conv1"
-  - "goldcheck-amber"
-  - "goldcheck-onyx"
+
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
   - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
-  agents:
-    docker: true
-  plugins:
-  - uber-workflow/run-without-clone:
+
+  # must run on r7cad-docker b/c that's where we built the docker image!
+  agents: { docker: true }
+
