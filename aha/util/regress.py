@@ -463,6 +463,10 @@ def dispatch(args, extra_args=None):
         skip_sparse_resnet = False
         resnet_tests = [ "conv1" ]
 
+    elif args.config == "conv2_sparse":
+        skip_sparse_resnet = False
+        resnet_tests = [ "conv2_x" ]
+
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
         width, height = 28, 16
         sparse_tests = [
