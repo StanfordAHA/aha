@@ -409,6 +409,7 @@ def dispatch(args, extra_args=None):
             "vec_elemmul",
             "mat_vecmul_ij",
             "mat_elemadd_leakyrelu_exp",
+            "mat_elemdiv",
             "mat_mattransmul",
             "matmul_ijk_crddrop_relu",
             "matmul_ikj",
@@ -418,7 +419,8 @@ def dispatch(args, extra_args=None):
             "masked_broadcast",
             "mat_sddmm",
             "tensor3_mttkrp",
-            "tensor3_ttv",        ]
+            "tensor3_ttv",        
+        ]
         glb_tests = [
             "apps/pointwise",
             "apps/gaussian",
@@ -453,6 +455,7 @@ def dispatch(args, extra_args=None):
             "mat_elemadd_leakyrelu_exp",
             "mat_elemadd3",
             "mat_elemmul",
+            "mat_elemdiv",
             "mat_identity",
             "mat_mattransmul",
             "matmul_ijk",
@@ -524,6 +527,7 @@ def dispatch(args, extra_args=None):
             "mat_elemadd_leakyrelu_exp",
             "mat_elemadd3",
             "mat_elemmul",
+            "mat_elemdiv",
             "mat_identity",
             "mat_mattransmul",
             "matmul_ijk",
