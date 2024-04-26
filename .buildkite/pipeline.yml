@@ -1,6 +1,7 @@
-# To turn daemon on or off, search code below and change to one of:
-#   aha regress $$CONFIG --daemon auto  # Use daemon
-#   aha regress $$CONFIG                # No daemon
+# All "docker"-tagged agents must live on a single machine
+# (e.g. r7cad-docker), so they can all share the same docker image.
+
+agents: { docker: true }
 
 env:
   CONFIG: ${CONFIG:-daily}
@@ -75,12 +76,8 @@ steps:
 
   - echo "--- BDI PIPELINE.XML COMMANDS END"
 
-  agents:
-    docker: true
-
 # Set soft_fail so that failing gold check does not fail pipeline.
 - label: ":hammer: Amber Gold RTL 1m"
-  agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
   key: "goldcheck-amber"
   depends_on: "docker-build"
   soft_fail: true  
@@ -102,7 +99,6 @@ steps:
 
 # Set soft_fail so that failing gold check does not fail pipeline.
 - label: ":hammer: Onyx Gold RTL 1m"
-  agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
   key: "goldcheck-onyx"
   depends_on: "docker-build"
   soft_fail: true  
@@ -141,7 +137,6 @@ steps:
 - label: ":hammer: Onyx Regression: conv2"
   key: "integration-tests-conv2"
   depends_on: "docker-build"
-  agents: { docker: true }  # must run on r7cad-docker b/c that's where we built the docker image!
 
   plugins:
     - uber-workflow/run-without-clone:
@@ -201,7 +196,4 @@ steps:
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
   - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
-
-  # must run on r7cad-docker b/c that's where we built the docker image!
-  agents: { docker: true }
 
