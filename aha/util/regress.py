@@ -388,27 +388,20 @@ def dispatch(args, extra_args=None):
     if args.config == "daily": args.config = "pr_aha"  # noqa
     if args.config == "pr": args.config = "pr_submod"  # noqa
 
-    # Defaults
-    width, height = 28, 16  # default
-    sparse_tests = []
-    glb_tests = []
-    glb_tests_fp = []
-    resnet_tests = []
-    resnet_tests_fp = []
-    hardcoded_dense_tests = []
-    skip_sparse_resnet = False
-
     if args.config == "fast":
         width, height = 4, 4
         sparse_tests = [
-            "vec_identity",
+            "vec_identity"
         ]
         glb_tests = [
-            "apps/pointwise",
+            "apps/pointwise"
         ]
         glb_tests_fp = [
             "tests/fp_pointwise",
         ]
+        resnet_tests = []
+        resnet_tests_fp = []
+        hardcoded_dense_tests = []
 
     elif args.config == "pr_aha":  # For aha-repo push/pull
         width, height = 28, 16
@@ -425,8 +418,7 @@ def dispatch(args, extra_args=None):
             "masked_broadcast",
             "mat_sddmm",
             "tensor3_mttkrp",
-            "tensor3_ttv",
-        ]
+            "tensor3_ttv",        ]
         glb_tests = [
             "apps/pointwise",
             "apps/gaussian",
@@ -437,35 +429,16 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = [
             "conv1",
-            "conv2_x",  # This one takes 1h20 ish
+            "conv2_x",
             "conv5_1",
             "conv5_x",
         ]
         resnet_tests_fp = [
-            "conv2_x_fp"  # This one takes 2 hours
+            "conv2_x_fp"
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
         ]
-
-    elif args.config == "quickquick":
-        sparse_tests = [ "vec_elemmul" ]  # Maybe 20m, maybe ten min faster than conv1
-
-    elif args.config == "conv2_dense":
-        resnet_tests = [ "conv2_x" ]
-        args.include_dense_only_tests = True; skip_sparse_resnet = True
-
-    elif args.config == "conv1_dense":  # Maybe 30m ish
-        resnet_tests = [ "conv1" ]
-        args.include_dense_only_tests = True; skip_sparse_resnet = True
-
-    elif args.config == "conv1_sparse":
-        skip_sparse_resnet = False
-        resnet_tests = [ "conv1" ]
-
-    elif args.config == "conv2_sparse":
-        skip_sparse_resnet = False
-        resnet_tests = [ "conv2_x" ]
 
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
         width, height = 28, 16
@@ -578,6 +551,7 @@ def dispatch(args, extra_args=None):
             "tensor3_mttkrp_unfused2",
             "tensor3_ttm",
             "tensor3_ttv",
+
         ]
         glb_tests = [
             "apps/pointwise",
@@ -721,9 +695,7 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
-        if skip_sparse_resnet:
-            break
-        elif "residual" in test:
+        if "residual" in test:
             t0, t1, t2 = test_dense_app("apps/resnet_residual",
                                         width, height, args.env_parameters, extra_args, layer=test)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
@@ -757,7 +729,6 @@ def dispatch(args, extra_args=None):
         t = gen_garnet(width, height, dense_only=True)
         info.append(["garnet with dense only", t])
 
-        # Looks like...we only do a maximum of five dense glb_tests...? Why...?
         num_dense_only_glb_tests = 5
         for test_index, test in enumerate(glb_tests):
             if test_index == num_dense_only_glb_tests:
