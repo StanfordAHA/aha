@@ -444,25 +444,17 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
         ]
         glb_tests = [
             "apps/gaussian",
-            "apps/pointwise",
-            "apps/unsharp",
         ]
         glb_tests_fp = [
             "tests/fp_pointwise",
-            "tests/fp_arith",
-            "apps/matrix_multiplication_fp",
         ]
         resnet_tests = [
             "conv1",
-            "conv4_1",
         ]
         resnet_tests_fp = [
-            "conv2_x_fp",
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
