@@ -406,24 +406,6 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr_aha1":  # For aha-repo push/pull
         width, height = 28, 16
         sparse_tests = [
-        ]
-        glb_tests = [
-            "apps/gaussian",
-        ]
-        glb_tests_fp = [
-        ]
-        resnet_tests = [
-            "conv2_x",
-        ]
-        resnet_tests_fp = [
-            "conv2_x_fp"
-        ]
-        hardcoded_dense_tests = [
-        ]
-
-    elif args.config == "pr_aha2":  # For aha-repo push/pull
-        width, height = 28, 16
-        sparse_tests = [
             "vec_elemmul",
             "mat_vecmul_ij",
             "mat_elemadd_leakyrelu_exp",
@@ -455,6 +437,40 @@ def dispatch(args, extra_args=None):
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
+        ]
+
+    elif args.config == "pr_aha2":  # For aha-repo push/pull
+        width, height = 28, 16
+        sparse_tests = [
+        ]
+        glb_tests = [
+            "apps/gaussian",
+        ]
+        glb_tests_fp = [
+        ]
+        resnet_tests = [
+            "conv2_x",
+        ]
+        resnet_tests_fp = [
+        ]
+        hardcoded_dense_tests = [
+        ]
+
+    elif args.config == "pr_aha3":  # For aha-repo push/pull
+        width, height = 28, 16
+        sparse_tests = [
+        ]
+        glb_tests = [
+            "apps/gaussian",
+        ]
+        glb_tests_fp = [
+        ]
+        resnet_tests = [
+        ]
+        resnet_tests_fp = [
+            "conv2_x_fp"
+        ]
+        hardcoded_dense_tests = [
         ]
 
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
