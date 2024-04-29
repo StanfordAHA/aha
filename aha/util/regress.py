@@ -403,7 +403,24 @@ def dispatch(args, extra_args=None):
         resnet_tests_fp = []
         hardcoded_dense_tests = []
 
-    elif args.config == "pr_aha":  # For aha-repo push/pull
+    elif args.config == "pr_aha1":  # For aha-repo push/pull
+        width, height = 28, 16
+        sparse_tests = [
+        glb_tests = [
+            "apps/gaussian",
+        ]
+        glb_tests_fp = [
+        ]
+        resnet_tests = [
+            "conv2_x",
+        ]
+        resnet_tests_fp = [
+            "conv2_x_fp"
+        ]
+        hardcoded_dense_tests = [
+        ]
+
+    elif args.config == "pr_aha2":  # For aha-repo push/pull
         width, height = 28, 16
         sparse_tests = [
             "vec_elemmul",
@@ -429,12 +446,10 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = [
             "conv1",
-            "conv2_x",
             "conv5_1",
             "conv5_x",
         ]
         resnet_tests_fp = [
-            "conv2_x_fp"
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
