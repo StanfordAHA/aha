@@ -443,10 +443,13 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
         width, height = 28, 16
         sparse_tests = [
+            "vec_elemadd",
         ]
         glb_tests = [
+            # "apps/gaussian",
         ]
         glb_tests_fp = [
+            # "tests/fp_pointwise",
         ]
         resnet_tests = [
             "conv1",
@@ -454,6 +457,7 @@ def dispatch(args, extra_args=None):
         resnet_tests_fp = [
         ]
         hardcoded_dense_tests = [
+            # "apps/depthwise_conv"
         ]
     elif args.config == "full":
         width, height = 28, 16
