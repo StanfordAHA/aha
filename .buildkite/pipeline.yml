@@ -337,7 +337,7 @@ steps:
   - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
   - set -x; if test -e /buildkite/DO_PR; then
-      echo "Trigger is not from aha repo; so we don't do this test (yet)"
+      echo "Trigger is not from aha repo; so we don't do this test (yet)";
     elif [ "$$CONFIG" == "daily" ]; then
       export CONFIG=pr_aha2;
       echo "Trigger came from aha repo; use pr_aha2";
