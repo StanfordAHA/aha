@@ -223,11 +223,14 @@ steps:
   - if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config";
       export CONFIG=pr;
+    elif [ "$$CONFIG" == "pr_aha" ]; then
+      export CONFIG=pr_aha1;
+      echo "Trigger came from aha repo; use $$CONFIG";
     else
-      echo "Trigger came from aha repo; use default config";
+      echo "Trigger came from OTHER, use default and/or config=$$CONFIG";
     fi;
-  # - aha regress $$CONFIG --daemon auto --include-dense-only-tests
-  - aha regress pr_aha1 --daemon auto --include-dense-only-tests || exit 13
+  - aha regress $$CONFIG --daemon auto --include-dense-only-tests
+  # - aha regress pr_aha1 --daemon auto --include-dense-only-tests || exit 13
   # We report success to the aha-flow app by removing the .TEST file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
@@ -334,13 +337,15 @@ steps:
   - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
   - if test -e /buildkite/DO_PR; then
-      echo "Trigger came from submod repo pull request; use pr config";
-      export CONFIG=pr;
+      echo "Trigger is not from aha repo; so we don't do this test (yet)"
+    elif [ "$$CONFIG" == "pr_aha" ]; then
+      export CONFIG=pr_aha2;
+      echo "Trigger came from aha repo; use pr_aha2";
+      aha regress pr_aha2 --daemon auto --include-dense-only-tests || exit 13
     else
-      echo "Trigger came from aha repo; use default config";
+      echo "Trigger is not from aha repo; so we don't do this test (yet)"
     fi;
   # - aha regress $$CONFIG --daemon auto --include-dense-only-tests
-  - aha regress pr_aha2 --daemon auto --include-dense-only-tests || exit 13
   # We report success to the aha-flow app by removing the .TEST file,
   # which is created in the post-checkout hook and checked for in the
   # pre-exit hook.
