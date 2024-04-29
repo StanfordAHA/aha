@@ -406,6 +406,7 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr_aha1":  # For aha-repo push/pull
         width, height = 28, 16
         sparse_tests = [
+        ]
         glb_tests = [
             "apps/gaussian",
         ]
@@ -435,7 +436,8 @@ def dispatch(args, extra_args=None):
             "masked_broadcast",
             "mat_sddmm",
             "tensor3_mttkrp",
-            "tensor3_ttv",        ]
+            "tensor3_ttv",
+        ]
         glb_tests = [
             "apps/pointwise",
             "apps/gaussian",
