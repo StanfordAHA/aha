@@ -443,10 +443,10 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
         width, height = 28, 16
         sparse_tests = [
-            "vec_elemadd",
+            # "vec_elemadd",
         ]
         glb_tests = [
-            # "apps/gaussian",
+            "apps/gaussian",
         ]
         glb_tests_fp = [
             # "tests/fp_pointwise",
