@@ -19,9 +19,17 @@ echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
+
+    # FIXME aha-submod-flow should set the aha branch; if e.g.
+    # aha-submod-flow steps were trying out a dev branch, this would undo that!
+    # FIXME add some kind of "assert branch == master" here to verify this clause is unnecessary!
+
     echo "Pull request from a submod repo: check out aha master branch"
+    set -x
     git fetch -v --prune -- origin master
-    git checkout -qf master
+    git checkout -qf standalone-conv2 || git checkout -qf master
+    set +x
+
 else
     echo "Push or PR from aha repo: check out requested aha branch $BUILDKITE_COMMIT"
     git fetch -v --prune -- origin $BUILDKITE_COMMIT
