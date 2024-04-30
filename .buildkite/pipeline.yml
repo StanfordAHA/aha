@@ -7,7 +7,7 @@ env:
 
 steps:
 
-- label: ":wrench: Build Docker Image"
+- label: "Build Docker Image"
   key: "docker-build"
   plugins:
   # Override standard checkout procedure with custom checkout script
@@ -80,7 +80,7 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Amber Gold RTL 1m"
+- label: "Amber Gold RTL 1m"
   key: "goldcheck-amber"
   depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
@@ -104,7 +104,7 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Onyx Gold RTL 1m"
+- label: "Onyx Gold RTL 1m"
   key: "goldcheck-onyx"
   depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
@@ -128,7 +128,7 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Onyx Integration Tests"
+- label: "Onyx Integration Tests"
   key: "integration-tests"
   depends_on: "docker-build"
 
@@ -220,7 +220,7 @@ steps:
   - echo    "--- PIP FREEZE"; pip freeze
   - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
-  - set -x; if test -e /buildkite/DO_PR; then
+  - if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config";
       export CONFIG=pr;
     elif [ "$$CONFIG" == "daily" ]; then
@@ -231,9 +231,9 @@ steps:
     fi;
   - set -x; aha regress $$CONFIG --daemon auto --include-dense-only-tests
   # - aha regress pr_aha1 --daemon auto --include-dense-only-tests || exit 13
+
   # We report success to the aha-flow app by removing the .TEST file,
-  # which is created in the post-checkout hook and checked for in the
-  # pre-exit hook.
+  # which is created in the post-checkout hook and checked for in the pre-exit hook.
 
   # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
   - echo "--- Removing Failure Canary"
@@ -244,7 +244,7 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Onyx Integration Tests 2"
+- label: "Regress 2"
   key: "integration-tests2"
   depends_on: "docker-build"
 
@@ -336,7 +336,7 @@ steps:
   - echo    "--- PIP FREEZE"; pip freeze
   - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
-  - set -x; if test -e /buildkite/DO_PR; then
+  - if test -e /buildkite/DO_PR; then
       echo "Trigger is not from aha repo; so we don't do this test (yet)";
     elif [ "$$CONFIG" == "daily" ]; then
       export CONFIG=pr_aha2;
@@ -346,9 +346,9 @@ steps:
       echo "Trigger is not from aha repo; so we don't do this test (yet)";
     fi;
   # - aha regress $$CONFIG --daemon auto --include-dense-only-tests
+
   # We report success to the aha-flow app by removing the .TEST file,
-  # which is created in the post-checkout hook and checked for in the
-  # pre-exit hook.
+  # which is created in the post-checkout hook and checked for in the pre-exit hook.
 
   # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
   - echo "--- Removing Failure Canary"
@@ -359,7 +359,7 @@ steps:
   agents:
     docker: true
 
-- label: ":hammer: Onyx Integration Tests 3"
+- label: "Regress 3"
   key: "integration-tests3"
   depends_on: "docker-build"
 
@@ -451,7 +451,7 @@ steps:
   - echo    "--- PIP FREEZE"; pip freeze
   - echo -n "--- GARNET VERSION "; (cd garnet && git rev-parse --verify HEAD)
   # Run regression tests
-  - set -x; if test -e /buildkite/DO_PR; then
+  - if test -e /buildkite/DO_PR; then
       echo "Trigger is not from aha repo; so we don't do this test (yet)";
     elif [ "$$CONFIG" == "daily" ]; then
       export CONFIG=pr_aha3;
@@ -461,9 +461,9 @@ steps:
       echo "Trigger is not from aha repo; so we don't do this test (yet)";
     fi;
   # - aha regress $$CONFIG --daemon auto --include-dense-only-tests
+
   # We report success to the aha-flow app by removing the .TEST file,
-  # which is created in the post-checkout hook and checked for in the
-  # pre-exit hook.
+  # which is created in the post-checkout hook and checked for in the pre-exit hook.
 
   # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
   - echo "--- Removing Failure Canary"
