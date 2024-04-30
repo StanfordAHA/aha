@@ -26,6 +26,7 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
     echo "Pull request from a submod repo: check out aha master branch"
     set -x
+    git rev-parse HEAD
     git fetch -v --prune -- origin master
     git checkout -qf standalone-conv2 || git checkout -qf master
     set +x

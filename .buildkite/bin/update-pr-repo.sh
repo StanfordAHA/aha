@@ -13,11 +13,13 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 # Also need to rediscover pull number BUILDKITE_PULL_REQUEST
 
-if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
-    echo "- BUILDKITE_PULL_REQUEST_REPO already set, to '$BUILDKITE_PULL_REQUEST_REPO'"
-    echo "- Nothing to do, returning to main script."
-
-elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+# Loosk like this is broken maybe?
+# if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
+#     echo "- BUILDKITE_PULL_REQUEST_REPO already set, to '$BUILDKITE_PULL_REQUEST_REPO'"
+#     echo "- Nothing to do, returning to main script."
+# 
+# el
+if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
 
     echo "- OMG it's a retry of a pull request build"
     echo "- Must recover BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST"
