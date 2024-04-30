@@ -24,8 +24,12 @@ if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     echo "- OMG it's a retry of a pull request build"
     echo "- Must recover BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST"
 
+    echo "- Reset BUILDKITE_COMMIT=$COMMIE according to COMMIE set by pr_trigger.yml :("
+    BUILDKITE_COMMIT=$COMMIE
+
+
     echo '- Extract submod name from PR message e.g. "Pull from lake"'
-    submod=`echo "$BUILDKITE_MESSAGE" | awk '{print $3}'`  # E.g. "lake"
+    submod=`echo "$BUILDKITE_MESSAGE" | awk '{print $3;exit}'`  # E.g. "lake"
     echo "- Found submod '$submod'"
 
     echo '- Find full path of submod e.g. "https://github.com/stanfordaha/canal"'

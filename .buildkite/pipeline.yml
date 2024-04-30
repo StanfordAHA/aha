@@ -37,7 +37,7 @@ steps:
         set +x
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
-        # FIXME maybe have a global env var "DEV_BRANCH" and we do this if DEV_BRANCH is set, see
+        # FIXME maybe have a global env var "DEV_BRANCH" and we do this if DEV_BRANCH is set, see?
         # Wow how many times we gotta do this
         git checkout standalone-conv2 || echo could not checkout dev branch
 
