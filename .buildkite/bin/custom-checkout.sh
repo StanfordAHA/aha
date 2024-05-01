@@ -20,11 +20,32 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
-    # FIXME aha-submod-flow should set the aha branch; if e.g.
-    # aha-submod-flow steps were trying out a dev branch, this would undo that!
+    # Submod pull request uses aha master branch
+    echo "Pull request from a submod repo: check out aha master branch"
+
+    # submod steps do this:
+    #   git clone aha
+    #   (BUG? should do: git checkout DEV_BRANCH || echo okay)
+    #   upload pr_trigger (triggers aha-flow)
+    #
+    # aha-flow steps do this:
+    #   git clone aha
+    #   git checkout BUILDKITE_COMMIT || echo okay
+    #   git checkout BUILDKITE_COMMIT || git checkout DEV || echo okay
+    #   upload pipeline.yml
+
+
+
+    # FIXME aha-submod-flow should set the aha branch;
+    # e.g. if aha-submod-flow steps were trying out a dev branch, this would undo that!
     # FIXME add some kind of "assert branch == master" here to verify this clause is unnecessary!
 
-    echo "Pull request from a submod repo: check out aha master branch"
+    cur_commit=`git rev-parse HEAD | cut -b 1-7`
+    master_commit=`git rev-parse master | cut -b 1-7`
+    if [ "cur_commit" != "master_commit" ]; then
+        echo "--- WARNING current aha hash $cur_commit != master commit $master_commit"
+    fi
+
     set -x
     git rev-parse HEAD
     git fetch -v --prune -- origin master
