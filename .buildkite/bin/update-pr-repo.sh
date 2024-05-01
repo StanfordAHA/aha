@@ -24,9 +24,9 @@ if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
     echo "- OMG it's a retry of a pull request build"
     echo "- Must recover BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST"
 
-    echo "- Reset BUILDKITE_COMMIT=$COMMIE according to COMMIE set by pr_trigger.yml :("
-    BUILDKITE_COMMIT=$COMMIE
-
+    echo "- Reset BUILDKITE_COMMIT=$COMMIE according to COMMIE set by aha-submod-flow steps :("
+    echo "- https://buildkite.com/stanford-aha/aha-submod-flow/settings/steps"
+    BUILDKITE_COMMIT=$AHA_SUBMOD_FLOW_COMMIT
 
     echo '- Extract submod name from PR message e.g. "Pull from lake"'
     submod=`echo "$BUILDKITE_MESSAGE" | awk '{print $3;exit}'`  # E.g. "lake"

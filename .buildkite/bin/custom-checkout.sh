@@ -33,8 +33,15 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     #   git checkout BUILDKITE_COMMIT || echo okay
     #   git checkout BUILDKITE_COMMIT || git checkout DEV || echo okay
     #   upload pipeline.yml
-
-
+    #
+    # pipeline.yml does this:
+    #   BDI pre-checkout:
+    #     git clone aha
+    #     git checkout DEV_BRANCH
+    #     source update-pre-repo.sh: sets BUILDKITE_COMMIT to submod commit hash COMMIE
+    #     source set-trigfrom...sh
+    #     ~/bin/status-update
+    #     source custom_checkout.sh (this file)
 
     # FIXME aha-submod-flow should set the aha branch;
     # e.g. if aha-submod-flow steps were trying out a dev branch, this would undo that!
@@ -48,6 +55,9 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
     set -x
     git rev-parse HEAD
+
+    # Haha note "fetch" command DOES NOT CHANGE BRANCH
+    # i.e. if we were on "branch-foo" before, we are sill on "branch-foo"
     git fetch -v --prune -- origin master
     git checkout -qf standalone-conv2 || git checkout -qf master
     set +x
