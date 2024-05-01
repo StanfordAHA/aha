@@ -13,21 +13,23 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 # Also need to rediscover pull number BUILDKITE_PULL_REQUEST
 
-# Loosk like this is broken maybe?
-# if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
-#     echo "- BUILDKITE_PULL_REQUEST_REPO already set, to '$BUILDKITE_PULL_REQUEST_REPO'"
-#     echo "- Nothing to do, returning to main script."
-# 
-# el
-if expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+
+echo "- Reset BUILDKITE_COMMIT according to env var set by aha-submod-flow steps :("
+echo "- https://buildkite.com/stanford-aha/aha-submod-flow/settings/steps"
+BUILDKITE_COMMIT=$AHA_SUBMOD_FLOW_COMMIT
+
+if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
+    echo "- BUILDKITE_PULL_REQUEST_REPO already set, to '$BUILDKITE_PULL_REQUEST_REPO'"
+    echo "- Nothing to do, returning to main script."
+
+elif expr "$BUILDKITE_MESSAGE" : "PR from " > /dev/null; then
+
+    # ?? does this ever happen? FIXME/TODO maybe scrub the logs and see.
 
     echo "- OMG it's a retry of a pull request build"
     echo "- Must recover BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST"
 
-    echo "- Reset BUILDKITE_COMMIT=$COMMIE according to COMMIE set by aha-submod-flow steps :("
-    echo "- https://buildkite.com/stanford-aha/aha-submod-flow/settings/steps"
-    BUILDKITE_COMMIT=$AHA_SUBMOD_FLOW_COMMIT
-
+    # Need "exit" in awk script in case commit message has embedded linefeeds :(
     echo '- Extract submod name from PR message e.g. "Pull from lake"'
     submod=`echo "$BUILDKITE_MESSAGE" | awk '{print $3;exit}'`  # E.g. "lake"
     echo "- Found submod '$submod'"
