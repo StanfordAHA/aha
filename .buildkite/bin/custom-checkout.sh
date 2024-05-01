@@ -20,53 +20,20 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
-    # Submod pull request uses aha master branch
-    echo "Pull request from a submod repo: check out aha master branch"
+    # This script is called only from pipeline.yml BDI step (I think).
+    # BDI step is responsible for leaving us in default aha branch (e.g. master or dev)
+    echo "Pull request from a submod repo: stay in aha master branch"
 
-    # submod steps do this:
-    #   git clone aha
-    #   (BUG? should do: git checkout DEV_BRANCH || echo okay)
-    #   upload pr_trigger (triggers aha-flow)
-    #
-    # aha-flow steps do this:
-    #   git clone aha
-    #   git checkout BUILDKITE_COMMIT || echo okay
-    #   git checkout BUILDKITE_COMMIT || git checkout DEV || echo okay
-    #   upload pipeline.yml
-    #
-    # pipeline.yml does this:
-    #   BDI pre-checkout:
-    #     git clone aha
-    #     git checkout DEV_BRANCH
-    #     source update-pre-repo.sh: sets BUILDKITE_COMMIT to submod commit hash COMMIE
-    #     source set-trigfrom...sh
-    #     ~/bin/status-update
-    #     source custom_checkout.sh (this file)
-
-    # FIXME aha-submod-flow should set the aha branch;
-    # e.g. if aha-submod-flow steps were trying out a dev branch, this would undo that!
-    # FIXME add some kind of "assert branch == master" here to verify this clause is unnecessary!
-
-    cur_commit=`git rev-parse HEAD | cut -b 1-7`
-    master_commit=`git rev-parse master | cut -b 1-7`
-    if [ "cur_commit" != "master_commit" ]; then
-        echo "--- WARNING current aha hash $cur_commit != master commit $master_commit"
-    fi
-
-    set -x
-    git rev-parse HEAD
-
-    # Haha note "fetch" command DOES NOT CHANGE BRANCH
-    # i.e. if we were on "branch-foo" before, we are sill on "branch-foo"
+    # Not sure why we need this. Keeping it for legacy reasons...
     git fetch -v --prune -- origin master
-    git checkout -qf standalone-conv2 || git checkout -qf master
-    set +x
 
 else
     echo "Push or PR from aha repo: check out requested aha branch $BUILDKITE_COMMIT"
     git fetch -v --prune -- origin $BUILDKITE_COMMIT
     git checkout -qf $BUILDKITE_COMMIT
 fi
+echo -n "Aha master commit = "; git rev-parse master
+echo -n "We now have commit: "; git rev-parse HEAD
 
 echo "--- Initialize all submodules YES THIS TAKES AWHILE"
 
