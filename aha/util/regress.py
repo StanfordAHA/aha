@@ -404,6 +404,14 @@ def dispatch(args, extra_args=None):
         hardcoded_dense_tests = []
 
     elif args.config == "pr_aha1":  # For aha-repo push/pull
+
+        # aha pr used to invoke the much larger "daily" suite;
+        # which is now deleted; now aha pr invokes this pared-down
+        # version which is kind of an enhanced version of the old "pr"
+        # suite of tests; the original "pr" suite is now called "pr_submod"
+        # and it's used for submod pr's. pr_submod only takes a couple of hours
+        # whereas this new enhanced version is in the 8-10 hour range.
+
         width, height = 28, 16
         sparse_tests = [
             "vec_elemmul",
@@ -457,6 +465,8 @@ def dispatch(args, extra_args=None):
         hardcoded_dense_tests = []
 
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
+        # This is the OLD / original two-hour submod pr, I think, from
+        # 611c8bb4, before I mucked things up...this is the original "pr" suite
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
@@ -466,67 +476,40 @@ def dispatch(args, extra_args=None):
             "mat_vecmul_ij",
             "mat_elemadd",
             "mat_elemadd_relu",
-            "mat_elemadd_leakyrelu_exp",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_identity",
-            "mat_mattransmul",
             "matmul_ijk",
             "matmul_ijk_crddrop",
             "matmul_ijk_crddrop_relu",
-            "matmul_ikj",
-            "matmul_jik",
-            "spmm_ijk_crddrop_fp",
-            "spmm_ijk_crddrop",
-            "spmm_ijk_crddrop_relu",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
             # Turned off until SUB ordering fixed in mapping
             # 'mat_residual',
-            "mat_sddmm",
-            "mat_mask_tri",
             "mat_vecmul_iter",
             "tensor3_elemadd",
-            "tensor3_elemmul",
-            "tensor3_identity",
-            "tensor3_innerprod",
-            "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
         ]
         glb_tests = [
-            "apps/gaussian",
             "apps/pointwise",
-            "apps/unsharp",
-            "apps/camera_pipeline_2x2",
-            "apps/harris_color",
-            "apps/cascade",
-            "apps/maxpooling",
-            "tests/three_level_pond",
+            "tests/ushift",
+            "tests/arith",
+            "tests/absolute",
+            "tests/scomp",
+            "tests/ucomp",
+            "tests/uminmax",
+            "tests/rom",
+            "tests/conv_1_2",
+            "tests/conv_2_1",
         ]
         glb_tests_fp = [
             "tests/fp_pointwise",
             "tests/fp_arith",
+            "tests/fp_comp",
             "tests/fp_conv_7_7",
-            "apps/maxpooling_fp",
-            "apps/matrix_multiplication_fp",
         ]
-        resnet_tests = [
-            "conv1",
-            "conv4_1",
-            "conv4_x",
-            "conv5_x",  
-            "conv2_x_residual",
-            "conv5_x_residual",
-        ]
-        resnet_tests_fp = [
-            "conv2_x_fp",
-        ]
+        resnet_tests = []
+        resnet_tests_fp = []
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
         ]
+
     elif args.config == "full":
         width, height = 28, 16
         sparse_tests = [
