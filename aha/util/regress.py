@@ -405,12 +405,17 @@ def dispatch(args, extra_args=None):
 
     elif args.config == "pr_aha1":  # For aha-repo push/pull
 
-        # aha pr used to invoke the much larger "daily" suite;
-        # which is now deleted; now aha pr invokes this pared-down
-        # version which is kind of an enhanced version of the old "pr"
-        # suite of tests; the original "pr" suite is now called "pr_submod"
-        # and it's used for submod pr's. pr_submod only takes a couple of hours
-        # whereas this new enhanced version is in the 8-10 hour range.
+        # aha pull requests used to invoke the much larger "daily"
+        # suite; which we deleted. Now, aha PRs invoke this pared-down
+        # test "pr_aha", (as recommended by Kalhan et al.).  Pr_aha is
+        # kind of an enhanced version of the old "pr" suite of tests,
+        # which was used by pull requests from AHA submodule repos.
+        # The old "pr" suite is now called "pr_submod". (Pr_submod
+        # only takes a couple of hours whereas pr_aha is in the 8-10
+        # hour range.)
+
+        # 2. THEN we broke the 8-10 hour "pr_aha" test into three 3-hour
+        # tests pr_aha1,2,3 that can all run in parallel.
 
         width, height = 28, 16
         sparse_tests = [
@@ -465,8 +470,11 @@ def dispatch(args, extra_args=None):
         hardcoded_dense_tests = []
 
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
+
         # This is the OLD / original two-hour submod pr, I think, from
-        # 611c8bb4, before I mucked things up...this is the original "pr" suite
+        # 611c8bb4, before I mucked things up...before that, this set
+        # of tests was called simply "pr"
+
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",

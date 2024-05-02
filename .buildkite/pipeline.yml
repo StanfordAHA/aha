@@ -3,7 +3,8 @@
 #   aha regress $$CONFIG                # No daemon
 
 env:
-  CONFIG: ${CONFIG:-daily}
+  # Default config is "aha_pr"
+  CONFIG: ${CONFIG:-aha_pr}
 
 steps:
 
@@ -37,9 +38,9 @@ steps:
         set +x
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
-        # FIXME maybe have a global env var "DEV_BRANCH" and we do this if DEV_BRANCH is set, see?
-        # Wow how many times we gotta do this
-        git checkout standalone-conv2 || echo could not checkout dev branch
+        # (aha-flow steps is responsible for setting DEV_BRANCH)
+        # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
+        git checkout $$DEV_BRANCH || echo no dev branch found, continuing with master
 
         # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
         source $$bin/update-pr-repo.sh
@@ -160,7 +161,7 @@ steps:
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
           # If trigger came from a submod repo, we will do "pr" regressions.
-          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+          # Otherwise, trigger came from aha repo push/pull and we do (default) "aha_pr" regressions.
           # We use "env" file to pass information between steps.
           # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
 
@@ -227,7 +228,7 @@ steps:
   - if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config";
       export CONFIG=pr;
-    elif [ "$$CONFIG" == "daily" ]; then
+    elif [ "$$CONFIG" == "aha_pr" ]; then
       export CONFIG=pr_aha1;
       echo "Trigger came from aha repo; use $$CONFIG";
     else
@@ -276,7 +277,7 @@ steps:
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
           # If trigger came from a submod repo, we will do "pr" regressions.
-          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+          # Otherwise, trigger came from aha repo push/pull and we just do "aha_pr" regressions.
           # We use "env" file to pass information between steps.
           # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
 
@@ -342,7 +343,7 @@ steps:
   # Run regression tests
   - if test -e /buildkite/DO_PR; then
       echo "Trigger is not from aha repo; so we don't do this test (yet)";
-    elif [ "$$CONFIG" == "daily" ]; then
+    elif [ "$$CONFIG" == "aha_pr" ]; then
       export CONFIG=pr_aha2;
       echo "Trigger came from aha repo; use pr_aha2";
       set -x; aha regress pr_aha2 --daemon auto --include-dense-only-tests || exit 13;
@@ -391,7 +392,7 @@ steps:
           mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
 
           # If trigger came from a submod repo, we will do "pr" regressions.
-          # Otherwise, trigger came from aha repo push/pull and we just do "daily" regressions.
+          # Otherwise, trigger came from aha repo push/pull and we just do "aha_pr" regressions.
           # We use "env" file to pass information between steps.
           # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
 
@@ -457,7 +458,7 @@ steps:
   # Run regression tests
   - if test -e /buildkite/DO_PR; then
       echo "Trigger is not from aha repo; so we don't do this test (yet)";
-    elif [ "$$CONFIG" == "daily" ]; then
+    elif [ "$$CONFIG" == "aha_pr" ]; then
       export CONFIG=pr_aha3;
       echo "Trigger came from aha repo; use pr_aha3";
       set -x; aha regress pr_aha3 --daemon auto --include-dense-only-tests || exit 13;
