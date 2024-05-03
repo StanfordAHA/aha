@@ -1,15 +1,20 @@
-# This file processes incoming pull-request triggers from aha submods..
-# It rewrites the build message to be more informative. E.g. a pull
-# request from the canal repo with a message 'updated some files'
-# becomes a message more like:
-# 'Pull Request from canal: "updated some files"'
+# NO LONGER USED:
+# this file has been replaced by ~/bin/pr_trigger.yml on r7cad-docker!
+# it is/was invoked by aha-submod-flow pipeline steps, see
+# https://buildkite.com/stanford-aha/aha-submod-flow/settings/steps
 
-- trigger: "aha-flow"
-  label: "PR check"
-  build:
-    # BPPR must exist as env var before uploading this file; e.g. BPPR_TAIL="canal"
-    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
-    commit: "${BUILDKITE_COMMIT}"
-    env:
-      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
-      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+#NO # This file processes incoming pull-request triggers from aha submods..
+#NO # It rewrites the build message to be more informative. E.g. a pull
+#NO # request from the canal repo with a message 'updated some files'
+#NO # becomes a message more like:
+#NO # 'Pull Request from canal: "updated some files"'
+#NO 
+#NO - trigger: "aha-flow"
+#NO   label: "PR check"
+#NO   build:
+#NO     # BPPR must exist as env var before uploading this file; e.g. BPPR_TAIL="canal"
+#NO     message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+#NO     commit: "${BUILDKITE_COMMIT}"
+#NO     env:
+#NO       BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+#NO       BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
