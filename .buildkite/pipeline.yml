@@ -35,15 +35,12 @@ steps:
         git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
         git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
         git clean -ffxdq
-        # set +x
+        set +x
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
         # (aha-flow steps is responsible for setting DEV_BRANCH)
         # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
         git checkout $$DEV_BRANCH || echo no dev branch found, continuing with master
-
-        git rev-parse HEAD
-        cat $$bin/update-pr-repo.sh
 
         # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
         source $$bin/update-pr-repo.sh
