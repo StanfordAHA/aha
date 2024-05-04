@@ -403,7 +403,20 @@ def dispatch(args, extra_args=None):
         resnet_tests_fp = []
         hardcoded_dense_tests = []
 
-    elif args.config == "pr_aha":  # For aha-repo push/pull
+    elif args.config == "pr_aha1":  # For aha-repo push/pull
+
+        # aha pull requests used to invoke the much larger "daily"
+        # suite; which we deleted. Now, aha PRs invoke this pared-down
+        # test "pr_aha", (as recommended by Kalhan et al.).  Pr_aha is
+        # kind of an enhanced version of the old "pr" suite of tests,
+        # which was used by pull requests from AHA submodule repos.
+        # The old "pr" suite is now called "pr_submod". (Pr_submod
+        # only takes a couple of hours whereas pr_aha is in the 8-10
+        # hour range.)
+
+        # 2. THEN we broke the 8-10 hour "pr_aha" test into three 3-hour
+        # tests pr_aha1,2,3 that can all run in parallel.
+
         width, height = 28, 16
         sparse_tests = [
             "vec_elemmul",
@@ -431,18 +444,39 @@ def dispatch(args, extra_args=None):
         ]
         resnet_tests = [
             "conv1",
-            "conv2_x",
             "conv5_1",
             "conv5_x",
         ]
         resnet_tests_fp = [
-            "conv2_x_fp"
         ]
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
         ]
 
+    elif args.config == "pr_aha2":  # For aha-repo push/pull
+        width, height = 28, 16
+        sparse_tests = []
+        glb_tests = ["apps/gaussian"]
+        glb_tests_fp = []
+        resnet_tests = ["conv2_x"]
+        resnet_tests_fp = []
+        hardcoded_dense_tests = []
+
+    elif args.config == "pr_aha3":  # For aha-repo push/pull
+        width, height = 28, 16
+        sparse_tests = []
+        glb_tests = ["apps/gaussian"]
+        glb_tests_fp = []
+        resnet_tests = []
+        resnet_tests_fp = ["conv2_x_fp"]
+        hardcoded_dense_tests = []
+
     elif args.config == "pr_submod":  # For push/pull from aha submod repos
+
+        # This is the OLD / original two-hour submod pr, I think, from
+        # 611c8bb4, before I mucked things up...before that, this set
+        # of tests was called simply "pr"
+
         width, height = 28, 16
         sparse_tests = [
             "vec_elemadd",
@@ -452,70 +486,40 @@ def dispatch(args, extra_args=None):
             "mat_vecmul_ij",
             "mat_elemadd",
             "mat_elemadd_relu",
-            "mat_elemadd_leakyrelu_exp",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_elemdiv",
-            "mat_identity",
-            "mat_mattransmul",
             "matmul_ijk",
             "matmul_ijk_crddrop",
             "matmul_ijk_crddrop_relu",
-            "matmul_ikj",
-            "matmul_jik",
-            "spmm_ijk_crddrop_fp",
-            "spmm_ijk_crddrop",
-            "spmm_ijk_crddrop_relu",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
-            "mat_dn2sp",
-            "mat_sp2dn",
             # Turned off until SUB ordering fixed in mapping
             # 'mat_residual',
-            "mat_sddmm",
-            "mat_mask_tri",
             "mat_vecmul_iter",
             "tensor3_elemadd",
-            "tensor3_elemmul",
-            "tensor3_identity",
-            "tensor3_innerprod",
-            "tensor3_mttkrp",
             "tensor3_ttm",
             "tensor3_ttv",
         ]
         glb_tests = [
-            "apps/gaussian",
             "apps/pointwise",
-            "apps/unsharp",
-            "apps/camera_pipeline_2x2",
-            "apps/harris_color",
-            "apps/cascade",
-            "apps/maxpooling",
-            "tests/three_level_pond",
+            "tests/ushift",
+            "tests/arith",
+            "tests/absolute",
+            "tests/scomp",
+            "tests/ucomp",
+            "tests/uminmax",
+            "tests/rom",
+            "tests/conv_1_2",
+            "tests/conv_2_1",
         ]
         glb_tests_fp = [
             "tests/fp_pointwise",
             "tests/fp_arith",
+            "tests/fp_comp",
             "tests/fp_conv_7_7",
-            "apps/maxpooling_fp",
-            "apps/matrix_multiplication_fp",
         ]
-        resnet_tests = [
-            "conv1",
-            "conv4_1",
-            "conv4_x",
-            "conv5_x",  
-            "conv2_x_residual",
-            "conv5_x_residual",
-        ]
-        resnet_tests_fp = [
-            "conv2_x_fp",
-        ]
+        resnet_tests = []
+        resnet_tests_fp = []
         hardcoded_dense_tests = [
             "apps/depthwise_conv"
         ]
+
     elif args.config == "full":
         width, height = 28, 16
         sparse_tests = [
