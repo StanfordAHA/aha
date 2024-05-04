@@ -19,7 +19,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
     # BUILDKITE_PULL_REQUEST="166"
     # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
-
+echo '+++ foo'; set -x
     # E.g. repo="https://github.com/StanfordAHA/lake"
     repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
     r=`echo "$repo" | sed 's/http.*github.com.//'`               # "StanfordAHA/lake"
