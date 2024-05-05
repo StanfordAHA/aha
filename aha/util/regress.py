@@ -547,6 +547,8 @@ def dispatch(args, extra_args=None):
             "spmv_relu",
             "masked_broadcast",
             "trans_masked_broadcast",
+            "mat_dn2sp",
+            "mat_sp2dn",
             # Turned off until SUB ordering fixed in mapping
             # 'mat_residual',
             "mat_sddmm",
