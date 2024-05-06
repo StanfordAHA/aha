@@ -119,9 +119,18 @@ steps:
         exit 13
     fi
 
-- label: "Onyx Gold RTL 1m"
-  # Set soft_fail so that failing gold check does not fail pipeline.
-  soft_fail: true
+########################################################################
+# ONYX GOLD step
+
+- label: "Onyx Gold"
+  soft_fail: true  # So that failing gold check does not fail pipeline.
+  plugins:
+    - uber-workflow/run-without-clone:  # Don't need clone when using docker
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes: ["/cad/:/cad"]
+        shell:   ["/bin/bash", "-e", "-c"]
+        mount-checkout: false
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
@@ -130,14 +139,10 @@ steps:
         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
     fi
-  plugins:
-    - uber-workflow/run-without-clone:
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes:
-          - "/cad/:/cad"
-        mount-checkout: false
-        shell: ["/bin/bash", "-e", "-c"]
+
+
+
+
 
 - label: "Onyx Integration Tests"
 
