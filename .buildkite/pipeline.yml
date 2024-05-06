@@ -1,10 +1,16 @@
-# To turn daemon on or off, search code below and change to one of:
-#   aha regress $$CONFIG --daemon auto  # Use daemon
-#   aha regress $$CONFIG                # No daemon
+# All "docker"-tagged agents must live on a single machine
+# (e.g. r7cad-docker), so they can all share the same docker image.
+agents: { docker: true }
 
 env:
-  # Default config is "aha_pr"
-  CONFIG: ${CONFIG:-aha_pr}
+  # Default config is "pr_aha"
+  CONFIG: ${CONFIG:-pr_aha}
+
+  # "COMMON" is a dir where we can pass information from one step to another
+  COMMON: /var/lib/buildkite-agent/builds/DELETEME-$BUILDKITE_BUILD_NUMBER
+
+  REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
+  IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
 steps:
 
