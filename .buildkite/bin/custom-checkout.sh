@@ -21,17 +21,20 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
     # This script is called only from pipeline.yml BDI step (I think).
-    # BDI step is responsible for leaving us in default aha branch (e.g. master or dev)
+    # BDI step should have put us in default aha branch (e.g. master or dev)
     echo "Pull request from a submod repo: stay in aha master branch"
 
-    # Not sure why we need this. Keeping it for legacy reasons...
+    # Not sure why we need this 'git fetch' (below). Keeping it for legacy reasons...
+    # THIS DOES NOT CHECKOUT MASTER; e.g. if we were on DEV_BRANCH, we stay there...
     git fetch -v --prune -- origin master
 
 else
-    echo "Push or PR from aha repo: check out requested aha branch $BUILDKITE_COMMIT"
+    echo "Push or PR from aha repo: check out requested aha branch '$BUILDKITE_COMMIT'"
     git fetch -v --prune -- origin $BUILDKITE_COMMIT
     git checkout -qf $BUILDKITE_COMMIT
 fi
+echo DEV_BRANCH=$DEV_BRANCH || echo okay
+echo -n "DEV_BRANCH commit = "; git rev-parse $DEV_BRANCH || echo okay
 echo -n "Aha master commit = "; git rev-parse master
 echo -n "We now have commit: "; git rev-parse HEAD
 
