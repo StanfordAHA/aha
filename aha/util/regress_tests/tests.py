@@ -23,6 +23,9 @@ class Tests:
             glb_tests_fp = [
                 "tests/fp_pointwise",
             ]
+            resnet_tests = []
+            resnet_tests_fp = []
+            hardcoded_dense_tests = []
 
         # PR_AHA test suite for aha-repo push/pull
         elif testname == "pr_aha":
@@ -37,7 +40,7 @@ class Tests:
             # hour range.)
 
             # 2. THEN we broke the 8-10 hour "pr_aha" test into three 3-hour
-            # tests pr_aha1,2,3 that can all run in parallel (see below).
+            # tests pr_aha1,2,3 that can all run in parallel.
 
             width, height = 28, 16
             sparse_tests = [
@@ -185,6 +188,8 @@ class Tests:
                 "spmv_relu",
                 "masked_broadcast",
                 "trans_masked_broadcast",
+                "mat_dn2sp",
+                "mat_sp2dn",
                 # Turned off until SUB ordering fixed in mapping
                 # 'mat_residual',
                 "mat_sddmm",
