@@ -208,22 +208,21 @@ steps:
     - docker exec -e CONFIG=$$CONFIG -e REGSTEP=3 $$CONTAINER /bin/bash -c "$$script"
     - docker kill $$CONTAINER
 
+########################################################################
+# STEP: final cleanup
 
-
-
-
-
-
-
-
-
-- wait: { continue_on_failure: true } # One step at a time + continue on failure
+# Wait for all steps to complete before deleting image
+- wait: { continue_on_failure: true }
 
 - label: ":skull_and_crossbones: Delete Docker Image"
-  # Set soft_fail so that failing cleanup does not fail pipeline.
+
+  # "run-without-clone" b/c don't need repo just to delete the docker image
+  plugins:   [ uber-workflow/run-without-clone: ]
+
+  # Set "soft-fail" -- failing cleanup should not fail the larger pipeline.
   soft_fail: true
+
+  # Not exactly sure why '--no-prune' is included...?
   commands:
-  # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
-  - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
-  plugins:
-  - uber-workflow/run-without-clone:
+    - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
+    - /bin/rm -rf $$COMMON
