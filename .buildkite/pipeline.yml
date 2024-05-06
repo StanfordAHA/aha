@@ -13,7 +13,6 @@ env:
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
 steps:
-
 - label: "Build Docker Image"
   plugins:
   # Override standard checkout procedure with custom checkout script
@@ -29,9 +28,6 @@ steps:
         echo "+++ BDI PRE CHECKOUT HOOK"
         set +u     # nounset? not on my watch!
 
-        if [ "$$FLOW_HEAD_SHA" ]; then
-            echo "+++ ERROR Not processing heroku requests anymore"; exit 13; fi
-
         # Clone the aha repo; starting in root dir '/' I think
         echo I am in dir `pwd`
         aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
@@ -43,12 +39,18 @@ steps:
         set +x
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
-        # (aha-flow steps is responsible for setting DEV_BRANCH)
-        # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
-        git checkout $$DEV_BRANCH || echo no dev branch found, continuing with master
+        if [ "$$AHA_SUBMOD_FLOW_COMMIT" ]; then
+            echo 'Submod pull requests use master branch (sometimes overridden by DEV_BRANCH)'
+            # (aha-flow steps is responsible for setting DEV_BRANCH)
+            # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
+            git checkout $$DEV_BRANCH || echo no dev branch found, continuing with master
 
-        # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
-        source $$bin/update-pr-repo.sh
+            # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
+            source $$bin/update-pr-repo.sh
+        else
+            echo 'Aha push/PR uses pushed branch'
+            git checkout $$BUILDKITE_COMMIT
+        fi
 
         # If build was triggered by a pull request, annotate build with
         #    links pointing to pull request on github.
