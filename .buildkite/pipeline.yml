@@ -13,7 +13,9 @@ env:
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
 steps:
+
 - label: "Build Docker Image"
+
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
@@ -52,6 +54,7 @@ steps:
             git checkout $$BUILDKITE_COMMIT
         fi
 
+
         # If build was triggered by a pull request, annotate build with
         #    links pointing to pull request on github.
         # Set REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
@@ -78,11 +81,15 @@ steps:
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
 
+  - echo "--- Save repo things in common area"
+  - mkdir -p $$COMMON
+  - cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
+
   - echo "--- DEBUG DOCKER TRASH"
   - set -x; docker images; docker ps;
 
   - echo "--- Creating garnet Image"
-  - docker build . -t "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}"
+  - docker build . -t "$$IMAGE"
 
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
