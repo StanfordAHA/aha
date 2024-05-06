@@ -15,7 +15,6 @@ env:
 steps:
 
 - label: "Build Docker Image"
-  key: "docker-build"
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
@@ -88,12 +87,9 @@ steps:
 
   - echo "--- BDI PIPELINE.XML COMMANDS END"
 
-  agents:
-    docker: true
+- wait: ~
 
 - label: "Amber Gold RTL 1m"
-  key: "goldcheck-amber"
-  depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
   commands: |
@@ -112,12 +108,8 @@ steps:
           - "/cad/:/cad"
         mount-checkout: false
         shell: ["/bin/bash", "-e", "-c"]
-  agents:
-    docker: true
 
 - label: "Onyx Gold RTL 1m"
-  key: "goldcheck-onyx"
-  depends_on: "docker-build"
   # Set soft_fail so that failing gold check does not fail pipeline.
   soft_fail: true
   commands: |
@@ -136,12 +128,8 @@ steps:
           - "/cad/:/cad"
         mount-checkout: false
         shell: ["/bin/bash", "-e", "-c"]
-  agents:
-    docker: true
 
 - label: "Onyx Integration Tests"
-  key: "integration-tests"
-  depends_on: "docker-build"
 
   plugins:
     - uber-workflow/run-without-clone:
@@ -252,12 +240,7 @@ steps:
   - rm -rf /buildkite/.TEST
   - ls -al /buildkite
 
-  agents:
-    docker: true
-
 - label: "Regress 2"
-  key: "integration-tests2"
-  depends_on: "docker-build"
 
   plugins:
     - uber-workflow/run-without-clone:
@@ -367,12 +350,8 @@ steps:
   - rm -rf /buildkite/.TEST
   - ls -al /buildkite
 
-  agents:
-    docker: true
 
 - label: "Regress 3"
-  key: "integration-tests3"
-  depends_on: "docker-build"
 
   plugins:
     - uber-workflow/run-without-clone:
@@ -482,24 +461,14 @@ steps:
   - rm -rf /buildkite/.TEST
   - ls -al /buildkite
 
-  agents:
-    docker: true
 
 - wait: { continue_on_failure: true } # One step at a time + continue on failure
 
 - label: ":skull_and_crossbones: Delete Docker Image"
   # Set soft_fail so that failing cleanup does not fail pipeline.
   soft_fail: true
-  depends_on:
-  - "integration-tests"
-  - "integration-tests2"
-  - "integration-tests3"
-  - "goldcheck-amber"
-  - "goldcheck-onyx"
   commands:
   # '--no-prune' so it doesn't prune dangling images, we want to use them for the Docker cache.
   - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
-  agents:
-    docker: true
   plugins:
   - uber-workflow/run-without-clone:
