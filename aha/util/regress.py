@@ -426,38 +426,38 @@ def dispatch(args, extra_args=None):
 
         width, height = 28, 16
         sparse_tests = [
-            # "vec_elemmul",
-            # "mat_vecmul_ij",
-            # "mat_elemadd_leakyrelu_exp",
-            # "mat_elemdiv",
-            # "mat_mattransmul",
-            # "matmul_ijk_crddrop_relu",
-            # "matmul_ikj",
-            # "matmul_jik",
+            "vec_elemmul",
+            "mat_vecmul_ij",
+            "mat_elemadd_leakyrelu_exp",
+            "mat_elemdiv",
+            "mat_mattransmul",
+            "matmul_ijk_crddrop_relu",
+            "matmul_ikj",
+            "matmul_jik",
             "spmm_ijk_crddrop_relu",
-            # "spmv_relu",
-            # "masked_broadcast",
-            # "mat_sddmm",
-            # "tensor3_mttkrp",
-            # "tensor3_ttv",        
+            "spmv_relu",
+            "masked_broadcast",
+            "mat_sddmm",
+            "tensor3_mttkrp",
+            "tensor3_ttv",        
         ]
         glb_tests = [
-            # "apps/pointwise",
-            # "apps/gaussian",
-            # "apps/camera_pipeline_2x2",
+            "apps/pointwise",
+            "apps/gaussian",
+            "apps/camera_pipeline_2x2",
         ]
         glb_tests_fp = [
-            # "apps/matrix_multiplication_fp",
+            "apps/matrix_multiplication_fp",
         ]
         resnet_tests = [
-            # "conv1",
-            # "conv5_1",
-            # "conv5_x",
+            "conv1",
+            "conv5_1",
+            "conv5_x",
         ]
         resnet_tests_fp = [
         ]
         hardcoded_dense_tests = [
-            # "apps/depthwise_conv"
+            "apps/depthwise_conv"
         ]
 
     elif args.config == "pr_aha2":  # For aha-repo push/pull
