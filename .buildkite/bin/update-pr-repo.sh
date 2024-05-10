@@ -19,7 +19,7 @@ cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 echo "- Reset BUILDKITE_COMMIT according to env var set by aha-submod-flow steps :("
 echo "- https://buildkite.com/stanford-aha/aha-submod-flow/settings/steps"
-[ "$AHA_SUBMOD_FLOW_COMMIT"] && BUILDKITE_COMMIT=$AHA_SUBMOD_FLOW_COMMIT || echo okay
+[ "$AHA_SUBMOD_FLOW_COMMIT" ] && BUILDKITE_COMMIT=$AHA_SUBMOD_FLOW_COMMIT || echo okay
 
 if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     echo "- BUILDKITE_PULL_REQUEST_REPO already set, to '$BUILDKITE_PULL_REQUEST_REPO'"
