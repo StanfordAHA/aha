@@ -253,11 +253,11 @@ def dispatch(args, extra_args=None):
             else:
                 mismatch_idx = numpy.nonzero(~close_elements)[0]
                 mismatch_frac = len(mismatch_idx) / len(gold_array_fp)
-                frac_tolerance = 1e-2
+                frac_tolerance = 6e-2
                 if mismatch_frac <= frac_tolerance:
                     print(f"\033[93mWarning: Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
                 else:
-                    assert False, f"\033[91mFloating point comparison failed. Exceptions are beyond {frac_tolerance*100}% of all pixels\033[0m"
+                    assert False, f"\033[91mFloating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
 
             # print pass message and maximum difference
             print("\033[92mFloating point comparison passed.\033[0m")

@@ -260,7 +260,13 @@ class Tests:
                 "conv5_x_residual",
             ]
             resnet_tests_fp = [
-                "conv2_x_fp"
+                "conv2_x_fp",
+                "sequential_0_fp",
+                "InvRes1_pw_fp",
+                "InvRes2_pw_exp_fp",
+                "InvRes2_pw_sq_fp",
+                "InvRes3_pw_exp_fp",
+                "InvRes3_pw_sq_residual_fp"
             ]
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
