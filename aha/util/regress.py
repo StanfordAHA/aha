@@ -17,6 +17,7 @@ def add_subparser(subparser):
     parser.add_argument("config")
     parser.add_argument("--env-parameters", default="", type=str)
     parser.add_argument("--include-dense-only-tests", action="store_true")
+    parser.add_argument("--opal-workaround", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -70,7 +71,7 @@ def gen_garnet(width, height, dense_only=False):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=False):
     if len(sparse_tests) == 0:
         return 0
     
@@ -81,51 +82,57 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
     if(seed_flow):
+        build_tb_cmd = [
+            "python",
+            "/aha/garnet/tests/test_memory_core/build_tb.py",
+            "--ic_fork",
+            "--sam_graph", *all_sam_graphs,
+            "--seed", f"{0}",
+            "--dump_bitstream",
+            "--add_pond",
+            "--combined",
+            "--pipeline_scanner",
+            "--base_dir",
+            "/aha/garnet/SPARSE_TESTS/",
+            "--just_glb",
+            "--dump_glb",
+            "--fiber_access",
+            "--width", str(width),
+            "--height", str(height),
+        ]
+        if opal_workaround:
+            build_tb_cmd.append("--opal-workaround")
         buildkite_call(
-            [
-                "python",
-                "/aha/garnet/tests/test_memory_core/build_tb.py",
-                "--ic_fork",
-                "--sam_graph", *all_sam_graphs,
-                "--seed", f"{0}",
-                "--dump_bitstream",
-                "--add_pond",
-                "--combined",
-                "--pipeline_scanner",
-                "--base_dir",
-                "/aha/garnet/SPARSE_TESTS/",
-                "--just_glb",
-                "--dump_glb",
-                "--fiber_access",
-                "--width", str(width),
-                "--height", str(height),
-            ],
+            build_tb_cmd,
             env=env_vars,
         )
     else: 
+        build_tb_cmd = [
+            "python",
+            "/aha/garnet/tests/test_memory_core/build_tb.py",
+            "--ic_fork",
+            "--sam_graph", *all_sam_graphs,
+            "--seed", f"{0}",
+            "--dump_bitstream",
+            "--add_pond",
+            "--combined",
+            "--pipeline_scanner",
+            "--base_dir",
+            "/aha/garnet/SPARSE_TESTS/",
+            "--just_glb",
+            "--dump_glb",
+            "--fiber_access",
+            "--give_tensor",
+            "--tensor_locs",
+            "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
+            "--width", str(width),
+            "--height", str(height),
+            "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
+        ]
+        if opal_workaround:
+            build_tb_cmd.append("--opal-workaround")
         buildkite_call(
-            [
-                "python",
-                "/aha/garnet/tests/test_memory_core/build_tb.py",
-                "--ic_fork",
-                "--sam_graph", *all_sam_graphs,
-                "--seed", f"{0}",
-                "--dump_bitstream",
-                "--add_pond",
-                "--combined",
-                "--pipeline_scanner",
-                "--base_dir",
-                "/aha/garnet/SPARSE_TESTS/",
-                "--just_glb",
-                "--dump_glb",
-                "--fiber_access",
-                "--give_tensor",
-                "--tensor_locs",
-                "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
-                "--width", str(width),
-                "--height", str(height),
-                "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
-            ],
+            build_tb_cmd,
             env=env_vars,
         )
     time_map = time.time() - start
@@ -184,7 +191,7 @@ def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pip
     return all_tiles, num_list
 
 
-def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num_l=[1], test=""):
+def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num_l=[1], opal_workaround=False, test=""):
     if test == "":
         test = testname
 
@@ -456,7 +463,7 @@ def dispatch(args, extra_args=None):
     print("HERE ARE THE SS DATA TILE PAIRS!")
     print(suitesparse_data_tile_pairs)
 
-    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs)
+    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround)
 
     if not(seed_flow):
         if os.path.exists("/aha/garnet/suitesparse_perf_out.txt"):
@@ -468,10 +475,10 @@ def dispatch(args, extra_args=None):
         if use_pipeline:
             assert (not seed_flow), "Pipeline mode is not supported with seed flow"
             tile_pairs, pipeline_num_l = format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num)
-            t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l)
+            t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
-            t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs)
+            t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
