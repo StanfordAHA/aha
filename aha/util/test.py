@@ -14,8 +14,6 @@ def add_subparser(subparser):
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--log", action="store_true")
     parser.add_argument("--sparse", action="store_true")
-    parser.add_argument("--sparse-test-name", type=str, default=None)
-    parser.add_argument("--sparse-comparison", type=str, default=None)
     parser.add_argument("--dense-fp", action="store_true")
     parser.add_argument("--multiles", type=int, default=None)
     parser.add_argument("--dpr", action="store_true")
@@ -79,7 +77,10 @@ def dispatch(args, extra_args=None):
         # this is how many apps we 're running
         arg_name = f"APP{idx}"
         # get the full path of the app
-        arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}"
+        if not args.sparse:
+            arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}"
+        else:
+            arg_path = f"{args.aha_dir}/garnet/SPARSE_TESTS/{app}"
         app_args.append(f"+{arg_name}={arg_path}")
 
     if args.dpr is True:
@@ -93,7 +94,10 @@ def dispatch(args, extra_args=None):
         env["WAVEFORM_GLB_ONLY"] = "1"
     
     # if there are more than 1 app, store the log in the first app
-    app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
+    if not args.sparse:
+        app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
+    else:
+        app_dir = Path(f"{args.aha_dir}/garnet/SPARSE_TESTS/{args.app[0]}")
     log_path = app_dir / Path("log")
     log_file_path = log_path / Path("aha_test.log")
     if args.log:
@@ -123,14 +127,9 @@ def dispatch(args, extra_args=None):
             print("Failed as expected...move to offsite comparison...")
 
         from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
-        testname = args.sparse_test_name
 
-        sparse_comp = args.sparse_comparison
-
-        if sparse_comp is None:
-            sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0/"
-
-
+        sparse_comp = str(app_dir)
+        
         tiles = 1
         if args.multiles:
             tiles = args.multiles

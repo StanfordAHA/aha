@@ -199,7 +199,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
 
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
 
-    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path, flush=True)
 
     try:
@@ -212,7 +212,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
         print("RUNNING SEED FLOW", flush=True)
         start = time.time()
         buildkite_call(
-            ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
+            ["aha", "test", app_path, "--sparse"], env=env_vars,
         )
         time_test = time.time() - start
     else:
@@ -236,12 +236,8 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
                 buildkite_call(
                     ["aha", 
                     "test", 
-                    f"../../../garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
+                    f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
                     "--sparse", 
-                    "--sparse-test-name", 
-                    f"{test}", 
-                    "--sparse-comparison", 
-                    f"/aha/garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}/",
                     "--multiles", str(pipeline_num)
                     ], env=env_vars,
                     return_output=True,
