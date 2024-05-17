@@ -129,7 +129,8 @@ def dispatch(args, extra_args=None):
         from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
 
         sparse_comp = str(app_dir)
-        
+        batches = len(args.app)
+
         tiles = 1
         if args.multiles:
             tiles = args.multiles
@@ -146,28 +147,39 @@ def dispatch(args, extra_args=None):
         all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
         just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
         for file__ in just_out_files_sim:
-            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles)
-        for i in range(tiles):
-            gold_matrix = numpy.load(f"{sparse_comp}/output_gold_{i}.npy")
-            # Process according to the data type of the gold matrix 
-            if gold_matrix.dtype == int:
-                gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
-            elif gold_matrix.dtype == numpy.float32:
-                # the gold matrix were already in bf16, no need to truncate again
-                pass
-            sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
-                                                format="CSF",
-                                                shape=gold_matrix.shape, base=16, early_terminate='x',
-                                                use_fp=(gold_matrix.dtype == numpy.float32), suffix=f"_tile{i}").get_matrix()
+            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles, batches)
+        for j in range(batches):
+            for i in range(tiles):
+                gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/{args.app[j]}/output_gold_{i}.npy")
+                # Process according to the data type of the gold matrix 
+                if gold_matrix.dtype == int:
+                    gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+                elif gold_matrix.dtype == numpy.float32:
+                    # the gold matrix were already in bf16, no need to truncate again
+                    pass
+                sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                                    format="CSF",
+                                                    shape=gold_matrix.shape, base=16, early_terminate='x',
+                                                    use_fp=(gold_matrix.dtype == numpy.float32), suffix=f"_batch{j}_tile{i}").get_matrix()
 
-            # Set up numpy so it doesn't print in scientific notation
-            numpy.set_printoptions(suppress=True)
-            print(f"GOLD")
-            print(gold_matrix)
-            print(f"SIM")
-            print(sim_matrix)
-        # for comparing floating point  
-        assert numpy.allclose(gold_matrix, sim_matrix)
+                # Set up numpy so it doesn't print in scientific notation
+                numpy.set_printoptions(suppress=True)
+                print("Batch: ", j, "Tile: ", i)
+                # for comparing floating point  
+                if numpy.allclose(gold_matrix, sim_matrix):
+                    print(f"Check Passed.")
+                    # print(f"GOLD")
+                    # print(gold_matrix)
+                    # print(f"SIM")
+                    # print(sim_matrix)
+                else:
+                    print(f"GOLD")
+                    print(gold_matrix)
+                    print(f"SIM")
+                    print(sim_matrix)
+                    assert numpy.allclose(gold_matrix, sim_matrix), f"Check Failed.\n"
+
+
 
     else:
 
@@ -235,6 +247,7 @@ def dispatch(args, extra_args=None):
             assert gold_array.shape == sim_array.shape, "\033[91mThe shape of the gold and sim arrays do not match.\033[0m"
 
         if args.dense_fp:
+            # TODO: Implement back to back apps
 
             # define custom absolute tolerance for floating point comparison
             custom_atol = 1.5e-04 # default 1e-08
@@ -296,7 +309,7 @@ def dispatch(args, extra_args=None):
 
         # do bit accurate comparison for integer case
         else:
-
+            # Works for checking back to back apps
             for app in args.app:
                 gold_array = golds.pop(0)
                 sim_array = sim_array_list.pop(0)
