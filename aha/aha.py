@@ -48,7 +48,17 @@ def main():
     # Each subcommand sets args.dispatch to the command it wants to
     # execute, accepting `args` as the only argument
     if getattr(args, "dispatch", None):
-        args.dispatch(args, extra_args)
+
+        # In case of SIGSEGV, retry up to three times
+        for retry in [1,2,3]:
+            try:
+                args.dispatch(args, extra_args)
+            except subprocess.CalledProcessError as e:
+                if 'SIGSEGV' in str(e):
+                    print(f'\n\n{e}\n')  # Print the error msg
+                    print(f'*** ERROR subprocess died {retry} time(s) with SIGSEGV')
+                    print('*** Will retry three times, then give up.\n\n')
+
     else:
         parser.print_help()
 
