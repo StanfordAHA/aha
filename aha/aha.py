@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import pkgutil
 import aha.util
+import subprocess
 
 
 def main():
@@ -53,6 +54,7 @@ def main():
         for retry in [1,2,3]:
             try:
                 args.dispatch(args, extra_args)
+                break
             except subprocess.CalledProcessError as e:
                 if 'SIGSEGV' in str(e):
                     print(f'\n\n{e}\n')  # Print the error msg
