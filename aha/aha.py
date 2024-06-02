@@ -50,8 +50,7 @@ def main():
     # execute, accepting `args` as the only argument
     if getattr(args, "dispatch", None):
 
-        # In case of SIGSEGV, retry up to three times
-        for retry in [1,2,3]:
+        for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
             try:
                 args.dispatch(args, extra_args)
                 break
@@ -60,6 +59,8 @@ def main():
                     print(f'\n\n{e}\n')  # Print the error msg
                     print(f'*** ERROR subprocess died {retry} time(s) with SIGSEGV')
                     print('*** Will retry three times, then give up.\n\n')
+                    if retry == 3:
+                        raise
 
     else:
         parser.print_help()

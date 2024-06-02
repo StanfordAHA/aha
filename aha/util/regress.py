@@ -27,21 +27,36 @@ def buildkite_filter(s):
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     env = {**os.environ.copy(), **env}
-    if return_output:
-        app = subprocess.run(
-            command,
-            check=True,
-            text=True,
-            env=env,
-            stdout=out_file,
-        )
-    else: 
-        app = subprocess.run(
-            command,
-            check=True,
-            text=True,
-            env=env,
-    )
+    for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
+        try:
+            if return_output:
+                app = subprocess.run(
+                    command,
+                    check=True,
+                    text=True,
+                    env=env,
+                    stdout=out_file,
+                )
+            else: 
+                app = subprocess.run(
+                    command,
+                    check=True,
+                    text=True,
+                    env=env,
+            )
+            break
+        except subprocess.CalledProcessError as e:
+            if 'SIGSEGV' in str(e):
+                print(f'\n\n{e}\n')  # Print the error msg
+                print(f'*** ERROR subprocess died {retry} time(s) with SIGSEGV')
+                print('*** Will retry three times, then give up.\n\n')
+
+                # if retry == 3: raise
+                # - No! Don't raise the error! Higher-level aha.py has similar
+                # - three-retry catchall, resulting in up to nine retries ! (Right?)
+                # - Do this instead:
+                if retry == 3:
+                    assert False, 'ERROR: Three time loser'
 
 
 def gen_garnet(width, height, dense_only=False):
