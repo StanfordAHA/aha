@@ -242,6 +242,7 @@ class Tests:
                 "apps/maxpooling_fp",
                 "apps/matrix_multiplication_fp",
                 "apps/mcunet_in_sequential_0_fp",
+                "apps/depthwise_conv_stream_fp",
             ]
 
             # FIXME would it be better here to do e.g.
