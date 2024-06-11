@@ -50,6 +50,8 @@ def main():
     # execute, accepting `args` as the only argument
     if getattr(args, "dispatch", None):
 
+        # Keeping this as a catchall backup; the SIGSEGV should have already
+        # been caught by similar retry mechanisms in garnet.py and regress.py
         for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
             try:
                 args.dispatch(args, extra_args)
@@ -61,6 +63,8 @@ def main():
                     print('*** Will retry three times, then give up.\n\n')
                     if retry == 3:
                         raise
+                else:
+                    raise
 
     else:
         parser.print_help()

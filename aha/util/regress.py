@@ -57,7 +57,8 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
                 # - Do this instead:
                 if retry == 3:
                     assert False, 'ERROR: Three time loser'
-
+            else:
+                raise
 
 def gen_garnet(width, height, dense_only=False):
     print("--- Generating Garnet", flush=True)
