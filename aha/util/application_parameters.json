@@ -455,6 +455,31 @@
             "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
+    "apps/depthwise_conv_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=9 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "KERNEL_HOST_STENCIL_POS":"8, 10, 12, 14",
+            "HW_OUTPUT_STENCIL_POS":"1, 3, 5, 7",
+            "GLB_INPUTS":"",
+            "NUM_GLB_TILING":"10"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"in_img=52 ksize=3 stride=1 n_ic=16 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "PNR_PLACER_EXP":"1",
+            "DISABLE_GP":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"in_img=52 ksize=3 stride=1 n_ic=16 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1"
+        }
+    },
     "sequential_0_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"in_img=101 pad_o_left=1 pad_o_right=1 ksize=3 stride=2 n_ic=4 n_oc=16 k_ic=4 k_oc=16 glb_i=4 glb_k=4 glb_o=4 relu6=1",
