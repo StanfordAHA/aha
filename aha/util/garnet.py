@@ -28,3 +28,5 @@ def dispatch(args, extra_args=None):
                 # - Do this instead:
                 if retry == 3:
                     assert False, 'ERROR: Three time loser'
+            else:
+                raise
