@@ -87,13 +87,14 @@ def gen_garnet(width, height, dense_only=False):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=False):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=False, unroll=1):
     if len(sparse_tests) == 0:
         return 0
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    #env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -144,6 +145,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
             "--width", str(width),
             "--height", str(height),
             "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
+            "--unroll", str(unroll),
         ]
         if opal_workaround:
             build_tb_cmd.append("--opal-workaround")
@@ -155,7 +157,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     return time_map
 
 
-def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num=64):
+def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num=64, unroll=1):
     script_path = "/aha/garnet/"
     pairs_cpy = suitesparse_data_tile_pairs.copy()
     all_tiles = []
@@ -200,6 +202,7 @@ def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pip
                     test,
                     suitesparse_datum,
                     test_l_str,
+                    str(unroll),
                     *test_l_s,
                 ],
                 cwd = script_path
@@ -249,8 +252,12 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
         last_pipeline_num = pipeline_num_l[-1]
         full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
         last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
+
+        cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
+        if len(full_tile_pairs) == 0:
+            cmd_list = [last_pipeline_cmd]
         
-        for cmd in [full_pipeline_cmd, last_pipeline_cmd]:
+        for cmd in cmd_list:
             buildkite_call(cmd, env=env_vars)
             command = "grep \"total time\" /aha/garnet/tests/test_app/run.log"
             results = subprocess.check_output(command, shell=True, encoding='utf-8')
@@ -390,7 +397,8 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 def dispatch(args, extra_args=None):
     seed_flow = True 
     use_pipeline = False
-    pipeline_num = 64
+    pipeline_num = 32
+    unroll = 2
     suitesparse_data = ["football"]
 
     # Preserve backward compatibility
@@ -465,7 +473,7 @@ def dispatch(args, extra_args=None):
     print("HERE ARE THE SS DATA TILE PAIRS!")
     print(suitesparse_data_tile_pairs)
 
-    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround)
+    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround, unroll=unroll)
 
     if not(seed_flow):
         if os.path.exists("/aha/garnet/suitesparse_perf_out.txt"):
@@ -476,7 +484,7 @@ def dispatch(args, extra_args=None):
     for test in sparse_tests:
         if use_pipeline:
             assert (not seed_flow), "Pipeline mode is not supported with seed flow"
-            tile_pairs, pipeline_num_l = format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num)
+            tile_pairs, pipeline_num_l = format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num, unroll)
             t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
