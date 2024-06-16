@@ -398,7 +398,7 @@ def dispatch(args, extra_args=None):
     seed_flow = True 
     use_pipeline = False
     pipeline_num = 32
-    unroll = 2
+    unroll = 1
     suitesparse_data = ["football"]
 
     # Preserve backward compatibility
