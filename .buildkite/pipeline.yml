@@ -167,6 +167,7 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
+    - exit 13
     - docker kill $$CONTAINER || echo okay
     - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
     - script="$($REGRESS_METAHOOKS --commands)"
@@ -187,6 +188,7 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
+    - exit 13
     - docker kill $$CONTAINER || echo okay
     - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
     - script="$($REGRESS_METAHOOKS --commands)"
@@ -206,6 +208,7 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
+    - exit 13
     - docker kill $$CONTAINER || echo okay
     - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
     - script="$($REGRESS_METAHOOKS --commands)"
