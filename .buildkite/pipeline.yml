@@ -232,4 +232,3 @@ steps:
   # Not exactly sure why '--no-prune' is included...?
   commands:
     - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
-    - /bin/rm -rf $$COMMON
