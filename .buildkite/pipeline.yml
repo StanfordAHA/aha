@@ -83,7 +83,7 @@ steps:
 
   # Remove DELETEME* dirs older than one week
   - echo "--- Cleanup old common areas"
-  - find /var/lib/buildkite-agent/builds/DELETEME* -type d -mtime -7 -exec /bin/rm -rf {} \; || echo okay
+  - find /var/lib/buildkite-agent/builds/DELETEME* -type d -mtime +7 -exec /bin/rm -rf {} \; || echo okay
 
   - echo "--- Save repo things in common area"
   - mkdir -p $$COMMON
