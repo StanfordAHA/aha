@@ -1,34 +1,10 @@
-# https://buildkite.com/stanford-aha/aha-flow/settings/steps
-# should have something like this:
-# 
-# env:
-#     # DEV_BRANCH: master
-#     DEV_BRANCH: offload-steps
-# 
-# steps:
-# - label: ":pipeline:"
-#   agents: { docker: true }
-#   command: echo DONE
-#   plugins:
-#     # Turn off normal/slow repo+submods checkout b/c all we need is pipeline.yml
-#     - uber-workflow/run-without-clone:
-#     
-#     # Even though we turned off cloning, I think there's a reasone why
-#     # we do commands in pre-checkout phase, but I can't quite remember why...?
-#     - improbable-eng/metahook:
-#         pre-checkout: |
-#             set -x
-#             mkdir -p DELETEME-aha-flow-{$BUILDKITE_BUILD_NUMBER}
-#             udev=https://github.com/StanfordAHA/aha/blob/$$DEV_BRANCH/aha-flow-steps.sh
-#             umaster=https://github.com/StanfordAHA/aha/blob/master/aha-flow-steps.sh
-#             httpcode=`curl $$udev -o $$TMPDIR/aha-flow-steps.sh`
-#             if ! [ $httpcode == 200 ]; then
-#                 echo "Cannot find steps in branch '$$DEV_BRANCH'; trying master instead"
-#                 export DEV_BRANCH=master  # FIXME things break if DEV_BRANCH not set
-#                 curl $$umaster -o $$TMPDIR/aha-flow-steps.sh
-#             fi
-#             set +x
-#             source $$TMPDIR/aha-flow-steps.sh
+# This file is designed to replace the existing aha-flow buildkite script at
+# <https://buildkite.com/stanford-aha/aha-flow/settings/steps>.
+# By moving the script to the repo, we can have it under version control, etc.
+
+set +x
+DEV_BRANCH=master  # I.e. not using a dev branch atm
+export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
 
 set +u;  # My code assumes unset vars are okay
 echo "+++ Must have a (empty!) working directory"; set -x;
@@ -53,6 +29,30 @@ if ! git checkout -q $BUILDKITE_COMMIT; then
 # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
 # Also see ~steveri/bin/status-update on kiwi
 echo "+++ Notify github of pending status"; ~/bin/status-update --force pending;
-grep conv2 .buildkite/pipeline.yml || echo not found oh no;
 buildkite-agent pipeline upload .buildkite/pipeline.yml;
 echo "--- CUSTOM CHECKOUT END"
+
+################################################################################
+# <https://buildkite.com/stanford-aha/aha-flow/settings/steps> should have just
+# the bare bones required to load and run this setup script. Something like:
+################################################################################
+# env:
+#   # DEV_BRANCH: master
+#   DEV_BRANCH: offload-steps
+#   AHA_REPO: https://raw.githubusercontent.com/StanfordAHA/aha
+#   STEPSCRIPT: .buildkite/bin/aha-flow-steps.sh
+# 
+# steps:
+# - label: \":pipeline:\"
+#   agents: { docker: true }
+#   plugins: [ { uber-workflow/run-without-clone: ~ } ]
+#   commands: |
+#     udev=$$AHA_REPO/$$DEV_BRANCH/$$STEPSCRIPT
+#     httpcode=`curl $$udev -o aha-flow-steps.sh -w '%{http_code}'`
+#     if ! [ \"$$httpcode\" == 200 ]; then
+#         echo \"Cannot find steps in branch '$$DEV_BRANCH'; trying master instead\"
+#         curl $$AHA_REPO/master/$$STEPSCRIPT -o aha-flow-steps.sh
+#     fi
+#     source aha-flow-steps.sh
+################################################################################
+
