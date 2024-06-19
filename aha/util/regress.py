@@ -27,22 +27,38 @@ def buildkite_filter(s):
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     env = {**os.environ.copy(), **env}
-    if return_output:
-        app = subprocess.run(
-            command,
-            check=True,
-            text=True,
-            env=env,
-            stdout=out_file,
-        )
-    else: 
-        app = subprocess.run(
-            command,
-            check=True,
-            text=True,
-            env=env,
-    )
+    for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
+        try:
+            if return_output:
+                app = subprocess.run(
+                    command,
+                    check=True,
+                    text=True,
+                    env=env,
+                    stdout=out_file,
+                )
+            else: 
+                app = subprocess.run(
+                    command,
+                    check=True,
+                    text=True,
+                    env=env,
+            )
+            break
+        except subprocess.CalledProcessError as e:
+            if 'SIGSEGV' in str(e):
+                print(f'\n\n{e}\n')  # Print the error msg
+                print(f'*** ERROR subprocess died {retry} time(s) with SIGSEGV')
+                print('*** Will retry three times, then give up.\n\n')
 
+                # if retry == 3: raise
+                # - No! Don't raise the error! Higher-level aha.py has similar
+                # - three-retry catchall, resulting in up to nine retries ! (Right?)
+                # - Do this instead:
+                if retry == 3:
+                    assert False, 'ERROR: Three time loser'
+            else:
+                raise
 
 def gen_garnet(width, height, dense_only=False):
     print("--- Generating Garnet", flush=True)
@@ -191,7 +207,7 @@ def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pip
     return all_tiles, num_list
 
 
-def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num_l=[1], opal_workaround=False, test=""):
+def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test=""):
     if test == "":
         test = testname
 
@@ -199,7 +215,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
 
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
 
-    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path, flush=True)
 
     try:
@@ -212,49 +228,35 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
         print("RUNNING SEED FLOW", flush=True)
         start = time.time()
         buildkite_call(
-            ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
+            ["aha", "test", app_path, "--sparse"], env=env_vars,
         )
         time_test = time.time() - start
     else:
         print("RUNNING SS FLOW", flush=True)
         use_pipeline = False
-        if len(pipeline_num_l) != 1:
+        if len(pipeline_num_l) is not None:
             assert len(pipeline_num_l) == len(suitesparse_data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
             use_pipeline = True
         start = time.time()
         dataset_runtime_dict = defaultdict(float)
-        for ss_tile_pair in suitesparse_data_tile_pairs:
-            pipeline_num = 1
-            if use_pipeline:
-                index = suitesparse_data_tile_pairs.index(ss_tile_pair)
-                pipeline_num = pipeline_num_l[index]
-            ss_tile_pair = ss_tile_pair.split("MAT_TMP_DIR/")[1]
-            ss_tile_pair_sparse_testname = ss_tile_pair.split("-")[0]
-            if ss_tile_pair_sparse_testname != testname:
-                continue
-            with open("/aha/garnet/aha_test_out.txt", 'w') as test_out_file:
-                buildkite_call(
-                    ["aha", 
-                    "test", 
-                    f"../../../garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
-                    "--sparse", 
-                    "--sparse-test-name", 
-                    f"{test}", 
-                    "--sparse-comparison", 
-                    f"/aha/garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}/",
-                    "--multiles", str(pipeline_num)
-                    ], env=env_vars,
-                    return_output=True,
-                    out_file = test_out_file
-                )
-            command = "grep \"total time\" /aha/garnet/aha_test_out.txt"
-            result = subprocess.check_output(command, shell=True, encoding='utf-8')
-            total_time_line = result.split("\n")[0]
-            time_str = total_time_line.split(" ns")[0].split(" ")[-1]
-            time_value = float(time_str)
-            split_str = f"{testname}-"
-            dataset = total_time_line.split(split_str)[1].split("_")[0]
-            dataset_runtime_dict[dataset] += time_value
+
+        # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
+        suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
+        suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
+        full_tile_pairs = suitesparse_data_tile_pairs[:-1]
+        last_tile_pair = suitesparse_data_tile_pairs[-1]
+        full_pipeline_num = pipeline_num_l[0]
+        last_pipeline_num = pipeline_num_l[-1]
+        full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
+        last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
+        
+        for cmd in [full_pipeline_cmd, last_pipeline_cmd]:
+            buildkite_call(cmd, env=env_vars)
+            command = "grep \"total time\" /aha/garnet/tests/test_app/run.log"
+            results = subprocess.check_output(command, shell=True, encoding='utf-8')
+            for result in results.split("\n"):
+                if testname in result:
+                    dataset_runtime_dict[result.split(f"{testname}-")[1].split("_")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
         with open("/aha/garnet/suitesparse_perf_out.txt", 'a') as perf_out_file:
             for dataset, time_value in dataset_runtime_dict.items():
