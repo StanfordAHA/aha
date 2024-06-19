@@ -107,6 +107,15 @@ def dispatch(args, extra_args=None):
     if args.sparse:
 
         try:
+
+            subprocess_call_log (
+                    cmd=["make", "clean_sparse_outputs"],
+                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                    env=env,
+                    log=args.log,
+                    log_file_path=log_file_path
+            )
+
             if args.run:
                 subprocess_call_log (
                     cmd=["make", "run"] + extra_args,
