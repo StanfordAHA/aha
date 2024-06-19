@@ -19,14 +19,24 @@ echo I am in dir `pwd`
 cd $BUILDKITE_BUILD_CHECKOUT_PATH
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-    echo "Pull request from a submod repo: check out aha master branch"
+
+    # This script is called only from pipeline.yml BDI step (I think).
+    # BDI step should have put us in default aha branch (e.g. master or dev)
+    echo "Pull request from a submod repo: stay in aha master branch"
+
+    # Not sure why we need this 'git fetch' (below). Keeping it for legacy reasons...
+    # THIS DOES NOT CHECKOUT MASTER; e.g. if we were on DEV_BRANCH, we stay there...
     git fetch -v --prune -- origin master
-    git checkout -qf master
+
 else
-    echo "Push or PR from aha repo: check out requested aha branch $BUILDKITE_COMMIT"
+    echo "Push or PR from aha repo: check out requested aha branch '$BUILDKITE_COMMIT'"
     git fetch -v --prune -- origin $BUILDKITE_COMMIT
     git checkout -qf $BUILDKITE_COMMIT
 fi
+echo DEV_BRANCH=$DEV_BRANCH || echo okay
+echo -n "DEV_BRANCH commit = "; git rev-parse $DEV_BRANCH || echo okay
+echo -n "Aha master commit = "; git rev-parse master
+echo -n "We now have commit: "; git rev-parse HEAD
 
 echo "--- Initialize all submodules YES THIS TAKES AWHILE"
 

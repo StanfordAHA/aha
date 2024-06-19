@@ -17,6 +17,7 @@ def add_subparser(subparser):
     parser.add_argument("config")
     parser.add_argument("--env-parameters", default="", type=str)
     parser.add_argument("--include-dense-only-tests", action="store_true")
+    parser.add_argument("--opal-workaround", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -26,22 +27,38 @@ def buildkite_filter(s):
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     env = {**os.environ.copy(), **env}
-    if return_output:
-        app = subprocess.run(
-            command,
-            check=True,
-            text=True,
-            env=env,
-            stdout=out_file,
-        )
-    else: 
-        app = subprocess.run(
-            command,
-            check=True,
-            text=True,
-            env=env,
-    )
+    for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
+        try:
+            if return_output:
+                app = subprocess.run(
+                    command,
+                    check=True,
+                    text=True,
+                    env=env,
+                    stdout=out_file,
+                )
+            else: 
+                app = subprocess.run(
+                    command,
+                    check=True,
+                    text=True,
+                    env=env,
+            )
+            break
+        except subprocess.CalledProcessError as e:
+            if 'SIGSEGV' in str(e):
+                print(f'\n\n{e}\n')  # Print the error msg
+                print(f'*** ERROR subprocess died {retry} time(s) with SIGSEGV')
+                print('*** Will retry three times, then give up.\n\n')
 
+                # if retry == 3: raise
+                # - No! Don't raise the error! Higher-level aha.py has similar
+                # - three-retry catchall, resulting in up to nine retries ! (Right?)
+                # - Do this instead:
+                if retry == 3:
+                    assert False, 'ERROR: Three time loser'
+            else:
+                raise
 
 def gen_garnet(width, height, dense_only=False):
     print("--- Generating Garnet", flush=True)
@@ -70,69 +87,127 @@ def gen_garnet(width, height, dense_only=False):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=False):
     if len(sparse_tests) == 0:
         return 0
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
     if(seed_flow):
+        build_tb_cmd = [
+            "python",
+            "/aha/garnet/tests/test_memory_core/build_tb.py",
+            "--ic_fork",
+            "--sam_graph", *all_sam_graphs,
+            "--seed", f"{0}",
+            "--dump_bitstream",
+            "--add_pond",
+            "--combined",
+            "--pipeline_scanner",
+            "--base_dir",
+            "/aha/garnet/SPARSE_TESTS/",
+            "--just_glb",
+            "--dump_glb",
+            "--fiber_access",
+            "--width", str(width),
+            "--height", str(height),
+        ]
+        if opal_workaround:
+            build_tb_cmd.append("--opal-workaround")
         buildkite_call(
-            [
-                "python",
-                "/aha/garnet/tests/test_memory_core/build_tb.py",
-                "--ic_fork",
-                "--sam_graph", *all_sam_graphs,
-                "--seed", f"{0}",
-                "--dump_bitstream",
-                "--add_pond",
-                "--combined",
-                "--pipeline_scanner",
-                "--base_dir",
-                "/aha/garnet/SPARSE_TESTS/",
-                "--just_glb",
-                "--dump_glb",
-                "--fiber_access",
-                "--width", str(width),
-                "--height", str(height),
-            ],
+            build_tb_cmd,
             env=env_vars,
         )
     else: 
+        build_tb_cmd = [
+            "python",
+            "/aha/garnet/tests/test_memory_core/build_tb.py",
+            "--ic_fork",
+            "--sam_graph", *all_sam_graphs,
+            "--seed", f"{0}",
+            "--dump_bitstream",
+            "--add_pond",
+            "--combined",
+            "--pipeline_scanner",
+            "--base_dir",
+            "/aha/garnet/SPARSE_TESTS/",
+            "--just_glb",
+            "--dump_glb",
+            "--fiber_access",
+            "--give_tensor",
+            "--tensor_locs",
+            "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
+            "--width", str(width),
+            "--height", str(height),
+            "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
+        ]
+        if opal_workaround:
+            build_tb_cmd.append("--opal-workaround")
         buildkite_call(
-            [
-                "python",
-                "/aha/garnet/tests/test_memory_core/build_tb.py",
-                "--ic_fork",
-                "--sam_graph", *all_sam_graphs,
-                "--seed", f"{0}",
-                "--dump_bitstream",
-                "--add_pond",
-                "--combined",
-                "--pipeline_scanner",
-                "--base_dir",
-                "/aha/garnet/SPARSE_TESTS/",
-                "--just_glb",
-                "--dump_glb",
-                "--fiber_access",
-                "--give_tensor",
-                "--tensor_locs",
-                "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
-                "--width", str(width),
-                "--height", str(height),
-                "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
-            ],
+            build_tb_cmd,
             env=env_vars,
         )
     time_map = time.time() - start
     return time_map
 
 
-def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
+def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num=64):
+    script_path = "/aha/garnet/"
+    pairs_cpy = suitesparse_data_tile_pairs.copy()
+    all_tiles = []
+    num_list = []
+    for suitesparse_datum in suitesparse_data:
+        pairs_cpy_tmp = pairs_cpy.copy()
+        pairs_cpy = []
+        test_l = []
+        tile_format = ""
+        for tile in pairs_cpy_tmp:
+            if test in tile and suitesparse_datum in tile:
+                test_l.append(int(tile.split("_")[-1][4:]))
+                if tile_format == "":
+                    tile_format = tile
+            else:
+                pairs_cpy.append(tile)
+        test_l.sort()
+        test_l = [str(x) for x in test_l]
+
+        for i in range(0, len(test_l), pipeline_num):
+            test_l_str = f"concat{i}"
+            tile_format_t = tile_format.split("/")
+            tile_format_name = tile_format_t[-1]
+            tile_format_name = tile_format_name.split("_")
+            tile_format_name[-1] = "tile_" + test_l_str
+            tile_format_name = "_".join(tile_format_name)
+            tile_format_t[-1] = tile_format_name
+            tile_format_t = "/".join(tile_format_t)
+            all_tiles.append(tile_format_t)
+
+            if i + pipeline_num < len(test_l):
+                test_l_s = test_l[i:i+pipeline_num]
+            else:
+                test_l_s = test_l[i:]
+            true_pipeline_num = len(test_l_s)
+            num_list.append(true_pipeline_num)
+            print(f"CONCATENATING TILES {test_l_s}")
+            subprocess.call(
+                [
+                    "python",
+                    "/aha/garnet/concat_tiles.py",
+                    test,
+                    suitesparse_datum,
+                    test_l_str,
+                    *test_l_s,
+                ],
+                cwd = script_path
+            )
+    return all_tiles, num_list
+
+
+def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test=""):
     if test == "":
         test = testname
 
@@ -140,7 +215,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
 
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
 
-    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path, flush=True)
 
     try:
@@ -153,40 +228,35 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
         print("RUNNING SEED FLOW", flush=True)
         start = time.time()
         buildkite_call(
-            ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
+            ["aha", "test", app_path, "--sparse"], env=env_vars,
         )
         time_test = time.time() - start
     else:
         print("RUNNING SS FLOW", flush=True)
+        use_pipeline = False
+        if len(pipeline_num_l) is not None:
+            assert len(pipeline_num_l) == len(suitesparse_data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
+            use_pipeline = True
         start = time.time()
         dataset_runtime_dict = defaultdict(float)
-        for ss_tile_pair in suitesparse_data_tile_pairs:
-            ss_tile_pair = ss_tile_pair.split("MAT_TMP_DIR/")[1]
-            ss_tile_pair_sparse_testname = ss_tile_pair.split("-")[0]
-            if ss_tile_pair_sparse_testname != testname:
-                continue
-            with open("/aha/garnet/aha_test_out.txt", 'w') as test_out_file:
-                buildkite_call(
-                    ["aha", 
-                    "test", 
-                    f"../../../garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
-                    "--sparse", 
-                    "--sparse-test-name", 
-                    f"{test}", 
-                    "--sparse-comparison", 
-                    f"/aha/garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}/"
-                    ], env=env_vars,
-                    return_output=True,
-                    out_file = test_out_file
-                )
-            command = "grep \"total time\" /aha/garnet/aha_test_out.txt"
-            result = subprocess.check_output(command, shell=True, encoding='utf-8')
-            total_time_line = result.split("\n")[0]
-            time_str = total_time_line.split(" ns")[0].split(" ")[-1]
-            time_value = float(time_str)
-            split_str = f"{testname}-"
-            dataset = total_time_line.split(split_str)[1].split("_")[0]
-            dataset_runtime_dict[dataset] += time_value
+
+        # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
+        suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
+        suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
+        full_tile_pairs = suitesparse_data_tile_pairs[:-1]
+        last_tile_pair = suitesparse_data_tile_pairs[-1]
+        full_pipeline_num = pipeline_num_l[0]
+        last_pipeline_num = pipeline_num_l[-1]
+        full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
+        last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
+        
+        for cmd in [full_pipeline_cmd, last_pipeline_cmd]:
+            buildkite_call(cmd, env=env_vars)
+            command = "grep \"total time\" /aha/garnet/tests/test_app/run.log"
+            results = subprocess.check_output(command, shell=True, encoding='utf-8')
+            for result in results.split("\n"):
+                if testname in result:
+                    dataset_runtime_dict[result.split(f"{testname}-")[1].split("_")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
         with open("/aha/garnet/suitesparse_perf_out.txt", 'a') as perf_out_file:
             for dataset, time_value in dataset_runtime_dict.items():
@@ -319,244 +389,49 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
 def dispatch(args, extra_args=None):
     seed_flow = True 
+    use_pipeline = False
+    pipeline_num = 64
     suitesparse_data = ["football"]
-    if args.config == "fast":
-        width, height = 4, 4
-        sparse_tests = [
-            "vec_identity"
-        ]
-        glb_tests = [
-            "apps/pointwise"
-        ]
-        glb_tests_fp = [
-            "tests/fp_pointwise",
-        ]
-        resnet_tests = []
-        hardcoded_dense_tests = []
-    elif args.config == "pr":
-        width, height = 28, 16
-        sparse_tests = [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "matmul_ijk_crddrop_relu",
-            # Turned off until SUB ordering fixed in mapping
-            # 'mat_residual',
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_ttm",
-            "tensor3_ttv",
-        ]
-        glb_tests = [
-            "apps/pointwise",
-            "tests/ushift",
-            "tests/arith",
-            "tests/absolute",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/uminmax",
-            "tests/rom",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-        ]
-        glb_tests_fp = [
-            "tests/fp_pointwise",
-            "tests/fp_arith",
-            "tests/fp_comp",
-            "tests/fp_conv_7_7",
-        ]
-        resnet_tests = []
-        hardcoded_dense_tests = [
-            "apps/depthwise_conv"
-        ]
-    elif args.config == "daily":
-        width, height = 28, 16
-        sparse_tests = [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "mat_elemadd_leakyrelu_exp",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_identity",
-            "mat_mattransmul",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "matmul_ijk_crddrop_relu",
-            "matmul_ikj",
-            "matmul_jik",
-            "spmm_ijk_crddrop_fp",
-            "spmm_ijk_crddrop",
-            "spmm_ijk_crddrop_relu",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
-            # Turned off until SUB ordering fixed in mapping
-            # 'mat_residual',
-            "mat_sddmm",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_elemmul",
-            "tensor3_identity",
-            "tensor3_innerprod",
-            "tensor3_mttkrp",
-            "tensor3_ttm",
-            "tensor3_ttv",
-        ]
-        glb_tests = [
-            "apps/gaussian",
-            "apps/pointwise",
-            "apps/unsharp",
-            "apps/camera_pipeline_2x2",
-            "apps/harris_color",
-            "apps/cascade",
-            "apps/maxpooling",
-            "tests/three_level_pond",
-        ]
-        glb_tests_fp = [
-            "tests/fp_pointwise",
-            "tests/fp_arith",
-            "tests/fp_comp",
-            "tests/fp_conv_7_7",
-        ]
-        resnet_tests = [
-            "conv1",
-            "conv4_1",
-            "conv4_x",
-            "conv5_x",  
-            "conv2_x_residual",
-            "conv5_x_residual",
-        ]
-        hardcoded_dense_tests = [
-            "apps/depthwise_conv"
-        ]
-    elif args.config == "full":
-        width, height = 28, 16
-        sparse_tests = [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "mat_elemadd_leakyrelu_exp",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_identity",
-            "mat_mattransmul",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "matmul_ijk_crddrop_relu",
-            "matmul_ikj",
-            "matmul_jik",
-            "spmm_ijk_crddrop",
-            "spmm_ijk_crddrop_relu",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
-            # Turned off until SUB ordering fixed in mapping
-            # 'mat_residual',
-            "mat_sddmm",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_elemmul",
-            "tensor3_identity",
-            "tensor3_innerprod",
-            "tensor3_mttkrp",
-            "tensor3_mttkrp_unfused1",
-            "tensor3_mttkrp_unfused2",
-            "tensor3_ttm",
-            "tensor3_ttv",
 
-        ]
-        glb_tests = [
-            "apps/pointwise",
-            "tests/rom",
-            "tests/arith",
-            "tests/absolute",
-            "tests/boolean_ops",
-            "tests/equal",
-            "tests/ternary",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/sminmax",
-            "tests/uminmax",
-            "tests/sshift",
-            "tests/ushift",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-            "tests/conv_3_3",
-            "apps/gaussian",
-            "apps/brighten_and_blur",
-            "apps/cascade",
-            "apps/harris",
-            "apps/resnet_layer_gen",
-            "apps/unsharp",
-            "apps/harris_color",
-            "apps/camera_pipeline_2x2",
-            "apps/maxpooling",
-            "apps/matrix_multiplication"
-        ]
-        glb_tests_fp = [
-            "tests/fp_pointwise",
-            "tests/fp_arith",
-            "tests/fp_comp",
-            "tests/fp_conv_7_7",
-        ]
-        resnet_tests = [
-            "conv1",
-            "conv2_x",
-            "conv3_1",
-            "conv3_x",
-            "conv4_1",
-            "conv4_x",
-            "conv5_1",
-            "conv5_x",
-            "conv2_x_residual",
-            "conv5_x_residual",
-        ]
-        hardcoded_dense_tests = [
-            "apps/depthwise_conv"
-        ]
-    elif args.config == "resnet":
-        width, height = 28, 16
-        sparse_tests = []
-        glb_tests = []
-        glb_tests_fp = []
-        resnet_tests = [
-            "conv1",
-            "conv2_x",
-            "conv3_1",
-            "conv3_x",
-            "conv4_1",
-            "conv4_x",
-            "conv5_1",
-            "conv5_x",
-            "conv2_x_residual",
-            "conv3_x_residual",
-            "conv4_x_residual",
-            "conv5_x_residual",
-        ]
-        hardcoded_dense_tests = []
+    # Preserve backward compatibility
+    if args.config == "daily": args.config = "pr_aha"  # noqa
+    if args.config == "pr": args.config = "pr_submod"  # noqa
 
+    from aha.util.regress_tests.tests import Tests
+    imported_tests = None
+
+    # pr_aha1,2,3 are 4-hour, 3-hour, and 3-hour slices of pr_aha, respectively
+    if args.config == "pr_aha1":
+        imported_tests = Tests("pr_aha")
+        imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
+        imported_tests.resnet_tests_fp.remove('conv2_x_fp')
+
+    # NOTE conv2 breaks if don't do gaussian first(!) for details see issues:
+    # https://github.com/StanfordAHA/garnet/issues/1070
+    # https://github.com/StanfordAHA/aha/issues/1897
+    elif args.config == "pr_aha2":
+        imported_tests = Tests("BLANK")
+        imported_tests.glb_tests = ["apps/gaussian"]
+        # Note conv2 here is actually *two* tests, one sparse and one dense
+        imported_tests.resnet_tests = [ 'conv2_x' ]
+
+    elif args.config == "pr_aha3":
+        imported_tests = Tests("BLANK")
+        imported_tests.glb_tests = ["apps/gaussian"]
+        imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
+
+    # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
     else:
-        raise NotImplementedError(f"Unknown test config: {args.config}")
+        imported_tests = Tests(args.config)
 
+    # Unpack imported_tests into convenient handles
+    width, height = imported_tests.width, imported_tests.height
+    sparse_tests = imported_tests.sparse_tests
+    glb_tests = imported_tests.glb_tests
+    glb_tests_fp = imported_tests.glb_tests_fp
+    resnet_tests = imported_tests.resnet_tests
+    resnet_tests_fp = imported_tests.resnet_tests_fp
+    hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
 
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
@@ -576,7 +451,10 @@ def dispatch(args, extra_args=None):
         
         for test in sparse_tests:
             for suitesparse_datum in suitesparse_data:
-                command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                if "tensor" not in test:
+                    command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                else:
+                    command = "python3 /aha/garnet/copy_formatted_tensor_tiling.py " + test + " " + suitesparse_datum
                 subprocess.call(command, shell=True)
             this_sparse_test_tile_pairs = glob.glob(f"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/{test}*")
             suitesparse_data_tile_pairs.extend(this_sparse_test_tile_pairs)
@@ -587,7 +465,7 @@ def dispatch(args, extra_args=None):
     print("HERE ARE THE SS DATA TILE PAIRS!")
     print(suitesparse_data_tile_pairs)
 
-    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs)
+    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround)
 
     if not(seed_flow):
         if os.path.exists("/aha/garnet/suitesparse_perf_out.txt"):
@@ -596,8 +474,14 @@ def dispatch(args, extra_args=None):
             perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
     for test in sparse_tests:
-        t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        if use_pipeline:
+            assert (not seed_flow), "Pipeline mode is not supported with seed flow"
+            tile_pairs, pipeline_num_l = format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num)
+            t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        else:
+            t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
         t0, t1, t2 = test_dense_app(test, 
@@ -617,6 +501,16 @@ def dispatch(args, extra_args=None):
         else:
             t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
                                         width, height, args.env_parameters, extra_args, layer=test)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+    for test in resnet_tests_fp:
+        if "residual" in test:
+            t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp",
+                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        else:
+            t0, t1, t2 = test_dense_app("apps/conv2D_fp",
+                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
@@ -650,7 +544,7 @@ def dispatch(args, extra_args=None):
                 info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
  
     print(f"+++ TIMING INFO", flush=True)
-    print(tabulate(info, headers=["step", "total", "compile", "map", "test"]), flush=True)
+    print(tabulate(info, headers=["step", "total", "compile", "map", "test"], floatfmt=".0f"), flush=True)
 
 
 def gather_tests(tags):

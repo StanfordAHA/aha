@@ -11,7 +11,7 @@ echo "+++ set-trigfrom-and-reqtype.sh BEGIN"
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 echo "+++ BEGIN TRIGGERED-FROM LINKS"
-
+set -x
 # If pull request, show where request came from.
 # And set e.g. PR_REPO_TAIL="lake"
 PR_REPO_TAIL=
@@ -53,5 +53,7 @@ echo "--- FOUND REQUEST_TYPE '$REQUEST_TYPE'"
 temp=/var/lib/buildkite-agent/builds/DELETEME; mkdir -p $temp
 env=$temp/env-$BUILDKITE_BUILD_NUMBER
 echo REQUEST_TYPE=${REQUEST_TYPE} >> $env
+echo PR_REPO_TAIL=${PR_REPO_TAIL} >> $env
+set -x; cat $env; set +x
 
 echo "+++ set-trigfrom-and-reqtype.sh END"
