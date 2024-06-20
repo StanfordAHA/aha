@@ -4,6 +4,49 @@
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
 if [ "$1" == '--pre-command' ]; then
+
+    # This is here in case someone tries to retry the step later,
+    # maybe after the original docker image is gone...
+    echo "+++ OIT Check for valid docker image"
+    if ! docker images | grep $$TAG; then
+        echo 'debuggin: LIVE second time through'
+        printf "OH NO cannot find docker image $$IMAGE.\nI will rebuild it for you"
+
+        aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+        set -x
+        /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
+        git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
+        git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
+        git clean -ffxdq
+        set +x
+        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+
+        if [ "$$AHA_SUBMOD_FLOW_COMMIT" ]; then
+            echo 'Submod pull requests use master branch (sometimes overridden by DEV_BRANCH)'
+            # (aha-flow steps is responsible for setting DEV_BRANCH)
+            # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
+            git checkout $$DEV_BRANCH || echo no dev branch found, continuing with master
+
+            # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
+            source $$bin/update-pr-repo.sh
+        else
+            echo 'Aha push/PR uses pushed branch'
+            git checkout $$BUILDKITE_COMMIT
+        fi
+
+        # Checkout and update correct aha branch and submodules
+        source $$bin/custom-checkout.sh
+
+        echo "--- (Re)creating garnet Image"
+        docker build --progress plain . -t "$$IMAGE"
+    else
+        echo 'debuggin: die first time through'
+        exit 13
+    fi
+
+
+
+
     echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
     # Use temp/.TEST to pass fail/success info into and out of docker container
