@@ -167,11 +167,10 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
-    - exit 13
     - docker kill $$CONTAINER || echo okay
     - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
+    - exit 13
     - script="$($REGRESS_METAHOOKS --commands)"
-    # - docker exec -e CONFIG=fast -e REGSTEP=1 $$CONTAINER /bin/bash -c "$$script"
     - docker exec -e CONFIG=$$CONFIG -e REGSTEP=1 $$CONTAINER /bin/bash -c "$$script"
     - docker kill $$CONTAINER
 
@@ -188,9 +187,9 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
-    - exit 13
     - docker kill $$CONTAINER || echo okay
     - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
+    - exit 13
     - script="$($REGRESS_METAHOOKS --commands)"
     - docker exec -e CONFIG=$$CONFIG -e REGSTEP=2 $$CONTAINER /bin/bash -c "$$script"
     - docker kill $$CONTAINER
@@ -208,9 +207,9 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands:
-    - exit 13
     - docker kill $$CONTAINER || echo okay
     - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
+    - exit 13
     - script="$($REGRESS_METAHOOKS --commands)"
     - docker exec -e CONFIG=$$CONFIG -e REGSTEP=3 $$CONTAINER /bin/bash -c "$$script"
     - docker kill $$CONTAINER
