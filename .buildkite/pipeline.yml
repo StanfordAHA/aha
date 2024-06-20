@@ -98,7 +98,7 @@ steps:
   - set -x; docker images; docker ps;
 
   - echo "--- Creating garnet Image"
-  - docker build . -t "$$IMAGE"
+  - docker build --progress plain . -t "$$IMAGE"
 
   - echo "--- Pruning Docker Images"
   - yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
@@ -172,10 +172,13 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   commands: |
+    set -x
     docker kill $$CONTAINER || echo okay
+    docker images; echo IMAGE=$$IMAGE
     if ! docker images | grep $$IMAGE; then
         printf "OH NO cannot find docker image $$IMAGE.\nI will rebuild it for you"
-        docker build . -t "$$IMAGE"
+        echo docker build --progress plain . -t "$$IMAGE"
+        exit 13
     fi
     docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
     exit 13
