@@ -11,6 +11,7 @@ env:
 
   REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
+  TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
 steps:
 
@@ -174,8 +175,8 @@ steps:
   commands: |
     set -x
     docker kill $$CONTAINER || echo okay
-    docker images; echo IMAGE=$$IMAGE
-    if ! docker images | grep $$IMAGE; then
+    docker images; echo IMAGE=$$IMAGE; echo TAG=$$TAG
+    if ! docker images | grep $$TAG; then
         printf "OH NO cannot find docker image $$IMAGE.\nI will rebuild it for you"
         echo docker build --progress plain . -t "$$IMAGE"
         exit 13
