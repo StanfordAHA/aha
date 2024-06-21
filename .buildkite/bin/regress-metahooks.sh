@@ -9,13 +9,9 @@ if [ "$1" == '--pre-command' ]; then
     echo "Check for valid docker image"
 
     # In case of e.g. manual retry, original docker image may have been deleted already.
-    # This gives us the opportunity to revive it when needed.
-
-    set -x
+    # This new code below gives us the opportunity to revive the dead image when needed.
     if ! docker images | grep $TAG; then
-        set +x
-        printf "OH NO cannot find docker image $IMAGE\n"
-        printf "I will rebuild it for you\n\n"
+        echo "OH NO cannot find docker image $IMAGE...I will rebuild it for you"
 
         # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
         # E.g. pwd=/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow
@@ -82,16 +78,9 @@ elif [ "$1" == '--commands' ]; then
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
 
-    # cat <<'EOF'  # Single-quotes prevent var expansion etc.
     docker kill $CONTAINER || echo okay
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
     docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
-
-    set -x
-    echo being catty now...
-    pwd; ls -l
-    echo tmp1=tmp$$
-    echo tmp2=tmp$$
     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
 
     if ! test -e /buildkite/.TEST; then
@@ -168,11 +157,8 @@ elif [ "$1" == '--commands' ]; then
     echo "--- Removing Failure Canary"; rm -rf /buildkite/.TEST
 
 EOF
-    ls -l tmp$$
-
     docker exec -e CONFIG=$CONFIG -e REGSTEP=$REGRESSION_STEP $CONTAINER /bin/bash -c "$(cat tmp$$)" || exit 13
-    docker kill $CONTAINER
-    rm tmp$$
+    docker kill $CONTAINER; rm tmp$$  # Cleanup on aisle FOO
     echo "--- END regress-metahooks.sh --commands"
 
 elif [ "$1" == '--pre-exit' ]; then
