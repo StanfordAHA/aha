@@ -5,29 +5,21 @@
 
 if [ "$1" == '--pre-command' ]; then
 
-    # This is here in case someone tries to retry the step later,
-    # maybe after the original docker image is gone...
-    echo "+++ OIT Check for valid docker image"
+    echo "--- OIT PRE COMMAND HOOK BEGIN"
+    echo "Check for valid docker image"
+
+    # In case of e.g. manual retry, original docker image may have been deleted already.
+    # This gives us the opportunity to revive it when needed.
+
     set -x
     if ! docker images | grep $TAG; then
-        echo 'debuggin: LIVE second time through'
-        printf "OH NO cannot find docker image $IMAGE.\nI will rebuild it for you\n\n"
-
-        # E.g. BBCP = '/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow'
-        # We can assome BBCP exists; no need to mkdir
-        # Given that it exists, it probably already contains the aha clone, so no need to do that either.
-        # aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-        # Is this safe? Is this wise? Is this necessary?
-        # cd /tmp; /bin/rm -rf $aha_clone; mkdir -p $aha_clone
-        # git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
-        # git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
-        set -x
-        echo "                         pwd= `pwd`"
-        echo BUILDKITE_BUILD_CHECKOUT_PATH= $BUILDKITE_BUILD_CHECKOUT_PATH
-        cd $BUILDKITE_BUILD_CHECKOUT_PATH
-        git clean -ffxdq
         set +x
+        printf "OH NO cannot find docker image $IMAGE\n"
+        printf "I will rebuild it for you\n\n"
 
+        # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
+        # E.g. pwd=/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow
+        git clean -ffxdq
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
         if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
@@ -49,16 +41,9 @@ if [ "$1" == '--pre-command' ]; then
 
         echo "--- (Re)creating garnet Image"
         docker build --progress plain . -t "$IMAGE"
-    else
-        echo 'debuggin: die first time through'
-        exit 13
     fi
-    set +x
 
-
-
-    echo "+++ OIT PRE COMMAND HOOK BEGIN"
-
+    echo "--- OIT PRE COMMAND HOOK CONTINUES..."
     # Use temp/.TEST to pass fail/success info into and out of docker container
     echo Renewing `pwd`/temp/.TEST
     mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
