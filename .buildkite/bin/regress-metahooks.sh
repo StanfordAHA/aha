@@ -92,13 +92,17 @@ if [ "$1" == '--pre-command' ]; then
 
 elif [ "$1" == '--commands' ]; then
 
-    # These commands run INSIDE the docker container
-    # Also need to be sourced maybe?
-    # So maybe do something like...?
-    #    $0 --commands > tmp; source tmp
+    echo "--- BEGIN regress-metahooks.sh --commands"
 
-    # cat <<'EOF' | sed "s/--BENCHMARK--/$2/"  # Single-quotes prevent var expansion etc.
-    cat <<'EOF'  # Single-quotes prevent var expansion etc.
+    # This is designed to be invoked from pipeline.yml, which should provide
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+
+    # cat <<'EOF'  # Single-quotes prevent var expansion etc.
+    docker kill $CONTAINER || echo okay
+    docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
+    docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
+
+    cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
 
     if ! test -e /buildkite/.TEST; then
         echo "+++ No .TEST detected, so skip redundant regressions"
@@ -174,7 +178,10 @@ elif [ "$1" == '--commands' ]; then
     echo "--- Removing Failure Canary"; rm -rf /buildkite/.TEST
 
 EOF
-
+    docker exec -e CONFIG=$CONFIG -e REGSTEP=$REGRESSION_STEP $CONTAINER /bin/bash tmp$$
+    docker kill $CONTAINER
+    rm tmp$$
+    echo "--- END regress-metahooks.sh --commands"
 
 elif [ "$1" == '--pre-exit' ]; then
 

@@ -174,25 +174,16 @@ steps:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  commands: |
-    set -x
-    docker kill $$CONTAINER || echo okay
-    docker images; echo IMAGE=$$IMAGE; echo TAG=$$TAG
+  command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
 
-    #     if ! docker images | grep $$TAG; then
-    #         echo 'debuggin: LIVE second time through'
-    #         printf "OH NO cannot find docker image $$IMAGE.\nI should have rebuilt it for you. wha hoppin?"
-    #         exit 13
-    #         # docker build --progress plain . -t "$$IMAGE"
-    #     else
-    #         echo 'debuggin: die first time through'
-    #         exit 13
-    #     fi
-
-    docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
-    script="$($REGRESS_METAHOOKS --commands)"
-    docker exec -e CONFIG=$$CONFIG -e REGSTEP=1 $$CONTAINER /bin/bash -c "$$script"
-    docker kill $$CONTAINER
+#   commands: |
+#     set -x
+#     docker kill $$CONTAINER || echo okay
+#     docker images; echo IMAGE=$$IMAGE; echo TAG=$$TAG
+#     docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
+#     script="$($REGRESS_METAHOOKS --commands)"
+#     docker exec -e CONFIG=$$CONFIG -e REGSTEP=1 $$CONTAINER /bin/bash -c "$$script"
+#     docker kill $$CONTAINER
 
 ########################################################################
 # STEP: onyx regression 2
