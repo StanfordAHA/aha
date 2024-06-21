@@ -5,6 +5,9 @@
 
 if [ "$1" == '--pre-command' ]; then
 
+    # This is designed to be invoked from pipeline.yml, which should provide
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+
     echo "--- OIT PRE COMMAND HOOK BEGIN"
     echo "Check for valid docker image"
 
