@@ -179,15 +179,15 @@ steps:
     docker kill $$CONTAINER || echo okay
     docker images; echo IMAGE=$$IMAGE; echo TAG=$$TAG
 
-#     if ! docker images | grep $$TAG; then
-#         echo 'debuggin: LIVE second time through'
-#         printf "OH NO cannot find docker image $$IMAGE.\nI should have rebuilt it for you. wha hoppin?"
-#         exit 13
-#         # docker build --progress plain . -t "$$IMAGE"
-#     else
-#         echo 'debuggin: die first time through'
-#         exit 13
-#     fi
+    #     if ! docker images | grep $$TAG; then
+    #         echo 'debuggin: LIVE second time through'
+    #         printf "OH NO cannot find docker image $$IMAGE.\nI should have rebuilt it for you. wha hoppin?"
+    #         exit 13
+    #         # docker build --progress plain . -t "$$IMAGE"
+    #     else
+    #         echo 'debuggin: die first time through'
+    #         exit 13
+    #     fi
 
     docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
     script="$($REGRESS_METAHOOKS --commands)"
