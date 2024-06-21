@@ -11,15 +11,23 @@ if [ "$1" == '--pre-command' ]; then
     set -x
     if ! docker images | grep $TAG; then
         echo 'debuggin: LIVE second time through'
-        printf "OH NO cannot find docker image $IMAGE.\nI will rebuild it for you"
+        printf "OH NO cannot find docker image $IMAGE.\nI will rebuild it for you\n\n"
 
-        aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+        # E.g. BBCP = '/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow'
+        # We can assome BBCP exists; no need to mkdir
+        # Given that it exists, it probably already contains the aha clone, so no need to do that either.
+        # aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+        # Is this safe? Is this wise? Is this necessary?
+        # cd /tmp; /bin/rm -rf $aha_clone; mkdir -p $aha_clone
+        # git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
+        # git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
         set -x
-        /bin/rm -rf $aha_clone; mkdir -p $aha_clone
-        git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
-        git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
+        echo "                         pwd= `pwd`"
+        echo BUILDKITE_BUILD_CHECKOUT_PATH= $BUILDKITE_BUILD_CHECKOUT_PATH
+        cd $BUILDKITE_BUILD_CHECKOUT_PATH
         git clean -ffxdq
         set +x
+
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
         if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
