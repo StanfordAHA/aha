@@ -87,6 +87,11 @@ elif [ "$1" == '--commands' ]; then
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
     docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
 
+    set -x
+    echo being catty now...
+    pwd; ls -l
+    echo tmp1=tmp$$
+    echo tmp2=tmp$$
     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
 
     if ! test -e /buildkite/.TEST; then
@@ -163,6 +168,8 @@ elif [ "$1" == '--commands' ]; then
     echo "--- Removing Failure Canary"; rm -rf /buildkite/.TEST
 
 EOF
+    ls -l tmp$$
+
     docker exec -e CONFIG=$CONFIG -e REGSTEP=$REGRESSION_STEP $CONTAINER /bin/bash tmp$$
     docker kill $CONTAINER
     rm tmp$$
