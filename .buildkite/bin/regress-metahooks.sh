@@ -170,7 +170,7 @@ elif [ "$1" == '--commands' ]; then
 EOF
     ls -l tmp$$
 
-    docker exec -e CONFIG=$CONFIG -e REGSTEP=$REGRESSION_STEP $CONTAINER /bin/bash tmp$$
+    docker exec -e CONFIG=$CONFIG -e REGSTEP=$REGRESSION_STEP $CONTAINER /bin/bash <(cat tmp$$) || exit 13
     docker kill $CONTAINER
     rm tmp$$
     echo "--- END regress-metahooks.sh --commands"
