@@ -82,10 +82,10 @@ steps:
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
 
-  # Remove docker images older than one day
-  - echo "--- Cleanup old docker images"
-  - docker image ls | awk '/(days|weeks|months) ago/ {print}' || echo okay
-  - docker image ls | awk '/(days|weeks|months) ago/ {print $3}' | xargs docker image rm || echo okay
+#   # Remove docker images older than one day
+#   - echo "--- Cleanup old docker images"
+#   - docker image ls | awk '/(days|weeks|months) ago/ {print $3}' || echo okay
+#   - docker image ls | awk '/(days|weeks|months) ago/ {print $3}' | xargs docker image rm || echo okay
 
   # Remove DELETEME* dirs older than one week
   - echo "--- Cleanup old common areas"
@@ -121,6 +121,7 @@ steps:
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
   commands: |
+    exit 13
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
         msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
@@ -142,6 +143,7 @@ steps:
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
   commands: |
+    exit 13
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
         msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
@@ -174,6 +176,15 @@ steps:
 
   command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
 
+#   commands: |
+#     set -x
+#     docker kill $$CONTAINER || echo okay
+#     docker images; echo IMAGE=$$IMAGE; echo TAG=$$TAG
+#     docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
+#     script="$($REGRESS_METAHOOKS --commands)"
+#     docker exec -e CONFIG=$$CONFIG -e REGSTEP=1 $$CONTAINER /bin/bash -c "$$script"
+#     docker kill $$CONTAINER
+
 ########################################################################
 # STEP: onyx regression 2
 
@@ -186,7 +197,13 @@ steps:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=2 $REGRESS_METAHOOKS --commands
+  commands:
+    - docker kill $$CONTAINER || echo okay
+    - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
+    - exit 13
+    - script="$($REGRESS_METAHOOKS --commands)"
+    - docker exec -e CONFIG=$$CONFIG -e REGSTEP=2 $$CONTAINER /bin/bash -c "$$script"
+    - docker kill $$CONTAINER
 
 ########################################################################
 # STEP: onyx regression 3
@@ -200,4 +217,28 @@ steps:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=3 $REGRESS_METAHOOKS --commands
+  commands:
+    - docker kill $$CONTAINER || echo okay
+    - docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
+    - exit 13
+    - script="$($REGRESS_METAHOOKS --commands)"
+    - docker exec -e CONFIG=$$CONFIG -e REGSTEP=3 $$CONTAINER /bin/bash -c "$$script"
+    - docker kill $$CONTAINER
+
+########################################################################
+# STEP: final cleanup
+
+# Wait for all steps to complete before deleting image
+- wait: { continue_on_failure: true }
+
+- label: ":skull_and_crossbones: Delete Docker Image"
+
+  # "run-without-clone" b/c don't need repo just to delete the docker image
+  plugins:   [ uber-workflow/run-without-clone: ]
+
+  # Set "soft-fail" -- failing cleanup should not fail the larger pipeline.
+  soft_fail: true
+
+  # Not exactly sure why '--no-prune' is included...?
+  commands:
+    - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
