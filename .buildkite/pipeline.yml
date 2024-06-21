@@ -121,6 +121,7 @@ steps:
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
   commands: |
+    exit 13
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
         msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
@@ -142,6 +143,7 @@ steps:
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
   commands: |
+    exit 13
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
         msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
@@ -176,14 +178,17 @@ steps:
     set -x
     docker kill $$CONTAINER || echo okay
     docker images; echo IMAGE=$$IMAGE; echo TAG=$$TAG
-    if ! docker images | grep $$TAG; then
-        echo 'debuggin: LIVE second time through'
-        printf "OH NO cannot find docker image $$IMAGE.\nI will rebuild it for you"
-        docker build --progress plain . -t "$$IMAGE"
-    else
-        echo 'debuggin: die first time through'
-        exit 13
-    fi
+
+#     if ! docker images | grep $$TAG; then
+#         echo 'debuggin: LIVE second time through'
+#         printf "OH NO cannot find docker image $$IMAGE.\nI should have rebuilt it for you. wha hoppin?"
+#         exit 13
+#         # docker build --progress plain . -t "$$IMAGE"
+#     else
+#         echo 'debuggin: die first time through'
+#         exit 13
+#     fi
+
     docker run -id --name $$CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $$IMAGE bash
     script="$($REGRESS_METAHOOKS --commands)"
     docker exec -e CONFIG=$$CONFIG -e REGSTEP=1 $$CONTAINER /bin/bash -c "$$script"
