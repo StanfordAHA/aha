@@ -93,8 +93,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    #env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    #env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -409,13 +409,14 @@ def dispatch(args, extra_args=None):
     imported_tests = None
 
     # pr_aha1,2,3 are 4-hour, 3-hour, and 3-hour slices of pr_aha, respectively
+    # pr_aha1 starts with the full pr_aha suite and removes conv2, conv2_fp
     if args.config == "pr_aha1":
         imported_tests = Tests("pr_aha")
         imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
         imported_tests.resnet_tests_fp.remove('conv2_x_fp')
 
+    # pr_aha2 is just conv2 by itself (it runs both sparse and dense versions tho)
     # NOTE conv2 breaks if don't do gaussian first(!) for details see issues:
-    # https://github.com/StanfordAHA/garnet/issues/1070
     # https://github.com/StanfordAHA/aha/issues/1897
     elif args.config == "pr_aha2":
         imported_tests = Tests("BLANK")
