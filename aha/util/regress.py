@@ -455,7 +455,7 @@ def dispatch(args, extra_args=None):
     print("HERE ARE THE DATA TILE PAIRS!")
     print(data_tile_pairs)
 
-    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll):
+    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll)
 
     if not(seed_flow):
         if os.path.exists("/aha/garnet/perf_stats.txt"):
