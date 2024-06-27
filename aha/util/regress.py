@@ -19,6 +19,9 @@ def add_subparser(subparser):
     parser.add_argument("--env-parameters", default="", type=str)
     parser.add_argument("--include-dense-only-tests", action="store_true")
     parser.add_argument("--opal-workaround", action="store_true")
+    parser.add_argument("--non-seed-flow", action="store_true")
+    parser.add_argument("--use-pipeline", action="store_true")
+    parser.add_argument("--pipeline-num", default=64, type=int)
     parser.add_argument("--tile-pairs-list", default="", type=str)
     parser.set_defaults(dispatch=dispatch)
 
@@ -89,7 +92,7 @@ def gen_garnet(width, height, dense_only=False):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, kernel_name, opal_workaround=False):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False):
     if len(sparse_tests) == 0:
         return 0
     
@@ -146,7 +149,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
             "--width", str(width),
             "--height", str(height),
             "--kernel_name", kernel_name,
-            "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
+            "--data_tile_pairs", *data_tile_pairs,
         ]
         if opal_workaround:
             build_tb_cmd.append("--opal-workaround")
@@ -252,7 +255,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
                 if testname in result:
                     dataset_runtime_dict[result.split(f"{testname}_")[1].split("-")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
-        with open("/aha/garnet/suitesparse_perf_out.txt", 'a') as perf_out_file:
+        with open("/aha/garnet/perf_stats.txt", 'a') as perf_out_file:
             for dataset, time_value in dataset_runtime_dict.items():
                 perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")    
 
@@ -382,9 +385,9 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = True 
-    use_pipeline = False
-    pipeline_num = 64
+    seed_flow = not args.non_seed_flow
+    use_pipeline = args.use_pipeline
+    pipeline_num = args.pipeline_num
 
     # Preserve backward compatibility
     if args.config == "daily": args.config = "pr_aha"  # noqa
@@ -446,9 +449,9 @@ def dispatch(args, extra_args=None):
     generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround)
 
     if not(seed_flow):
-        if os.path.exists("/aha/garnet/suitesparse_perf_out.txt"):
-            os.system("rm /aha/garnet/suitesparse_perf_out.txt")
-        with open("/aha/garnet/suitesparse_perf_out.txt", 'w') as perf_out_file:
+        if os.path.exists("/aha/garnet/perf_stats.txt"):
+            os.system("rm /aha/garnet/perf_stats.txt")
+        with open("/aha/garnet/perf_stats.txt", 'w') as perf_out_file:
             perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
     for test in sparse_tests:
