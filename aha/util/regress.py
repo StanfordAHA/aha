@@ -92,13 +92,14 @@ def gen_garnet(width, height, dense_only=False):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1):
     if len(sparse_tests) == 0:
         return 0
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    #env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -150,6 +151,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             "--height", str(height),
             "--kernel_name", kernel_name,
             "--data_tile_pairs", *data_tile_pairs,
+            "--unroll", str(unroll),
         ]
         if opal_workaround:
             build_tb_cmd.append("--opal-workaround")
@@ -161,7 +163,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
     return time_map
 
 
-def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=64):
+def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=64, unroll=1):
     script_path = "/aha/garnet/"
     pairs_cpy = data_tile_pairs.copy()
     all_tiles = []
@@ -190,6 +192,7 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=64):
                 test,
                 kernel_name,
                 test_l_str,
+                str(unroll),
                 *test_l_s,
             ],
             cwd = script_path
@@ -244,8 +247,12 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
         last_tile_pair = data_tile_pairs[-1]
         last_pipeline_num = pipeline_num_l[-1]
         last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
-        
-        for cmd in [full_pipeline_cmd, last_pipeline_cmd]:
+
+        cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
+        if len(full_tile_pairs) == 0:
+            cmd_list = [last_pipeline_cmd]
+
+        for cmd in cmd_list:
             if cmd is None:
                 continue
             buildkite_call(cmd, env=env_vars)
@@ -388,6 +395,7 @@ def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
     pipeline_num = args.pipeline_num
+    unroll = 1
 
     # Preserve backward compatibility
     if args.config == "daily": args.config = "pr_aha"  # noqa
@@ -397,13 +405,14 @@ def dispatch(args, extra_args=None):
     imported_tests = None
 
     # pr_aha1,2,3 are 4-hour, 3-hour, and 3-hour slices of pr_aha, respectively
+    # pr_aha1 starts with the full pr_aha suite and removes conv2, conv2_fp
     if args.config == "pr_aha1":
         imported_tests = Tests("pr_aha")
         imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
         imported_tests.resnet_tests_fp.remove('conv2_x_fp')
 
+    # pr_aha2 is just conv2 by itself (it runs both sparse and dense versions tho)
     # NOTE conv2 breaks if don't do gaussian first(!) for details see issues:
-    # https://github.com/StanfordAHA/garnet/issues/1070
     # https://github.com/StanfordAHA/aha/issues/1897
     elif args.config == "pr_aha2":
         imported_tests = Tests("BLANK")
@@ -446,7 +455,7 @@ def dispatch(args, extra_args=None):
     print("HERE ARE THE DATA TILE PAIRS!")
     print(data_tile_pairs)
 
-    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround)
+    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll):
 
     if not(seed_flow):
         if os.path.exists("/aha/garnet/perf_stats.txt"):
@@ -457,7 +466,7 @@ def dispatch(args, extra_args=None):
     for test in sparse_tests:
         if use_pipeline:
             assert (not seed_flow), "Pipeline mode is not supported with seed flow"
-            tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num)
+            tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
             t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
