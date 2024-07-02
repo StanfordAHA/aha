@@ -201,7 +201,7 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=64, unr
     return all_tiles, num_list
 
 
-def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test=""):
+def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test="", test_dataset_runtime_dict=None):
     if test == "":
         test = testname
 
@@ -232,7 +232,6 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
             assert len(pipeline_num_l) == len(data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
             use_pipeline = True
         start = time.time()
-        dataset_runtime_dict = defaultdict(float)
 
         # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
         data_tile_pairs = [f"{test}_{tile}/GLB_DIR/{test}_combined_seed_{tile}" for tile in data_tile_pairs]
@@ -250,6 +249,9 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
         cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
         if len(full_tile_pairs) == 0:
             cmd_list = [last_pipeline_cmd]
+        
+        if testname not in test_dataset_runtime_dict:
+            test_dataset_runtime_dict[testname] = defaultdict(float)
 
         for cmd in cmd_list:
             if cmd is None:
@@ -259,12 +261,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
             results = subprocess.check_output(command, shell=True, encoding='utf-8')
             for result in results.split("\n"):
                 if testname in result:
-                    dataset_runtime_dict[result.split(f"{testname}_")[1].split("-")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
-
-        with open("/aha/garnet/perf_stats.txt", 'a') as perf_out_file:
-            for dataset, time_value in dataset_runtime_dict.items():
-                perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")    
-
+                    test_dataset_runtime_dict[testname][result.split(f"{testname}_")[1].split("-")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
         time_test = time.time() - start
     return 0, 0, time_test
@@ -451,6 +448,8 @@ def dispatch(args, extra_args=None):
             with open("/aha/garnet/perf_stats.txt", 'w') as perf_out_file:
                 perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
+        test_dataset_runtime_dict = {}   
+
         for sparse_tile_pairs_list in args.sparse_tile_pairs_list:
             with open(sparse_tile_pairs_list, 'r') as f:
                 tile_pairs_dict = toml.load(f)
@@ -466,11 +465,16 @@ def dispatch(args, extra_args=None):
                 if use_pipeline:
                     assert (not seed_flow), "Pipeline mode is not supported with seed flow"
                     tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
                 else:
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+        with open("/aha/garnet/perf_stats.txt", 'a') as perf_out_file:
+            for testname, dataset_runtime_dict in test_dataset_runtime_dict.items():
+                for dataset, time_value in dataset_runtime_dict.items():
+                    perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")   
     else:
         generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll)
 
