@@ -42,17 +42,20 @@ echo "--- CUSTOM CHECKOUT END"
 #   AHA_REPO: https://raw.githubusercontent.com/StanfordAHA/aha
 #   STEPSCRIPT: .buildkite/bin/aha-flow-steps.sh
 # 
+# # Must do commands in pre-checkout else get wrong BUILDKITE_MESSAGE
 # steps:
-# - label: \":pipeline:\"
+# - label: ":pipeline:"
 #   agents: { docker: true }
-#   plugins: [ { uber-workflow/run-without-clone: ~ } ]
-#   commands: |
-#     udev=$$AHA_REPO/$$DEV_BRANCH/$$STEPSCRIPT
-#     httpcode=`curl $$udev -o aha-flow-steps.sh -w '%{http_code}'`
-#     if ! [ \"$$httpcode\" == 200 ]; then
-#         echo \"Cannot find steps in branch '$$DEV_BRANCH'; trying master instead\"
-#         curl $$AHA_REPO/master/$$STEPSCRIPT -o aha-flow-steps.sh
-#     fi
-#     source aha-flow-steps.sh
+#   plugins:
+#   - uber-workflow/run-without-clone:
+#   - improbable-eng/metahook:
+#       pre-checkout: |
+#         udev=$$AHA_REPO/$$DEV_BRANCH/$$STEPSCRIPT
+#         httpcode=`curl $$udev -o aha-flow-steps.sh -w '%{http_code}'`
+#         if ! [ "$$httpcode" == 200 ]; then
+#             echo "Cannot find steps in branch '$$DEV_BRANCH'; trying master instead"
+#             curl $$AHA_REPO/master/$$STEPSCRIPT -o aha-flow-steps.sh
+#         fi
+#         source aha-flow-steps.sh
+#   command: echo DONE  # (Breaks if no command)
 ################################################################################
-
