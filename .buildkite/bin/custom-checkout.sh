@@ -16,7 +16,8 @@ echo I am in dir `pwd`
 
 # Checkout master or BUILDKITE_COMMIT
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
+test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
+cd $aha_clone;
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
