@@ -15,8 +15,8 @@ echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 
 # Checkout master or BUILDKITE_COMMIT
-
-cd $BUILDKITE_BUILD_CHECKOUT_PATH
+aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
