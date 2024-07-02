@@ -7,9 +7,10 @@ DEV_BRANCH=master  # I.e. not using a dev branch atm
 export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
 
 set +u;  # My code assumes unset vars are okay
+
 echo "+++ Must have a (empty!) working directory"; set -x;
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
-/bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d;
+/bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
 
 echo "--- CUSTOM CHECKOUT BEGIN"; set -x;
 echo "Fast checkout w/ no submod loads (yet)";
