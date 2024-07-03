@@ -33,10 +33,11 @@ if [ "$1" == "--aha-flow" ]; then
     # export REQUEST_TYPE=${save_reqtype}
 fi
 
-echo "+++ Must have a (empty!) working directory"; set -x;
+echo "--- Must have a (empty!) working directory"
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
 /bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
 
+echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;

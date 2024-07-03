@@ -41,6 +41,49 @@ export BUILDKITE_COMMIT=$submod_commit;
 echo "+++ Notify github of pending status";
 ~/bin/status-update --force pending;
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# I think it would work to do this...
+#   message="PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+#   source /nobackup/steveri/github/aha/.buildkite/bin/set-trigfrom-and-reqtype.sh
+# ...but is it simpler (hint: NO)
+
+    # BUILDKITE_PULL_REQUEST_REPO="https://github.com/StanfordAHA/lake.git"
+    # BUILDKITE_PULL_REQUEST="166"
+    # BUILDKITE_COMMIT=7c5e88021a01fef1a04ea56b570563cae2050b1f
+    # BPPR_TAIL=StanfordAHA/lake
+
+# See what this does maybe
+cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
+BUILDKITE_PULL_REQUEST_REPO=${BUILDKITE_PULL_REQUEST_REPO}
+BUILDKITE_PULL_REQUEST=${BUILDKITE_PULL_REQUEST}
+BUILDKITE_COMMIT=${BUILDKITE_COMMIT}
+BUILDKITE_BUILD_CHECKOUT_PATH=${BUILDKITE_BUILD_CHECKOUT_PATH}
+BUILDKITE_MESSAGE=${BUILDKITE_MESSAGE}
+BPPR_TAIL=${BPPR_TAIL}
+EOF
+
+
+
+
+
+
+
 # 'update-pr-repo.sh' will use AHA_SUBMOD_FLOW_COMMIT to set up links and such
 export BUILDKITE_COMMIT=$save_commit;
 echo "Trigger aha-flow pipeline";
@@ -50,6 +93,20 @@ export AHA_SUBMOD_FLOW_COMMIT=$submod_commit;
 # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
 buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
 echo "--- CUSTOM CHECKOUT END";
+
+########################################################################
+# pr_trigger.yml should look something like:
+# - trigger: "aha-flow"
+#   label: "PR check"
+#   build:
+#     message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+#     commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+#     env:
+#       BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+#       BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+#       BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+#       AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+########################################################################
 
 
 ##################################################################################
