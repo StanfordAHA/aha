@@ -305,17 +305,38 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = True 
-    suitesparse_data = ["football"]
+    seed_flow = False
+    # suitesparse_data = ["bcsstm26"]
+    suitesparse_data = ["rand_large_tensor5"]
     if args.config == "fast":
-        width, height = 4, 4
+        width, height = 28, 16
         sparse_tests = [
-            "vec_identity"
+            # "mat_elemadd3",
+            # "mat_elemmul",
+            # "mat_vecmul_ij",
+            # "matmul_ijk",
+            # "matmul_ikj",
+            # "tensor3_ttv",
+            # "tensor3_ttm",
+            # "tensor3_innerprod",
+            "tensor3_mttkrp"
         ]
         glb_tests = [
-            "apps/pointwise"
+            #"apps/gaussian",
+            #"apps/unsharp",
+            #"apps/harris_color",
+            #"apps/camera_pipeline_2x2"
         ]
-        resnet_tests = []
+        resnet_tests = [
+            #"conv1",
+            #"conv2_x",
+            #"conv3_1",
+            #"conv3_x",
+            #"conv4_1",
+            #"conv4_x",
+            #"conv5_1",
+            #"conv5_x"
+        ]
         hardcoded_dense_tests = []
     elif args.config == "pr":
         width, height = 28, 16
@@ -521,7 +542,10 @@ def dispatch(args, extra_args=None):
         
         for test in sparse_tests:
             for suitesparse_datum in suitesparse_data:
-                command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                if "tensor" not in test:
+                    command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
+                else:
+                    command = "python3 /aha/garnet/copy_formatted_tensor_tiling.py " + test + " " + suitesparse_datum
                 subprocess.call(command, shell=True)
             this_sparse_test_tile_pairs = glob.glob(f"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/{test}*")
             suitesparse_data_tile_pairs.extend(this_sparse_test_tile_pairs)

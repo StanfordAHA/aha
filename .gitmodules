@@ -9,7 +9,7 @@
 [submodule "garnet"]
     path = garnet
     url = https://github.com/stanfordaha/garnet
-    branch = master
+	branch = opal-codegen
 [submodule "Halide-to-Hardware"]
     path = Halide-to-Hardware
     url = https://github.com/stanfordaha/Halide-to-Hardware
