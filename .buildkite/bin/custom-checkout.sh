@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Invoked from e.g. pipeline.yml and online aha-flow, aha-submod-flow steps maybe
+
 # What this script does:
 # - Check out aha branch BUILDKITE_COMMIT if build triggered from aha repo.
 # - Else check out master if triggered from submod push/pull.
@@ -9,27 +11,26 @@
 # Setup
 set +u    # nounset? not on my watch!
 set +x    # debug OFF
-PS4=">"   # Prevents "+++" prefix during 3-deep "set -x" execution
+PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
-echo I see arg1=$1
-echo I see London I see France
 
 # args. arg.
 SKIP_SUBMOD_INIT=
 save_reqtype=
 if [ "$1" == "--aha-flow" ]; then
-  echo "--- Found arg '$1'"
-  DEV_BRANCH=master  # I.e. not using a dev branch atm
-  export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
+    # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
+    echo "--- Found arg '$1'"
+    DEV_BRANCH=master  # I.e. not using a dev branch atm
+    export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
 
-  save_reqtype=$REQUEST_TYPE
-  export REQUEST_TYPE=NONE
-  SKIP_SUBMOD_INIT=True
-  # source custom-checout.sh --skip-submod-init
-  # if [ "save_reqtype"]; then export REQUEST_TYPE=${save_reqtype}; fi
-  # export REQUEST_TYPE=${save_reqtype}
+    save_reqtype=$REQUEST_TYPE
+    export REQUEST_TYPE=NONE
+    SKIP_SUBMOD_INIT=True
+    # source custom-checout.sh --skip-submod-init
+    # if [ "save_reqtype"]; then export REQUEST_TYPE=${save_reqtype}; fi
+    # export REQUEST_TYPE=${save_reqtype}
 fi
 
 echo "+++ Must have a (empty!) working directory"; set -x;
@@ -91,16 +92,16 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 fi
 
 if [ "$1" == "--aha-flow" ]; then
-  export REQUEST_TYPE=${save_reqtype}
+    export REQUEST_TYPE=${save_reqtype}
 
-  # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
-  # Also see ~steveri/bin/status-update on kiwi
+    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+    # Also see ~steveri/bin/status-update on kiwi
 
-  echo "+++ Notify github of pending status"
-  ~/bin/status-update --force pending;
+    echo "+++ Notify github of pending status"
+    ~/bin/status-update --force pending;
 
-  echo "--- Upload pipeline.yml"
-  buildkite-agent pipeline upload .buildkite/pipeline.yml;
+    echo "--- Upload pipeline.yml"
+    buildkite-agent pipeline upload .buildkite/pipeline.yml;
 fi
 
 echo "--- END custom-checkout.sh"
