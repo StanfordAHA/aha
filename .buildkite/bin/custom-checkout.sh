@@ -13,6 +13,7 @@ PS4=">"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
+echo I see arg1=$1
 
 # args. arg.
 SKIP_SUBMOD_INIT=
