@@ -14,10 +14,15 @@ PS4=">"   # Prevents "+++" prefix during 3-deep "set -x" execution
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 
-# Checkout master or BUILDKITE_COMMIT
+echo "+++ Must have a (empty!) working directory"; set -x;
+d=$BUILDKITE_BUILD_CHECKOUT_PATH;
+/bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
+
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
+
+# Checkout master or BUILDKITE_COMMIT
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
