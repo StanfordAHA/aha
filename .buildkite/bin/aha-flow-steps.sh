@@ -1,3 +1,21 @@
+# What if?
+# 
+# DEV_BRANCH=master  # I.e. not using a dev branch atm
+# export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
+# 
+# save_reqtype=$REQUEST_TYPE
+# export REQUEST_TYPE=NONE
+# source custom-checout.sh --skip-submod-init
+# export REQUEST_TYPE=${save_reqtype}
+# # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+# # Also see ~steveri/bin/status-update on kiwi
+# echo "+++ Notify github of pending status"; ~/bin/status-update --force pending;
+# buildkite-agent pipeline upload .buildkite/pipeline.yml;
+# echo "--- CUSTOM CHECKOUT END"
+
+
+
+
 # This file is designed to replace the existing aha-flow buildkite script at
 # <https://buildkite.com/stanford-aha/aha-flow/settings/steps>.
 # By moving the script to the repo, we can have it under version control, etc.
@@ -7,6 +25,13 @@ DEV_BRANCH=master  # I.e. not using a dev branch atm
 export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
 
 set +u;  # My code assumes unset vars are okay
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# This could be function? like?
+# buildkite-clone https://github.com/StanfordAHA/aha $BUILDKITE_COMMIT ?
+# buildkite-clone https://github.com/StanfordAHA/aha master ?
 
 echo "+++ Must have a (empty!) working directory"; set -x;
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
@@ -26,6 +51,12 @@ if ! git checkout -q $BUILDKITE_COMMIT; then
 
 # git checkout -q $BUILDKITE_COMMIT || echo "Submod commit hash found, using aha master branch";
 # git checkout -q $BUILDKITE_COMMIT || git checkout -q $DEV_BRANCH || echo "No dev branch found, continuing w master...";
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
+
+
 
 # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
 # Also see ~steveri/bin/status-update on kiwi
