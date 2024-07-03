@@ -11,10 +11,15 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4=">"   # Prevents "+++" prefix during 3-deep "set -x" execution
 
+echo "+++ BEGIN custom-checkout.sh"
+echo I am in dir `pwd`
+echo I see arg1=$1
+
 # args. arg.
 SKIP_SUBMOD_INIT=
 save_reqtype=
 if [ "$1" == "--aha-flow" ]; then
+  echo "--- Found arg '$1'"
   DEV_BRANCH=master  # I.e. not using a dev branch atm
   export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
 
@@ -25,9 +30,6 @@ if [ "$1" == "--aha-flow" ]; then
   # if [ "save_reqtype"]; then export REQUEST_TYPE=${save_reqtype}; fi
   # export REQUEST_TYPE=${save_reqtype}
 fi
-
-echo "+++ BEGIN custom-checkout.sh"
-echo I am in dir `pwd`
 
 echo "+++ Must have a (empty!) working directory"; set -x;
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
