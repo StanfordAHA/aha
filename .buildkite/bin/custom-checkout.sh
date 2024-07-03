@@ -42,6 +42,55 @@ aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
+if [ "$1" == "--aha-submod-flow" ]; then
+    # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
+    echo "--- Found arg '$1'"
+
+    echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
+    export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
+    url=$BPPR_TAIL
+    BPPR_TAIL=`echo "$BPPR_TAIL" | sed "s,http.*github.com/.*/,,"` || echo fail;
+
+    # Find submod commit hash; use url calculated above
+    # E.g. https://github.com/StanfordAHA/lake/pull/194
+    set -x;
+    curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
+    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
+    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
+    submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
+          | grep 'oid=' | tr -cd '[:alnum:]=\n' | head -n 1 \
+          | sed 's/.*oid=\(.......\).*/\1/'`;
+    echo "found submod commit $submod_commit";
+    save_commit=$BUILDKITE_COMMIT;
+    export BUILDKITE_COMMIT=$submod_commit;
+
+    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+    # Also see ~steveri/bin/status-update on kiwi
+    echo "+++ Notify github of pending status";
+    ~/bin/status-update --force pending;
+
+    # See what this does maybe
+    cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
+    BUILDKITE_PULL_REQUEST_REPO=${BUILDKITE_PULL_REQUEST_REPO}
+    BUILDKITE_PULL_REQUEST=${BUILDKITE_PULL_REQUEST}
+    BUILDKITE_COMMIT=${BUILDKITE_COMMIT}
+    BUILDKITE_BUILD_CHECKOUT_PATH=${BUILDKITE_BUILD_CHECKOUT_PATH}
+    BUILDKITE_MESSAGE=${BUILDKITE_MESSAGE}
+    BPPR_TAIL=${BPPR_TAIL}
+EOF
+
+    # 'update-pr-repo.sh' will use AHA_SUBMOD_FLOW_COMMIT to set up links and such
+    export BUILDKITE_COMMIT=$save_commit;
+    echo "Trigger aha-flow pipeline";
+    export AHA_SUBMOD_FLOW_COMMIT=$submod_commit;
+
+    # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
+    buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
+    echo "--- CUSTOM CHECKOUT END";
+
+    return
+fi
+
 # Checkout master or BUILDKITE_COMMIT
 # REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
