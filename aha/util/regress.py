@@ -236,7 +236,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
 
         # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
         data_tile_pairs = [f"{test}_{tile}/GLB_DIR/{test}_combined_seed_{tile}" for tile in data_tile_pairs]
-        full_tile_pairs = None
+        full_tile_pairs = []
         full_pipeline_cmd = None
         full_pipeline_cmd = None
         # if there's only one batch, we don't need to handle partially full batches
