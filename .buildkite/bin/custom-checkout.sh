@@ -59,12 +59,13 @@ if [ "$1" == "--aha-submod-flow" ]; then
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
 
     # No good; must have full 40-char commit sha
+    # Also: should I guess be TAIL, not head, -n 1 ?
     # submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
     #       | grep 'oid=' | tr -cd '[:alnum:]=\n' | head -n 1 \
     #       | sed 's/.*oid=\(.......\).*/\1/'`;
 
     submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
-          | grep 'oid=' | tr -cd '[:alnum:]=\n' | head -n 1 \
+          | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
 
     echo "found submod commit $submod_commit";
