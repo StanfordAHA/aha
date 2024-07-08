@@ -57,17 +57,19 @@ if [ "$1" == "--aha-submod-flow" ]; then
     curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
+
+    # No good; must have full 40-char commit sha
+    # submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
+    #       | grep 'oid=' | tr -cd '[:alnum:]=\n' | head -n 1 \
+    #       | sed 's/.*oid=\(.......\).*/\1/'`;
+
     submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | head -n 1 \
-          | sed 's/.*oid=\(.......\).*/\1/'`;
+          | sed 's/.*oid=\(.*\)/\1/'`;
+
     echo "found submod commit $submod_commit";
     save_commit=$BUILDKITE_COMMIT;
     export BUILDKITE_COMMIT=$submod_commit;
-
-    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
-    # Also see ~steveri/bin/status-update on kiwi
-    echo "+++ Notify github of pending status";
-    ~/bin/status-update --force pending;
 
     # See what this does maybe
     cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
@@ -78,6 +80,11 @@ if [ "$1" == "--aha-submod-flow" ]; then
     BUILDKITE_MESSAGE=${BUILDKITE_MESSAGE}
     BPPR_TAIL=${BPPR_TAIL}
 EOF
+
+    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+    # Also see ~steveri/bin/status-update on kiwi
+    echo "+++ Notify github of pending status";
+    ~/bin/status-update --force pending;
 
     # 'update-pr-repo.sh' will use AHA_SUBMOD_FLOW_COMMIT to set up links and such
     export BUILDKITE_COMMIT=$save_commit;

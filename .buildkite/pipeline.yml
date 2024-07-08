@@ -76,7 +76,7 @@ steps:
         # status-update exit status will tell us if this step has failed
         if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
-            (set -x; docker image rm "garnet:aha-flow-build-$${BUILDKITE_BUILD_NUMBER}" --no-prune)
+            (set -x; docker image rm "garnet:aha-flow-build-$${BUILDKITE_BUILD_NUMBER}" --no-prune) || echo okay
         fi
 
   commands:
