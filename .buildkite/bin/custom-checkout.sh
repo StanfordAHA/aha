@@ -92,36 +92,14 @@ EOF
     echo "Trigger aha-flow pipeline";
     export AHA_SUBMOD_FLOW_COMMIT=$submod_commit;
 
-
-
-
-    export BUILDKITE_REPO='https://github.com/StanfordAHA/lake'
-
-
-
-
-
     # If we don't set meta-data here, buildkite default checkout will overwrite
     # submod commit message with aha-repo commit message instead.
     echo "Reset metadata buildkite:git:commit to BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
     echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
 
-    echo "List of all metadata keys, I hope:"
-    buildkite-agent meta-data keys
-
     # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
     buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
     echo "--- CUSTOM CHECKOUT END";
-
-
-
-
-    export BUILDKITE_REPO='https://github.com/StanfordAHA/lake'
-
-
-
-
-
     return
 fi
 
