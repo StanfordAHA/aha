@@ -43,7 +43,6 @@ test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clo
 cd $aha_clone;
 
 if [ "$1" == "--aha-submod-flow" ]; then
-    export BUILDKITE_MESSAGE=foo1
     # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
     echo "--- Found arg '$1'"
 
@@ -92,9 +91,6 @@ EOF
     export BUILDKITE_COMMIT=$save_commit;
     echo "Trigger aha-flow pipeline";
     export AHA_SUBMOD_FLOW_COMMIT=$submod_commit;
-
-    export BUILDKITE_MESSAGE=foo2
-
 
     # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
     buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
