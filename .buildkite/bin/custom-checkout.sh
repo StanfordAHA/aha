@@ -92,9 +92,16 @@ EOF
     echo "Trigger aha-flow pipeline";
     export AHA_SUBMOD_FLOW_COMMIT=$submod_commit;
 
+    echo "one BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
+    echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
+
+
     # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
     buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
     echo "--- CUSTOM CHECKOUT END";
+
+    echo "two BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
+
 
     return
 fi
