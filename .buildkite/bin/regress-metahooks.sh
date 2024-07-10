@@ -170,7 +170,7 @@ elif [ "$1" == '--pre-exit' ]; then
     set -x; docker kill $CONTAINER; set +x
 
     echo "+++ [pre-exit] CHECKING EXIT STATUS"
-    echo "Send status to github."; set -x
+    # echo "Send status to github."; set -x
     cd $BUILDKITE_BUILD_CHECKOUT_PATH
 
     # Docker will have removed temp/.TEST if all the tests passed

@@ -94,6 +94,7 @@ steps:
   - echo "--- Save repo things in common area"
   - mkdir -p $$COMMON
   - cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
+  - git branch; cat $$REGRESS_METAHOOKS || echo okay
 
   - echo "--- DEBUG DOCKER TRASH"
   - set -x; docker images; docker ps;

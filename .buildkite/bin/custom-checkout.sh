@@ -25,14 +25,20 @@ aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
+# FIXME things break if DEV_BRANCH not set?
+[ "$DEV_BRANCH" ] || export DEV_BRANCH=master
+
+if ! git checkout -q $DEV_BRANCH; then
+    export DEV_BRANCH=master
+    echo "Cannot checkout dev branch '$DEV_BRANCH', continuing w master..."
+fi
+
 SKIP_SUBMOD_INIT=
 save_reqtype=
 
 # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
 if [ "$1" == "--aha-flow" ]; then
     echo "--- Found arg '$1'"
-    [ "$DEV_BRANCH" ] || DEV_BRANCH=master
-    export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
     save_reqtype=$REQUEST_TYPE; 
     export REQUEST_TYPE=NONE       # I.e. not doing submod-flow init
     SKIP_SUBMOD_INIT=True
@@ -125,7 +131,7 @@ else
         git checkout -q $DEV_BRANCH || echo "No dev branch found, continuing w master..."; fi;
 fi
 echo DEV_BRANCH=$DEV_BRANCH || echo okay
-echo -n "DEV_BRANCH commit = "; git rev-parse $DEV_BRANCH || echo okay
+echo -n "DEV_BRANCH commit = "; git rev-parse origin/$DEV_BRANCH || echo okay
 echo -n "Aha master commit = "; git rev-parse master
 echo -n "We now have commit: "; git rev-parse HEAD
 
