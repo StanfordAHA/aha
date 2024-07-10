@@ -31,7 +31,7 @@ save_reqtype=
 # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
 if [ "$1" == "--aha-flow" ]; then
     echo "--- Found arg '$1'"
-    DEV_BRANCH=master  # I.e. not using a dev branch atm
+    [ "$DEV_BRANCH" ] || DEV_BRANCH=master
     export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
     save_reqtype=$REQUEST_TYPE; 
     export REQUEST_TYPE=NONE       # I.e. not doing submod-flow init
