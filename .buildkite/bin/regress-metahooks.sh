@@ -179,13 +179,5 @@ elif [ "$1" == '--pre-exit' ]; then
     fi
     /bin/rm -rf temp
 
-    # FIXME
-    # OMG! OH no you di'nt! ~/bin??? what are you THINKING
-    # Looks like ~/bin devolves to e.g. /var/lib/buildkite-agent/bin
-
-    # status-update will magically override "success" with "failure" as appropriate!
-    # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
-    ~/bin/status-update success
-
 fi
 

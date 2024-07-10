@@ -163,6 +163,7 @@ steps:
 # STEP: onyx regression 1
 
 - label: "Regress 1"
+  key: "regress1"
   env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -178,6 +179,7 @@ steps:
 # STEP: onyx regression 2
 
 - label: "Regress 2"
+  key: "regress2"
   env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -192,6 +194,7 @@ steps:
 # STEP: onyx regression 3
 
 - label: "Regress 3"
+  key: "regress3"
   env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -201,3 +204,50 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   command: REGRESSION_STEP=3 $REGRESS_METAHOOKS --commands
+
+########################################################################
+# STEP: Update
+
+# Wait for all steps to complete before sending out final status
+# This step should run regardless of whether prev steps failed
+- wait: { continue_on_failure: true } 
+
+- label: "Cleanup"
+  command: |
+    echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
+    echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
+    echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
+    FAIL=
+    set -x
+    [ $(buildkite-agent step get "outcome" --step "regress1") ] == "passed" || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress2") ] == "passed" || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress3") ] == "passed" || FAIL=True
+    echo FAIL=$$FAIL
+    [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
+
+# 
+#     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+#     # Also see ~steveri/bin/status-update on kiwi
+# 
+#     - echo "+++ Notify github of success"
+#     - ~/bin/status-update --force success
+# 
+# ########################################################################
+# # STEP: final status
+# 
+# # Wait for all steps to complete before sending out final status
+# # This step should run regardless of whether prev steps failed
+# - wait: { continue_on_failure: true } 
+# 
+# - label: "Cleanup"
+# 
+#   # Set "soft-fail" -- failing status update should not fail the larger pipeline I guess
+#   # "run-without-clone" b/c don't need repo just to update github status
+# 
+#   soft_fail: true
+#   plugins:   [ uber-workflow/run-without-clone: ]
+# 
+#   # Not exactly sure why '--no-prune' is included...?
+#   commands:
+#     - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
+#     - /bin/rm -rf $$COMMON
