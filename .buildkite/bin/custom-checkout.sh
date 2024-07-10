@@ -16,23 +16,6 @@ PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 
-# args. arg.
-SKIP_SUBMOD_INIT=
-save_reqtype=
-if [ "$1" == "--aha-flow" ]; then
-    # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
-    echo "--- Found arg '$1'"
-    DEV_BRANCH=master  # I.e. not using a dev branch atm
-    export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
-
-    save_reqtype=$REQUEST_TYPE
-    export REQUEST_TYPE=NONE
-    SKIP_SUBMOD_INIT=True
-    # source custom-checout.sh --skip-submod-init
-    # if [ "save_reqtype"]; then export REQUEST_TYPE=${save_reqtype}; fi
-    # export REQUEST_TYPE=${save_reqtype}
-fi
-
 echo "--- Must have a (empty!) working directory"
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
 /bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
@@ -42,8 +25,21 @@ aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
+SKIP_SUBMOD_INIT=
+save_reqtype=
+
+# E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
+if [ "$1" == "--aha-flow" ]; then
+    echo "--- Found arg '$1'"
+    DEV_BRANCH=master  # I.e. not using a dev branch atm
+    export DEV_BRANCH=$DEV_BRANCH  # FIXME things break if DEV_BRANCH not set?
+    save_reqtype=$REQUEST_TYPE; 
+    export REQUEST_TYPE=NONE       # I.e. not doing submod-flow init
+    SKIP_SUBMOD_INIT=True
+fi
+
+# E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
 if [ "$1" == "--aha-submod-flow" ]; then
-    # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
     echo "--- Found arg '$1'"
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
@@ -84,6 +80,7 @@ EOF
 
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
     # Also see ~steveri/bin/status-update on kiwi
+
     echo "+++ Notify github of pending status";
     ~/bin/status-update --force pending;
 
@@ -153,8 +150,10 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $BUILDKITE_COMMIT)
 fi
 
+# Restore original REQUEST_TYPE value, even though I think it's maybe never used...
+[ "${save_reqtype}" ] && export REQUEST_TYPE=${save_reqtype}
+
 if [ "$1" == "--aha-flow" ]; then
-    export REQUEST_TYPE=${save_reqtype}
 
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
     # Also see ~steveri/bin/status-update on kiwi
