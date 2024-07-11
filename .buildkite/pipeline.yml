@@ -76,7 +76,7 @@ steps:
         # status-update exit status will tell us if this step has failed
         if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
-            (set -x; docker image rm "garnet:aha-flow-build-$${BUILDKITE_BUILD_NUMBER}" --no-prune) || echo okay
+            (set -x; docker image rm "$$IMAGE" --no-prune) || echo okay
         fi
 
   commands:
@@ -215,25 +215,25 @@ steps:
 - label: "Cleanup"
   command: |
 
-    # Show outcomes from each regression step
+    echo '- Show outcomes from each regression step'
     echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
     echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
     echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
 
-    # Send summary outcome "success" or "failure" to github PR
+    echo '- Use FAIL to summarize overall result'
     FAIL=
     set -x
     [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
-    echo FAIL=$$FAIL
+    echo '-- FAIL=$$FAIL'
 
+    echo '- Send summary outcome "success" or "failure" to github PR'
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
     # Also see ~steveri/bin/status-update on kiwi
-
     [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
 
-    # Clean up your mess
+    echo '- Clean up your mess'
     test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
     test -d $COMMON && rmdir $COMMON || echo okay
     /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
