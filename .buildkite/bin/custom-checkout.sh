@@ -101,8 +101,8 @@ EOF
     return
 fi
 
-# Checkout master or BUILDKITE_COMMIT
-# REQUEST_TYPE comes from set-trigfrom-and-reqtype.sh
+# Checkout appropriate aha branch.
+# REQUEST_TYPE comes from e.g. set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
 
     # This script is called only from pipeline.yml BDI step (I think).
