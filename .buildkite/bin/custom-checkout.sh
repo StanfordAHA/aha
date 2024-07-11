@@ -114,17 +114,17 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     git fetch -v --prune -- origin master
 
 else
-    # My scripts don't deal well with a commit that's not a full hash!
-    if [ "$BUILDKITE_COMMIT" == "HEAD" ]; then
-        BUILDKITE_COMMIT=`git rev-parse HEAD`; fi
-
     echo "Push or PR from aha repo: check out requested aha branch '$BUILDKITE_COMMIT'"
+
+    # My scripts don't deal well with a commit that's not a full hash!
+    [ "$BUILDKITE_COMMIT" == "HEAD" ] && export BUILDKITE_COMMIT=`git rev-parse HEAD`
     git fetch -v --prune -- origin $BUILDKITE_COMMIT || echo okay
-    # git checkout -qf $BUILDKITE_COMMIT
+
     if ! git checkout -qf $BUILDKITE_COMMIT; then
         echo "Submod commit hash found, using aha master branch";
         git checkout -q $DEV_BRANCH || echo "No dev branch found, continuing w master..."; fi;
 fi
+
 echo DEV_BRANCH=$DEV_BRANCH || echo okay
 echo -n "DEV_BRANCH commit = "; git rev-parse origin/$DEV_BRANCH || echo okay
 echo -n "Aha master commit = "; git rev-parse master
@@ -141,6 +141,8 @@ if ! [ "$SKIP_SUBMOD_INIT" ]; then
     echo '--- git submodule foreach --recursive "git reset --hard"'
     git submodule foreach --recursive "git reset --hard"
     set +x
+else
+    echo "Skip lengthy submodule initialization"
 fi
 
 # Update submod
