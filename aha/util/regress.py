@@ -445,13 +445,17 @@ def dispatch(args, extra_args=None):
     if not(seed_flow):
         if os.path.exists("/aha/garnet/perf_stats.txt"):
             os.system("rm /aha/garnet/perf_stats.txt")
-            with open("/aha/garnet/perf_stats.txt", 'w') as perf_out_file:
-                perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
+        with open("/aha/garnet/perf_stats.txt", 'w') as perf_out_file:
+            perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
-        test_dataset_runtime_dict = {}   
-
+        test_dataset_runtime_dict = {}
+        
+        data_tile_pairs_lists = []
         for sparse_tile_pairs_list in args.sparse_tile_pairs_list:
-            with open(sparse_tile_pairs_list, 'r') as f:
+            data_tile_pairs_lists.extend(glob.glob(sparse_tile_pairs_list))
+
+        for data_tile_pairs_file in data_tile_pairs_lists:
+            with open(data_tile_pairs_file, 'r') as f:
                 tile_pairs_dict = toml.load(f)
                 data_tile_pairs = tile_pairs_dict["sam_config"]["sam_path"]
                 kernel_name = tile_pairs_dict["sam_config"]["name"]
