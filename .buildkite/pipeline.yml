@@ -94,7 +94,6 @@ steps:
   - echo "--- Save repo things in common area"
   - mkdir -p $$COMMON
   - cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
-  - git branch; cat $$REGRESS_METAHOOKS || echo okay
 
   - echo "--- DEBUG DOCKER TRASH"
   - set -x; docker images; docker ps;
@@ -220,9 +219,9 @@ steps:
     echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
     FAIL=
     set -x
-    [ $(buildkite-agent step get "outcome" --step "regress1") ] == "passed" || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress2") ] == "passed" || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress3") ] == "passed" || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
     echo FAIL=$$FAIL
     [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
 
