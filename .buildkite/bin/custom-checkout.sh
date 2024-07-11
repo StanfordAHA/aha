@@ -153,15 +153,14 @@ if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $BUILDKITE_COMMIT)
 fi
 
-# Restore original REQUEST_TYPE value, even though I think it's maybe never used...
+# Restore original REQUEST_TYPE value, even though I think it's maybe never used again...
 [ "${save_reqtype}" ] && export REQUEST_TYPE=${save_reqtype}
 
 if [ "$1" == "--aha-flow" ]; then
+    echo "+++ Notify github of pending status"
 
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
     # Also see ~steveri/bin/status-update on kiwi
-
-    echo "+++ Notify github of pending status"
     ~/bin/status-update --force pending;
 
     echo "--- Upload pipeline.yml"
