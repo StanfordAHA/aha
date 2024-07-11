@@ -215,10 +215,12 @@ steps:
 - label: "Cleanup"
   command: |
 
-    # Send outcome "success" or "failure" to github PR
+    # Show outcomes from each regression step
     echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
     echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
     echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
+
+    # Send summary outcome "success" or "failure" to github PR
     FAIL=
     set -x
     [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
