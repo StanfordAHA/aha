@@ -230,3 +230,8 @@ steps:
     # Also see ~steveri/bin/status-update on kiwi
 
     [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
+
+    # Clean up your mess
+    test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
+    test -d $COMMON && rmdir $COMMON || echo okay
+    /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
