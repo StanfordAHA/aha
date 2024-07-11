@@ -11,7 +11,7 @@ echo "+++ set-trigfrom-and-reqtype.sh BEGIN"
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
 echo "--- BEGIN TRIGGERED-FROM LINKS"
-# set -x
+
 # If pull request, show where request came from.
 # And set e.g. PR_REPO_TAIL="lake"
 PR_REPO_TAIL=
