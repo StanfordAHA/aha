@@ -206,7 +206,7 @@ steps:
   command: REGRESSION_STEP=3 $REGRESS_METAHOOKS --commands
 
 ########################################################################
-# STEP: Update
+# STEP: Cleanup
 
 # Wait for all steps to complete before sending out final status
 # This step should run regardless of whether prev steps failed
@@ -214,6 +214,8 @@ steps:
 
 - label: "Cleanup"
   command: |
+
+    # Send outcome "success" or "failure" to github PR
     echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
     echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
     echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
@@ -223,31 +225,8 @@ steps:
     [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
     echo FAIL=$$FAIL
-    [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
 
-# 
-#     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
-#     # Also see ~steveri/bin/status-update on kiwi
-# 
-#     - echo "+++ Notify github of success"
-#     - ~/bin/status-update --force success
-# 
-# ########################################################################
-# # STEP: final status
-# 
-# # Wait for all steps to complete before sending out final status
-# # This step should run regardless of whether prev steps failed
-# - wait: { continue_on_failure: true } 
-# 
-# - label: "Cleanup"
-# 
-#   # Set "soft-fail" -- failing status update should not fail the larger pipeline I guess
-#   # "run-without-clone" b/c don't need repo just to update github status
-# 
-#   soft_fail: true
-#   plugins:   [ uber-workflow/run-without-clone: ]
-# 
-#   # Not exactly sure why '--no-prune' is included...?
-#   commands:
-#     - docker image rm "garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}" --no-prune
-#     - /bin/rm -rf $$COMMON
+    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+    # Also see ~steveri/bin/status-update on kiwi
+
+    [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
