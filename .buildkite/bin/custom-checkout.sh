@@ -55,34 +55,26 @@ if [ "$1" == "--aha-submod-flow" ]; then
 
     # Find submod commit hash; use url calculated above
     # E.g. https://github.com/StanfordAHA/lake/pull/194
+    # NOTE submod_commit must be full 40-char commit sha for status-update - DO NOT ABBREVIATE
     set -x;
     curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
-
-    # No good; must have full 40-char commit sha
-    # Also: should I guess be TAIL, not head, -n 1 ?
-    # submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
-    #       | grep 'oid=' | tr -cd '[:alnum:]=\n' | head -n 1 \
-    #       | sed 's/.*oid=\(.......\).*/\1/'`;
-
     submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
-
     echo "found submod commit $submod_commit";
-    save_commit=$BUILDKITE_COMMIT;
-    export BUILDKITE_COMMIT=$submod_commit;
 
-    # See what this does maybe
+    # Debuggin
     cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
-    BUILDKITE_PULL_REQUEST_REPO=${BUILDKITE_PULL_REQUEST_REPO}
-    BUILDKITE_PULL_REQUEST=${BUILDKITE_PULL_REQUEST}
+    submod_commit=$submod_commit
     BUILDKITE_COMMIT=${BUILDKITE_COMMIT}
     BUILDKITE_BUILD_CHECKOUT_PATH=${BUILDKITE_BUILD_CHECKOUT_PATH}
-    BUILDKITE_MESSAGE=${BUILDKITE_MESSAGE}
-    BPPR_TAIL=${BPPR_TAIL}
 EOF
+
+    # Temporarily replace BUILDKITE_COMMIT env var with submod commit
+    save_commit=$BUILDKITE_COMMIT;
+    export BUILDKITE_COMMIT=$submod_commit;
 
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
     # Also see ~steveri/bin/status-update on kiwi
@@ -90,14 +82,17 @@ EOF
     echo "+++ Notify github of pending status";
     ~/bin/status-update --force pending;
 
-    # 'update-pr-repo.sh' will use AHA_SUBMOD_FLOW_COMMIT to set up links and such
+    # Restore BUILDKITE_COMMIT
     export BUILDKITE_COMMIT=$save_commit;
+
+    # 'update-pr-repo.sh' will use AHA_SUBMOD_FLOW_COMMIT to set up links and such
     echo "Trigger aha-flow pipeline";
     export AHA_SUBMOD_FLOW_COMMIT=$submod_commit;
 
-    # If we don't set meta-data here, buildkite default checkout will overwrite
-    # submod commit message with aha-repo commit message instead.
-    echo "Reset metadata buildkite:git:commit to BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
+    # If buildkite checkout mechanism sees unset buildkite:git:commit meta-data, it will
+    # use (incorrect) aha-repo commit message instead of (desired) submod commit message.
+
+    echo "Set metadata buildkite:git:commit to BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
     echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
 
     # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
