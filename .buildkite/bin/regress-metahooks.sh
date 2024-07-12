@@ -169,23 +169,15 @@ elif [ "$1" == '--pre-exit' ]; then
     echo "+++ [pre-exit] KILL CONTAINER $CONTAINER"
     set -x; docker kill $CONTAINER; set +x
 
-    echo "+++ [pre-exit] CHECKING EXIT STATUS"
-    echo "Send status to github."; set -x
+    # Make sure we are in the right place to reference "temp" subdir
     cd $BUILDKITE_BUILD_CHECKOUT_PATH
 
     # Docker will have removed temp/.TEST if all the tests passed
+    echo "+++ [pre-exit] CHECKING EXIT STATUS"
     if [ "$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
         test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
     fi
     /bin/rm -rf temp
-
-    # FIXME
-    # OMG! OH no you di'nt! ~/bin??? what are you THINKING
-    # Looks like ~/bin devolves to e.g. /var/lib/buildkite-agent/bin
-
-    # status-update will magically override "success" with "failure" as appropriate!
-    # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
-    ~/bin/status-update success
 
 fi
 
