@@ -475,6 +475,10 @@ def dispatch(args, extra_args=None):
                     t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
+                # remove the generated collateral for tiles that passed to avoid overrunning the disk
+                os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/{test}*")
+                os.system(f"rm /aha/garnet/SPARSE_TESTS/tensor_X*")
+
         with open("/aha/garnet/perf_stats.txt", 'a') as perf_out_file:
             for testname, dataset_runtime_dict in test_dataset_runtime_dict.items():
                 for dataset, time_value in dataset_runtime_dict.items():
