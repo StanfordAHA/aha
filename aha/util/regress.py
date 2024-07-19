@@ -57,7 +57,6 @@ def gen_garnet(width, height):
                 "--rv",
                 "--sparse-cgra",
                 "--sparse-cgra-combined",
-                "--glb_tile_mem_size", str(256),
             ]
         )
     return time.time() - start
@@ -69,7 +68,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     
     print(f"--- mapping all tests")
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    # env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -133,7 +133,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
 
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
 
-    app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
+    app_path = f"{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path)
 
     try:
@@ -146,41 +146,30 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
         print("RUNNING SEED FLOW")
         start = time.time()
         buildkite_call(
-            ["aha", "test", app_path, "--sparse", "--sparse-test-name", testname], env=env_vars,
+            ["aha", "test", app_path, "--sparse"], env=env_vars,
         )
         time_test = time.time() - start
     else:
         print("RUNNING SS FLOW")
         start = time.time()
         dataset_runtime_dict = defaultdict(float)
-        for ss_tile_pair in suitesparse_data_tile_pairs:
-            ss_tile_pair = ss_tile_pair.split("MAT_TMP_DIR/")[1]
-            ss_tile_pair_sparse_testname = ss_tile_pair.split("-")[0]
-            if ss_tile_pair_sparse_testname != testname:
-                continue
-            print(f"--- {test} - glb testing - {ss_tile_pair}")
-            with open("/aha/garnet/aha_test_out.txt", 'w') as test_out_file:
-                buildkite_call(
-                    ["aha", 
-                    "test", 
-                    f"../../../garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}",  
-                    "--sparse", 
-                    "--sparse-test-name", 
-                    f"{test}", 
-                    "--sparse-comparison", 
-                    f"/aha/garnet/SPARSE_TESTS/{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}/"
-                    ], env=env_vars,
-                    return_output=True,
-                    out_file = test_out_file
-                )
-            command = "grep \"total time\" /aha/garnet/aha_test_out.txt"
-            result = subprocess.check_output(command, shell=True, encoding='utf-8')
-            total_time_line = result.split("\n")[0]
-            print(total_time_line)
-            time_str = total_time_line.split(" ns")[0].split(" ")[-1]
-            time_value = float(time_str)
-            dataset = total_time_line.split("-")[2].split("_")[0]
-            dataset_runtime_dict[dataset] += time_value
+        # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
+        suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
+        suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
+
+        tile_pairs = [suitesparse_data_tile_pairs[i:i + 64] for i in range(0, len(suitesparse_data_tile_pairs), 64)]
+        cmd_list = []
+        # for each tile pair construct cmd
+        for tile_pair in tile_pairs:
+            cmd_list.append(["aha", "test"] + tile_pair + ["--sparse", "--multiles", str(1)])
+        
+        for cmd in cmd_list:
+            buildkite_call(cmd, env=env_vars)
+            command = "grep \"total time\" /aha/garnet/tests/test_app/run.log"
+            results = subprocess.check_output(command, shell=True, encoding='utf-8')
+            for result in results.split("\n"):
+                if testname in result:
+                    dataset_runtime_dict[result.split(f"{testname}-")[1].split("_")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
         with open("/aha/garnet/suitesparse_perf_out.txt", 'a') as perf_out_file:
             for dataset, time_value in dataset_runtime_dict.items():
@@ -237,8 +226,8 @@ def test_dense_app(test, width, height, layer=None, env_parameters=""):
 
 def dispatch(args, extra_args=None):
     seed_flow = False 
-    suitesparse_data = ["rand_large_sp98_1"]
-    #suitesparse_data = ["cage5", "football"]
+    #suitesparse_data = ["rand_large_tensor1"]
+    suitesparse_data = ["qiulp"]
     sparse_tests = []
     if args.config == "fast":
         width, height = 4, 4
@@ -302,32 +291,33 @@ def dispatch(args, extra_args=None):
             "conv5_x",
         ]
     elif args.config == "full":
-        width, height = 32, 16
+        width, height = 16, 16
         sparse_tests = [
-            #"mat_elemadd",
-            #"mat_elemadd3",
-            #"mat_elemmul",
-            #"mat_identity",
-            #"mat_mattransmul",
-            ## Turned off until SUB ordering fixed in mapping
-            ## 'mat_residual',
-            #"mat_sddmm",
-            #"mat_vecmul_ij",
-            #"matmul_ijk",
-            #"matmul_ijk_crddrop",
-            #"tensor3_elemadd",
-            #"tensor3_elemmul",
-            #"tensor3_identity",
-            #"tensor3_innerprod",
-            #"tensor3_mttkrp",
-            "tensor3_mttkrp_unfused1",
-            #"tensor3_mttkrp_unfused2",
-            #"tensor3_ttm",
-            #"tensor3_ttv",
-            #"vec_elemadd",
-            #"vec_elemmul",
-            #"vec_identity",
-            #"vec_scalar_mul",
+            #"mat_mask_tri_DA3sum_final",
+            # "mat_elemadd",
+            # "mat_elemadd3",
+            # "mat_elemmul",
+            # "mat_identity",
+            # "mat_mattransmul",
+            # # Turned off until SUB ordering fixed in mapping
+            # # 'mat_residual',
+            # #"mat_sddmm",
+            # "mat_vecmul_ij",
+            # "matmul_ijk",
+            "matmul_ijk_crddrop",
+            # "tensor3_elemadd",
+            # "tensor3_elemmul",
+            # "tensor3_identity",
+            # "tensor3_innerprod",
+            # "tensor3_mttkrp",
+            # "tensor3_mttkrp_unfused1",
+            # "tensor3_mttkrp_unfused2",
+            # "tensor3_ttm",
+            # "tensor3_ttv",
+            # "vec_elemadd",
+            # "vec_elemmul",
+            # "vec_identity",
+            # "vec_scalar_mul",
         ]
         glb_tests = [
             #"apps/pointwise",

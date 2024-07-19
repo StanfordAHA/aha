@@ -13,8 +13,8 @@ def add_subparser(subparser):
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--log", action="store_true")
     parser.add_argument("--sparse", action="store_true")
-    parser.add_argument("--sparse-test-name", type=str, default=None)
-    parser.add_argument("--sparse-comparison", type=str, default=None)
+    parser.add_argument("--dpr", action="store_true")
+    parser.add_argument("--multiles", type=int, default=None)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -47,8 +47,15 @@ def dispatch(args, extra_args=None):
         # this is how many apps we 're running
         arg_name = f"APP{idx}"
         # get the full path of the app
-        arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}"
+        if not args.sparse:
+            arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}"
+        else:
+            arg_path = f"{args.aha_dir}/garnet/SPARSE_TESTS/{app}"
         app_args.append(f"+{arg_name}={arg_path}")
+
+    if args.dpr is True:
+        app_args.append(f"+DPR=1")
+
 
     app_args = " ".join(app_args)
     env["APP_ARGS"] = app_args
@@ -58,15 +65,19 @@ def dispatch(args, extra_args=None):
         env["WAVEFORM_GLB_ONLY"] = "1"
     
     # if there are more than 1 app, store the log in the first app
-    app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
+    if not args.sparse:
+        app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
+    else:
+        app_dir = Path(f"{args.aha_dir}/garnet/SPARSE_TESTS/{args.app[0]}")
     log_path = app_dir / Path("log")
     log_file_path = log_path / Path("aha_test.log")
     if args.log:
         subprocess.check_call(["mkdir", "-p", log_path])
         subprocess.check_call(["rm", "-f", log_file_path])
 
-    if args.sparse:
+    
 
+    if args.sparse:
         try:
             if args.run:
                 subprocess_call_log (
@@ -88,12 +99,9 @@ def dispatch(args, extra_args=None):
             print("Failed as expected...move to offsite comparison...")
 
         from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
-        testname = args.sparse_test_name
 
-        sparse_comp = args.sparse_comparison
-
-        if sparse_comp is None:
-            sparse_comp = f"/aha/garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0/"
+        sparse_comp = str(app_dir)
+        batches = len(args.app)
 
         # This is where we do the fallback comparison...
         # First get gold matrix from the output...
@@ -111,27 +119,37 @@ def dispatch(args, extra_args=None):
         all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
         just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
         for file__ in just_out_files_sim:
-            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles)
-        for i in range(tiles):
-            gold_matrix = numpy.load(f"{sparse_comp}/output_gold_{i}.npy")
-        
-            sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
-                                                format="CSF",
-                                                shape=gold_matrix.shape, base=16, early_terminate='x', suffix=f"_tile{i}")
-            sim_matrix_np = sim_matrix.get_matrix()
+            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles, batches)
+        for j in range(batches):
+            for i in range(tiles):
+                gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/{args.app[j]}/output_gold_{i}.npy")
+                # Process according to the data type of the gold matrix 
+                if gold_matrix.dtype == int:
+                    gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+                elif gold_matrix.dtype == numpy.float32:
+                    # the gold matrix were already in bf16, no need to truncate again
+                    pass
+                sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                                    format="CSF",
+                                                    shape=gold_matrix.shape, base=16, early_terminate='x',
+                                                    suffix=f"_batch{j}_tile{i}").get_matrix()
 
-            print(f"GOLD")
-            gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
-            print(gold_matrix)
-            print(f"SIM")
-            sim_matrix_np = sim_matrix_np.astype(numpy.uint16, casting='unsafe')
-            print(sim_matrix)
-            assert numpy.array_equal(gold_matrix, sim_matrix_np)
-            print("test", i)
-            #if numpy.array_equal(gold_matrix, sim_matrix_np):
-            #    print("Equal!!")
-            #else: 
-            #    print("Not Equal!!")
+                # Set up numpy so it doesn't print in scientific notation
+                numpy.set_printoptions(suppress=True)
+                print("Batch: ", j, "Tile: ", i)
+                # for comparing floating point  
+                if numpy.allclose(gold_matrix, sim_matrix):
+                    print(f"Check Passed.")
+                    # print(f"GOLD")
+                    # print(gold_matrix)
+                    # print(f"SIM")
+                    # print(sim_matrix)
+                else:
+                    print(f"GOLD")
+                    print(gold_matrix)
+                    print(f"SIM")
+                    print(sim_matrix)
+                    assert numpy.allclose(gold_matrix, sim_matrix), f"Check Failed.\n"
     else:
 
         if args.run:
