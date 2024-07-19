@@ -4,8 +4,45 @@
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
 if [ "$1" == '--pre-command' ]; then
-    echo "+++ OIT PRE COMMAND HOOK BEGIN"
 
+    # This is designed to be invoked from pipeline.yml, which should provide
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+
+    echo "--- OIT PRE COMMAND HOOK BEGIN"
+    echo "Check for valid docker image"
+
+    # In case of e.g. manual retry, original docker image may have been deleted already.
+    # This new code below gives us the opportunity to revive the dead image when needed.
+    if ! docker images | grep $TAG; then
+        echo "OH NO cannot find docker image $IMAGE...I will rebuild it for you"
+
+        # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
+        # E.g. pwd=/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow
+        git clean -ffxdq
+        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+
+        if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
+            echo 'Submod pull requests use master branch (sometimes overridden by DEV_BRANCH)'
+            # (aha-flow steps is responsible for setting DEV_BRANCH)
+            # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
+            git checkout $DEV_BRANCH || echo no dev branch found, continuing with master
+
+            # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
+            source $bin/update-pr-repo.sh
+        else
+            echo 'Aha push/PR uses pushed branch'
+            git checkout $BUILDKITE_COMMIT
+        fi
+
+        # Checkout and update correct aha branch and submodules
+        source $bin/custom-checkout.sh
+        test -e .git/modules/sam/HEAD || echo OH NO HEAD not found
+
+        echo "--- (Re)creating garnet Image"
+        docker build --progress plain . -t "$IMAGE"
+    fi
+
+    echo "--- OIT PRE COMMAND HOOK CONTINUES..."
     # Use temp/.TEST to pass fail/success info into and out of docker container
     echo Renewing `pwd`/temp/.TEST
     mkdir -p temp; rm -rf temp/.TEST; touch temp/.TEST
@@ -39,13 +76,15 @@ if [ "$1" == '--pre-command' ]; then
 
 elif [ "$1" == '--commands' ]; then
 
-    # These commands run INSIDE the docker container
-    # Also need to be sourced maybe?
-    # So maybe do something like...?
-    #    $0 --commands > tmp; source tmp
+    echo "--- BEGIN regress-metahooks.sh --commands"
 
-    # cat <<'EOF' | sed "s/--BENCHMARK--/$2/"  # Single-quotes prevent var expansion etc.
-    cat <<'EOF'  # Single-quotes prevent var expansion etc.
+    # This is designed to be invoked from pipeline.yml, which should provide
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+
+    docker kill $CONTAINER || echo okay
+    docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
+    docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
+    cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
 
     if ! test -e /buildkite/.TEST; then
         echo "+++ No .TEST detected, so skip redundant regressions"
@@ -121,30 +160,24 @@ elif [ "$1" == '--commands' ]; then
     echo "--- Removing Failure Canary"; rm -rf /buildkite/.TEST
 
 EOF
-
+    docker exec -e CONFIG=$CONFIG -e REGSTEP=$REGRESSION_STEP $CONTAINER /bin/bash -c "$(cat tmp$$)" || exit 13
+    docker kill $CONTAINER; rm tmp$$  # Cleanup on aisle FOO
+    echo "--- END regress-metahooks.sh --commands"
 
 elif [ "$1" == '--pre-exit' ]; then
 
     echo "+++ [pre-exit] KILL CONTAINER $CONTAINER"
     set -x; docker kill $CONTAINER; set +x
 
-    echo "+++ [pre-exit] CHECKING EXIT STATUS"
-    echo "Send status to github."; set -x
+    # Make sure we are in the right place to reference "temp" subdir
     cd $BUILDKITE_BUILD_CHECKOUT_PATH
 
     # Docker will have removed temp/.TEST if all the tests passed
+    echo "+++ [pre-exit] CHECKING EXIT STATUS"
     if [ "$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
         test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
     fi
     /bin/rm -rf temp
-
-    # FIXME
-    # OMG! OH no you di'nt! ~/bin??? what are you THINKING
-    # Looks like ~/bin devolves to e.g. /var/lib/buildkite-agent/bin
-
-    # status-update will magically override "success" with "failure" as appropriate!
-    # (Based on BUILDKITE_COMMAND_EXIT_STATUS and BUILDKITE_LAST_HOOK_EXIT_STATUS)
-    ~/bin/status-update success
 
 fi
 
