@@ -93,8 +93,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    #env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    # env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -237,26 +237,40 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
     else:
         print("RUNNING SS FLOW", flush=True)
         use_pipeline = False
-        if len(pipeline_num_l) is not None:
+        print(suitesparse_data_tile_pairs)
+        if pipeline_num_l is not None:
             assert len(pipeline_num_l) == len(suitesparse_data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
             use_pipeline = True
+        else:
+            use_pipeline = False
         start = time.time()
         dataset_runtime_dict = defaultdict(float)
 
-        # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
-        suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
-        suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
-        full_tile_pairs = suitesparse_data_tile_pairs[:-1]
-        last_tile_pair = suitesparse_data_tile_pairs[-1]
-        full_pipeline_num = pipeline_num_l[0]
-        last_pipeline_num = pipeline_num_l[-1]
-        full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
-        last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
+        if use_pipeline:
+            # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
+            suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
+            suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
+            full_tile_pairs = suitesparse_data_tile_pairs[:-1]
+            last_tile_pair = suitesparse_data_tile_pairs[-1]
+            full_pipeline_num = pipeline_num_l[0]
+            last_pipeline_num = pipeline_num_l[-1]
+            full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
+            last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
+            cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
+            if len(full_tile_pairs) == 0:
+                cmd_list = [last_pipeline_cmd]
+        else:
+            suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
+            suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
+            # split into batches of 64
+            tile_pairs = [suitesparse_data_tile_pairs[i:i + 64] for i in range(0, len(suitesparse_data_tile_pairs), 64)]
+            cmd_list = []
+            # for each tile pair construct cmd
+            for tile_pair in tile_pairs:
+                cmd_list.append(["aha", "test"] + tile_pair + ["--sparse", "--multiles", str(1)])
 
-        cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
-        if len(full_tile_pairs) == 0:
-            cmd_list = [last_pipeline_cmd]
-        
+        print(cmd_list)
+
         for cmd in cmd_list:
             buildkite_call(cmd, env=env_vars)
             command = "grep \"total time\" /aha/garnet/tests/test_app/run.log"
@@ -395,11 +409,11 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = True 
+    seed_flow = True
     use_pipeline = False
     pipeline_num = 32
-    unroll = 1
-    suitesparse_data = ["football"]
+    unroll = 7
+    suitesparse_data = ["qiulp"]
 
     # Preserve backward compatibility
     if args.config == "daily": args.config = "pr_aha"  # noqa
