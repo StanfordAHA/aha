@@ -1,0 +1,16 @@
+source /aha/bin/activate
+mkdir -p /root/.modules
+source /cad/modules/tcl/init/sh
+
+cat << EOF
+
+  For pre-compiled Halide gch headers:
+      cd /aha/Halide-to-Hardware        
+      rm include/Halide.h               
+      make include/Halide.h             
+
+EOF
+
+# Restore 420MB of clockwork .git data
+echo "Restore submodule metadata"
+/aha/aha/bin/restore-dotgit.sh clockwork
