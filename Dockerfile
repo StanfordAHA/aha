@@ -177,16 +177,23 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
       rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
       rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+      echo "Wait, does clockwork metadata exist yet?" && \
+      (du -shx /aha/.modules/clockwork || echo okay) && \
     echo DONE
 
 # Sam 1 - clone and set up sam
+# ??? Is this where ALL SUBMODULES get initialized ???
 COPY ./.git/modules/sam/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   cd /aha/sam && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/sam/ && \
   ln -s /aha/.git/modules/sam/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
+  \
+  echo "Cleanup: 420M .git metadata, to be restored by bashrc on startup" && \
+  (du -shx /aha/.modules/clockwork || echo okay) && \
+  rm -rf /aha/.modules/clockwork
 
 # Sam 2 - build sam
 COPY ./sam /aha/sam
@@ -239,21 +246,23 @@ COPY . /aha
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
 
-# bashrc
+# Add startup instructions to existing /root/.bashrc
 # 1. Create a /root/.modules so as to avoid this warning on startup:
 #    "+(0):WARN:0: Directory '/root/.modules' not found"
 # 2. Tell user how to restore gch headers.
 
-RUN echo "source /aha/bin/activate"        >> /root/.bashrc && \
-    echo "mkdir -p /root/.modules"         >> /root/.bashrc && \
-    echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc && \
-    echo 'echo ""                                      ' >> /root/.bashrc && \
-    echo 'echo "For pre-compiled Halide 'gch' headers:"' >> /root/.bashrc && \
-    echo 'echo "    cd /aha/Halide-to-Hardware"        ' >> /root/.bashrc && \
-    echo 'echo "    rm include/Halide.h"               ' >> /root/.bashrc && \
-    echo 'echo "    make include/Halide.h"             ' >> /root/.bashrc && \
-    echo 'echo ""                                      ' >> /root/.bashrc && \
-    echo DONE
+RUN echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && echo DONE
+
+# RUN echo "source /aha/bin/activate"        >> /root/.bashrc && \
+#     echo "mkdir -p /root/.modules"         >> /root/.bashrc && \
+#     echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc && \
+#     echo 'echo ""                                      ' >> /root/.bashrc && \
+#     echo 'echo "For pre-compiled Halide 'gch' headers:"' >> /root/.bashrc && \
+#     echo 'echo "    cd /aha/Halide-to-Hardware"        ' >> /root/.bashrc && \
+#     echo 'echo "    rm include/Halide.h"               ' >> /root/.bashrc && \
+#     echo 'echo "    make include/Halide.h"             ' >> /root/.bashrc && \
+#     echo 'echo ""                                      ' >> /root/.bashrc && \
+#     echo DONE
 
 # Restore halide distrib files on every container startup
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
