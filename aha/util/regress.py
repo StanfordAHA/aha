@@ -21,7 +21,7 @@ def add_subparser(subparser):
     parser.add_argument("--opal-workaround", action="store_true")
     parser.add_argument("--non-seed-flow", action="store_true")
     parser.add_argument("--use-pipeline", action="store_true")
-    parser.add_argument("--pipeline-num", default=64, type=int)
+    parser.add_argument("--pipeline-num", default=32, type=int)
     parser.add_argument("--sparse-tile-pairs-list", default="", type=str, nargs="*")
     parser.set_defaults(dispatch=dispatch)
 
