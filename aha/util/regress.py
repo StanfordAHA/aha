@@ -99,7 +99,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
     print(f"--- mapping all tests", flush=True)
     start = time.time()
     env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
-    #env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    # env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -231,27 +231,41 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
         if pipeline_num_l is not None:
             assert len(pipeline_num_l) == len(data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
             use_pipeline = True
+        else:
+            use_pipeline = False
         start = time.time()
+        if use_pipeline:
+            # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
+            data_tile_pairs = [f"{test}_{tile}/GLB_DIR/{test}_combined_seed_{tile}" for tile in data_tile_pairs]
+            full_tile_pairs = []
+            full_pipeline_cmd = None
+            # if there's only one batch, we don't need to handle partially full batches
+            if len(data_tile_pairs) > 1:
+                full_tile_pairs = data_tile_pairs[:-1]
+                full_pipeline_num = pipeline_num_l[0]
+                full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
+            last_tile_pair = data_tile_pairs[-1]
+            last_pipeline_num = pipeline_num_l[-1]
+            last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
 
-        # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
-        data_tile_pairs = [f"{test}_{tile}/GLB_DIR/{test}_combined_seed_{tile}" for tile in data_tile_pairs]
-        full_tile_pairs = []
-        full_pipeline_cmd = None
-        # if there's only one batch, we don't need to handle partially full batches
-        if len(data_tile_pairs) > 1:
-            full_tile_pairs = data_tile_pairs[:-1]
-            full_pipeline_num = pipeline_num_l[0]
-            full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
-        last_tile_pair = data_tile_pairs[-1]
-        last_pipeline_num = pipeline_num_l[-1]
-        last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
+            cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
+            if len(full_tile_pairs) == 0:
+                cmd_list = [last_pipeline_cmd]
+            
+            if testname not in test_dataset_runtime_dict:
+                test_dataset_runtime_dict[testname] = defaultdict(float)
+        else:
+            data_tile_pairs = [f"{test}_{tile}/GLB_DIR/{test}_combined_seed_{tile}" for tile in data_tile_pairs]
+            # split into batches of 64
+            tile_pairs = [data_tile_pairs[i:i + 64] for i in range(0, len(data_tile_pairs), 64)]
+            cmd_list = []
+            # for each tile pair construct cmd
+            for tile_pair in tile_pairs:
+                cmd_list.append(["aha", "test"] + tile_pair + ["--sparse", "--multiles", str(1)])
+            if testname not in test_dataset_runtime_dict:
+                test_dataset_runtime_dict[testname] = defaultdict(float)
 
-        cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
-        if len(full_tile_pairs) == 0:
-            cmd_list = [last_pipeline_cmd]
-        
-        if testname not in test_dataset_runtime_dict:
-            test_dataset_runtime_dict[testname] = defaultdict(float)
+        print(cmd_list)
 
         for cmd in cmd_list:
             if cmd is None:

@@ -16,7 +16,7 @@ setup(
         'gitpython',
         'networkx',
         'packaging',
-        'pydot',
+        'pydot==2.0.0',
         'requirements-parser',
         'tabulate',
         'pandas',
