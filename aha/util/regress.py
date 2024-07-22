@@ -163,7 +163,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
     return time_map
 
 
-def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=64, unroll=1):
+def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unroll=1):
     script_path = "/aha/garnet/"
     pairs_cpy = data_tile_pairs.copy()
     all_tiles = []
