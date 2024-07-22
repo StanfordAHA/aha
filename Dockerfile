@@ -193,6 +193,7 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   \
   echo "Cleanup: 420M .git metadata, to be restored by bashrc on startup" && \
   (du -shx /aha/.modules/clockwork || echo okay) && \
+  (du -shx /aha/clockwork || echo okay) && \
   rm -rf /aha/.modules/clockwork
 
 # Sam 2 - build sam
@@ -234,6 +235,8 @@ COPY ./aha /aha/aha
 
 WORKDIR /aha
 RUN source bin/activate && \
+  echo "FOO NOT YET, right?" && \
+  (du -shx /aha/.modules/clockwork || echo okay) && \
   echo "--- ..Final aha deps install" && \
   pip install -e . && \
   aha deps install
@@ -242,6 +245,15 @@ RUN source bin/activate && \
 # in EVERYTHING. Anything from here on down CANNOT BE CACHED.
 WORKDIR /aha
 COPY . /aha
+RUN cd /aha && \
+  echo "FOO here it is, right?" && \
+  (du -shx /aha/.modules/clockwork || echo okay) && \
+  \
+  echo "Cleanup: 420M .git metadata, to be restored by bashrc on startup" && \
+  (du -shx /aha/.modules/clockwork || echo okay) && \
+  rm -rf /aha/.modules/clockwork && \
+  (du -shx /aha/.modules/clockwork || echo okay) && \
+  echo DONE
 
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
