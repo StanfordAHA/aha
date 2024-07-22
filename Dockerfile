@@ -178,7 +178,7 @@ RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
       rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
       echo "Wait, does clockwork metadata exist yet?" && \
-      (du -shx /aha/.modules/clockwork || echo okay) && \
+      (du -shx /aha/.git/modules/clockwork || echo okay) && \
     echo DONE
 
 # Sam 1 - clone and set up sam
@@ -192,9 +192,9 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
   \
   echo "Cleanup: 420M .git metadata, to be restored by bashrc on startup" && \
-  (du -shx /aha/.modules/clockwork || echo okay) && \
+  (du -shx /aha/.git/modules/clockwork || echo okay) && \
   (du -shx /aha/clockwork || echo okay) && \
-  rm -rf /aha/.modules/clockwork
+  rm -rf /aha/.git/modules/clockwork
 
 # Sam 2 - build sam
 COPY ./sam /aha/sam
@@ -236,7 +236,7 @@ COPY ./aha /aha/aha
 WORKDIR /aha
 RUN source bin/activate && \
   echo "FOO NOT YET, right?" && \
-  (du -shx /aha/.modules/clockwork || echo okay) && \
+  (du -shx /aha/.git/modules/clockwork || echo okay) && \
   echo "--- ..Final aha deps install" && \
   pip install -e . && \
   aha deps install
@@ -247,12 +247,12 @@ WORKDIR /aha
 COPY . /aha
 RUN cd /aha && \
   echo "FOO here it is, right?" && \
-  (du -shx /aha/.modules/clockwork || echo okay) && \
+  (du -shx /aha/.git/modules/clockwork || echo okay) && \
   \
   echo "Cleanup: 420M .git metadata, to be restored by bashrc on startup" && \
-  (du -shx /aha/.modules/clockwork || echo okay) && \
-  rm -rf /aha/.modules/clockwork && \
-  (du -shx /aha/.modules/clockwork || echo okay) && \
+  (du -shx /aha/.git/modules/clockwork || echo okay) && \
+  rm -rf /aha/.git/modules/clockwork && \
+  (du -shx /aha/.git/modules/clockwork || echo okay) && \
   echo DONE
 
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
