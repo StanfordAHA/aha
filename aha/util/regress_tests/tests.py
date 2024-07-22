@@ -13,7 +13,7 @@ class Tests:
 
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
-            width, height = 4, 4
+            width, height = 8, 8,
             sparse_tests = [
                 "vec_identity"
             ]
