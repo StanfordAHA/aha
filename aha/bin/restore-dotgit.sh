@@ -53,15 +53,3 @@ echo ""
 echo "+++ DONE"
 printf "\ngit status\n"; git status -uno
 printf "\ngit branch\n"; git branch
-
-
-
-
-
-##############################################################################
-# OLD/DELETEME
-
-# (cd $submod; git branch) # FAILS b/c no .git, duh
-
-# echo ""; echo "Remove existing metadata '$d'"
-# cd /aha/.git/modules; test -d $submod && /bin/rm -rf $d || echo okay
