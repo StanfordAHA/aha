@@ -20,7 +20,8 @@ setup(
         'requirements-parser',
         'tabulate',
         'pandas',
-        'pulp'
+        'pulp',
+        'toml'
     ],
     setup_requires = [
         'networkx',

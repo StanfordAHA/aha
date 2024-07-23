@@ -10,6 +10,7 @@ import tempfile
 import glob
 from collections import defaultdict
 import shutil
+import toml
 
 
 def add_subparser(subparser):
@@ -18,6 +19,10 @@ def add_subparser(subparser):
     parser.add_argument("--env-parameters", default="", type=str)
     parser.add_argument("--include-dense-only-tests", action="store_true")
     parser.add_argument("--opal-workaround", action="store_true")
+    parser.add_argument("--non-seed-flow", action="store_true")
+    parser.add_argument("--use-pipeline", action="store_true")
+    parser.add_argument("--pipeline-num", default=32, type=int)
+    parser.add_argument("--sparse-tile-pairs-list", default="", type=str, nargs="*")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -87,7 +92,7 @@ def gen_garnet(width, height, dense_only=False):
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=False, unroll=1):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1):
     if len(sparse_tests) == 0:
         return 0
     
@@ -144,7 +149,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
             "/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR",
             "--width", str(width),
             "--height", str(height),
-            "--suitesparse_data_tile_pairs", *suitesparse_data_tile_pairs,
+            "--kernel_name", kernel_name,
+            "--data_tile_pairs", *data_tile_pairs,
             "--unroll", str(unroll),
         ]
         if opal_workaround:
@@ -157,60 +163,45 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     return time_map
 
 
-def format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num=64, unroll=1):
+def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unroll=1):
     script_path = "/aha/garnet/"
-    pairs_cpy = suitesparse_data_tile_pairs.copy()
+    pairs_cpy = data_tile_pairs.copy()
     all_tiles = []
     num_list = []
-    for suitesparse_datum in suitesparse_data:
-        pairs_cpy_tmp = pairs_cpy.copy()
-        pairs_cpy = []
-        test_l = []
-        tile_format = ""
-        for tile in pairs_cpy_tmp:
-            if test in tile and suitesparse_datum in tile:
-                test_l.append(int(tile.split("_")[-1][4:]))
-                if tile_format == "":
-                    tile_format = tile
-            else:
-                pairs_cpy.append(tile)
-        test_l.sort()
-        test_l = [str(x) for x in test_l]
+    test_l = []
+    tile_format = ""
+    for tile in pairs_cpy:
+        test_l.append(kernel_name + "-" + tile.replace("/", "_"))
 
-        for i in range(0, len(test_l), pipeline_num):
-            test_l_str = f"concat{i}"
-            tile_format_t = tile_format.split("/")
-            tile_format_name = tile_format_t[-1]
-            tile_format_name = tile_format_name.split("_")
-            tile_format_name[-1] = "tile_" + test_l_str
-            tile_format_name = "_".join(tile_format_name)
-            tile_format_t[-1] = tile_format_name
-            tile_format_t = "/".join(tile_format_t)
-            all_tiles.append(tile_format_t)
+    for i in range(0, len(test_l), pipeline_num):
+        test_l_str = f"concat{i}"
+        tile_format_t = f"{kernel_name}-tile_{test_l_str}"
+        all_tiles.append(tile_format_t)
 
-            if i + pipeline_num < len(test_l):
-                test_l_s = test_l[i:i+pipeline_num]
-            else:
-                test_l_s = test_l[i:]
-            true_pipeline_num = len(test_l_s)
-            num_list.append(true_pipeline_num)
-            print(f"CONCATENATING TILES {test_l_s}")
-            subprocess.call(
-                [
-                    "python",
-                    "/aha/garnet/concat_tiles.py",
-                    test,
-                    suitesparse_datum,
-                    test_l_str,
-                    str(unroll),
-                    *test_l_s,
-                ],
-                cwd = script_path
-            )
+        if i + pipeline_num < len(test_l):
+            test_l_s = test_l[i:i+pipeline_num]
+        else:
+            test_l_s = test_l[i:]
+        true_pipeline_num = len(test_l_s)
+        num_list.append(true_pipeline_num)
+        print(f"CONCATENATING TILES {test_l_s}")
+        subprocess.call(
+            [
+                "python",
+                "/aha/garnet/concat_tiles.py",
+                test,
+                kernel_name,
+                test_l_str,
+                str(unroll),
+                *test_l_s,
+            ],
+            cwd = script_path
+        )
+
     return all_tiles, num_list
 
 
-def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test=""):
+def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test="", test_dataset_runtime_dict=None):
     if test == "":
         test = testname
 
@@ -237,52 +228,54 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, pipeline_n
     else:
         print("RUNNING SS FLOW", flush=True)
         use_pipeline = False
-        print(suitesparse_data_tile_pairs)
         if pipeline_num_l is not None:
-            assert len(pipeline_num_l) == len(suitesparse_data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
+            assert len(pipeline_num_l) == len(data_tile_pairs), "Pipeline number list must be the same length as the number of tile pairs"
             use_pipeline = True
         else:
             use_pipeline = False
         start = time.time()
-        dataset_runtime_dict = defaultdict(float)
-
         if use_pipeline:
             # Last batch won't have the same number of tiles as the rest, so we do two VCS calls
-            suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
-            suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
-            full_tile_pairs = suitesparse_data_tile_pairs[:-1]
-            last_tile_pair = suitesparse_data_tile_pairs[-1]
-            full_pipeline_num = pipeline_num_l[0]
+            data_tile_pairs = [f"{test}_{tile}/GLB_DIR/{test}_combined_seed_{tile}" for tile in data_tile_pairs]
+            full_tile_pairs = []
+            full_pipeline_cmd = None
+            # if there's only one batch, we don't need to handle partially full batches
+            if len(data_tile_pairs) > 1:
+                full_tile_pairs = data_tile_pairs[:-1]
+                full_pipeline_num = pipeline_num_l[0]
+                full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
+            last_tile_pair = data_tile_pairs[-1]
             last_pipeline_num = pipeline_num_l[-1]
-            full_pipeline_cmd = ["aha", "test"] + full_tile_pairs + ["--sparse", "--multiles", str(full_pipeline_num)]
             last_pipeline_cmd = ["aha", "test"] + [last_tile_pair] + ["--sparse", "--multiles", str(last_pipeline_num)]
+
             cmd_list = [full_pipeline_cmd, last_pipeline_cmd]
             if len(full_tile_pairs) == 0:
                 cmd_list = [last_pipeline_cmd]
+            
+            if testname not in test_dataset_runtime_dict:
+                test_dataset_runtime_dict[testname] = defaultdict(float)
         else:
-            suitesparse_data_tile_pairs = [ss_tile_pair.split("MAT_TMP_DIR/")[1] for ss_tile_pair in suitesparse_data_tile_pairs]
-            suitesparse_data_tile_pairs = [f"{test}_{ss_tile_pair}/GLB_DIR/{test}_combined_seed_{ss_tile_pair}" for ss_tile_pair in suitesparse_data_tile_pairs]
+            data_tile_pairs = [f"{test}_{tile}/GLB_DIR/{test}_combined_seed_{tile}" for tile in data_tile_pairs]
             # split into batches of 64
-            tile_pairs = [suitesparse_data_tile_pairs[i:i + 64] for i in range(0, len(suitesparse_data_tile_pairs), 64)]
+            tile_pairs = [data_tile_pairs[i:i + 64] for i in range(0, len(data_tile_pairs), 64)]
             cmd_list = []
             # for each tile pair construct cmd
             for tile_pair in tile_pairs:
                 cmd_list.append(["aha", "test"] + tile_pair + ["--sparse", "--multiles", str(1)])
+            if testname not in test_dataset_runtime_dict:
+                test_dataset_runtime_dict[testname] = defaultdict(float)
 
         print(cmd_list)
 
         for cmd in cmd_list:
+            if cmd is None:
+                continue
             buildkite_call(cmd, env=env_vars)
             command = "grep \"total time\" /aha/garnet/tests/test_app/run.log"
             results = subprocess.check_output(command, shell=True, encoding='utf-8')
             for result in results.split("\n"):
                 if testname in result:
-                    dataset_runtime_dict[result.split(f"{testname}-")[1].split("_")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
-
-        with open("/aha/garnet/suitesparse_perf_out.txt", 'a') as perf_out_file:
-            for dataset, time_value in dataset_runtime_dict.items():
-                perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")    
-
+                    test_dataset_runtime_dict[testname][result.split(f"{testname}_")[1].split("-")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
         time_test = time.time() - start
     return 0, 0, time_test
@@ -409,11 +402,10 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = True
-    use_pipeline = False
-    pipeline_num = 32
+    seed_flow = not args.non_seed_flow
+    use_pipeline = args.use_pipeline
+    pipeline_num = args.pipeline_num
     unroll = 1
-    suitesparse_data = ["qiulp"]
 
     # Preserve backward compatibility
     if args.config == "daily": args.config = "pr_aha"  # noqa
@@ -461,49 +453,56 @@ def dispatch(args, extra_args=None):
     t = gen_garnet(width, height, dense_only=False)
     info.append(["garnet with sparse and dense", t])
 
-    suitesparse_data_tile_pairs = []
+    data_tile_pairs = []
+    kernel_name = ""
 
     if not(seed_flow):
-        if not os.path.exists("/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR"):
-            os.mkdir("/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR")
-
-        # Remove whatever is in MAT_TMP_DIR first
-        exit_status = os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/*")
-        if os.WEXITSTATUS(exit_status) != 0:
-            raise RuntimeError(f"Command 'rm -rf /aha/garnet/SPARSE_TESTS//MAT_TMP_DIR/*' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
-        
-        for test in sparse_tests:
-            for suitesparse_datum in suitesparse_data:
-                if "tensor" not in test:
-                    command = "python3 /aha/garnet/copy_formatted.py " + test + " " + suitesparse_datum
-                else:
-                    command = "python3 /aha/garnet/copy_formatted_tensor_tiling.py " + test + " " + suitesparse_datum
-                subprocess.call(command, shell=True)
-            this_sparse_test_tile_pairs = glob.glob(f"/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR/{test}*")
-            suitesparse_data_tile_pairs.extend(this_sparse_test_tile_pairs)
-
-    #if not(seed_flow):
-    #    suitesparse_data_tile_pairs = os.listdir("/aha/garnet/SPARSE_TESTS/MAT_TMP_DIR")
-
-    print("HERE ARE THE SS DATA TILE PAIRS!")
-    print(suitesparse_data_tile_pairs)
-
-    generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround, unroll=unroll)
-
-    if not(seed_flow):
-        if os.path.exists("/aha/garnet/suitesparse_perf_out.txt"):
-            os.system("rm /aha/garnet/suitesparse_perf_out.txt")
-        with open("/aha/garnet/suitesparse_perf_out.txt", 'w') as perf_out_file:
+        if os.path.exists("/aha/garnet/perf_stats.txt"):
+            os.system("rm /aha/garnet/perf_stats.txt")
+        with open("/aha/garnet/perf_stats.txt", 'w') as perf_out_file:
             perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
-    for test in sparse_tests:
-        if use_pipeline:
-            assert (not seed_flow), "Pipeline mode is not supported with seed flow"
-            tile_pairs, pipeline_num_l = format_concat_tiles(test, suitesparse_data_tile_pairs, suitesparse_data, pipeline_num, unroll)
-            t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-        else:
-            t0, t1, t2 = test_sparse_app(test, seed_flow, suitesparse_data_tile_pairs, opal_workaround=args.opal_workaround)
+        test_dataset_runtime_dict = {}
+        
+        data_tile_pairs_lists = []
+        for sparse_tile_pairs_list in args.sparse_tile_pairs_list:
+            data_tile_pairs_lists.extend(glob.glob(sparse_tile_pairs_list))
+
+        for data_tile_pairs_file in data_tile_pairs_lists:
+            with open(data_tile_pairs_file, 'r') as f:
+                tile_pairs_dict = toml.load(f)
+                data_tile_pairs = tile_pairs_dict["sam_config"]["sam_path"]
+                kernel_name = tile_pairs_dict["sam_config"]["name"]
+
+            print("HERE ARE THE DATA TILE PAIRS!")
+            print(data_tile_pairs)
+
+            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll)
+
+            for test in sparse_tests:
+                if use_pipeline:
+                    assert (not seed_flow), "Pipeline mode is not supported with seed flow"
+                    tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict)
+                    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+                else:
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict)
+                    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+                # remove the generated collateral for tiles that passed to avoid overrunning the disk
+                os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/{test}*")
+                os.system(f"rm /aha/garnet/SPARSE_TESTS/tensor_X*")
+
+        with open("/aha/garnet/perf_stats.txt", 'a') as perf_out_file:
+            for testname, dataset_runtime_dict in test_dataset_runtime_dict.items():
+                for dataset, time_value in dataset_runtime_dict.items():
+                    perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")   
+    else:
+        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll)
+
+        for test in sparse_tests:
+            assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
+            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
