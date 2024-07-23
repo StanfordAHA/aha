@@ -11,6 +11,7 @@ cat << EOF
 
 EOF
 
-# Restore 420MB of clockwork .git data
+# Restore 420MB of clockwork .git data + 320MB of halide data
 echo "Restore submodule metadata"
 /aha/aha/bin/restore-dotgit.sh clockwork
+/aha/aha/bin/restore-dotgit.sh Halide-to-Hardware
