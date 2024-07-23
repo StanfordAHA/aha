@@ -99,8 +99,8 @@ steps:
   - set -x; docker images; docker ps;
 
   - echo "--- Remove 700MB of clockwork, halide metadata"
-  - dotgit=.git/modules/clockwork;          du -shx $dotgit; /bin/rm -rf $$dotgit
-  - dotgit=.git/modules/Halide-to-Hardware; du -shx $dotgit; /bin/rm -rf $$dotgit
+  - dotgit=.git/modules/clockwork;          du -shx $$dotgit; /bin/rm -rf $$dotgit
+  - dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
 
   - echo "--- Creating garnet Image"
   - docker build --progress plain . -t "$$IMAGE"
