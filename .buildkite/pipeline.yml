@@ -217,6 +217,11 @@ steps:
 - wait: { continue_on_failure: true } 
 
 - label: "Cleanup"
+
+  # Don't need time-wasting clone just for cleanup! Right?
+  plugins:
+    - uber-workflow/run-without-clone:
+
   command: |
 
     echo '- Show outcomes from each regression step'
