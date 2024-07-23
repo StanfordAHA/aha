@@ -10,15 +10,19 @@ on:
     - cron: '0 11 * * 0'
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
+
+    - name: Delete clockwork and halide metadata
+      run: |
+        du -shx     .git/modules/clockwork .git/modules/Halide-to-Hardware
+        /bin/rm -rf .git/modules/clockwork .git/modules/Halide-to-Hardware
+
     - name: Publish Docker image
       uses: elgohr/Publish-Docker-Github-Action@2.12
       with:
