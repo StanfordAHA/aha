@@ -54,8 +54,12 @@ RUN apt-get update && \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
         libncurses5 libxml2-dev \
+        # sam
         graphviz \
         xxd \
+        # lego
+        libboost-all-dev \
+        # pono
         time \ 
         m4 \
         && \
