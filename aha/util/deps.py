@@ -55,7 +55,7 @@ def dispatch(args, extra_args=None):
             "pythunder": "cgra_pnr/thunder",
             "mflowgen": "mflowgen",
             "metamapper": "MetaMapper",
-            "peak_gen": "peak_generator"
+            "peak_gen": "peak_generator",
             "Lego_v0": "Lego_v0"
         }
 
