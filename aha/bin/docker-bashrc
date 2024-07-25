@@ -11,7 +11,22 @@ cat << EOF
 
 EOF
 
+cat << EOF
+  Restoring submodule metadata in the background.
+  To monitor progress, can 'cat' or 'tail' log files e.g.
+      tail -f /tmp/restore-clockwork
+      tail -f /tmp/restore-halide
+
+EOF
 # Restore 420MB of clockwork .git data + 320MB of halide data
-echo "Restore submodule metadata"
-/aha/aha/bin/restore-dotgit.sh clockwork
-/aha/aha/bin/restore-dotgit.sh Halide-to-Hardware
+(
+  echo '/aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
+  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork
+  echo "Finished restoring clockwork metadata"
+) &
+(
+  echo '/aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
+  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide
+  echo "Finished restoring halide metadata"
+) &
+
