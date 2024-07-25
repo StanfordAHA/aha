@@ -98,6 +98,10 @@ steps:
   - echo "--- DEBUG DOCKER TRASH"
   - set -x; docker images; docker ps;
 
+  - echo "--- Remove 700MB of clockwork, halide metadata"
+  - dotgit=.git/modules/clockwork;          du -shx $$dotgit; /bin/rm -rf $$dotgit
+  - dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
+
   - echo "--- Creating garnet Image"
   - docker build --progress plain . -t "$$IMAGE"
 
@@ -213,6 +217,11 @@ steps:
 - wait: { continue_on_failure: true } 
 
 - label: "Cleanup"
+
+  # Don't need time-wasting clone just for cleanup! Right?
+  plugins:
+    - uber-workflow/run-without-clone:
+
   command: |
 
     echo '- Show outcomes from each regression step'

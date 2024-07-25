@@ -239,21 +239,12 @@ COPY . /aha
 ENV OA_UNSUPPORTED_PLAT=linux_rhel60
 ENV USER=docker
 
-# bashrc
+# Add startup instructions to existing /root/.bashrc
 # 1. Create a /root/.modules so as to avoid this warning on startup:
 #    "+(0):WARN:0: Directory '/root/.modules' not found"
 # 2. Tell user how to restore gch headers.
 
-RUN echo "source /aha/bin/activate"        >> /root/.bashrc && \
-    echo "mkdir -p /root/.modules"         >> /root/.bashrc && \
-    echo "source /cad/modules/tcl/init/sh" >> /root/.bashrc && \
-    echo 'echo ""                                      ' >> /root/.bashrc && \
-    echo 'echo "For pre-compiled Halide 'gch' headers:"' >> /root/.bashrc && \
-    echo 'echo "    cd /aha/Halide-to-Hardware"        ' >> /root/.bashrc && \
-    echo 'echo "    rm include/Halide.h"               ' >> /root/.bashrc && \
-    echo 'echo "    make include/Halide.h"             ' >> /root/.bashrc && \
-    echo 'echo ""                                      ' >> /root/.bashrc && \
-    echo DONE
+RUN echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && echo DONE
 
 # Restore halide distrib files on every container startup
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
