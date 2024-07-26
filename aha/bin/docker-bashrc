@@ -36,14 +36,15 @@ EOF
 ########################################################################
 # Restore clang - do it in the background for minimal disruption
 
-cat << EOF
+test -f /usr/bin/clang-7 || cat << EOF
 
   Restoring clang and llvm in the background.
   To monitor progress, can 'cat' or 'tail' log file e.g.
       tail /tmp/restore-clang
 
 EOF
-( url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+test -f /usr/bin/clang-7 || (
+  url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz
   echo "  wget $url"
   wget -nv -O ~/clang7.tar.xz $url
   echo ""
@@ -52,4 +53,4 @@ EOF
   printf "\nFinished restoring clang\n"
 ) &
 
-sleep 4
+sleep 1
