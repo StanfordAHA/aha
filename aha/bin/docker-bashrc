@@ -25,12 +25,12 @@ EOF
 
 ( echo '  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
   /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork
-  echo "Finished restoring clockwork metadata"
+  print "\nFinished restoring clockwork metadata\n"
 ) &
 
 ( echo '  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
   /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide
-  echo "Finished restoring halide metadata"
+  printf "\nFinished restoring halide metadata\n"
 ) &
 
 ########################################################################
@@ -46,8 +46,10 @@ EOF
 ( url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz
   echo "  wget $url"
   wget -nv -O ~/clang7.tar.xz $url
+  echo ""
   tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ >& /tmp/restore-clang
   rm -rf ~/clang7.tar.xz
+  print "\nFinished restoring clang\n"
 ) &
 
 sleep 4
