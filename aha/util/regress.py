@@ -23,6 +23,7 @@ def add_subparser(subparser):
     parser.add_argument("--use-pipeline", action="store_true")
     parser.add_argument("--pipeline-num", default=32, type=int)
     parser.add_argument("--sparse-tile-pairs-list", default="", type=str, nargs="*")
+    parser.add_argument("--unroll", default=1, type=int)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -405,7 +406,7 @@ def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
     pipeline_num = args.pipeline_num
-    unroll = 1
+    unroll = args.unroll
 
     # Preserve backward compatibility
     if args.config == "daily": args.config = "pr_aha"  # noqa
