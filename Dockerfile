@@ -72,9 +72,7 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake && \
-    wget -nv -O ~/clang7.tar.xz http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz && \
-    tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ && \
-    rm -rf ~/clang7.tar.xz
+    echo DONE
 
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
@@ -168,15 +166,31 @@ RUN ./misc/install_deps_ahaflow.sh && \
       rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
     echo DONE
 
-# Halide-to-Hardware
+# Halide-install step, below, modified to delete 1G of clang when finished.
+# Clang will be restored by way of .bashrc (aha/bin/docker-bashrc).
+
+# Halide-to-Hardware - Step 32/65 ish - requires clang
 COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
 WORKDIR /aha/Halide-to-Hardware
-RUN export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
+RUN \
+  : CLANG-INSTALL && \
+    echo "Install 1G of clang/llvm" && \
+      url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz && \
+      wget -nv -O ~/clang7.tar.xz $url && \
+      tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ && \
+      rm -rf ~/clang7.tar.xz && \
+  : BUILD && \
+    echo "Build and test Halide compiler" && \
+      export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
+  : CLEANUP && \
     echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
       rm -rf lib/* && \
       rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
       rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+    echo "Cleanup: 1G clang in /usr, will be restored by bashrc" && \
+      rm -rf /usr/*/{*clang*,*llvm*,*LLVM*} && \
+  : DONE && \
     echo DONE
 
 # Sam 1 - clone and set up sam
@@ -193,6 +207,7 @@ COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
+# ------------------------------------------------------------------------------
 # Final pip installs: AHA Tools etc.
 
 # Note kratos is slow but stable; maybe it should be installed much earlier in dockerfile
@@ -200,10 +215,7 @@ RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
 # For "aha deps install"; copy all the modules that not yet been copied
 COPY ./archipelago /aha/archipelago
 COPY ./ast_tools /aha/ast_tools
-# COPY ./BufferMapping /aha/BufferMapping
 COPY ./canal /aha/canal
-# COPY ./cgra_pnr/cyclone /aha/cgra_pnr/cyclone
-# COPY ./cgra_pnr/thunder /aha/cgra_pnr/thunder
 COPY ./cgra_pnr /aha/cgra_pnr
 COPY ./cosa /aha/cosa
 COPY ./fault /aha/fault
