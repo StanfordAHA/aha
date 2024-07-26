@@ -11,6 +11,9 @@ cat << EOF
 
 EOF
 
+########################################################################
+# Restore submodules - do it in the background for minimal disruption
+
 cat << EOF
   Restoring submodule metadata in the background.
   To monitor progress, can 'cat' or 'tail' log files e.g.
@@ -19,14 +22,23 @@ cat << EOF
 
 EOF
 # Restore 420MB of clockwork .git data + 320MB of halide data
-(
-  echo '/aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
+
+( echo '/aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
   /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork
   echo "Finished restoring clockwork metadata"
 ) &
-(
-  echo '/aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
+
+( echo '/aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
   /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide
   echo "Finished restoring halide metadata"
+) &
+
+########################################################################
+# Restore clang - do it in the background for minimal disruption
+
+( url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+  wget -nv -O ~/clang7.tar.xz $url
+  tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/
+  rm -rf ~/clang7.tar.xz
 ) &
 
