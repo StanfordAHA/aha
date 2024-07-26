@@ -25,7 +25,7 @@ EOF
 
 ( echo '  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
   /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork
-  print "\nFinished restoring clockwork metadata\n"
+  printf "\nFinished restoring clockwork metadata\n"
 ) &
 
 ( echo '  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
@@ -49,7 +49,7 @@ EOF
   echo ""
   tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ >& /tmp/restore-clang
   rm -rf ~/clang7.tar.xz
-  print "\nFinished restoring clang\n"
+  printf "\nFinished restoring clang\n"
 ) &
 
 sleep 4
