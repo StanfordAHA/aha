@@ -57,8 +57,6 @@ RUN apt-get update && \
         # sam
         graphviz \
         xxd \
-        # lego
-        libboost-all-dev \
         # pono
         time \ 
         m4 \
