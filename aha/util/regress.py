@@ -74,7 +74,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -195,7 +195,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, use_fp=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -241,7 +241,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None,)
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test])
+    if use_fp:
+        buildkite_call(["aha", "test", test, "--dense-fp"])
+    else:
+        buildkite_call(["aha", "test", test])
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -336,6 +339,9 @@ def dispatch(args, extra_args=None):
             #"conv4_x",
             #"conv5_1",
             #"conv5_x"
+        ]
+        glb_tests_fp = [
+            "apps/matrix_multiplication_fp"
         ]
         hardcoded_dense_tests = []
     elif args.config == "pr":
@@ -581,6 +587,11 @@ def dispatch(args, extra_args=None):
     for test in hardcoded_dense_tests:
         t0, t1, t2 = test_hardcoded_dense_app(test,
                                     width, height, args.env_parameters, extra_args)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+    
+    for test in glb_tests_fp:
+        t0, t1, t2 = test_dense_app(test, 
+                                    width, height, args.env_parameters, extra_args, use_fp=True)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         
     print(f"+++ TIMING INFO", flush=True)
