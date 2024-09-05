@@ -91,3 +91,6 @@
 [submodule "pono"]
 	path = pono
 	url = https://github.com/upscale-project/pono.git
+[submodule "archipelago"]
+	path = archipelago
+	url = https://github.com/StanfordAHA/archipelago.git
