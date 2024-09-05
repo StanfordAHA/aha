@@ -58,10 +58,6 @@
     path = peak
     url = https://github.com/cdonovick/peak
     branch = master
-[submodule "archipelago"]
-    path = archipelago
-	url = https://github.com/kuree/archipelago
-	branch = master 
 [submodule "cgra_pnr"]
     path = cgra_pnr
     url = https://github.com/kuree/cgra_pnr
