@@ -308,7 +308,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
 
 def dispatch(args, extra_args=None):
-    seed_flow = False
+    seed_flow = True
     # suitesparse_data = ["bcsstm26"]
     suitesparse_data = ["rand_large_tensor5"]
     if args.config == "fast":
@@ -320,28 +320,30 @@ def dispatch(args, extra_args=None):
             # "matmul_ijk",
             # "matmul_ikj",
             # "tensor3_ttv",
-            # "tensor3_ttm",
+            # "tensor3_ttm", # have to use different cgra size (e.g. 20x16)
             # "tensor3_innerprod",
-            "tensor3_mttkrp"
+            "fp_matmul_ijk",
+            # "fp_spmm_ijk",
+            # "tensor3_mttkrp"
         ]
         glb_tests = [
-            #"apps/gaussian",
-            #"apps/unsharp",
-            #"apps/harris_color",
-            #"apps/camera_pipeline_2x2"
+            # "apps/gaussian",
+            # "apps/unsharp",
+            # "apps/harris_color",
+            # "apps/camera_pipeline_2x2"
         ]
         resnet_tests = [
-            #"conv1",
-            #"conv2_x",
-            #"conv3_1",
-            #"conv3_x",
-            #"conv4_1",
-            #"conv4_x",
-            #"conv5_1",
-            #"conv5_x"
+            # "conv1",
+            # "conv2_x",
+            # "conv3_1",
+            # "conv3_x",
+            # "conv4_1",
+            # "conv4_x",
+            # "conv5_1",
+            # "conv5_x"
         ]
         glb_tests_fp = [
-            "apps/matrix_multiplication_fp"
+            # "apps/matrix_multiplication_fp"
         ]
         hardcoded_dense_tests = []
     elif args.config == "pr":
