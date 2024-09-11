@@ -86,7 +86,7 @@
     },
     "apps/matrix_multiplication":{
         "default":{
-            "HALIDE_GEN_ARGS":"input_height=128 input_height_tile=64 input_width=64 kernel_width=64 input_width_unroll=8 kernel_width_unroll=32 glb_i=8 glb_k=8 glb_o=8 m_input_width=1 m_kernel_width=1",
+            "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1"
         },
@@ -96,10 +96,28 @@
             "DISABLE_GP":"1"
         },
         "sweep":{
-            "HALIDE_GEN_ARGS":"input_height=128 input_height_tile=64 input_width=64 kernel_width=64 input_width_unroll=8 kernel_width_unroll=32 glb_i=8 glb_k=8 glb_o=8 m_input_width=1 m_kernel_width=1",
+            "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"    
+        }
+    },
+    "apps/matrix_multiplication_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "conv1":{
@@ -309,6 +327,113 @@
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"    
+        }
+    },
+    "conv2_x_residual":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "PNR_PLACER_EXP":"1",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "GLB_LEVEL_PE":"1"
+        }
+    },
+    "conv3_x_residual":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=28 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"in_img=28 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "PNR_PLACER_EXP":"1",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"in_img=28 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "GLB_LEVEL_PE":"1"
+        }
+    },
+    "conv4_x_residual":{
+        "default":{
+            "HALIDE_GEN_ARGS":"schedule=12 in_img=14 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"schedule=12 in_img=14 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "PNR_PLACER_EXP":"1",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"schedule=12 in_img=14 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "GLB_LEVEL_PE":"1"
+        }
+    },
+    "conv5_x_residual":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "PNR_PLACER_EXP":"1",
+            "DISABLE_GP":"1",
+            "GLB_LEVEL_PE":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=24 n_oc=24 k_ic=12 k_oc=12 glb_i=4 glb_k=4 glb_o=4 glb_r=4",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "GLB_LEVEL_PE":"1"
+        }
+    },
+    "conv2_x_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "PNR_PLACER_EXP":"1",
+            "DISABLE_GP":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=1 n_ic=16 n_oc=16 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     }
 }
