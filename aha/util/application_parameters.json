@@ -438,9 +438,13 @@
     },
     "apps/depthwise_conv_preload_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=52 ksize=3 stride=1 n_ic=16 unroll=4",
+            "HALIDE_GEN_ARGS":"in_img=87 ksize=7 stride=2 n_ic=24 unroll=2",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
-            "DISABLE_GP":"1"
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"0, 2",
+            "HW_OUTPUT_STENCIL_POS":"4, 6",
+            "GLB_INPUTS":""
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"in_img=52 ksize=3 stride=1 n_ic=16 unroll=4",
@@ -480,23 +484,22 @@
             "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
-    "sequential_0_fp":{
+    "apps/sequential_0_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=101 pad_o_left=1 pad_o_right=1 ksize=3 stride=2 n_ic=4 n_oc=16 k_ic=4 k_oc=16 glb_i=4 glb_k=4 glb_o=4 relu6=1",
-            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
-            "DISABLE_GP":"1"
-        },
-        "fastest":{
-            "HALIDE_GEN_ARGS":"in_img=101 pad_o_left=1 pad_o_right=1 ksize=3 stride=2 n_ic=4 n_oc=16 k_ic=4 k_oc=16 glb_i=4 glb_k=4 glb_o=4 relu6=1",
-            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
-            "PNR_PLACER_EXP":"1",
-            "DISABLE_GP":"1"
-        },
-        "sweep":{
-            "HALIDE_GEN_ARGS":"in_img=101 pad_o_left=1 pad_o_right=1 ksize=3 stride=2 n_ic=4 n_oc=16 k_ic=4 k_oc=16 glb_i=4 glb_k=4 glb_o=4 relu6=1",
+            "HALIDE_GEN_ARGS":"in_img=165 pad_o_left=1 pad_o_right=0 ksize=3 stride=2 n_ic=4 n_oc=32 k_ic=4 k_oc=16 glb_i=4 glb_k=4 glb_o=4 relu6=1 trunc_size=2",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"
+            "TORCH_GOLD_LAYER":"sequential_0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "KERNEL_HOST_STENCIL_POS":"8, 10, 12, 14",
+            "BIAS_HOST_STENCIL_POS":"16",
+            "HW_OUTPUT_STENCIL_POS":"18, 20, 22, 24",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
         }
     },
     "InvRes1_pw_fp":{

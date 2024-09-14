@@ -244,10 +244,14 @@ def dispatch(args, extra_args=None):
             # "vec_identity"
         ]
         glb_tests = [
-            # "apps/pointwise"
+            # "apps/pointwise",
+            # "apps/glb_exchange",
         ]
         glb_tests_fp = [
-            "apps/relu_layer_fp",
+            "apps/sequential_0_fp",
+            # "apps/pointwise_fp",
+            # "apps/relu_layer_fp",
+            # "apps/depthwise_conv_preload_fp",
         ]
         resnet_tests = []
         resnet_tests_fp = []
