@@ -1,0 +1,56 @@
+source /aha/bin/activate
+mkdir -p /root/.modules
+source /cad/modules/tcl/init/sh
+
+cat << EOF
+
+  For pre-compiled Halide gch headers:
+      cd /aha/Halide-to-Hardware        
+      rm include/Halide.h               
+      make include/Halide.h             
+
+EOF
+
+########################################################################
+# Restore submodules - do it in the background for minimal disruption
+
+cat << EOF
+  Restoring submodule metadata in the background.
+  To monitor progress, can 'cat' or 'tail' log files e.g.
+      tail /tmp/restore-clockwork
+      tail /tmp/restore-halide
+
+EOF
+# Restore 420MB of clockwork .git data + 320MB of halide data
+
+( echo '  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
+  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork
+  printf "\nFinished restoring clockwork metadata\n"
+) &
+
+( echo '  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
+  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide
+  printf "\nFinished restoring halide metadata\n"
+) &
+
+########################################################################
+# Restore clang - do it in the background for minimal disruption
+
+test -f /usr/bin/clang-7 || cat << EOF
+
+  Restoring clang and llvm in the background.
+  To monitor progress, can 'cat' or 'tail' log file e.g.
+      tail /tmp/restore-clang
+
+EOF
+test -f /usr/bin/clang-7 || (
+  url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+  echo "  wget $url"
+  wget -nv -O ~/clang7.tar.xz $url
+  echo ""
+  tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ >& /tmp/restore-clang
+  rm -rf ~/clang7.tar.xz
+  printf "\nFinished restoring clang\n"
+) &
+
+sleep 1
