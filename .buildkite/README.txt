@@ -35,7 +35,7 @@ THE PLAYERS
     A copy of the script used to update github commit statuses, with
     secrets redacted. The script must live on the buildkite agent
     machine in the agent's home directory, e.g.
-    `r7cad-docker:/var/lib/buildkite-agent/status-update`
+    `r7cad-docker:/var/lib/buildkite-agent/bin/status-update`
 
   bin/custom-checkout.sh
     Script sourced by pipeline.yml; clones aha repo and uses info

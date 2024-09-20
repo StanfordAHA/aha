@@ -1,3 +1,13 @@
+########################################################################
+# This is a copy of the status-update script used by buildkite jobs;
+# the original lives on the buildkite machine e.g.
+# r7cad-docker:/var/lib/buildkite-agent/bin/status-update
+# where it can be invoked by the buildkite agent
+# 
+# Last update Sep 2024
+# 
+# MAKE SURE SECRETS ARE EXCISED FROM THIS FILE!!!
+########################################################################
 #!/usr/bin/env bash
 set +u
 
@@ -39,7 +49,7 @@ USAGE="
 # Update env with latest pull-request info
 # BUILDKITE_PULL_REQUEST_REPO, BUILDKITE_PULL_REQUEST
 temp=/var/lib/buildkite-agent/builds/DELETEME
-env=$temp/env-$BUILDKITE_BUILD_NUMBER
+env=$temp/env-${BUILDKITE_BUILD_NUMBER}
 test -e $env && source $env
 
 # Only need status updates if BUILDKITE_PULL_REQUEST_REPO is valid
@@ -58,8 +68,14 @@ if [ "$#" != "1" ];      then echo "$USAGE"; exit; fi
 buildno=$BUILDKITE_BUILD_NUMBER
 repo=$BUILDKITE_PULL_REQUEST_REPO
 SHA=$BUILDKITE_COMMIT
+[ "$AHA_SUBMOD_FLOW_COMMIT" ] && SHA=$AHA_SUBMOD_FLOW_COMMIT
 status=$1
 
+nchars=`expr length "$SHA"`
+if ! [ "$nchars" -eq 40 ]; then
+    echo "ERROR 'SHA'=$SHA has $nchars chars, should be 40"
+    exit 13
+fi
 
 # Extract info from repo url
 # E.g. repo="https://github.com/stanfordaha/garnet" => OWNER=stanfordaha, REPO="garnet"
@@ -110,7 +126,9 @@ elif [ "$status" == "failure" ]; then
 else
     echo "ERROR status must be one of {pending,success,failure}"; exit 13
 fi
-target_url="\"target_url\":\"https://buildkite.com/stanford-aha/aha-flow/builds/$buildno\""
+
+# E.g. BUILDKITE_PIPELINE_SLUG="aha-submod-flow" or "aha-flow"
+target_url="\"target_url\":\"https://buildkite.com/stanford-aha/$BUILDKITE_PIPELINE_SLUG/builds/$buildno\""
 context='"context":"buildkite/aha-flow"'
 
 echo "Sending status '$status' to 'https://api.github.com/repos/$OWNER/$REPO/statuses/$SHA'"
