@@ -1,28 +1,28 @@
-env:
-  # For heroku
-  FLOW_URL: "https://shielded-temple-72016.herokuapp.com"
-  AHA_FLOW_TOKEN: "xgCSpqtxmn94wU2BqS6g"
+# This is a copy of the online buildkite steps for the aha-flow pipeline,
+# see https://buildkite.com/stanford-aha/aha-flow/settings/steps
 
+# Last update Sep 2024
+
+env:
+  DEV_BRANCH: master
+  # DEV_BRANCH: ci-cleanup
+  AHA_REPO: https://raw.githubusercontent.com/StanfordAHA/aha
+  STEPSCRIPT: .buildkite/bin/custom-checkout.sh
+
+# Must do commands in pre-checkout else get wrong BUILDKITE_MESSAGE
 steps:
 - label: ":pipeline:"
   agents: { docker: true }
   plugins:
-      # Turn off normal/slow repo+submods checkout b/c all we need is pipeline.yml
-      - uber-workflow/run-without-clone:
-  commands:
-  - 'echo "+++ Must have a (empty!) working directory"; set -x;
-     d=$$BUILDKITE_BUILD_CHECKOUT_PATH;
-     /bin/rm -rf $$d; mkdir -p $$d; ls -ld $$d; cd $$d'
-
-     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
-     # Also see ~steveri/bin/status-update on kiwi
-  - 'echo "+++ Notify github of pending status"; ~/bin/status-update --force pending'
-
-  - 'echo "--- CUSTOM CHECKOUT BEGIN"; set -x;
-     echo "Fast checkout w/ no submod loads (yet)";
-     aha_clone=$$BUILDKITE_BUILD_CHECKOUT_PATH;
-     git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
-     git checkout -q $$BUILDKITE_COMMIT || echo "Submod commit hash found, using aha master branch";
-     buildkite-agent pipeline upload .buildkite/pipeline.yml;'
-  - echo "--- CUSTOM CHECKOUT END"
-
+  - uber-workflow/run-without-clone:
+  - improbable-eng/metahook:
+      pre-checkout: |
+        # (pwd; ls -l) || echo okay
+        udev=$$AHA_REPO/$$DEV_BRANCH/$$STEPSCRIPT
+        httpcode=`curl $$udev -o custom-checkout.sh -w '%{http_code}'`
+        if ! [ "$$httpcode" == 200 ]; then
+            echo "Cannot find steps in branch '$$DEV_BRANCH'; trying master instead"
+            curl $$AHA_REPO/master/$$STEPSCRIPT -o custom-checkout.sh
+        fi
+        source custom-checkout.sh --aha-flow
+  command: echo DONE  # (Breaks if no command)
