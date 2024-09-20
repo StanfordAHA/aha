@@ -118,6 +118,7 @@ elif [ "$1" == '--commands' ]; then
       echo "Trigger came from submod repo pull request; use pr config"; export CONFIG=pr;
       if [ "$REGSTEP" == 2 -o "$REGSTEP" == 3 ]; then
         echo "oops no REGSTEP='$REGSTEP', not doing regressions"
+        echo "(Submod PR's skip reg steps 2 and 3, see)"
         DO_AR=False
       fi
 
