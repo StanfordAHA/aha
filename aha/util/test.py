@@ -246,86 +246,85 @@ def dispatch(args, extra_args=None):
             # Check if the shape of the gold and sim arrays match
             assert gold_array.shape == sim_array.shape, "\033[91mThe shape of the gold and sim arrays do not match.\033[0m"
 
-        if args.dense_fp:
-            # TODO: Implement back to back apps
+            if args.dense_fp:
 
-            # define custom absolute tolerance for floating point comparison
-            custom_atol = 4.0e-02 # default 1e-08
-            custom_rtol = 5.0e-02 # default 1e-05
-            sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype = numpy.float32)
-            gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype = numpy.float32)
+                # define custom absolute tolerance for floating point comparison
+                custom_atol = 4.0e-02 # default 1e-08
+                custom_rtol = 5.0e-02 # default 1e-05
+                sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype = numpy.float32)
+                gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype = numpy.float32)
 
-            # check diff array and print wrong pixels
-            differences = numpy.abs(gold_array_fp - sim_array_fp)
-            tolerances = custom_atol + custom_rtol * numpy.abs(gold_array_fp)
-            exceed_indices = numpy.where(differences > tolerances)[0]
-            # get max absolute and relative difference
-            max_diff = numpy.max(differences)
-            max_diff_index = numpy.argmax(differences)
-            relative_differences = numpy.zeros_like(differences)
-            relative_differences[gold_array_fp != 0] = differences[gold_array_fp != 0] / numpy.abs(gold_array_fp[gold_array_fp != 0])
-            max_relative_diff = numpy.max(relative_differences) if numpy.any(gold_array_fp != 0) else 0
-            max_relative_diff_index = numpy.argmax(relative_differences) if numpy.any(gold_array_fp != 0) else -1  # -1 if no valid index
+                # check diff array and print wrong pixels
+                differences = numpy.abs(gold_array_fp - sim_array_fp)
+                tolerances = custom_atol + custom_rtol * numpy.abs(gold_array_fp)
+                exceed_indices = numpy.where(differences > tolerances)[0]
+                # get max absolute and relative difference
+                max_diff = numpy.max(differences)
+                max_diff_index = numpy.argmax(differences)
+                relative_differences = numpy.zeros_like(differences)
+                relative_differences[gold_array_fp != 0] = differences[gold_array_fp != 0] / numpy.abs(gold_array_fp[gold_array_fp != 0])
+                max_relative_diff = numpy.max(relative_differences) if numpy.any(gold_array_fp != 0) else 0
+                max_relative_diff_index = numpy.argmax(relative_differences) if numpy.any(gold_array_fp != 0) else -1  # -1 if no valid index
 
-            if len(exceed_indices) > 0:
-                print("Floating-point values exceeding tolerance:")
-                for idx in exceed_indices[:20]:  # Limit to first 20 differences
-                    actual_tolerance = custom_atol + custom_rtol * numpy.abs(gold_array_fp[idx])
-                    print(f"Index: {idx}, Gold: {gold_array_fp[idx]}, Sim: {sim_array_fp[idx]}, Diff: {differences[idx]}, Allowed Tolerance: {actual_tolerance}")
-                print(f"Total exceeding tolerance: {len(exceed_indices)}")
+                if len(exceed_indices) > 0:
+                    print("Floating-point values exceeding tolerance:")
+                    for idx in exceed_indices[:20]:  # Limit to first 20 differences
+                        actual_tolerance = custom_atol + custom_rtol * numpy.abs(gold_array_fp[idx])
+                        print(f"Index: {idx}, Gold: {gold_array_fp[idx]}, Sim: {sim_array_fp[idx]}, Diff: {differences[idx]}, Allowed Tolerance: {actual_tolerance}")
+                    print(f"Total exceeding tolerance: {len(exceed_indices)}")
+                    print("Max absolute difference is:", max_diff)
+                    print(f"Index: {max_diff_index}, Gold value: {gold_array_fp[max_diff_index]}, Sim value: {sim_array_fp[max_diff_index]}")
+                    if max_relative_diff_index != -1:
+                        print(f"Max relative difference is {max_relative_diff}")
+                        print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
+                    else:
+                        print("No valid maximum relative difference found (all gold values might be zero).")
+
+                # save gold and sim array as npy files
+                numpy.save(f'{app_dir}/bin/gold_output_array_fp.npy', gold_array_fp)
+                numpy.save(f'{app_dir}/bin/sim_output_array_fp.npy', sim_array_fp)
+
+                # do partial close check with small fraction tolerance
+                close_elements = numpy.isclose(sim_array_fp, gold_array_fp, atol=custom_atol, rtol=custom_rtol)
+                if numpy.all(close_elements): print("All elements are close.")
+                else:
+                    mismatch_idx = numpy.nonzero(~close_elements)[0]
+                    mismatch_frac = len(mismatch_idx) / len(gold_array_fp)
+                    frac_tolerance = 6e-2
+                    if mismatch_frac <= frac_tolerance:
+                        print(f"\033[93mWarning: Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
+                    else:
+                        assert False, f"\033[91mFloating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+
+                # print pass message and maximum difference
+                print("\033[92mFloating point comparison passed.\033[0m")
                 print("Max absolute difference is:", max_diff)
                 print(f"Index: {max_diff_index}, Gold value: {gold_array_fp[max_diff_index]}, Sim value: {sim_array_fp[max_diff_index]}")
                 if max_relative_diff_index != -1:
                     print(f"Max relative difference is {max_relative_diff}")
                     print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
                 else:
-                    print("No valid maximum relative difference found (all gold values might be zero).")
+                    print("No valid maximum relative difference found (all simulation values might be zero).")
 
-            # save gold and sim array as npy files
-            numpy.save(f'{app_dir}/bin/gold_output_array_fp.npy', gold_array_fp)
-            numpy.save(f'{app_dir}/bin/sim_output_array_fp.npy', sim_array_fp)
-
-            # do partial close check with small fraction tolerance
-            close_elements = numpy.isclose(sim_array_fp, gold_array_fp, atol=custom_atol, rtol=custom_rtol)
-            if numpy.all(close_elements): print("All elements are close.")
+            # do bit accurate comparison for integer case
             else:
-                mismatch_idx = numpy.nonzero(~close_elements)[0]
-                mismatch_frac = len(mismatch_idx) / len(gold_array_fp)
-                frac_tolerance = 6e-2
-                if mismatch_frac <= frac_tolerance:
-                    print(f"\033[93mWarning: Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
-                else:
-                    assert False, f"\033[91mFloating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+                # Works for checking back to back apps
+                for app in args.app:
+                    gold_array = golds.pop(0)
+                    sim_array = sim_array_list.pop(0)
+                    # check diff array and print wrong pixels
+                    differences = gold_array != sim_array
+                    diff_indices = numpy.where(differences)[0]
+                    if len(diff_indices) > 0:
+                        print("Integer values differing:")
+                        for idx in diff_indices[:20]:  # Limit to first 20 differences
+                            print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                        print(f"Total differing: {len(diff_indices)}")
 
-            # print pass message and maximum difference
-            print("\033[92mFloating point comparison passed.\033[0m")
-            print("Max absolute difference is:", max_diff)
-            print(f"Index: {max_diff_index}, Gold value: {gold_array_fp[max_diff_index]}, Sim value: {sim_array_fp[max_diff_index]}")
-            if max_relative_diff_index != -1:
-                print(f"Max relative difference is {max_relative_diff}")
-                print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
-            else:
-                print("No valid maximum relative difference found (all simulation values might be zero).")
+                    # save gold and sim array as npy files
+                    numpy.save(f'{app_dir}/bin/gold_output_array.npy', gold_array)
+                    numpy.save(f'{app_dir}/bin/sim_output_array.npy', sim_array)
 
-        # do bit accurate comparison for integer case
-        else:
-            # Works for checking back to back apps
-            for app in args.app:
-                gold_array = golds.pop(0)
-                sim_array = sim_array_list.pop(0)
-                # check diff array and print wrong pixels
-                differences = gold_array != sim_array
-                diff_indices = numpy.where(differences)[0]
-                if len(diff_indices) > 0:
-                    print("Integer values differing:")
-                    for idx in diff_indices[:20]:  # Limit to first 20 differences
-                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
-                    print(f"Total differing: {len(diff_indices)}")
-
-                # save gold and sim array as npy files
-                numpy.save(f'{app_dir}/bin/gold_output_array.npy', gold_array)
-                numpy.save(f'{app_dir}/bin/sim_output_array.npy', sim_array)
-
-                # Assertion for the integer case
-                assert numpy.array_equal(gold_array, sim_array), f"\033[91m{app}: Integer comparison failed.\033[0m"
-                print(f"\033[92m{app}: Integer comparison passed.\033[0m")
+                    # Assertion for the integer case
+                    assert numpy.array_equal(gold_array, sim_array), f"\033[91m{app}: Integer comparison failed.\033[0m"
+                    print(f"\033[92m{app}: Integer comparison passed.\033[0m")
