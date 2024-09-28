@@ -248,13 +248,48 @@ def dispatch(args, extra_args=None):
             # "apps/glb_exchange",
         ]
         glb_tests_fp = [
-            "apps/sequential_0_fp",
-            # "apps/pointwise_fp",
+            # "apps/sequential_0_fp",
+            # "apps/sequential_0_bias_relu6_fp",
+            # "apps/InvRes1_dw_bias_relu6_fp",
+            # "apps/InvRes1_pw_fp",
+            # "apps/InvRes1_pw_bias_fp",
+            # "apps/InvRes2_pw_exp_fp",
+            # "apps/InvRes2_pw_exp_bias_relu6_fp",
+            # "apps/InvRes2_dw_bias_relu6_fp",
+            # "apps/InvRes2_pw_sq_fp",
+            # "apps/InvRes2_pw_sq_bias_fp",
+            # "apps/InvRes3_pw_exp_fp",
+            # "apps/InvRes3_pw_exp_bias_relu6_fp",
+            # "apps/InvRes3_dw_bias_relu6_fp",
+            # "apps/InvRes3_pw_sq_fp",
+            # "apps/InvRes3_skip_padding_fp",
+            # "apps/InvRes3_pw_sq_bias_skip_fp",
+            # "apps/InvRes4_pw_exp_fp",
+            # "apps/InvRes4_pw_exp_bias_relu6_fp",
+            # "apps/InvRes4_dw_bias_relu6_fp",
+            # "apps/InvRes4_pw_sq_fp",
+            # "apps/InvRes4_pw_sq_bias_skip_fp",
+            # "apps/InvRes5_pw_exp_fp",
+            # "apps/InvRes5_pw_exp_bias_relu6_fp",
+            # "apps/InvRes5_dw_bias_relu6_fp",
+            "apps/InvRes5_pw_sq_fp",
+            # "apps/InvRes5_pw_sq_bias_fp",
+            
+            # "apps/InvRes1_dw_fp",
+            # "apps/InvRes1_dw_stream_fp",
+            # "apps/InvRes1_dw_bias_relu6",
+            # "apps/InvRes1_pw_fp",
+            # "apps/matrix_multiplication_fp",
+            # "apps/conv2D_no_bias_fp",
             # "apps/relu_layer_fp",
             # "apps/depthwise_conv_preload_fp",
         ]
-        resnet_tests = []
-        resnet_tests_fp = []
+        resnet_tests = [
+            # "conv5_x"
+        ]
+        resnet_tests_fp = [
+            # "InvRes2_pw_exp_fp",
+        ]
         hardcoded_dense_tests = []
     elif args.config == "pr":
         width, height = 32, 16
