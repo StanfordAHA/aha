@@ -1128,7 +1128,7 @@
     },
     "apps/InvRes5_dw_bias_relu6_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"out_img=23 n_oc=120 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=3",
+            "HALIDE_GEN_ARGS":"out_img=23 n_oc=120 unroll=4 pad_o_left=0 pad_o_right=1 trunc_size=4",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "USE_GLB_BANK_CONFIG":"1",
@@ -1140,7 +1140,7 @@
     },
     "apps/InvRes5_pw_sq_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=23 ksize=1 stride=1 n_ic=120 n_oc=40 k_ic=4 k_oc=40 glb_i=4 glb_k=4 glb_o=4",
+            "HALIDE_GEN_ARGS":"in_img=24 ksize=1 stride=1 n_ic=120 n_oc=40 k_ic=4 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "USE_GLB_BANK_CONFIG":"1",
@@ -1156,13 +1156,1447 @@
     },
     "apps/InvRes5_pw_sq_bias_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"out_img=23 n_oc=40 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=3 use_relu6=0",
+            "HALIDE_GEN_ARGS":"out_img=24 n_oc=40 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=4 use_relu6=0",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "USE_GLB_BANK_CONFIG":"1",
             "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
             "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes6_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=24 ksize=1 stride=1 n_ic=40 n_oc=160 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes6_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=24 n_oc=160 unroll=4 pad_o_left=1 pad_o_right=3 trunc_size=7",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes6_dw_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=28 ksize=3 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes6_dw_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=28 ksize=3 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes6_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=26 n_oc=160 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes6_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=26 ksize=1 stride=1 n_ic=160 n_oc=40 k_ic=4 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes6_skip_padding_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=24 n_oc=40 unroll=4 pad_o_left=0 pad_o_right=2 trunc_size=0 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"16, 18, 20, 22",
+            "HW_OUTPUT_STENCIL_POS":"0, 2, 4, 6",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes6_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=26 n_oc=40 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"16, 18, 20, 22",
+            "HW_SKIP_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes7_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=26 ksize=1 stride=1 n_ic=40 n_oc=160 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes7_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=26 n_oc=160 unroll=4 pad_o_left=3 pad_o_right=2 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes7_dw_1_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=31 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes7_dw_1_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=31 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "KERNEL_HOST_STENCIL_POS":"0, 2",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes7_dw_2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=31 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20, 22",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes7_dw_2_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=31 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20, 22",
+            "KERNEL_HOST_STENCIL_POS":"4, 6",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes7_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=25 n_oc=160 unroll=4 pad_o_left=0 pad_o_right=1 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes7_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=26 ksize=1 stride=1 n_ic=160 n_oc=40 k_ic=4 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes7_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=26 n_oc=40 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_SKIP_STENCIL_POS":"24, 26, 28, 30",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes8_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=26 ksize=1 stride=1 n_ic=40 n_oc=120 k_ic=8 k_oc=8 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes8_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=26 n_oc=120 unroll=4 pad_o_left=3 pad_o_right=6 trunc_size=12",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes8_dw_1_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=35 ksize=7 stride=2 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes8_dw_1_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=35 ksize=7 stride=2 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "KERNEL_HOST_STENCIL_POS":"0, 2",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes8_dw_2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=35 ksize=7 stride=2 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20, 22",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes8_dw_2_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=35 ksize=7 stride=2 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20, 22",
+            "KERNEL_HOST_STENCIL_POS":"4, 6",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes8_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=15 n_oc=120 unroll=4 pad_o_left=0 pad_o_right=1 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes8_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=16 ksize=1 stride=1 n_ic=120 n_oc=80 k_ic=4 k_oc=20 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes8_pw_sq_bias_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=80 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes9_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=16 ksize=1 stride=1 n_ic=80 n_oc=240 k_ic=4 k_oc=20 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes9_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=240 unroll=4 pad_o_left=1 pad_o_right=2 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes9_dw_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=19 ksize=3 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes9_dw_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=19 ksize=3 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes9_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=17 n_oc=240 unroll=4 pad_o_left=0 pad_o_right=1 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes9_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=240 n_oc=80 k_ic=4 k_oc=20 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes9_skip_padding_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=80 unroll=4 pad_o_left=0 pad_o_right=2 trunc_size=0 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"16, 18, 20, 22",
+            "HW_OUTPUT_STENCIL_POS":"0, 2, 4, 6",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes9_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=80 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_SKIP_STENCIL_POS":"0, 2, 4, 6",
+            "HW_BIAS_STENCIL_POS":"16, 18, 20, 22",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes10_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=80 n_oc=240 k_ic=4 k_oc=40 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes10_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=240 unroll=4 pad_o_left=3 pad_o_right=1 trunc_size=9",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes10_dw_1_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=22 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes10_dw_1_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=22 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "KERNEL_HOST_STENCIL_POS":"0, 2",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes10_dw_move_1_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=120 unroll=2 pad_o_left=0 pad_o_right=0 trunc_size=0 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10",
+            "HW_OUTPUT_STENCIL_POS":"4, 6",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes10_dw_move_2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=22 n_oc=120 unroll=2 pad_o_left=0 pad_o_right=0 trunc_size=0 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"20, 22",
+            "HW_OUTPUT_STENCIL_POS":"16, 18",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes10_dw_move_3_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=120 unroll=2 pad_o_left=0 pad_o_right=0 trunc_size=0 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes10_dw_move_4_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=120 unroll=2 pad_o_left=0 pad_o_right=0 trunc_size=0 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes10_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=240 unroll=4 pad_o_left=0 pad_o_right=2 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes10_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=240 n_oc=80 k_ic=4 k_oc=40 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes10_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=80 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_SKIP_STENCIL_POS":"24, 26, 28, 30",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes11_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=80 n_oc=320 k_ic=4 k_oc=40 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes11_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=320 unroll=4 pad_o_left=1 pad_o_right=0 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes11_dw_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=19 ksize=3 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes11_dw_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=19 ksize=3 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes11_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=17 n_oc=320 unroll=4 pad_o_left=0 pad_o_right=1 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes11_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=320 n_oc=96 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes11_pw_sq_bias_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=96 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=8 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes12_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=96 n_oc=288 k_ic=4 k_oc=36 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes12_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=288 unroll=4 pad_o_left=2 pad_o_right=0 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes12_dw_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=20 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes12_dw_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=20 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes12_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=288 unroll=4 pad_o_left=0 pad_o_right=2 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes12_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=288 n_oc=96 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes12_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=96 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_SKIP_STENCIL_POS":"16, 18, 20, 22",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes13_move_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=96 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=0 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"24, 26, 28, 30",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes13_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=96 n_oc=288 k_ic=4 k_oc=36 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes13_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=288 unroll=4 pad_o_left=2 pad_o_right=0 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes13_dw_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=20 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes13_dw_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=20 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes13_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=16 n_oc=288 unroll=4 pad_o_left=0 pad_o_right=2 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes13_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=288 n_oc=96 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes13_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=96 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_SKIP_STENCIL_POS":"16, 18, 20, 22",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes14_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=18 ksize=1 stride=1 n_ic=96 n_oc=384 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes14_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=18 n_oc=384 unroll=4 pad_o_left=3 pad_o_right=6 trunc_size=14",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes14_dw_1_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=27 ksize=7 stride=2 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "KERNEL_HOST_STENCIL_POS":"0, 2",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes14_dw_2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=27 ksize=7 stride=2 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20, 22",
+            "KERNEL_HOST_STENCIL_POS":"4, 6",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes14_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=384 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes14_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=384 n_oc=192 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes14_pw_sq_bias_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=192 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes15_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=192 n_oc=576 k_ic=4 k_oc=36 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes15_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=576 unroll=4 pad_o_left=3 pad_o_right=1 trunc_size=7",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes15_dw_1_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes15_dw_1_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26",
+            "KERNEL_HOST_STENCIL_POS":"0, 2",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes15_dw_2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"28, 30",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes15_dw_2_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"28, 30",
+            "KERNEL_HOST_STENCIL_POS":"4, 6",
+            "HW_OUTPUT_STENCIL_POS":"12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes15_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=9 n_oc=576 unroll=4 pad_o_left=0 pad_o_right=2 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes15_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=576 n_oc=192 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes15_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=192 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_SKIP_STENCIL_POS":"16, 18, 20, 22",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"24, 26, 28, 30",
+            "GLB_INPUTS":""
+        }
+    }
+    ,
+    "apps/InvRes16_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=192 n_oc=576 k_ic=4 k_oc=36 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes16_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=576 unroll=4 pad_o_left=2 pad_o_right=2 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes16_dw_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes16_dw_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes16_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=576 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes16_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=576 n_oc=192 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes16_pw_sq_bias_skip_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=192 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_SKIP_STENCIL_POS":"24, 26, 28, 30",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes17_pw_exp_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=192 n_oc=768 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes17_pw_exp_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=768 unroll=4 pad_o_left=2 pad_o_right=2 trunc_size=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes17_dw_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes17_dw_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=15 ksize=5 stride=1 n_ic=4 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "NUM_GLB_TILING":"1",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes17_dw_bias_relu6_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=768 unroll=4 pad_o_left=0 pad_o_right=0 trunc_size=6",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/InvRes17_pw_sq_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=768 n_oc=320 k_ic=4 k_oc=40 glb_i=4 glb_k=4 glb_o=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes17_pw_sq_bias_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=11 n_oc=320 unroll=4 pad_o_left=0 pad_o_right=1 trunc_size=7 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"8, 10, 12, 14",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/avgpool_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"input_height=320 input_height_tile=320 input_width=144 kernel_width=1 input_width_unroll=8 kernel_width_unroll=1 glb_i=4 glb_k=1 glb_o=1",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
+            "KERNEL_HOST_STENCIL_POS":"0",
+            "HW_OUTPUT_STENCIL_POS":"2",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/classifier_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"input_height=1000 input_height_tile=500 input_width=320 kernel_width=1 input_width_unroll=8 kernel_width_unroll=1 glb_i=4 glb_k=1 glb_o=1",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"8, 10, 12, 14",
+            "KERNEL_HOST_STENCIL_POS":"2",
+            "HW_OUTPUT_STENCIL_POS":"4",
+            "GLB_INPUTS":""
+        }
+    },
+    "apps/classifier_bias_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img_x=20 out_img_y=50 n_oc=1 unroll=1 use_relu6=0",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"4",
+            "HW_BIAS_STENCIL_POS":"0",
+            "HW_OUTPUT_STENCIL_POS":"2",
             "GLB_INPUTS":""
         }
     }
