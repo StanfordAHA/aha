@@ -100,4 +100,4 @@
 	url = https://github.com/sgauthamr2001/Lego_v0.git
 [submodule "DSEGraphAnalysis"]
 	path = DSEGraphAnalysis
-	url = /aha/DSEGraphAnalysis/
+	url = https://github.com/jack-melchert/DSEGraphAnalysis.git
