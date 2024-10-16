@@ -313,6 +313,7 @@ def dispatch(args, extra_args=None):
     suitesparse_data = ["rand_large_tensor5"]
     if args.config == "fast":
         width, height = 28, 16
+        # to unroll, use 12x16
         sparse_tests = [
             # "mat_elemadd3",
             # "mat_elemmul",
@@ -322,7 +323,14 @@ def dispatch(args, extra_args=None):
             # "tensor3_ttv",
             # "tensor3_ttm", # have to use different cgra size (e.g. 20x16)
             # "tensor3_innerprod",
-            "fp_matmul_ijk",
+            "fp_matmul_ijk_crddrop",
+            # "fp_matmul_ikj",
+            # "matmul_ijk_crddrop_relu",
+            # "matmul_ijk_crddrop",
+            # "spmm_ijk_crddrop_relu",
+            # "spmm_ijk_crddrop",
+            # "mat_elemadd_leakyrelu_exp",
+            # "fp_mat_elemadd",
             # "fp_spmm_ijk",
             # "tensor3_mttkrp"
         ]
