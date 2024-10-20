@@ -315,24 +315,26 @@ def dispatch(args, extra_args=None):
         width, height = 28, 16
         # to unroll, use 12x16
         sparse_tests = [
+            # sparse matrix expressions
             # "mat_elemadd3",
-            # "mat_elemmul",
-            # "mat_vecmul_ij",
-            # "matmul_ijk",
-            # "matmul_ikj",
-            # "tensor3_ttv",
+            # "mat_elemmul", # unrolled
+            # "mat_vecmul_ij", # have to use different cgra size unrolling (10x16)
+            # "matmul_ikj", # unrolled
+            # "matmul_ijk_crddrop", # unrolled
+            # sparse ternsor expressions
+            # "tensor3_ttv", #unrolled
             # "tensor3_ttm", # have to use different cgra size (e.g. 20x16)
             # "tensor3_innerprod",
-            "fp_matmul_ijk_crddrop",
-            # "fp_matmul_ikj",
-            # "matmul_ijk_crddrop_relu",
-            # "matmul_ijk_crddrop",
+            # "tensor3_mttkrp"
+            # sparse-ml kernels
+            "fp_matmul_ikj", # unrollled
+            # "fp_matmul_ijk_crddrop", # unrolled
+            # psarse ml micro-benchmarks
             # "spmm_ijk_crddrop_relu",
             # "spmm_ijk_crddrop",
             # "mat_elemadd_leakyrelu_exp",
             # "fp_mat_elemadd",
             # "fp_spmm_ijk",
-            # "tensor3_mttkrp"
         ]
         glb_tests = [
             # "apps/gaussian",
