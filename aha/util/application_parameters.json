@@ -8,12 +8,23 @@
             "SWEEP_PNR_PLACER_EXP":"1"    
         }
     },
+    "apps/pointwise_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=20 n_oc=2 unroll=2",
+            "HL_TARGET":"host-x86-64-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"12, 14",
+            "HW_OUTPUT_STENCIL_POS":"20, 22",
+            "SWEEP_PNR_PLACER_EXP":"1"
+        }
+    },
     "apps/gaussian":{
         "default":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1"
-        },
+	},
         "fastest":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",
             "HL_TARGET":"host-x86-64",
@@ -88,7 +99,8 @@
         "default":{
             "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
-            "DISABLE_GP":"1"
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
@@ -149,9 +161,9 @@
             "MEM2PE_REG_CHAIN":"1"    
         }
     },
-    "conv3_1":{
+    "apps/resnet_output_stationary":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=2 n_ic=28 n_oc=28 k_ic=14 k_oc=14 glb_i=7 glb_k=7 glb_o=7",
+            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=2 n_ic=32 n_oc=64 k_ic=16 k_oc=16 glb_i=8 glb_k=8 glb_o=8",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1",
             "MANUAL_PLACER":"1",
@@ -573,7 +585,8 @@
             "INPUT_HOST_STENCIL_POS":"0, 2, 4, 6",
             "KERNEL_HOST_STENCIL_POS":"8, 10, 12, 14",
             "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
-            "GLB_INPUTS":""
+            "GLB_INPUTS":"",
+            "SWEEP_PNR_PLACER_EXP":"1"
         },
         "fastest":{
         },
@@ -589,7 +602,8 @@
             "HW_INPUT_STENCIL_POS":"16, 18, 20, 22",
             "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "GLB_INPUTS":""
+            "GLB_INPUTS":"",
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/InvRes1_dw_fp":{
@@ -601,7 +615,7 @@
             "INPUT_HOST_STENCIL_POS":"8, 10, 12, 14",
             "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
             "GLB_INPUTS":"",
-            "NUM_GLB_TILING":"1"
+            "NUM_GLB_TILING":"8"
         },
         "fastest":{
         },
@@ -618,7 +632,7 @@
             "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
             "GLB_INPUTS":"",
-            "NUM_GLB_TILING":"1"
+            "NUM_GLB_TILING":"8"
         },
         "fastest":{
         },
@@ -635,6 +649,19 @@
             "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
             "GLB_INPUTS":""
+        }
+    },
+    "apps/relu_layer_fp":{
+        "default":{      
+            "HALIDE_GEN_ARGS":"out_img=86 n_oc=32 unroll=4 pad_o_left=0 pad_o_right=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "HW_INPUT_STENCIL_POS":"16, 18, 20, 22",
+            "HW_BIAS_STENCIL_POS":"0, 2, 4, 6",
+            "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
+            "GLB_INPUTS":"",
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/InvRes1_pw_fp":{
@@ -701,7 +728,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"8, 10",
             "HW_OUTPUT_STENCIL_POS":"16, 18",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"12",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -718,7 +745,7 @@
             "INPUT_HOST_STENCIL_POS":"8, 10",
             "KERNEL_HOST_STENCIL_POS":"0, 2",
             "HW_OUTPUT_STENCIL_POS":"16, 18",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"12",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -734,7 +761,22 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"12, 14",
             "HW_OUTPUT_STENCIL_POS":"20, 22",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"12",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes2_dw_2_glbtiling_1_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=91 ksize=7 stride=2 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12, 14",
+            "HW_OUTPUT_STENCIL_POS":"20, 22",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -751,7 +793,7 @@
             "INPUT_HOST_STENCIL_POS":"12, 14",
             "KERNEL_HOST_STENCIL_POS":"4, 6",
             "HW_OUTPUT_STENCIL_POS":"20, 22",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"12",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -835,7 +877,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -948,7 +990,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "HW_OUTPUT_STENCIL_POS":"16, 18, 20, 22",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"24",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1050,7 +1092,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1067,7 +1109,7 @@
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "KERNEL_HOST_STENCIL_POS":"0, 2",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1083,7 +1125,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"20, 22",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1100,7 +1142,7 @@
             "INPUT_HOST_STENCIL_POS":"20, 22",
             "KERNEL_HOST_STENCIL_POS":"4, 6",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1184,7 +1226,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"40",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1308,7 +1350,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"40",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1325,7 +1367,7 @@
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "KERNEL_HOST_STENCIL_POS":"0, 2",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"40",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1341,7 +1383,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"20, 22",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"40",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1358,7 +1400,7 @@
             "INPUT_HOST_STENCIL_POS":"20, 22",
             "KERNEL_HOST_STENCIL_POS":"4, 6",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"40",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1443,7 +1485,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1460,7 +1502,7 @@
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "KERNEL_HOST_STENCIL_POS":"0, 2",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1476,7 +1518,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"20, 22",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1493,7 +1535,7 @@
             "INPUT_HOST_STENCIL_POS":"20, 22",
             "KERNEL_HOST_STENCIL_POS":"4, 6",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"30",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1577,7 +1619,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"60",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1701,7 +1743,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"60",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1718,7 +1760,40 @@
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "KERNEL_HOST_STENCIL_POS":"0, 2",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"60",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes10_dw_2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=22 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"60",
+            "GLB_INPUTS":""
+        },
+        "fastest":{
+        },
+        "sweep":{
+        }
+    },
+    "apps/InvRes10_dw_2_stream_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=22 ksize=7 stride=1 n_ic=2 unroll=2",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16, 18",
+            "KERNEL_HOST_STENCIL_POS":"0, 2",
+            "HW_OUTPUT_STENCIL_POS":"8, 10",
+            "NUM_GLB_TILING":"60",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1847,7 +1922,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"80",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1948,7 +2023,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"72",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -1965,7 +2040,7 @@
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"72",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2061,7 +2136,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"72",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2078,7 +2153,7 @@
             "INPUT_HOST_STENCIL_POS":"24, 26, 28, 30",
             "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"72",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2164,7 +2239,7 @@
             "INPUT_HOST_STENCIL_POS":"16, 18",
             "KERNEL_HOST_STENCIL_POS":"0, 2",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"96",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2181,7 +2256,7 @@
             "INPUT_HOST_STENCIL_POS":"20, 22",
             "KERNEL_HOST_STENCIL_POS":"4, 6",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"96",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2265,7 +2340,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"24, 26",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"144",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2282,7 +2357,7 @@
             "INPUT_HOST_STENCIL_POS":"24, 26",
             "KERNEL_HOST_STENCIL_POS":"0, 2",
             "HW_OUTPUT_STENCIL_POS":"8, 10",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"144",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2298,7 +2373,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"28, 30",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"144",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2315,7 +2390,7 @@
             "INPUT_HOST_STENCIL_POS":"28, 30",
             "KERNEL_HOST_STENCIL_POS":"4, 6",
             "HW_OUTPUT_STENCIL_POS":"12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"144",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2401,7 +2476,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"144",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2418,7 +2493,7 @@
             "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
             "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"144",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2503,7 +2578,7 @@
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"192",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2520,7 +2595,7 @@
             "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
             "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"8, 10, 12, 14",
-            "NUM_GLB_TILING":"1",
+            "NUM_GLB_TILING":"192",
             "GLB_INPUTS":""
         },
         "fastest":{
@@ -2542,14 +2617,15 @@
     },
     "apps/InvRes17_pw_sq_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=768 n_oc=320 k_ic=4 k_oc=40 glb_i=4 glb_k=4 glb_o=1",
+            "HALIDE_GEN_ARGS":"in_img=11 ksize=1 stride=1 n_ic=768 n_oc=320 k_ic=4 k_oc=32 glb_i=4 glb_k=4 glb_o=1",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"16, 18, 20, 22",
             "KERNEL_HOST_STENCIL_POS":"0, 2, 4, 6",
             "HW_OUTPUT_STENCIL_POS":"8",
-            "GLB_INPUTS":""
+            "GLB_INPUTS":"",
+            "SWEEP_PNR_PLACER_EXP":"1"
         },
         "fastest":{
         },

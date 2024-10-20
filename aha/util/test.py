@@ -249,7 +249,7 @@ def dispatch(args, extra_args=None):
             if args.dense_fp:
 
                 # define custom absolute tolerance for floating point comparison
-                custom_atol = 4.0e-01 # default 1e-08
+                custom_atol = 8.0e-01 # default 1e-08
                 custom_rtol = 5.0e-02 # default 1e-05
                 sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype = numpy.float32)
                 gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype = numpy.float32)

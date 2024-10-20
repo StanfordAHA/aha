@@ -245,10 +245,13 @@ def dispatch(args, extra_args=None):
         ]
         glb_tests = [
             # "apps/pointwise",
+            # "apps/gaussian",
         ]
         glb_tests_fp = [
+            "apps/InvRes17_pw_sq_fp"
         ]
         resnet_tests = [
+            # "conv3_1",
         ]
         resnet_tests_fp = [
         ]
