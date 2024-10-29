@@ -23,6 +23,8 @@ case $command in
 	;;
 	lower)
 		cd sam/
+		echo "Making a temporary collateral directory in sam/temp/"
+		mkdir temp
 		echo "Convert SAM graph to hardware-aware sparse dataflow graph"
 		PYTHONPATH=/aha/garnet/ python sam/onyx/parse_dot.py --sam_graph /aha/sam/compiler/sam-outputs/onyx-dot/mat_elemadd.gv --output_png hw_aware_mat_elemadd.png --output_graph hw_aware_mat_elemadd.gv  
 		cd ..
