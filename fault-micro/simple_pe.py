@@ -5,25 +5,76 @@ import hwtypes as ht
 import operator
 
 
-class ConfigALU(m.Circuit):
-    io = m.IO(
-        a=m.In(m.UInt[16]),
-        b=m.In(m.UInt[16]),
-        c=m.Out(m.UInt[16]),
-        config_data=m.In(m.Bits[2]),
-        config_en=m.In(m.Enable)
-    ) + m.ClockIO()
+class SimplePE(m.Generator2):
+    def __init__(self, addr):
+        self.io = io = m.IO(
+            a=m.In(m.UInt[16]),
+            b=m.In(m.UInt[16]),
+            c=m.Out(m.UInt[16]),
+            config_addr=m.In(m.Bits[8]),
+            config_data=m.In(m.Bits[2]),
+            config_en=m.In(m.Enable)
+        ) + m.ClockIO(has_reset=True)
 
-    opcode = m.Register(m.Bits[2], has_enable=True)()(
-        io.config_data, CE=io.config_en
-    )
-    io.c @= m.mux(
-        [io.a + io.b, io.a - io.b, io.a * io.b, io.b ^ io.a],
-        opcode
-    )
+        opcode = m.Register(m.Bits[2], has_enable=True, reset_type=m.Reset)()(
+            io.config_data, CE=io.config_en & (io.config_addr == addr)
+        )
+        io.c @= m.mux(
+            [io.a + io.b, io.a - io.b, io.a * io.b, io.b ^ io.a],
+            opcode
+        )
+
+
+class ResetTester:
+    def __init__(self, circuit):
+        for port in circuit.interface.ports.values():
+            if isinstance(port, m.Reset):
+                self.reset_port = port
+                break
+
+    def reset(self):
+        self.poke(self.reset_port, 1)
+        self.step(2)
+        self.poke(self.reset_port, 0)
+        self.step(2)
+
+
+class ConfigurationTester:
+    def __init__(self, circuit, config_addr_port, config_data_port,
+                 config_en_port):
+        self.config_addr_port = config_addr_port
+        self.config_data_port = config_data_port
+        self.config_en_port = config_en_port
+
+    def configure(self, addr, data):
+        self.poke(self.clock, 0)
+        self.poke(self.config_addr_port, addr)
+        self.poke(self.config_data_port, data)
+        self.poke(self.config_en_port, 1)
+        self.step(2)
+        self.poke(self.config_en_port, 0)
+
+
+class ResetAndConfigurationTester(
+    f.SynchronousTester, ResetTester, ConfigurationTester
+):
+    def __init__(self, circuit, clock, config_addr_port, config_data_port,
+                 config_en_port):
+        # Note the explicit calls to `__init__` to manage the multiple
+        # inheritance, rather than the standard use of `super`
+        f.SynchronousTester.__init__(self, circuit, clock)
+        ResetTester.__init__(self, circuit)
+        ConfigurationTester.__init__(self, circuit, config_addr_port,
+                                     config_data_port, config_en_port)
+
 
 ops = [operator.add, operator.sub, operator.mul, operator.xor]
-tester = f.SynchronousTester(ConfigALU)
+addr = 0xDE
+PE = SimplePE(addr)
+tester = ResetAndConfigurationTester(
+    PE, PE.CLK, PE.config_addr, PE.config_data, PE.config_en
+)
+tester.circuit.config_addr = addr
 tester.circuit.config_en = 1
 for i, op in enumerate(ops):
     tester.circuit.config_data = i
@@ -34,4 +85,3 @@ for i, op in enumerate(ops):
 
 tester.compile_and_run("verilator", flags=["-Wno-fatal"],
                        directory="build")
-
