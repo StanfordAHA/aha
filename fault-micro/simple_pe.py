@@ -55,7 +55,7 @@ class ConfigurationTester:
         self.poke(self.config_en_port, 0)
 
 
-class ResetAndConfigurationTester(
+class PETester(
     f.SynchronousTester, ResetTester, ConfigurationTester
 ):
     def __init__(self, circuit, clock, config_addr_port, config_data_port,
@@ -67,28 +67,24 @@ class ResetAndConfigurationTester(
         ConfigurationTester.__init__(self, circuit, config_addr_port,
                                      config_data_port, config_en_port)
 
+    def check_op(self, addr, instr, op):
+        tester.configure(addr, instr)
+        tester.circuit.a = a = ht.BitVector.random(16)
+        tester.circuit.b = b = ht.BitVector.random(16)
+        tester.step(2)
+        tester.circuit.c.expect(op(a, b))
+
 
 ops = [operator.add, operator.sub, operator.mul, operator.xor]
 addr = 0xDE
 PE = SimplePE(addr)
-tester = ResetAndConfigurationTester(
+tester = PETester(
     PE, PE.CLK, PE.config_addr, PE.config_data, PE.config_en
 )
-tester.circuit.RESET = 0
-tester.circuit.config_addr = addr
-tester.circuit.config_en = 1
 for i, op in enumerate(ops):
-    tester.circuit.config_data = i
-    tester.circuit.a = a = ht.BitVector.random(16)
-    tester.circuit.b = b = ht.BitVector.random(16)
-    tester.step(2)
-    tester.circuit.c.expect(op(a, b))
-tester.circuit.config_en = 0
+    tester.check_op(addr, i, op)
 tester.reset()
-tester.circuit.a = a = ht.BitVector.random(16)
-tester.circuit.b = b = ht.BitVector.random(16)
-tester.step(2)
-tester.circuit.c.expect(ops[0](a, b))
+tester.check_op(addr, 0, ops[0])
 
 
 tester.compile_and_run("verilator", flags=["-Wno-fatal"],
