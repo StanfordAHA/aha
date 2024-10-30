@@ -74,6 +74,7 @@ PE = SimplePE(addr)
 tester = ResetAndConfigurationTester(
     PE, PE.CLK, PE.config_addr, PE.config_data, PE.config_en
 )
+tester.circuit.RESET = 0
 tester.circuit.config_addr = addr
 tester.circuit.config_en = 1
 for i, op in enumerate(ops):
@@ -82,6 +83,13 @@ for i, op in enumerate(ops):
     tester.circuit.b = b = ht.BitVector.random(16)
     tester.step(2)
     tester.circuit.c.expect(op(a, b))
+tester.circuit.config_en = 0
+tester.reset()
+tester.circuit.a = a = ht.BitVector.random(16)
+tester.circuit.b = b = ht.BitVector.random(16)
+tester.step(2)
+tester.circuit.c.expect(ops[0](a, b))
+
 
 tester.compile_and_run("verilator", flags=["-Wno-fatal"],
                        directory="build")
