@@ -98,6 +98,6 @@
 [submodule "Lego_v0"]
 	path = Lego_v0
 	url = https://github.com/sgauthamr2001/Lego_v0.git
-[submodule "DSEGraphAnalysis"]
-	path = DSEGraphAnalysis
-	url = https://github.com/jack-melchert/DSEGraphAnalysis.git
+[submodule "APEX"]
+	path = APEX
+	url = https://github.com/jack-melchert/APEX.git
