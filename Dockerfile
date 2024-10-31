@@ -94,6 +94,7 @@ RUN source bin/activate && \
   pip install systemrdl-compiler peakrdl-html && \
   pip install packaging && \
   pip install importlib_resources && \
+  pip install matplotlib && \
   echo DONE
 
 # Pono
