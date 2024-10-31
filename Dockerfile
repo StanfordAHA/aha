@@ -238,6 +238,7 @@ COPY ./peak /aha/peak
 COPY ./peak_generator /aha/peak_generator
 COPY ./pycoreir /aha/pycoreir
 COPY ./Lego_v0 /aha/Lego_v0
+COPY ./DSEGraphAnalysis /aha/DSEGraphAnalysis
 
 # Install aha tools /aha/aha/
 COPY ./setup.py /aha/setup.py
