@@ -251,8 +251,6 @@ RUN source bin/activate && \
   pip install -e . && \
   aha deps install
 
-RUN cd /aha/APEX && pip install -r requirements.txt
-
 # This should go as late in Docker file as possible; it brings
 # in EVERYTHING. Anything from here on down CANNOT BE CACHED.
 WORKDIR /aha
