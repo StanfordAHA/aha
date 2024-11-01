@@ -207,6 +207,8 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   ln -s /aha/.git/modules/sam/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
+RUN cd /aha/APEX && pip install -r requirements.txt
+
 # Sam 2 - build sam
 COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
