@@ -207,8 +207,6 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   ln -s /aha/.git/modules/sam/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
-RUN cd /aha/APEX && pip install -r requirements.txt
-
 # Sam 2 - build sam
 COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
@@ -247,10 +245,13 @@ COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
 
 WORKDIR /aha
+
 RUN source bin/activate && \
   echo "--- ..Final aha deps install" && \
   pip install -e . && \
   aha deps install
+
+RUN cd /aha/APEX && pip install -r requirements.txt
 
 # This should go as late in Docker file as possible; it brings
 # in EVERYTHING. Anything from here on down CANNOT BE CACHED.
