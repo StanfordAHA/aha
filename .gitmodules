@@ -60,7 +60,7 @@
     branch = master
 [submodule "archipelago"]
     path = archipelago
-	url = https://github.com/kuree/archipelago
+	url = https://github.com/mcoduoza/archipelago
 	branch = master 
 [submodule "cgra_pnr"]
     path = cgra_pnr
