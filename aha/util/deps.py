@@ -35,6 +35,7 @@ def dispatch(args, extra_args=None):
         # TODO: only install these if they're not present in `pip list`
 
         modules = {
+            "APEX": "APEX",
             "archipelago": "archipelago",
             "ast_tools": "ast_tools",
             "buffer-mapping": "BufferMapping",
