@@ -122,18 +122,18 @@
     },
     "apps/maxpooling":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=114 ksize=3 stride=2 n_ic=28 unroll=14",
+            "HALIDE_GEN_ARGS":"in_img=114 ksize=3 stride=2 n_ic=112 unroll=14",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "PNR_PLACER_EXP":"15"
         },
         "fastest":{
-            "HALIDE_GEN_ARGS":"in_img=114 ksize=3 stride=2 n_ic=28 unroll=14",
+            "HALIDE_GEN_ARGS":"in_img=114 ksize=3 stride=2 n_ic=112 unroll=14",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1"
         },
         "sweep":{
-            "HALIDE_GEN_ARGS":"in_img=114 ksize=3 stride=2 n_ic=28 unroll=14",
+            "HALIDE_GEN_ARGS":"in_img=114 ksize=3 stride=2 n_ic=112 unroll=14",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"
@@ -141,18 +141,18 @@
     },
     "apps/maxpooling_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=57 ksize=3 stride=2 n_ic=28 unroll=14",
+            "HALIDE_GEN_ARGS":"in_img=57 ksize=3 stride=2 n_ic=56 unroll=14",
             "HL_TARGET":"host-x86-64-bfloat_hardware",
             "DISABLE_GP":"1",
             "PNR_PLACER_EXP":"6"
         },
         "fastest":{
-            "HALIDE_GEN_ARGS":"in_img=57 ksize=3 stride=2 n_ic=28 unroll=14",
+            "HALIDE_GEN_ARGS":"in_img=57 ksize=3 stride=2 n_ic=56 unroll=14",
             "HL_TARGET":"host-x86-64-bfloat_hardware",
             "DISABLE_GP":"1"
         },
         "sweep":{
-            "HALIDE_GEN_ARGS":"in_img=57 ksize=3 stride=2 n_ic=28 unroll=14",
+            "HALIDE_GEN_ARGS":"in_img=57 ksize=3 stride=2 n_ic=56 unroll=14",
             "HL_TARGET":"host-x86-64-bfloat_hardware",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"
