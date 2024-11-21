@@ -245,4 +245,8 @@ steps:
     echo '- Clean up your mess'
     test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
     test -d $COMMON && rmdir $COMMON || echo okay
-    /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
+
+    # No don't do this. Excludes ability to rerun etc.
+    # Also, it's generally not very big.
+    # Also, code above will eliminate DELETEME files older than one week.
+    # /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
