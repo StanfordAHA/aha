@@ -4,7 +4,8 @@ agents: { docker: true }
 
 env:
   # Default config is "pr_aha"
-  CONFIG: ${CONFIG:-pr_aha}
+  # CONFIG: ${CONFIG:-pr_aha}
+  CONFIG: full
 
   # "COMMON" is a dir where we can pass information from one step to another
   COMMON: /var/lib/buildkite-agent/builds/DELETEME-$BUILDKITE_BUILD_NUMBER
