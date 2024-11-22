@@ -243,10 +243,10 @@ steps:
     [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
 
     echo '- Clean up your mess'
-    test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
-    test -d $COMMON && rmdir $COMMON || echo okay
 
     # No don't do this. Excludes ability to rerun etc.
     # Also, it's generally not very big.
     # Also, code above will eliminate DELETEME files older than one week.
+    # test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
+    # test -d $COMMON && rmdir $COMMON || echo okay
     # /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
