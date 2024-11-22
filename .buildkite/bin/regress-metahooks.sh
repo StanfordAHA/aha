@@ -150,7 +150,13 @@ elif [ "$1" == '--commands' ]; then
       # For fast prototyping: ECHO ONLY and/or try config 'fast'
       set -x
       echo "aha regress $CONFIG"
-      aha regress $CONFIG --daemon auto --include-dense-only-tests || exit 13
+      OOPS_I_FAILED="False"
+      aha regress $CONFIG --daemon auto --include-dense-only-tests || OOPS_I_FAILED="True"
+      if [ "$OOPS_I_FAILED" == "True" ]; then
+          echo "ERROR 'aha regress $CONFIG --daemon auto --include-dense-only-tests' FAILED for unknown reasons"
+          echo "Hopefully there will be more information in the log above :("
+          exit 13
+      fi      
       set +x
     fi
 
