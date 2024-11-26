@@ -327,11 +327,20 @@ def dispatch(args, extra_args=None):
             # "tensor3_innerprod",
             # "tensor3_mttkrp"
             # sparse-ml kernels
-            "fp_matmul_ikj", # unrollled
+            # "fp_matmul_ikj", # unrolled
+            # "fp_relu_matmul_ikj", # unrolled
+            # "fp_relu_matmul_ijk_crddrop", # unrolled
+            # "fp_relu_spmm_ikj", # unrolled
+            # "fp_relu_spmm_ijk_crddrop", # unrolled
+            # "fp_spmm_ikj", # unrolled
             # "fp_matmul_ijk_crddrop", # unrolled
-            # psarse ml micro-benchmarks
-            # "spmm_ijk_crddrop_relu",
-            # "spmm_ijk_crddrop",
+            # "fp_spmm_ijk_crddrop", # unrolled
+            # "fp_mat_elemadd_relu", # unrolled
+            # "fp_mat_elemadd", # unrolled
+            # "fp_dense_mat_elemadd_relu" # unrolled
+            # sparse ml micro-benchmarks
+            # "fp_spmm_ijk_crddrop_relu",
+            "fp_spmm_ijk_crddrop_elu",
             # "mat_elemadd_leakyrelu_exp",
             # "fp_mat_elemadd",
             # "fp_spmm_ijk",
