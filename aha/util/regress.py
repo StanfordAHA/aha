@@ -426,6 +426,8 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
     if dense_only:
         buildkite_args.append("--dense-only")
     
+    env_vars = {}
+
     if using_matrix_unit:
         buildkite_args.append("--using-matrix-unit")
         env_vars["WEST_IN_IO_SIDES"] = "1"
