@@ -407,6 +407,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
                 "--height", str(height),
                 "--env-parameters", env_parameters,
             ] + use_daemon + layer_array
+        buildkite_call(buildkite_args)
     except:
         print("[INFO] Finished PnR which is expected to fail", flush=True)
 
