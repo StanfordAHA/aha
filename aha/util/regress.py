@@ -93,6 +93,7 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append("--using-matrix-unit")
             buildkite_args.append("--mu-datawidth")
             buildkite_args.append(str(mu_datawidth))
+            buildkite_args.append("--give-north-io-sbs")
 
         buildkite_call(buildkite_args)
         
@@ -133,6 +134,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--opal-workaround")
         if using_matrix_unit:
             build_tb_cmd.append("--using-matrix-unit")
+            build_tb_cmd.append("--give-north-io-sbs")
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -166,6 +168,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--opal-workaround")
         if using_matrix_unit:
             build_tb_cmd.append("--using-matrix-unit")
+            build_tb_cmd.append("--give-north-io-sbs")
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -342,6 +345,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     if using_matrix_unit:
         buildkite_args.append("--using-matrix-unit")
+        buildkite_args.append("--give-north-io-sbs")
         env_vars["WEST_IN_IO_SIDES"] = "1"
         env_vars["USING_MATRIX_UNIT"] = "1"
         env_vars["OC_0"] = str(2*cgra_height)
@@ -431,6 +435,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
     if using_matrix_unit:
         buildkite_args.append("--using-matrix-unit")
+        buildkite_args.append("--give-north-io-sbs")
         env_vars["WEST_IN_IO_SIDES"] = "1"
         env_vars["USING_MATRIX_UNIT"] = "1"
         env_vars["OC_0"] = str(2*cgra_height)
