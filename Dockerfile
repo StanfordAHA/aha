@@ -90,7 +90,7 @@ RUN source bin/activate && \
   pip install urllib3==1.26.15 && \
   pip install wheel six && \
   pip install systemrdl-compiler peakrdl-html && \
-  pip install packaging==21.3 && \
+  pip install packaging && \
   pip install importlib_resources && \
   echo DONE
 

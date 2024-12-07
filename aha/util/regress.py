@@ -24,6 +24,8 @@ def add_subparser(subparser):
     parser.add_argument("--pipeline-num", default=32, type=int)
     parser.add_argument("--sparse-tile-pairs-list", default="", type=str, nargs="*")
     parser.add_argument("--unroll", default=1, type=int)
+    parser.add_argument("--using-matrix-unit", action="store_true")
+    parser.add_argument("--mu-datawidth", default=16, type=int)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -66,7 +68,7 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
             else:
                 raise
 
-def gen_garnet(width, height, dense_only=False):
+def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_datawidth=16):
     print("--- Generating Garnet", flush=True)
     start = time.time()
     if not os.path.exists("/aha/garnet/garnet.v"):
@@ -74,7 +76,6 @@ def gen_garnet(width, height, dense_only=False):
         buildkite_call("aha garnet --daemon kill".split())
         
         # No garnet verilog yet, so build it now.
-
         buildkite_args = [
                             "aha",
                             "garnet",
@@ -88,12 +89,17 @@ def gen_garnet(width, height, dense_only=False):
         if dense_only:
             buildkite_args.append("--dense-only")
 
+        if using_matrix_unit:
+            buildkite_args.append("--using-matrix-unit")
+            buildkite_args.append("--mu-datawidth")
+            buildkite_args.append(str(mu_datawidth))
+
         buildkite_call(buildkite_args)
         
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1, using_matrix_unit=False):
     if len(sparse_tests) == 0:
         return 0
     
@@ -125,6 +131,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
         ]
         if opal_workaround:
             build_tb_cmd.append("--opal-workaround")
+        if using_matrix_unit:
+            build_tb_cmd.append("--using-matrix-unit")
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -156,6 +164,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
         ]
         if opal_workaround:
             build_tb_cmd.append("--opal-workaround")
+        if using_matrix_unit:
+            build_tb_cmd.append("--using-matrix-unit")
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -202,13 +212,18 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unr
     return all_tiles, num_list
 
 
-def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test="", test_dataset_runtime_dict=None):
+def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test="", test_dataset_runtime_dict=None, using_matrix_unit=False, cgra_height=32, mu_datawidth=16):
     if test == "":
         test = testname
 
     print(f"--- {test}")
 
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    if using_matrix_unit:
+        env_vars["WEST_IN_IO_SIDES"] = "1"
+        env_vars["USING_MATRIX_UNIT"] = "1"
+        env_vars["OC_0"] = str(2*cgra_height)
+        env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
 
     app_path = f"{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path, flush=True)
@@ -279,7 +294,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -323,6 +338,15 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if dense_only:
         buildkite_args.append("--dense-only")
     
+    env_vars = {}
+
+    if using_matrix_unit:
+        buildkite_args.append("--using-matrix-unit")
+        env_vars["WEST_IN_IO_SIDES"] = "1"
+        env_vars["USING_MATRIX_UNIT"] = "1"
+        env_vars["OC_0"] = str(2*cgra_height)
+        env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
+
     buildkite_call(buildkite_args)
 
     time_map = time.time() - start
@@ -330,15 +354,15 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
     if use_fp:
-        buildkite_call(["aha", "test", test, "--dense-fp"])
+        buildkite_call(["aha", "test", test, "--dense-fp"], env=env_vars)
     else:
-        buildkite_call(["aha", "test", test])
+        buildkite_call(["aha", "test", test], env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
 
 
-def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False):
+def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -365,7 +389,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         print(f"copying hardcoded bin folder", flush=True)
         shutil.copytree(f"{app_path}/bin_hardcoded", f"{app_path}/bin")
     except:
-        print(f"please don't delete hardcoded bin folder", flush=True)
+        raise RuntimeError(f"[ERROR] Please don't delete hardcoded bin folder")
 
     # To use daemon, call regress.py with args '--daemon auto'
     # --- extra_args=['--daemon', 'auto']
@@ -373,6 +397,22 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
     if (extra_args):
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = [ "--daemon", "auto" ]
+
+    try:
+        buildkite_args = [
+                "aha",
+                "pnr",
+                test,
+                "--width", str(width),
+                "--height", str(height),
+                "--env-parameters", env_parameters,
+            ] + use_daemon + layer_array
+        buildkite_call(buildkite_args)
+    except:
+        print("[INFO] Finished PnR which is expected to fail", flush=True)
+
+    print(f"[INFO] Re-copying design_top.json configuration", flush=True)
+    shutil.copy(f"{app_path}/bin_hardcoded/design_top.json", f"{app_path}/bin/design_top.json")
 
     buildkite_args = [
                 "aha",
@@ -386,6 +426,15 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
     if dense_only:
         buildkite_args.append("--dense-only")
+    
+    env_vars = {}
+
+    if using_matrix_unit:
+        buildkite_args.append("--using-matrix-unit")
+        env_vars["WEST_IN_IO_SIDES"] = "1"
+        env_vars["USING_MATRIX_UNIT"] = "1"
+        env_vars["OC_0"] = str(2*cgra_height)
+        env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
 
     buildkite_call(buildkite_args)
 
@@ -393,7 +442,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test])
+    buildkite_call(["aha", "test", test], env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -403,6 +452,8 @@ def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
     pipeline_num = args.pipeline_num
+    using_matrix_unit = args.using_matrix_unit
+    mu_datawidth = args.mu_datawidth
     unroll = args.unroll
 
     # Preserve backward compatibility
@@ -448,7 +499,7 @@ def dispatch(args, extra_args=None):
 
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
-    t = gen_garnet(width, height, dense_only=False)
+    t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth)
     info.append(["garnet with sparse and dense", t])
 
     data_tile_pairs = []
@@ -475,16 +526,16 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll)
+            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit)
 
             for test in sparse_tests:
                 if use_pipeline:
                     assert (not seed_flow), "Pipeline mode is not supported with seed flow"
                     tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
                 else:
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
                 # remove the generated collateral for tiles that passed to avoid overrunning the disk
@@ -496,46 +547,46 @@ def dispatch(args, extra_args=None):
                 for dataset, time_value in dataset_runtime_dict.items():
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")   
     else:
-        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll)
+        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit)
 
         for test in sparse_tests:
             assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
-            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
         t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args)
+                                    width, height, args.env_parameters, extra_args, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests_fp:
         t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args, use_fp=True)
+                                    width, height, args.env_parameters, extra_args, use_fp=True, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
         if "residual" in test:
             t0, t1, t2 = test_dense_app("apps/resnet_residual",
-                                        width, height, args.env_parameters, extra_args, layer=test)
+                                        width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
             t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
-                                        width, height, args.env_parameters, extra_args, layer=test)
+                                        width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests_fp:
         if "residual" in test:
             t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp",
-                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True)
+                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
             t0, t1, t2 = test_dense_app("apps/conv2D_fp",
-                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True)
+                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
         t0, t1, t2 = test_hardcoded_dense_app(test,
-                                    width, height, args.env_parameters, extra_args)
+                                    width, height, args.env_parameters, extra_args, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     if args.include_dense_only_tests:
@@ -545,7 +596,7 @@ def dispatch(args, extra_args=None):
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
         
-        t = gen_garnet(width, height, dense_only=True)
+        t = gen_garnet(width, height, dense_only=True, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth)
         info.append(["garnet with dense only", t])
 
         num_dense_only_glb_tests = 5
@@ -553,14 +604,14 @@ def dispatch(args, extra_args=None):
             if test_index == num_dense_only_glb_tests:
                 break
             t0, t1, t2 = test_dense_app(test, 
-                                        width, height, args.env_parameters, extra_args, dense_only=True)
+                                        width, height, args.env_parameters, extra_args, dense_only=True, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
             info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
 
         for test in resnet_tests:
             # residual resnet test is not working with dense only mode
             if "residual" not in test:
                 t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
-                                            width, height, args.env_parameters, extra_args, layer=test)
+                                            width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth)
                 info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
  
     print(f"+++ TIMING INFO", flush=True)

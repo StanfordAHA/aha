@@ -60,6 +60,7 @@ class Tests:
                 "tensor3_ttv",        
             ]
             glb_tests = [
+                "apps/maxpooling",
                 "apps/pointwise",
                 "apps/gaussian",
                 "apps/camera_pipeline_2x2",
@@ -207,6 +208,7 @@ class Tests:
 
             ]
             glb_tests = [
+                "apps/maxpooling",
                 "apps/pointwise",
                 "tests/rom",
                 "tests/arith",
@@ -231,15 +233,14 @@ class Tests:
                 "apps/unsharp",
                 "apps/harris_color",
                 "apps/camera_pipeline_2x2",
-                "apps/maxpooling",
                 "apps/matrix_multiplication"
             ]
             glb_tests_fp = [
+                "apps/maxpooling_fp",
                 "tests/fp_pointwise",
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
-                "apps/maxpooling_fp",
                 "apps/matrix_multiplication_fp",
                 "apps/mcunet_in_sequential_0_fp",
                 "apps/depthwise_conv_stream_fp",
