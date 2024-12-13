@@ -182,7 +182,9 @@ def dispatch(args, extra_args=None):
                 rearrng_axis = []
                 for reorder_tup in output_mode_map:
                     rearrng_axis.append(reorder_tup[0])
-                sim_matrix = numpy.transpose(sim_matrix, rearrng_axis)
+                is_scalar = (rearrng_axis == [])
+                if not is_scalar:
+                    sim_matrix = numpy.transpose(sim_matrix, rearrng_axis)
 
                 # Set up numpy so it doesn't print in scientific notation
                 numpy.set_printoptions(suppress=True)
