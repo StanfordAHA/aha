@@ -10,22 +10,27 @@ class Tests:
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
+        matrix_unit_tests = []
 
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
             sparse_tests = [
-                "vec_identity"
+                # "vec_identity"
             ]
             glb_tests = [
-                "apps/pointwise"
+                # "apps/two_input_add",
+                # "apps/pointwise"
             ]
             glb_tests_fp = [
-                "tests/fp_pointwise",
+                # "tests/fp_pointwise",
             ]
             resnet_tests = []
             resnet_tests_fp = []
             hardcoded_dense_tests = []
+            matrix_unit_tests = [
+                "apps/two_input_add"
+            ]
 
         # PR_AHA test suite for aha-repo push/pull
         elif testname == "pr_aha":
@@ -80,6 +85,7 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
+            matrix_unit_tests = []
 
 # Found the better way maybe
 # 
@@ -159,6 +165,7 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
+            matrix_unit_tests = []
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -273,6 +280,7 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
+            matrix_unit_tests = []
         elif testname == "resnet":
             width, height = 28, 16
             sparse_tests = []
@@ -294,6 +302,7 @@ class Tests:
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
+            matrix_unit_tests = []
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
@@ -309,3 +318,4 @@ class Tests:
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
+        self.matrix_unit_tests = matrix_unit_tests

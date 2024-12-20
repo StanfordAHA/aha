@@ -111,8 +111,10 @@ def dispatch(args, extra_args=None):
         "--gold-file",
         str(app_dir / f"bin/gold{ext}"),
         "--input-broadcast-branch-factor", "2",
-        "--input-broadcast-max-leaves", "4",
-        "--pipeline-pnr"
+        # MO: DRV HACK 
+        "--no-input-broadcast-pipelining",
+        "--input-broadcast-max-leaves", "4"
+        #"--pipeline-pnr"
     ]
 
     need_daemon = False
