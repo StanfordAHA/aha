@@ -505,6 +505,17 @@ def test_matrix_unit_app(test, width, height, env_parameters, extra_args, layer=
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
 
     #buildkite_call(buildkite_args)
+
+    try:
+        subprocess.call(["make", "clean"], cwd=app_path)
+    except:
+        pass
+
+    try:
+        print(f"copying hardcoded bin folder", flush=True)
+        shutil.copytree(f"{app_path}/hardcoded_bin", f"{app_path}/bin")
+    except:
+        raise RuntimeError(f"[ERROR] Please don't delete hardcoded bin folder")
     
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
