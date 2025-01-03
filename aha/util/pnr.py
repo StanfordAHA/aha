@@ -111,11 +111,15 @@ def dispatch(args, extra_args=None):
         "--gold-file",
         str(app_dir / f"bin/gold{ext}"),
         "--input-broadcast-branch-factor", "2",
-        # MO: DRV HACK 
-        "--no-input-broadcast-pipelining",
         "--input-broadcast-max-leaves", "4"
-        #"--pipeline-pnr"
     ]
+
+    dense_ready_valid = "DENSE_READY_VALID" in os.environ and os.environ.get("DENSE_READY_VALID") == "1" 
+    if dense_ready_valid:
+        map_args.append("--no-input-broadcast-pipelining")
+
+    if not(dense_ready_valid):
+        map_args.append("--pipeline-pnr")
 
     need_daemon = False
     do_cmd = subprocess.check_call

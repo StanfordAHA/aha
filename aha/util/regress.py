@@ -305,7 +305,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16, num_fabric_cols_removed=0):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16, num_fabric_cols_removed=0, dense_ready_valid=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -323,16 +323,15 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     except:
         pass
 
-    # MO: DRV HACK 
     env_vars = {}
-    env=env_vars
-    dense_ready_valid = True 
     if dense_ready_valid:
+        env_vars["DENSE_READY_VALID"] = "1"
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
+    #buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array)
     time_compile = time.time() - start
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
@@ -358,6 +357,8 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append("--dense-only")
     
     env_vars = {}
+    if dense_ready_valid:
+        env_vars["DENSE_READY_VALID"] = "1"
 
     # MO: DRV HACK, temporarily setting this so FIFOs are placed properly 
     #env_vars["EXHAUSTIVE_PIPE"] = "1"
@@ -389,6 +390,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
+
 
 
 def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16, num_fabric_cols_removed=0):
@@ -480,7 +482,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
     return time_compile, time_map, time_test
 
-def test_matrix_unit_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16, num_fabric_cols_removed=0):
+def test_hardcoded_matrix_unit_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16, num_fabric_cols_removed=0):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -580,7 +582,8 @@ def dispatch(args, extra_args=None):
     resnet_tests = imported_tests.resnet_tests
     resnet_tests_fp = imported_tests.resnet_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
-    matrix_unit_tests = imported_tests.matrix_unit_tests
+    dense_ready_valid_tests = imported_tests.dense_ready_valid_tests
+    hardcoded_matrix_unit_tests = imported_tests.hardcoded_matrix_unit_tests
 
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
@@ -686,8 +689,15 @@ def dispatch(args, extra_args=None):
                                     using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    for test in matrix_unit_tests:
-        t0, t1, t2 = test_matrix_unit_app(test, 
+    for test in dense_ready_valid_tests:
+        t0, t1, t2 = test_dense_app(test, 
+                                    width, height, args.env_parameters, extra_args, 
+                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                                    dense_ready_valid=True)
+        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+    for test in hardcoded_matrix_unit_tests:
+        t0, t1, t2 = test_hardcoded_matrix_unit_app(test, 
                                     width, height, args.env_parameters, extra_args, 
                                     using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
