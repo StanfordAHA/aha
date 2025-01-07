@@ -74,7 +74,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, suitespar
     
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
@@ -136,7 +136,7 @@ def test_sparse_app(testname, seed_flow, suitesparse_data_tile_pairs, test=""):
 
     print(f"--- {test}")
 
-    env_vars = {"PYTHONPATH": "/aha/garnet/"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
 
     app_path = f"../../../garnet/SPARSE_TESTS/{testname}_0/GLB_DIR/{testname}_combined_seed_0"
     print(app_path, flush=True)
@@ -308,14 +308,34 @@ def dispatch(args, extra_args=None):
     seed_flow = True 
     suitesparse_data = ["football"]
     if args.config == "fast":
-        width, height = 4, 4
+        # width, height = 4, 16 # gaussian
+        # width, height = 12, 16 # harris_color
+        # width, height = 12, 16 # unsharp
+        # width, height = 28, 16 # camera_pipeline_2x2
+        # width, height = 8, 16 # resnet_conv1
+        width, height = 28, 16 # resnet_conv5_1
         sparse_tests = [
-            "vec_identity"
+            #"vec_identity"
+            #"matmul_ijk",
         ]
         glb_tests = [
-            "apps/pointwise"
+            #"apps/gaussian",
+            # "apps/harris_color",
+            # "apps/unsharp",
+            # "apps/camera_pipeline_2x2",
+            #"conv1",
+            #"conv5_1"
         ]
-        resnet_tests = []
+        resnet_tests = [
+            #"conv1",
+            #"conv2_x",
+            #"conv3_1",
+            #"conv3_x",
+            "conv4_1",
+            #"conv4_x",
+            #"conv5_1",
+            #"conv5_x"
+        ]
         hardcoded_dense_tests = []
     elif args.config == "pr":
         width, height = 28, 16
@@ -545,14 +565,67 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests:
-        t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args)
+        if 'conv' in test:
+            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test)
+        else:
+            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+    
+    # for test in glb_tests:
+    #     # Dump top N bitstreams
+    #     top_n = 1
+    #     nn = 0
+    #     # create a folder to store the bin/ results
+    #     if 'conv' in test:
+    #         temp_folder = f"/aha/bin_resnet_output_stationary_{test}"
+    #     else:
+    #         temp_folder = f"/aha/bin_{test.split('/')[-1]}"
+    #     if not os.path.exists(temp_folder):
+    #         os.mkdir(temp_folder)
+    #     else:
+    #         os.system(f"rm -rf {temp_folder}")
+    #         os.mkdir(temp_folder)
+    #     # start dumping the bitstreams
+    #     with open("/aha/pnr_exp_freq_resnet_output_stationary_conv5_1.txt", 'r') as f:
+    #         # line by line read
+    #         for line in f:
+    #             if nn >= top_n:
+    #                 break
+    #             pnr_exp = line.split(":")[0]
+    #             os.environ["PNR_PLACER_EXP"] = pnr_exp
+    #             nn += 1
+    #             if 'conv' in test:
+    #                 t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test)
+    #             else:
+    #                 t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args)
+    #             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+    #             # copy the bin folder to the temp folder and rename it
+    #             folder_rename = f"top{nn}_exp{pnr_exp}"
+    #             if 'conv' in test:
+    #                 os.system(f"cp -r /aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/resnet_output_stationary/bin {temp_folder}/{folder_rename}")
+    #             else:
+    #                 os.system(f"cp -r /aha/Halide-to-Hardware/apps/hardware_benchmarks/{test}/bin {temp_folder}/{folder_rename}")
+    #             # delete big and useless files in that bin folder
+    #             os.system(f"rm {temp_folder}/{folder_rename}/mem_cout")
+    #             os.system(f"rm {temp_folder}/{folder_rename}/clockwork_codegen")
+    #             os.system(f"rm {temp_folder}/{folder_rename}/*.generator")
 
     for test in resnet_tests:
         t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
                                     width, height, args.env_parameters, extra_args, layer=test)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        # copy the log/meta files to /aha/run_{test} folder
+        # check if folder exist
+        result_folder = f"/aha/run_resnet_layer_glb484_{test}"
+        if not os.path.exists(result_folder):
+            os.mkdir(result_folder)
+        else:
+            os.system(f"rm -rf {result_folder}")
+            os.mkdir(result_folder)
+        # copy the files
+        os.system(f"cp /aha/garnet/tests/test_app/run.log {result_folder}")
+        os.system(f"cp /aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/resnet_output_stationary/bin/design_top.json {result_folder}")
+        os.system(f"cp /aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/resnet_output_stationary/bin/design_meta.json {result_folder}")
 
     for test in hardcoded_dense_tests:
         t0, t1, t2 = test_hardcoded_dense_app(test,
