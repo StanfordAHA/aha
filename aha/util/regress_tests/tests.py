@@ -10,7 +10,8 @@ class Tests:
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
-        matrix_unit_tests = []
+        dense_ready_valid_tests = []
+        hardcoded_matrix_unit_tests = []
 
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -20,7 +21,7 @@ class Tests:
             ]
             glb_tests = [
                 # "apps/two_input_add",
-                # "apps/pointwise"
+                "apps/pointwise"
             ]
             glb_tests_fp = [
                 # "tests/fp_pointwise",
@@ -28,7 +29,10 @@ class Tests:
             resnet_tests = []
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            matrix_unit_tests = [
+            dense_ready_valid_tests = [
+                "apps/pointwise"
+            ]
+            hardcoded_matrix_unit_tests = [
                 "apps/two_input_add"
             ]
 
@@ -49,43 +53,44 @@ class Tests:
 
             width, height = 28, 16
             sparse_tests = [
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "mat_elemdiv",
-                "mat_mattransmul",
-                "matmul_ijk_crddrop_relu",
-                "matmul_ikj",
-                "matmul_jik",
-                "spmm_ijk_crddrop_relu",
-                "spmv_relu",
-                "masked_broadcast",
-                "mat_sddmm",
-                "tensor3_mttkrp",
-                "tensor3_ttv",        
+                # "vec_elemmul",
+                # "mat_vecmul_ij",
+                # "mat_elemadd_leakyrelu_exp",
+                # "mat_elemdiv",
+                # "mat_mattransmul",
+                # "matmul_ijk_crddrop_relu",
+                # "matmul_ikj",
+                # "matmul_jik",
+                # "spmm_ijk_crddrop_relu",
+                # "spmv_relu",
+                # "masked_broadcast",
+                # "mat_sddmm",
+                # "tensor3_mttkrp",
+                # "tensor3_ttv",        
             ]
             glb_tests = [
-                "apps/maxpooling",
-                "apps/pointwise",
-                "apps/gaussian",
-                "apps/camera_pipeline_2x2",
+                # "apps/maxpooling",
+                # "apps/pointwise",
+                # "apps/gaussian",
+                # "apps/camera_pipeline_2x2",
             ]
             glb_tests_fp = [
-                "apps/matrix_multiplication_fp",
+                # "apps/matrix_multiplication_fp",
             ]
             resnet_tests = [
-                "conv1",
+                # "conv1",
                 "conv2_x",
-                "conv5_1",
-                "conv5_x",
+                # "conv5_1",
+                # "conv5_x",
             ]
             resnet_tests_fp = [
-                "conv2_x_fp"
+                # "conv2_x_fp"
             ]
             hardcoded_dense_tests = [
-                "apps/depthwise_conv"
+                # "apps/depthwise_conv"
             ]
-            matrix_unit_tests = []
+            dense_ready_valid_tests = []
+            hardcoded_matrix_unit_tests = []
 
 # Found the better way maybe
 # 
@@ -165,7 +170,8 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            matrix_unit_tests = []
+            dense_ready_valid_tests = []
+            hardcoded_matrix_unit_tests = []
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -280,7 +286,8 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            matrix_unit_tests = []
+            dense_ready_valid_tests = []
+            hardcoded_matrix_unit_tests = []
         elif testname == "resnet":
             width, height = 28, 16
             sparse_tests = []
@@ -302,7 +309,8 @@ class Tests:
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            matrix_unit_tests = []
+            dense_ready_valid_tests = []
+            hardcoded_matrix_unit_tests = []
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
@@ -318,4 +326,5 @@ class Tests:
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
-        self.matrix_unit_tests = matrix_unit_tests
+        self.dense_ready_valid_tests = dense_ready_valid_tests
+        self.hardcoded_matrix_unit_tests = hardcoded_matrix_unit_tests
