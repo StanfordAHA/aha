@@ -506,6 +506,8 @@ def test_hardcoded_matrix_unit_app(test, width, height, env_parameters, extra_ar
         env_vars["OC_0"] = str(2*cgra_height)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
 
+    env_vars["DENSE_READY_VALID"] = "1"
+
     #buildkite_call(buildkite_args)
 
     try:
