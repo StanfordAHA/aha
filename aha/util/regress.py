@@ -325,7 +325,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     env_vars = {}
     if dense_ready_valid:
-        env_vars["DENSE_READ_VALID"] = "1"
+        env_vars["DENSE_READY_VALID"] = "1"
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
 
