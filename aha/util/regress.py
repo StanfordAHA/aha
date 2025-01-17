@@ -325,9 +325,12 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     env_vars = {}
     if dense_ready_valid:
-        env_vars["DENSE_READY_VALID"] = "1"
+        env_vars["DENSE_READ_VALID"] = "1"
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
+
+        # TEMPORARY HACK
+        # env_vars["MU_APP_MANUAL_PLACER"] = "1"
 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
@@ -344,6 +347,9 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = [ "--daemon", "auto" ]
 
+
+
+
     buildkite_args = [
             "aha",
             "pnr",
@@ -359,6 +365,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     env_vars = {}
     if dense_ready_valid:
         env_vars["DENSE_READY_VALID"] = "1"
+
+        # TEMPORARY HACK
+        # env_vars["MU_APP_MANUAL_PLACER"] = "1"
+
 
     # MO: DRV HACK, temporarily setting this so FIFOs are placed properly 
     #env_vars["EXHAUSTIVE_PIPE"] = "1"
@@ -506,6 +516,7 @@ def test_hardcoded_matrix_unit_app(test, width, height, env_parameters, extra_ar
         env_vars["OC_0"] = str(2*cgra_height)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
 
+    env_vars["DENSE_READY_VALID"] = "1"
     #buildkite_call(buildkite_args)
 
     try:
