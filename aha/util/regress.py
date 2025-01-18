@@ -359,9 +359,9 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     env_vars = {}
     if dense_ready_valid:
         env_vars["DENSE_READY_VALID"] = "1"
-
-    # MO: DRV HACK, temporarily setting this so FIFOs are placed properly 
-    #env_vars["EXHAUSTIVE_PIPE"] = "1"
+        
+        # MO: TODO: Fix this for dense ready-valid apps 
+        #env_vars["EXHAUSTIVE_PIPE"] = "1"
 
     if using_matrix_unit:
         buildkite_args.append("--using-matrix-unit")

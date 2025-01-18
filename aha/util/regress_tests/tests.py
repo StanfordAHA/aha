@@ -17,14 +17,13 @@ class Tests:
         if testname == "fast":
             width, height = 8, 8,
             sparse_tests = [
-                # "vec_identity"
+                "vec_identity"
             ]
             glb_tests = [
-                # "apps/two_input_add",
-                "apps/pointwise"
+                "apps/pointwise",
             ]
             glb_tests_fp = [
-                # "tests/fp_pointwise",
+                "tests/fp_pointwise",
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -33,7 +32,7 @@ class Tests:
                 "apps/pointwise"
             ]
             hardcoded_matrix_unit_tests = [
-                "apps/two_input_add"
+                # "apps/two_input_add"
             ]
 
         # PR_AHA test suite for aha-repo push/pull
@@ -53,43 +52,45 @@ class Tests:
 
             width, height = 28, 16
             sparse_tests = [
-                # "vec_elemmul",
-                # "mat_vecmul_ij",
-                # "mat_elemadd_leakyrelu_exp",
-                # "mat_elemdiv",
-                # "mat_mattransmul",
-                # "matmul_ijk_crddrop_relu",
-                # "matmul_ikj",
-                # "matmul_jik",
-                # "spmm_ijk_crddrop_relu",
-                # "spmv_relu",
-                # "masked_broadcast",
-                # "mat_sddmm",
-                # "tensor3_mttkrp",
-                # "tensor3_ttv",        
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "mat_elemdiv",
+                "mat_mattransmul",
+                "matmul_ijk_crddrop_relu",
+                "matmul_ikj",
+                "matmul_jik",
+                "spmm_ijk_crddrop_relu",
+                "spmv_relu",
+                "masked_broadcast",
+                "mat_sddmm",
+                "tensor3_mttkrp",
+                "tensor3_ttv",        
             ]
             glb_tests = [
-                # "apps/maxpooling",
-                # "apps/pointwise",
-                # "apps/gaussian",
-                # "apps/camera_pipeline_2x2",
+                "apps/maxpooling",
+                "apps/pointwise",
+                "apps/gaussian",
+                "apps/camera_pipeline_2x2",
             ]
             glb_tests_fp = [
-                # "apps/matrix_multiplication_fp",
+                "apps/matrix_multiplication_fp",
             ]
             resnet_tests = [
-                # "conv1",
+                "conv1",
                 "conv2_x",
-                # "conv5_1",
-                # "conv5_x",
+                "conv5_1",
+                "conv5_x",
             ]
             resnet_tests_fp = [
-                # "conv2_x_fp"
+                "conv2_x_fp"
             ]
             hardcoded_dense_tests = [
-                # "apps/depthwise_conv"
+                "apps/depthwise_conv"
             ]
-            dense_ready_valid_tests = []
+            dense_ready_valid_tests = [      
+                "apps/pointwise",
+            ]
             hardcoded_matrix_unit_tests = []
 
 # Found the better way maybe
@@ -170,7 +171,9 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            dense_ready_valid_tests = []
+            dense_ready_valid_tests = [      
+                "apps/pointwise",
+            ]
             hardcoded_matrix_unit_tests = []
 
         # FULL test is used by scheduled weekly aha regressions
@@ -286,7 +289,9 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            dense_ready_valid_tests = []
+            dense_ready_valid_tests = [      
+                "apps/pointwise",
+            ]
             hardcoded_matrix_unit_tests = []
         elif testname == "resnet":
             width, height = 28, 16
@@ -309,7 +314,9 @@ class Tests:
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            dense_ready_valid_tests = []
+            dense_ready_valid_tests = [      
+                "apps/pointwise",
+            ]
             hardcoded_matrix_unit_tests = []
 
         # BLANK can be used to return default height, width, and blank test lists
