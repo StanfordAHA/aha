@@ -122,13 +122,13 @@ RUN \
       /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
   : BTOR2TOOLS && \
      ./contrib/setup-btor2tools.sh && \
-  : PIP INSTALL && \
-      cd /aha/pono && ./configure.sh --python && \
-      cd /aha/pono/build && make -j4 && pip install -e ./python && \
-      cd /aha && \
-        source /aha/bin/activate && \
-        pip install -e ./pono/deps/smt-switch/build/python && \
-        pip install -e pono/build/python/
+  #: PIP INSTALL && \
+  #    cd /aha/pono && ./configure.sh --python && \
+  #    cd /aha/pono/build && make -j4 && pip install -e ./python && \
+  #    cd /aha && \
+  #      source /aha/bin/activate && \
+  #      pip install -e ./pono/deps/smt-switch/build/python && \
+  #      pip install -e pono/build/python/
 
 # CoreIR
 WORKDIR /aha
