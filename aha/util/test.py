@@ -152,6 +152,11 @@ def dispatch(args, extra_args=None):
         output_name = name_line
         assert output_name is not None
 
+        output_mode_map = None
+        with open(f"{sparse_comp}/output_mode_map.json") as output_mode_map_h_:
+            output_mode_map = json.load(output_mode_map_h_)
+        assert output_mode_map is not None
+
         # Find the output files...
         all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
         just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
@@ -169,7 +174,17 @@ def dispatch(args, extra_args=None):
                 sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
                                                     format="CSF",
                                                     shape=gold_matrix.shape, base=16, early_terminate='x',
-                                                    use_fp=(gold_matrix.dtype == numpy.float32), suffix=f"_batch{j}_tile{i}").get_matrix()
+                                                    use_fp=(gold_matrix.dtype == numpy.float32), 
+                                                    suffix=f"_batch{j}_tile{i}",
+                                                    tensor_ordering=output_mode_map).get_matrix()
+
+                # Rearrange the axes of the sim_matrix base on the tensor ordering of the app
+                rearrng_axis = []
+                for reorder_tup in output_mode_map:
+                    rearrng_axis.append(reorder_tup[0])
+                is_scalar = (rearrng_axis == [])
+                if not is_scalar:
+                    sim_matrix = numpy.transpose(sim_matrix, rearrng_axis)
 
                 # Set up numpy so it doesn't print in scientific notation
                 numpy.set_printoptions(suppress=True)
@@ -177,10 +192,6 @@ def dispatch(args, extra_args=None):
                 # for comparing floating point  
                 if numpy.allclose(gold_matrix, sim_matrix):
                     print(f"Check Passed.")
-                    # print(f"GOLD")
-                    # print(gold_matrix)
-                    # print(f"SIM")
-                    # print(sim_matrix)
                 else:
                     print(f"GOLD")
                     print(gold_matrix)
