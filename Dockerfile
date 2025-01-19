@@ -95,33 +95,33 @@ RUN source bin/activate && \
   echo DONE
 
 # Pono
-COPY ./pono /aha/pono
-COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
-WORKDIR /aha/pono
+#COPY ./pono /aha/pono
+#COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
+#WORKDIR /aha/pono
 # Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
-RUN \
-  : SETUP && \
-      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
-  : FLEX && \
-      apt-get update && apt-get install -y flex && \
-  : BISON && \
-      echo "# Cannot use standard dist bison 3.5, must have 3.7 or better :(" && \
-      ./contrib/setup-bison.sh                                     && \
-      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
-      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
-  : SMT-SWITCH && \
-      ./contrib/setup-smt-switch.sh --python && \
-      :                                                 && \
-      echo "# cleanup: 1.3GB smt-switch build tests"    && \
-      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
-      :                                                           && \
-      echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
-      /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
-      :                                                                 && \
-      echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
-      /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
-  : BTOR2TOOLS && \
-     ./contrib/setup-btor2tools.sh && \
+#RUN \
+#  : SETUP && \
+#      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
+#  : FLEX && \
+#      apt-get update && apt-get install -y flex && \
+#  : BISON && \
+#      echo "# Cannot use standard dist bison 3.5, must have 3.7 or better :(" && \
+#      ./contrib/setup-bison.sh                                     && \
+#      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
+#      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
+#  : SMT-SWITCH && \
+#      ./contrib/setup-smt-switch.sh --python && \
+#      :                                                 && \
+#      echo "# cleanup: 1.3GB smt-switch build tests"    && \
+#      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
+#      :                                                           && \
+#      echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
+#      /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
+#      :                                                                 && \
+#      echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
+#      /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
+#  : BTOR2TOOLS && \
+#     ./contrib/setup-btor2tools.sh && \
   #: PIP INSTALL && \
   #    cd /aha/pono && ./configure.sh --python && \
   #    cd /aha/pono/build && make -j4 && pip install -e ./python && \
