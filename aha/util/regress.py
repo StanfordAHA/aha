@@ -374,10 +374,13 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     #env_vars["EXHAUSTIVE_PIPE"] = "1"
 
     if using_matrix_unit:
+        #TODO: Make these all env vars? 
         buildkite_args.append("--using-matrix-unit")
         buildkite_args.append("--give-north-io-sbs")
         buildkite_args.append("--num-fabric-cols-removed")
         buildkite_args.append(str(num_fabric_cols_removed))
+
+        env_vars["EXCHANGE_64"] = "1"
         
         if num_fabric_cols_removed == 0: 
             env_vars["WEST_IN_IO_SIDES"] = "1"
