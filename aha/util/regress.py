@@ -365,14 +365,13 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     env_vars = {}
     if dense_ready_valid:
         env_vars["DENSE_READY_VALID"] = "1"
+        env_vars["EXHAUSTIVE_PIPE"] = "1"
 
         # TEMPORARY HACK
         # env_vars["MU_APP_MANUAL_PLACER"] = "1"
 
 
-    # MO: DRV HACK, temporarily setting this so FIFOs are placed properly 
-    #env_vars["EXHAUSTIVE_PIPE"] = "1"
-
+    
     if using_matrix_unit:
         #TODO: Make these all env vars? 
         buildkite_args.append("--using-matrix-unit")
@@ -380,7 +379,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append("--num-fabric-cols-removed")
         buildkite_args.append(str(num_fabric_cols_removed))
 
-        env_vars["EXCHANGE_64"] = "1"
+        # env_vars["EXCHANGE_64"] = "1"
         
         if num_fabric_cols_removed == 0: 
             env_vars["WEST_IN_IO_SIDES"] = "1"
