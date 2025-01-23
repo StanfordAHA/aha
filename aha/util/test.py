@@ -323,6 +323,9 @@ def dispatch(args, extra_args=None):
                 gold_array = golds.pop(0)
                 sim_array = sim_array_list.pop(0)
                 # check diff array and print wrong pixels
+                print(f"Gold array len: {len(gold_array)}")
+                print(f"Sim array len: {len(sim_array)}")
+
                 differences = gold_array != sim_array
                 diff_indices = numpy.where(differences)[0]
                 if len(diff_indices) > 0:
