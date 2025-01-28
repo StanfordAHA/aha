@@ -51,16 +51,11 @@ git for-each-ref --format '%(refname:short)' refs/heads \
 
 echo ""
 echo "--- Restore remote-branch access"
-cd /aha/$submod
-# echo "BEFORE: git branch -r |& head"
-# git branch -r |& head -3
-# echo 'NOW: git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
 set -x
+cd /aha/$submod
 git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
 git fetch -p
 set +x
-# echo "AFTER: git branch -r |& head"
-# git branch -r |& head -3
 
 echo ""
 echo "+++ DONE"
