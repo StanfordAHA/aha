@@ -52,22 +52,17 @@ git for-each-ref --format '%(refname:short)' refs/heads \
 echo ""
 echo "--- Restore remote-branch access"
 cd /aha/$submod
-echo "BEFORE: git branch -r |& head"
-git branch -r |& head -3
+# echo "BEFORE: git branch -r |& head"
+# git branch -r |& head -3
+# echo 'NOW: git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
+set -x
 git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
 git fetch -p
-echo "AFTER: git branch -r |& head"
-git branch -r |& head -3
+set +x
+# echo "AFTER: git branch -r |& head"
+# git branch -r |& head -3
 
 echo ""
 echo "+++ DONE"
 printf "\ngit status\n"; git status -uno
 printf "\ngit branch\n"; git branch
-
-DBG=1
-if [ "$DBG" ]; then
-  if [ "$submod" == "Halide-to-Hardware" ]; then
-    test -f /tmp/restore-halide && cat /tmp/restore-halide
-  fi
-fi
-
