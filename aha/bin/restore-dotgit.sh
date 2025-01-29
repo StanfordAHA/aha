@@ -50,6 +50,14 @@ git for-each-ref --format '%(refname:short)' refs/heads \
    | xargs git branch -D
 
 echo ""
+echo "--- Restore remote-branch access"
+set -x
+cd /aha/$submod
+git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+git fetch -p
+set +x
+
+echo ""
 echo "+++ DONE"
 printf "\ngit status\n"; git status -uno
 printf "\ngit branch\n"; git branch
