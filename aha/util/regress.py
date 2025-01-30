@@ -371,8 +371,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["EXHAUSTIVE_PIPE"] = "1"
 
-        # TEMPORARY HACK
-        # env_vars["MU_APP_MANUAL_PLACER"] = "1"
 
 
     
@@ -386,6 +384,9 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
         env_vars["INCLUDE_E64_HW"] = "1"
         env_vars["E64_MODE_ON"] = "1"
+
+        # TEMPORARY HACK
+        # env_vars["MU_APP_MANUAL_PLACER"] = "1"
        
         
         if num_fabric_cols_removed == 0: 
