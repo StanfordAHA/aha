@@ -97,6 +97,7 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append("--give-north-io-sbs")
             buildkite_args.append("--num-fabric-cols-removed")
             buildkite_args.append(str(num_fabric_cols_removed))
+            buildkite_args.append("--include-E64-hw")
 
         buildkite_call(buildkite_args)
         
@@ -140,6 +141,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--give-north-io-sbs")
             build_tb_cmd.append("--num-fabric-cols-removed")
             build_tb_cmd.append(str(num_fabric_cols_removed))
+            build_tb_cmd.append("--include-E64-hw")
+            env_vars["INCLUDE_E64_HW"] = "1"
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -176,6 +179,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--give-north-io-sbs")
             build_tb_cmd.append("--num-fabric-cols-removed")
             build_tb_cmd.append(str(num_fabric_cols_removed))
+            build_tb_cmd.append("--include-E64-hw")
+            env_vars["INCLUDE_E64_HW"] = "1"
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -334,7 +339,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
-    #buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array)
     time_compile = time.time() - start
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
@@ -378,8 +382,11 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append("--give-north-io-sbs")
         buildkite_args.append("--num-fabric-cols-removed")
         buildkite_args.append(str(num_fabric_cols_removed))
+        buildkite_args.append("--include-E64-hw")
 
-        # env_vars["EXCHANGE_64"] = "1"
+        env_vars["INCLUDE_E64_HW"] = "1"
+        env_vars["E64_MODE_ON"] = "1"
+       
         
         if num_fabric_cols_removed == 0: 
             env_vars["WEST_IN_IO_SIDES"] = "1"
@@ -388,7 +395,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["OC_0"] = str(2*cgra_height)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
 
-    #buildkite_call(buildkite_args)
     
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
