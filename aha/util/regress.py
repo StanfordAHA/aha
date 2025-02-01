@@ -627,7 +627,9 @@ def dispatch(args, extra_args=None):
                                                     using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
                 else:
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict, 
+                    # calling this function to append the id to the input matrix, find a better way to do so in the future
+                    tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, 1, unroll)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict, 
                                                     using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
