@@ -64,7 +64,7 @@
 	branch = master 
 [submodule "cgra_pnr"]
     path = cgra_pnr
-    url = https://github.com/kuree/cgra_pnr
+	url = https://github.com/yuchen-mei/cgra_pnr.git
 [submodule "ast_tools"]
     path = ast_tools
     url = https://github.com/leonardt/ast_tools
