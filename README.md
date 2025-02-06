@@ -31,6 +31,41 @@ module load incisive
 aha regress pr
 ```
 
+
+# Simple Demo – Gaussian Blur
+* Also see slide 3 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).
+```
+# Generate hardware for a 4x16 CGRA
+cd /aha/
+aha garnet --width 4 --height 16 --verilog --use_sim_sram --glb_tile_mem_size 128
+
+# Run the test
+aha map apps/gaussian
+aha pnr apps/gaussian --width 4 --height 16
+TOOL=VCS aha test apps/gaussian        # Requires vcs verilog simulator
+# OR
+TOOL=VERILATOR aha test apps/gaussian  # Requires verilator 5.028 or better
+```
+
+
+# Bigger Demo – Camera Pipeline Using Full 32x16 Array
+* Also see slide 6 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).
+```
+# Remove previously cached RTL
+rm garnet/garnet.v
+
+# Generate hardware for a 32x16 CGRA
+aha garnet --width 32 --height 16 --verilog --use_sim_sram --glb_tile_mem_size 128 (~20 mins)
+
+# Run the test
+aha map apps/camera_pipeline_2x2
+aha pnr apps/camera_pipeline_2x2 --width 32 --height 16
+TOOL=VCS aha test apps/camera_pipeline_2x2        # Requires vcs verilog simulator
+# OR
+TOOL=VERILATOR aha test apps/camera_pipeline_2x2  # Requires verilator 5.028 or better
+```
+
+
 # Managing Grouped Dependency Updates
 
 It is inevitable that upstream dependencies change their APIs and
