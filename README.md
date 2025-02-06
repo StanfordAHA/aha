@@ -33,7 +33,7 @@ aha regress pr
 
 
 # Simple Demo – Gaussian Blur
-* Also see slide 3 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).
+<i>Also see slide 3 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).</i>
 ```
 # Generate hardware for a 4x16 CGRA
 cd /aha/
@@ -49,7 +49,7 @@ TOOL=VERILATOR aha test apps/gaussian  # Requires verilator 5.028 or better
 
 
 # Bigger Demo – Camera Pipeline Using Full 32x16 Array
-* Also see slide 6 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).
+<i>Also see slide 6 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).</i>
 ```
 # Remove previously cached RTL
 rm garnet/garnet.v
