@@ -31,6 +31,44 @@ module load incisive
 aha regress pr
 ```
 
+
+### Simple Demo – Gaussian Blur
+<i>Also see slide 3 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).</i>
+```
+# Generate hardware for a 4x16 CGRA
+cd /aha/; rm garnet/garnet.v  # Remove previously cached RTL
+aha garnet --width 4 --height 16 --verilog --use_sim_sram --glb_tile_mem_size 128
+
+# Choose a verilog simulator for testing
+export TOOL=VCS        # To use VCS verilog simulator (default) OR
+export TOOL=XCELIUM    # For Cadence Xcelium OR
+export TOOL=VERILATOR  # Requires verilator 5.028 or better OR
+
+# Run the test
+aha map apps/gaussian
+aha pnr apps/gaussian --width 4 --height 16
+aha test apps/gaussian
+```
+
+### Bigger Demo – Camera Pipeline Using Full 32x16 Array
+<i>Also see slide 6 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).</i>
+```
+# Generate hardware for a 32x16 CGRA
+cd /aha/; rm garnet/garnet.v  # Remove previously cached RTL
+aha garnet --width 32 --height 16 --verilog --use_sim_sram --glb_tile_mem_size 128  # (~20 mins)
+
+# Choose a verilog simulator for testing
+export TOOL=VCS        # To use VCS verilog simulator (default) OR
+export TOOL=XCELIUM    # For Cadence Xcelium OR
+export TOOL=VERILATOR  # Requires verilator 5.028 or better OR
+
+# Run the test
+aha map apps/camera_pipeline_2x2
+aha pnr apps/camera_pipeline_2x2 --width 32 --height 16
+aha test apps/camera_pipeline_2x2
+```
+
+
 # Managing Grouped Dependency Updates
 
 It is inevitable that upstream dependencies change their APIs and
