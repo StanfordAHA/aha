@@ -383,7 +383,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append("--include-E64-hw")
 
         env_vars["INCLUDE_E64_HW"] = "1"
-        env_vars["E64_MODE_ON"] = "1"
+        # env_vars["E64_MODE_ON"] = "1"
 
         # TEMPORARY HACK
         # env_vars["MU_APP_MANUAL_PLACER"] = "1"
@@ -395,6 +395,8 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["USING_MATRIX_UNIT"] = "1"
         env_vars["OC_0"] = str(2*cgra_height)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
+        env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
+
 
     
     buildkite_call(buildkite_args, env=env_vars)
