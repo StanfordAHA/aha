@@ -10,7 +10,6 @@ class Tests:
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
-        dense_ready_valid_tests = []
         hardcoded_matrix_unit_tests = []
 
         # FAST test suite should complete in just a minute or two
@@ -21,6 +20,7 @@ class Tests:
             ]
             glb_tests = [
                 "apps/pointwise",
+                "apps/pointwise_RV"
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
@@ -28,9 +28,6 @@ class Tests:
             resnet_tests = []
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            dense_ready_valid_tests = [
-                "apps/pointwise"
-            ]
             hardcoded_matrix_unit_tests = [
                 # "apps/two_input_add"
             ]
@@ -70,6 +67,7 @@ class Tests:
             glb_tests = [
                 "apps/maxpooling",
                 "apps/pointwise",
+                "apps/pointwise_RV",
                 "apps/gaussian",
                 "apps/camera_pipeline_2x2",
             ]
@@ -87,9 +85,6 @@ class Tests:
             ]
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
-            ]
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
             ]
             hardcoded_matrix_unit_tests = []
 
@@ -150,6 +145,7 @@ class Tests:
             ]
             glb_tests = [
                 "apps/pointwise",
+                "apps/pointwise_RV",
                 "tests/ushift",
                 "tests/arith",
                 "tests/absolute",
@@ -170,9 +166,6 @@ class Tests:
             resnet_tests_fp = []
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
-            ]
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
             ]
             hardcoded_matrix_unit_tests = []
 
@@ -226,6 +219,7 @@ class Tests:
             glb_tests = [
                 "apps/maxpooling",
                 "apps/pointwise",
+                "apps/pointwise_RV",
                 "tests/rom",
                 "tests/arith",
                 "tests/absolute",
@@ -289,9 +283,6 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
-            ]
             hardcoded_matrix_unit_tests = []
         elif testname == "resnet":
             width, height = 28, 16
@@ -314,9 +305,6 @@ class Tests:
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
-            ]
             hardcoded_matrix_unit_tests = []
 
         # BLANK can be used to return default height, width, and blank test lists
@@ -333,5 +321,4 @@ class Tests:
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
-        self.dense_ready_valid_tests = dense_ready_valid_tests
         self.hardcoded_matrix_unit_tests = hardcoded_matrix_unit_tests

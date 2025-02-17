@@ -604,7 +604,6 @@ def dispatch(args, extra_args=None):
     resnet_tests = imported_tests.resnet_tests
     resnet_tests_fp = imported_tests.resnet_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
-    dense_ready_valid_tests = imported_tests.dense_ready_valid_tests
     hardcoded_matrix_unit_tests = imported_tests.hardcoded_matrix_unit_tests
 
     print(f"--- Running regression: {args.config}", flush=True)
@@ -671,58 +670,61 @@ def dispatch(args, extra_args=None):
                                             using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
+    # Dense ready-valid mode 
+    def parse_RV_mode(testname):
+        dense_ready_valid = False
+        if "_RV" in testname:
+            dense_ready_valid = True
+            testname = test.split("_RV")[0]
+        return testname, dense_ready_valid
+
     for test in glb_tests:
-        t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args, 
-                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
+        test, dense_ready_valid = parse_RV_mode(test)
+        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, 
+                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                                    dense_ready_valid=dense_ready_valid)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests_fp:
-        t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args, use_fp=True, 
-                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
+        test, dense_ready_valid = parse_RV_mode(test)
+        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True, 
+                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                                    dense_ready_valid=dense_ready_valid)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
+        test, dense_ready_valid = parse_RV_mode(test)
         if "residual" in test:
-            t0, t1, t2 = test_dense_app("apps/resnet_residual",
-                                        width, height, args.env_parameters, extra_args, layer=test, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
+            t0, t1, t2 = test_dense_app("apps/resnet_residual", width, height, args.env_parameters, extra_args, layer=test, 
+                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                                        dense_ready_valid=dense_ready_valid)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
-            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
-                                        width, height, args.env_parameters, extra_args, layer=test, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
+            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, 
+                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                                        dense_ready_valid=dense_ready_valid)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests_fp:
+        test, dense_ready_valid = parse_RV_mode(test)
         if "residual" in test:
-            t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp",
-                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
+            t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
+                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                                        dense_ready_valid=dense_ready_valid)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
-            t0, t1, t2 = test_dense_app("apps/conv2D_fp",
-                                        width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
+            t0, t1, t2 = test_dense_app("apps/conv2D_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
+                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                                        dense_ready_valid=dense_ready_valid)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
-        t0, t1, t2 = test_hardcoded_dense_app(test,
-                                    width, height, args.env_parameters, extra_args, 
+        t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args, 
                                     using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    for test in dense_ready_valid_tests:
-        t0, t1, t2 = test_dense_app(test, 
-                                    width, height, args.env_parameters, extra_args, 
-                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
-                                    dense_ready_valid=True)
-        info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
     for test in hardcoded_matrix_unit_tests:
-        t0, t1, t2 = test_hardcoded_matrix_unit_app(test, 
-                                    width, height, args.env_parameters, extra_args, 
+        t0, t1, t2 = test_hardcoded_matrix_unit_app(test, width, height, args.env_parameters, extra_args, 
                                     using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
@@ -740,8 +742,7 @@ def dispatch(args, extra_args=None):
         for test_index, test in enumerate(glb_tests):
             if test_index == num_dense_only_glb_tests:
                 break
-            t0, t1, t2 = test_dense_app(test, 
-                                        width, height, args.env_parameters, extra_args, dense_only=True, 
+            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=True, 
                                         using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
             info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
 
