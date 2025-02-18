@@ -24,9 +24,9 @@ def add_subparser(subparser):
     parser.add_argument("--pipeline-num", default=32, type=int)
     parser.add_argument("--sparse-tile-pairs-list", default="", type=str, nargs="*")
     parser.add_argument("--unroll", default=1, type=int)
-    parser.add_argument("--using-matrix-unit", action="store_true")
+    parser.add_argument("--using-matrix-unit", action="store_true", default=True)
     parser.add_argument("--mu-datawidth", default=16, type=int)
-    parser.add_argument("--num-fabric-cols-removed", default=0, type=int)
+    parser.add_argument("--num-fabric-cols-removed", default=8, type=int)
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -310,7 +310,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16, num_fabric_cols_removed=0, dense_ready_valid=False):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, cgra_height=32, mu_datawidth=16, num_fabric_cols_removed=0, dense_ready_valid=False, E64_mode_on=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -333,14 +333,14 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
-
-        # TEMPORARY HACK
-        # env_vars["MU_APP_MANUAL_PLACER"] = "1"
+    
+    if E64_mode_on:
+        env_vars["E64_MODE_ON"] = "1"   
 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
     time_compile = time.time() - start
-
+    
     print(f"--- {testname} - pnr and pipelining", flush=True)
     start = time.time()
 
@@ -350,9 +350,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if (extra_args):
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = [ "--daemon", "auto" ]
-
-
-
 
     buildkite_args = [
             "aha",
@@ -371,9 +368,9 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["EXHAUSTIVE_PIPE"] = "1"
 
+    if E64_mode_on:
+        env_vars["E64_MODE_ON"] = "1" 
 
-
-    
     if using_matrix_unit:
         #TODO: Make these all env vars? 
         buildkite_args.append("--using-matrix-unit")
@@ -383,11 +380,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append("--include-E64-hw")
 
         env_vars["INCLUDE_E64_HW"] = "1"
-        # env_vars["E64_MODE_ON"] = "1"
-
-        # TEMPORARY HACK
-        # env_vars["MU_APP_MANUAL_PLACER"] = "1"
-       
         
         if num_fabric_cols_removed == 0: 
             env_vars["WEST_IN_IO_SIDES"] = "1"
@@ -398,7 +390,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
 
 
-    
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
@@ -606,6 +597,26 @@ def dispatch(args, extra_args=None):
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
     hardcoded_matrix_unit_tests = imported_tests.hardcoded_matrix_unit_tests
 
+    DRV_supported_tests = imported_tests.DRV_supported_tests
+    E64_supported_tests = imported_tests.E64_supported_tests
+
+
+
+    # Make sure num_fabric_cols_removed is less than the number of columns
+    if num_fabric_cols_removed >= width:
+        num_fabric_cols_removed = width - 4
+
+
+    # Assert at least 4 columns remain (1 group)
+    assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
+
+    print(f"\nINFO: Generating a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.")
+    print(f"----ZIRCON LAYOUT INFO----")
+    print(f"Tile array width: {width - num_fabric_cols_removed}") 
+    print(f"Tile array height: {height}") 
+    print(f"Num GLB tiles: {int (width/2)}") 
+
+
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed)
@@ -675,47 +686,70 @@ def dispatch(args, extra_args=None):
         dense_ready_valid = False
         if "_RV" in testname:
             dense_ready_valid = True
-            testname = test.split("_RV")[0]
+            testname = test.replace("_RV", "")
         return testname, dense_ready_valid
+    
+    # E64 mode
+    def parse_E64_mode(testname):
+        E64_mode_on = False
+        if "_E64" in testname:
+            E64_mode_on = True
+            testname = test.replace("_E64", "")
+        return testname, E64_mode_on
+    
+    def feature_support_check(testname, dense_ready_valid, E64_mode_on):
+        if dense_ready_valid:
+            assert testname in DRV_supported_tests, f"ERROR: Dense ready-valid mode not yet supported for {testname}. Once it is supported, please add it to DRV_supported_tests in regress_tests/tests.py"
 
+        if E64_mode_on:
+            assert testname in E64_supported_tests, f"ERROR: E64 mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64 unroll is multiple of 4. Once done, please add the test to E64_supported_tests in regress_tests/tests.py"
+    
     for test in glb_tests:
         test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on)
         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, 
-                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
-                                    dense_ready_valid=dense_ready_valid)
+                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests_fp:
         test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on)
         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True, 
-                                    using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
-                                    dense_ready_valid=dense_ready_valid)
+                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
         test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on)
         if "residual" in test:
             t0, t1, t2 = test_dense_app("apps/resnet_residual", width, height, args.env_parameters, extra_args, layer=test, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
-                                        dense_ready_valid=dense_ready_valid)
+                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
             t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
-                                        dense_ready_valid=dense_ready_valid)
+                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests_fp:
         test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on)
         if "residual" in test:
             t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
-                                        dense_ready_valid=dense_ready_valid)
+                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
             t0, t1, t2 = test_dense_app("apps/conv2D_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
-                                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
-                                        dense_ready_valid=dense_ready_valid)
+                        using_matrix_unit=using_matrix_unit, cgra_height=height, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, 
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:

@@ -12,6 +12,13 @@ class Tests:
         hardcoded_dense_tests = []
         hardcoded_matrix_unit_tests = []
 
+        DRV_supported_tests = [
+            "apps/pointwise",
+        ]
+        E64_supported_tests = [
+            "apps/pointwise",
+        ]
+
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
@@ -322,3 +329,5 @@ class Tests:
         self.resnet_tests_fp = resnet_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.hardcoded_matrix_unit_tests = hardcoded_matrix_unit_tests
+        self.E64_supported_tests = E64_supported_tests
+        self.DRV_supported_tests = DRV_supported_tests
