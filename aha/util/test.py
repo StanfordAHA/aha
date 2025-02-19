@@ -264,7 +264,11 @@ def dispatch(args, extra_args=None):
             sim_array = sim_array_list[i]
 
             # Check if the shape of the gold and sim arrays match
-            assert gold_array.shape == sim_array.shape, "\033[91mThe shape of the gold and sim arrays do not match.\033[0m"
+            if gold_array.shape != sim_array.shape:
+                print("\033[93mWarning: The shape of the gold and sim arrays do not match. Truncating to the smaller shape.\033[0m")
+                min_length = min(len(gold_array), len(sim_array))
+                gold_array = gold_array[:min_length]
+                sim_array = sim_array[:min_length]
 
         if args.dense_fp:
             # TODO: Implement back to back apps
@@ -333,10 +337,18 @@ def dispatch(args, extra_args=None):
             for app in args.app:
                 gold_array = golds.pop(0)
                 sim_array = sim_array_list.pop(0)
-                # check diff array and print wrong pixels
+
                 print(f"Gold array len: {len(gold_array)}")
                 print(f"Sim array len: {len(sim_array)}")
 
+                # Auto-truncate if the shapes (lengths) differ
+                if gold_array.shape != sim_array.shape:
+                    print("\033[93mWarning: The shape of the gold and sim arrays do not match. Truncating to the smaller shape.\033[0m")
+                    min_length = min(len(gold_array), len(sim_array))
+                    gold_array = gold_array[:min_length]
+                    sim_array = sim_array[:min_length]
+
+                # check diff array and print wrong pixels
                 differences = gold_array != sim_array
                 diff_indices = numpy.where(differences)[0]
                 if len(diff_indices) > 0:

@@ -158,6 +158,14 @@
             "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
+    "apps/scalar_reduction":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
+            "HL_TARGET":"host-x86-64-enable_ponds",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
     "conv1":{
         "default":{
             "HALIDE_GEN_ARGS":"in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4 glb_i=1 glb_k=1 glb_o=1",
