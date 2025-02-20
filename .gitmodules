@@ -13,7 +13,7 @@
 [submodule "Halide-to-Hardware"]
     path = Halide-to-Hardware
 	url = https://github.com/yuchen-mei/Halide-to-Hardware.git
-    branch = clockwork
+    branch = master
 [submodule "BufferMapping"]
     path = BufferMapping
     url = https://github.com/joyliu37/BufferMapping
