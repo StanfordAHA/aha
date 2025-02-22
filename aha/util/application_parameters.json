@@ -161,8 +161,7 @@
         "default":{
             "HALIDE_GEN_ARGS":"in_img=29 ksize=3 stride=2 n_ic=28 unroll=7",
             "HL_TARGET":"host-x86-64-bfloat_hardware",
-            "DISABLE_GP":"1",
-            "PNR_PLACER_EXP":"6"
+            "DISABLE_GP":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"in_img=29 ksize=3 stride=2 n_ic=28 unroll=7",
