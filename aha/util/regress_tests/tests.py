@@ -10,7 +10,6 @@ class Tests:
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
-        hardcoded_matrix_unit_tests = []
 
         DRV_supported_tests = [
             "apps/pointwise",
@@ -35,9 +34,6 @@ class Tests:
             resnet_tests = []
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            hardcoded_matrix_unit_tests = [
-                # "apps/two_input_add"
-            ]
 
         # PR_AHA test suite for aha-repo push/pull
         elif testname == "pr_aha":
@@ -93,7 +89,6 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            hardcoded_matrix_unit_tests = []
 
 # Found the better way maybe
 # 
@@ -174,7 +169,6 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            hardcoded_matrix_unit_tests = []
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -290,7 +284,6 @@ class Tests:
             hardcoded_dense_tests = [
                 "apps/depthwise_conv"
             ]
-            hardcoded_matrix_unit_tests = []
         elif testname == "resnet":
             width, height = 28, 16
             sparse_tests = []
@@ -312,7 +305,6 @@ class Tests:
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            hardcoded_matrix_unit_tests = []
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
@@ -328,6 +320,5 @@ class Tests:
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
-        self.hardcoded_matrix_unit_tests = hardcoded_matrix_unit_tests
         self.E64_supported_tests = E64_supported_tests
         self.DRV_supported_tests = DRV_supported_tests
