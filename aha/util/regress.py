@@ -365,10 +365,12 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     
     env_vars = {}
     if dense_ready_valid:
+        print(f"INFO: Running {test} in dense ready-valid mode\n")
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["EXHAUSTIVE_PIPE"] = "1"
 
     if E64_mode_on:
+        print(f"INFO: Running {test} with E64 MODE ON\n")
         env_vars["E64_MODE_ON"] = "1" 
 
     if using_matrix_unit:
@@ -561,7 +563,7 @@ def dispatch(args, extra_args=None):
     # Assert at least 4 columns remain (1 group)
     assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
 
-    print(f"\nINFO: Generating a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.")
+    print(f"\nINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.")
     print(f"----ZIRCON LAYOUT INFO----")
     print(f"Tile array width: {width - num_fabric_cols_removed}") 
     print(f"Tile array height: {height}") 

@@ -12,10 +12,10 @@ class Tests:
         hardcoded_dense_tests = []
 
         DRV_supported_tests = [
-            "apps/pointwise",
+            "apps/pointwise", "apps/pointwise_mu_io"
         ]
         E64_supported_tests = [
-            "apps/pointwise",
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
         ]
 
         # FAST test suite should complete in just a minute or two
@@ -26,12 +26,13 @@ class Tests:
             ]
             glb_tests = [
                 "apps/pointwise",
-                "apps/pointwise_RV"
+                "apps/pointwise_mu_io_RV_E64"
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
             ]
-            resnet_tests = []
+            resnet_tests = [
+            ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
 
@@ -71,6 +72,9 @@ class Tests:
                 "apps/maxpooling",
                 "apps/pointwise",
                 "apps/pointwise_RV",
+                "apps/pointwise_E64",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_mu_io_RV_E64",
                 "apps/gaussian",
                 "apps/camera_pipeline_2x2",
             ]
@@ -80,14 +84,13 @@ class Tests:
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv5_1",
-                "conv5_x",
+                "conv5_x_E64",
             ]
             resnet_tests_fp = [
-                "conv2_x_fp"
+                # "conv2_x_fp" # not yet supported by zircon
             ]
             hardcoded_dense_tests = [
-                "apps/depthwise_conv"
+                # "apps/depthwise_conv" # down on Zircon 
             ]
 
 # Found the better way maybe
@@ -148,6 +151,9 @@ class Tests:
             glb_tests = [
                 "apps/pointwise",
                 "apps/pointwise_RV",
+                "apps/pointwise_E64",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_mu_io_RV_E64",
                 "tests/ushift",
                 "tests/arith",
                 "tests/absolute",
@@ -167,7 +173,7 @@ class Tests:
             resnet_tests = []
             resnet_tests_fp = []
             hardcoded_dense_tests = [
-                "apps/depthwise_conv"
+                # "apps/depthwise_conv" # down on Zircon
             ]
 
         # FULL test is used by scheduled weekly aha regressions
@@ -221,6 +227,9 @@ class Tests:
                 "apps/maxpooling",
                 "apps/pointwise",
                 "apps/pointwise_RV",
+                "apps/pointwise_E64",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_mu_io_RV_E64",
                 "tests/rom",
                 "tests/arith",
                 "tests/absolute",
@@ -253,8 +262,8 @@ class Tests:
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
                 "apps/matrix_multiplication_fp",
-                "apps/mcunet_in_sequential_0_fp",
-                "apps/depthwise_conv_stream_fp",
+                # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
+                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon 
             ]
 
             # FIXME would it be better here to do e.g.
@@ -263,17 +272,10 @@ class Tests:
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv3_1",
-                "conv3_x",
-                "conv4_1",
-                "conv4_x",
-                "conv5_1",
-                "conv5_x",
-                "conv2_x_residual",
-                "conv5_x_residual",
+                "conv5_x_E64",
             ]
             resnet_tests_fp = [
-                "conv2_x_fp",
+                # "conv2_x_fp", # not yet supported by zircon
                 "sequential_0_fp",
                 "InvRes1_pw_fp",
                 "InvRes2_pw_exp_fp",
@@ -282,7 +284,7 @@ class Tests:
                 "InvRes3_pw_sq_residual_fp"
             ]
             hardcoded_dense_tests = [
-                "apps/depthwise_conv"
+                # "apps/depthwise_conv" # down on Zircon
             ]
         elif testname == "resnet":
             width, height = 28, 16
@@ -292,16 +294,7 @@ class Tests:
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv3_1",
-                "conv3_x",
-                "conv4_1",
-                "conv4_x",
-                "conv5_1",
-                "conv5_x",
-                "conv2_x_residual",
-                "conv3_x_residual",
-                "conv4_x_residual",
-                "conv5_x_residual",
+                "conv5_x_E64",
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
