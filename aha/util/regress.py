@@ -738,13 +738,13 @@ def dispatch(args, extra_args=None):
                 t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-        no_zircon_glb_tests = ["apps/pointwise", "apps/camera_pipeline_2x2, apps/gaussian"]
+        no_zircon_glb_tests = ["apps/pointwise", "apps/camera_pipeline_2x2", "apps/gaussian"]
         for test in no_zircon_glb_tests:
             t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0, 
                         dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-        no_zircon_resnet_tests = ["conv2_x"]
+        no_zircon_resnet_tests = ["conv5_x"]
         for test in no_zircon_resnet_tests:
             t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=False, num_fabric_cols_removed=0, 
                         dense_ready_valid=False, E64_mode_on=False)
