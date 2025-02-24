@@ -517,8 +517,9 @@ def dispatch(args, extra_args=None):
     # pr_aha1 starts with the full pr_aha suite and removes conv2, conv2_fp
     if args.config == "pr_aha1":
         imported_tests = Tests("pr_aha")
+        imported_tests.glb_tests.remove("apps/camera_pipeline_2x2")
         imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
-        imported_tests.resnet_tests_fp.remove('conv2_x_fp')
+        #imported_tests.resnet_tests_fp.remove('conv2_x_fp')
 
     # pr_aha2 is just conv2 by itself (it runs both sparse and dense versions tho)
     # NOTE conv2 breaks if don't do gaussian first(!) for details see issues:
@@ -531,8 +532,8 @@ def dispatch(args, extra_args=None):
 
     elif args.config == "pr_aha3":
         imported_tests = Tests("BLANK")
-        imported_tests.glb_tests = ["apps/gaussian"]
-        imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
+        imported_tests.glb_tests = ["apps/camera_pipeline_2x2"]
+        # imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
 
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
     else:
