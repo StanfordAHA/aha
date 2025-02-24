@@ -18,6 +18,7 @@ def add_subparser(subparser):
     parser.add_argument("config")
     parser.add_argument("--env-parameters", default="", type=str)
     parser.add_argument("--include-dense-only-tests", action="store_true")
+    parser.add_argument("--include-no-zircon-tests", action="store_true")
     parser.add_argument("--opal-workaround", action="store_true")
     parser.add_argument("--non-seed-flow", action="store_true")
     parser.add_argument("--use-pipeline", action="store_true")
@@ -578,7 +579,7 @@ def dispatch(args, extra_args=None):
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-    info.append(["garnet with sparse and dense", t])
+    info.append(["garnet (Zircon) with sparse and dense", t])
 
     data_tile_pairs = []
     kernel_name = ""
@@ -714,6 +715,41 @@ def dispatch(args, extra_args=None):
         t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args, 
                                     using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+
+    if args.include_no_zircon_tests:
+        exit_status = os.system(f"rm /aha/garnet/garnet.v")
+        if os.WEXITSTATUS(exit_status) != 0:
+            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+        
+        t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
+        info.append(["garnet (NO Zircon) with sparse and dense", t])
+
+        num_sparse_no_zircon_tests = 5
+        for test_index, test in enumerate(sparse_tests):
+            if test_index == num_sparse_no_zircon_tests:
+                break
+
+            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, 
+                                    opal_workaround=args.opal_workaround, unroll=unroll)
+
+            for test in sparse_tests:
+                assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
+                t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+        no_zircon_glb_tests = ["apps/pointwise", "apps/camera_pipeline_2x2, apps/gaussian"]
+        for test in no_zircon_glb_tests:
+            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0, 
+                        dense_ready_valid=False, E64_mode_on=False)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+        no_zircon_resnet_tests = ["conv2_x"]
+        for test in no_zircon_resnet_tests:
+            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=False, num_fabric_cols_removed=0, 
+                        dense_ready_valid=False, E64_mode_on=False)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
 
     if args.include_dense_only_tests:
         # DENSE ONLY TESTS

@@ -150,7 +150,7 @@ elif [ "$1" == '--commands' ]; then
       # For fast prototyping: ECHO ONLY and/or try config 'fast'
       set -x
       echo "aha regress $CONFIG"
-      aha regress $CONFIG --daemon auto --include-dense-only-tests || exit 13
+      aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
       set +x
     fi
 
