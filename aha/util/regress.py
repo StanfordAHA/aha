@@ -725,18 +725,15 @@ def dispatch(args, extra_args=None):
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
 
-        num_sparse_no_zircon_tests = 5
-        for test_index, test in enumerate(sparse_tests):
-            if test_index == num_sparse_no_zircon_tests:
-                break
-
-            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, 
+        no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp",  "matmul_ikj", "tensor3_mttkrp"]
+        data_tile_pairs = []
+        kernel_name = ""
+        seed_flow = False
+        generate_sparse_bitstreams(no_zircon_sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, 
                                     opal_workaround=args.opal_workaround, unroll=unroll)
-
-            for test in sparse_tests:
-                assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
-                t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
-                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        for test in no_zircon_sparse_tests:
+            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         no_zircon_glb_tests = ["apps/pointwise", "apps/camera_pipeline_2x2", "apps/gaussian"]
         for test in no_zircon_glb_tests:

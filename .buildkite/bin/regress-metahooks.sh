@@ -148,10 +148,17 @@ elif [ "$1" == '--commands' ]; then
       # aha regress pr_aha1 --daemon auto --include-dense-only-tests || exit 13
 
       # For fast prototyping: ECHO ONLY and/or try config 'fast'
-      set -x
-      echo "aha regress $CONFIG"
-      aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
-      set +x
+      if [ "$CONFIG" == "pr_aha3" ]; then 
+        set -x
+        echo "aha regress $CONFIG"
+        aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
+        set +x
+      else
+        set -x
+        echo "aha regress $CONFIG"
+        aha regress $CONFIG --daemon auto || exit 13
+        set +x
+      fi
     fi
 
 
