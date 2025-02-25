@@ -728,7 +728,7 @@ def dispatch(args, extra_args=None):
         no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp",  "matmul_ikj", "tensor3_mttkrp"]
         data_tile_pairs = []
         kernel_name = ""
-        seed_flow = False
+        seed_flow = True
         generate_sparse_bitstreams(no_zircon_sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, 
                                     opal_workaround=args.opal_workaround, unroll=unroll)
         for test in no_zircon_sparse_tests:
