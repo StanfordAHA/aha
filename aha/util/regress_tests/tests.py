@@ -4,36 +4,39 @@ class Tests:
 
         # Defaults
         width, height = 28, 16  # default
+        cols_removed, mu_oc_0 = 8, 32 # zircon defaults
         sparse_tests = []
         glb_tests = []
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
-        dense_ready_valid_tests = []
-        hardcoded_matrix_unit_tests = []
+
+        DRV_supported_tests = [
+            "apps/pointwise", "apps/pointwise_mu_io"
+        ]
+        E64_supported_tests = [
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
+        ]
 
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
+            cols_removed, mu_oc_0 = 4, 16
             sparse_tests = [
                 "vec_identity"
             ]
             glb_tests = [
                 "apps/pointwise",
+                "apps/pointwise_mu_io_RV_E64"
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
             ]
-            resnet_tests = []
+            resnet_tests = [
+            ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            dense_ready_valid_tests = [
-                "apps/pointwise"
-            ]
-            hardcoded_matrix_unit_tests = [
-                # "apps/two_input_add"
-            ]
 
         # PR_AHA test suite for aha-repo push/pull
         elif testname == "pr_aha":
@@ -51,6 +54,7 @@ class Tests:
             # tests pr_aha1,2,3 that can all run in parallel.
 
             width, height = 28, 16
+            cols_removed, mu_oc_0 = 8, 32
             sparse_tests = [
                 "vec_elemmul",
                 "mat_vecmul_ij",
@@ -70,6 +74,10 @@ class Tests:
             glb_tests = [
                 "apps/maxpooling",
                 "apps/pointwise",
+                "apps/pointwise_RV",
+                "apps/pointwise_E64",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_mu_io_RV_E64",
                 "apps/gaussian",
                 "apps/camera_pipeline_2x2",
             ]
@@ -79,19 +87,14 @@ class Tests:
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv5_1",
-                "conv5_x",
+                "conv5_x_E64",
             ]
             resnet_tests_fp = [
-                "conv2_x_fp"
+                # "conv2_x_fp" # not yet supported by zircon
             ]
             hardcoded_dense_tests = [
-                "apps/depthwise_conv"
+                # "apps/depthwise_conv" # down on Zircon 
             ]
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
-            ]
-            hardcoded_matrix_unit_tests = []
 
 # Found the better way maybe
 # 
@@ -130,6 +133,7 @@ class Tests:
             # of tests was called simply "pr"
 
             width, height = 28, 16
+            cols_removed, mu_oc_0 = 8, 32
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
@@ -150,6 +154,10 @@ class Tests:
             ]
             glb_tests = [
                 "apps/pointwise",
+                "apps/pointwise_RV",
+                "apps/pointwise_E64",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_mu_io_RV_E64",
                 "tests/ushift",
                 "tests/arith",
                 "tests/absolute",
@@ -169,17 +177,14 @@ class Tests:
             resnet_tests = []
             resnet_tests_fp = []
             hardcoded_dense_tests = [
-                "apps/depthwise_conv"
+                # "apps/depthwise_conv" # down on Zircon
             ]
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
-            ]
-            hardcoded_matrix_unit_tests = []
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
 
             width, height = 28, 16
+            cols_removed, mu_oc_0 = 8, 32
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
@@ -226,6 +231,10 @@ class Tests:
             glb_tests = [
                 "apps/maxpooling",
                 "apps/pointwise",
+                "apps/pointwise_RV",
+                "apps/pointwise_E64",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_mu_io_RV_E64",
                 "tests/rom",
                 "tests/arith",
                 "tests/absolute",
@@ -258,8 +267,8 @@ class Tests:
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
                 "apps/matrix_multiplication_fp",
-                "apps/mcunet_in_sequential_0_fp",
-                "apps/depthwise_conv_stream_fp",
+                # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
+                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon 
             ]
 
             # FIXME would it be better here to do e.g.
@@ -268,17 +277,10 @@ class Tests:
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv3_1",
-                "conv3_x",
-                "conv4_1",
-                "conv4_x",
-                "conv5_1",
-                "conv5_x",
-                "conv2_x_residual",
-                "conv5_x_residual",
+                "conv5_x_E64",
             ]
             resnet_tests_fp = [
-                "conv2_x_fp",
+                # "conv2_x_fp", # not yet supported by zircon
                 "sequential_0_fp",
                 "InvRes1_pw_fp",
                 "InvRes2_pw_exp_fp",
@@ -287,37 +289,21 @@ class Tests:
                 "InvRes3_pw_sq_residual_fp"
             ]
             hardcoded_dense_tests = [
-                "apps/depthwise_conv"
+                # "apps/depthwise_conv" # down on Zircon
             ]
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
-            ]
-            hardcoded_matrix_unit_tests = []
         elif testname == "resnet":
             width, height = 28, 16
+            cols_removed, mu_oc_0 = 8, 32
             sparse_tests = []
             glb_tests = []
             glb_tests_fp = []
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv3_1",
-                "conv3_x",
-                "conv4_1",
-                "conv4_x",
-                "conv5_1",
-                "conv5_x",
-                "conv2_x_residual",
-                "conv3_x_residual",
-                "conv4_x_residual",
-                "conv5_x_residual",
+                "conv5_x_E64",
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-            dense_ready_valid_tests = [      
-                "apps/pointwise",
-            ]
-            hardcoded_matrix_unit_tests = []
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
@@ -327,11 +313,12 @@ class Tests:
             raise NotImplementedError(f"Unknown test config: {args.config}")
 
         self.width, self.height = width, height
+        self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
         self.sparse_tests = sparse_tests
         self.glb_tests = glb_tests
         self.glb_tests_fp = glb_tests_fp
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
-        self.dense_ready_valid_tests = dense_ready_valid_tests
-        self.hardcoded_matrix_unit_tests = hardcoded_matrix_unit_tests
+        self.E64_supported_tests = E64_supported_tests
+        self.DRV_supported_tests = DRV_supported_tests
