@@ -32,7 +32,7 @@
     branch = master
 [submodule "kratos"]
     path = kratos
-    url = https://github.com/kuree/kratos
+    url = https://github.com/mbstrange2/kratos
     branch = master
 [submodule "canal"]
     path = canal
