@@ -563,8 +563,8 @@ def dispatch(args, extra_args=None):
     assert num_fabric_cols_removed <= 8, "ERROR: Removing more than 8 columns is not supported yet. Hardware modifications may be necessary to proceed."
     assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
 
-    # Check that OC_0 is legal for West IO
-    assert mu_oc_0 == 2 * height, "ERROR: OC_0 must be twice the height of the CGRA for West IO sides."
+    # Check that OC_0 is legal
+    assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
 
     if not(args.no_zircon):
         print(f"\nINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.")
