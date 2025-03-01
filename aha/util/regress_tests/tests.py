@@ -22,13 +22,13 @@ class Tests:
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
-            cols_removed, mu_oc_0 = 4, 16
+            cols_removed, mu_oc_0 = 4, 8
             sparse_tests = [
                 "vec_identity"
             ]
             glb_tests = [
                 "apps/pointwise",
-                "apps/pointwise_mu_io_RV_E64"
+                "apps/pointwise_RV_E64"
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",

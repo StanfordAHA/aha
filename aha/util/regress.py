@@ -379,9 +379,13 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if using_matrix_unit:
         #TODO: Make these all env vars? 
         buildkite_args.append("--using-matrix-unit")
+        buildkite_args.append("--mu-datawidth")
+        buildkite_args.append(str(mu_datawidth))
         buildkite_args.append("--give-north-io-sbs")
         buildkite_args.append("--num-fabric-cols-removed")
         buildkite_args.append(str(num_fabric_cols_removed))
+        buildkite_args.append("--mu-oc-0")
+        buildkite_args.append(str(mu_oc_0))
         buildkite_args.append("--include-E64-hw")
 
         env_vars["INCLUDE_E64_HW"] = "1"
