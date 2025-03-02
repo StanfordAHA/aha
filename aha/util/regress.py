@@ -379,9 +379,13 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if using_matrix_unit:
         #TODO: Make these all env vars? 
         buildkite_args.append("--using-matrix-unit")
+        buildkite_args.append("--mu-datawidth")
+        buildkite_args.append(str(mu_datawidth))
         buildkite_args.append("--give-north-io-sbs")
         buildkite_args.append("--num-fabric-cols-removed")
         buildkite_args.append(str(num_fabric_cols_removed))
+        buildkite_args.append("--mu-oc-0")
+        buildkite_args.append(str(mu_oc_0))
         buildkite_args.append("--include-E64-hw")
 
         env_vars["INCLUDE_E64_HW"] = "1"
@@ -563,8 +567,8 @@ def dispatch(args, extra_args=None):
     assert num_fabric_cols_removed <= 8, "ERROR: Removing more than 8 columns is not supported yet. Hardware modifications may be necessary to proceed."
     assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
 
-    # Check that OC_0 is legal for West IO
-    assert mu_oc_0 == 2 * height, "ERROR: OC_0 must be twice the height of the CGRA for West IO sides."
+    # Check that OC_0 is legal
+    assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
 
     if not(args.no_zircon):
         print(f"\nINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.")
