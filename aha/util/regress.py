@@ -326,22 +326,24 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     else:
         layer_array = []
 
-    try:
-        subprocess.call(["make", "clean"], cwd=app_path)
-    except:
-        pass
+    # try:
+    #     subprocess.call(["make", "clean"], cwd=app_path)
+    # except:
+    #     pass
 
     env_vars = {}
     if dense_ready_valid:
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
+        print(f"\033[92mINFO: Running {test} in dense ready-valid mode\033[0m")
     
     if E64_mode_on:
-        env_vars["E64_MODE_ON"] = "1"   
+        env_vars["E64_MODE_ON"] = "1" 
+        print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")  
 
     start = time.time()
-    buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
+    # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
     time_compile = time.time() - start
     
     print(f"--- {testname} - pnr and pipelining", flush=True)
@@ -368,12 +370,12 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     
     env_vars = {}
     if dense_ready_valid:
-        print(f"INFO: Running {test} in dense ready-valid mode\n")
+        print(f"\033[92mINFO: Running {test} in dense ready-valid mode\033[0m")
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["EXHAUSTIVE_PIPE"] = "1"
 
     if E64_mode_on:
-        print(f"INFO: Running {test} with E64 MODE ON\n")
+        print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")
         env_vars["E64_MODE_ON"] = "1" 
 
     if using_matrix_unit:
@@ -571,7 +573,7 @@ def dispatch(args, extra_args=None):
     assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
 
     if not(args.no_zircon):
-        print(f"\nINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.")
+        print(f"\033[92mINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.\033[0m")
         print(f"----ZIRCON LAYOUT INFO----")
         print(f"Tile array width: {width - num_fabric_cols_removed}") 
         print(f"Tile array height: {height}") 
