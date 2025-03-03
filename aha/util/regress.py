@@ -326,10 +326,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     else:
         layer_array = []
 
-    # try:
-    #     subprocess.call(["make", "clean"], cwd=app_path)
-    # except:
-    #     pass
+    try:
+        subprocess.call(["make", "clean"], cwd=app_path)
+    except:
+        pass
 
     env_vars = {}
     if dense_ready_valid:
@@ -343,7 +343,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")  
 
     start = time.time()
-    # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
+    buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
     time_compile = time.time() - start
     
     print(f"--- {testname} - pnr and pipelining", flush=True)
