@@ -101,7 +101,7 @@ def dispatch(args, extra_args=None):
         os.rename(
             app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
         )
-    
+
     else:
         # Raw Images
         subprocess_call_log (
@@ -128,7 +128,7 @@ def dispatch(args, extra_args=None):
             log=args.log,
             log_file_path=log_file_path
         )
- 
+
 
     if run_sim:
         subprocess_call_log (

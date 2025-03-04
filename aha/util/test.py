@@ -92,7 +92,7 @@ def dispatch(args, extra_args=None):
         env["WAVEFORM"] = "1"
     elif args.waveform_glb:
         env["WAVEFORM_GLB_ONLY"] = "1"
-    
+
     # if there are more than 1 app, store the log in the first app
     if not args.sparse:
         app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
@@ -165,7 +165,7 @@ def dispatch(args, extra_args=None):
         for j in range(batches):
             for i in range(tiles):
                 gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/{args.app[j]}/output_gold_{i}.npy")
-                # Process according to the data type of the gold matrix 
+                # Process according to the data type of the gold matrix
                 if gold_matrix.dtype == int:
                     gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
                 elif gold_matrix.dtype == numpy.float32:
@@ -174,7 +174,7 @@ def dispatch(args, extra_args=None):
                 sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
                                                     format="CSF",
                                                     shape=gold_matrix.shape, base=16, early_terminate='x',
-                                                    use_fp=(gold_matrix.dtype == numpy.float32), 
+                                                    use_fp=(gold_matrix.dtype == numpy.float32),
                                                     suffix=f"_batch{j}_tile{i}",
                                                     tensor_ordering=output_mode_map).get_matrix()
 
@@ -189,7 +189,7 @@ def dispatch(args, extra_args=None):
                 # Set up numpy so it doesn't print in scientific notation
                 numpy.set_printoptions(suppress=True)
                 print("Batch: ", j, "Tile: ", i)
-                # for comparing floating point  
+                # for comparing floating point
                 if numpy.allclose(gold_matrix, sim_matrix):
                     print(f"Check Passed.")
                 else:

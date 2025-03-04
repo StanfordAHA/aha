@@ -69,7 +69,7 @@ class Tests:
                 "masked_broadcast",
                 "mat_sddmm",
                 "tensor3_mttkrp",
-                "tensor3_ttv",        
+                "tensor3_ttv",
             ]
             glb_tests = [
                 "apps/maxpooling",
@@ -93,15 +93,15 @@ class Tests:
                 # "conv2_x_fp" # not yet supported by zircon
             ]
             hardcoded_dense_tests = [
-                # "apps/depthwise_conv" # down on Zircon 
+                # "apps/depthwise_conv" # down on Zircon
             ]
 
 # Found the better way maybe
-# 
+#
 #         # PR_AHA tests broken into three sub-parts: aha_pr1
 #         elif testname == "pr_aha1":
 #             t = Tests('aha_pr')
-#             
+#
 #             # FIXME surely there is a better way of doing this part...!!
 #             width, height = (t.width, t.height)
 #             sparse_tests = t.sparse_tests
@@ -110,16 +110,16 @@ class Tests:
 #             resnet_tests = t.resnet_tests
 #             resnet_tests_fp = t.resnet_tests_fp
 #             hardcoded_dense_tests = t.hardcoded_dense_tests
-# 
+#
 #             # Remove conv2 benchmarks, which take about 1.5 hr each...
 #             resnet_tests.remove('conv2_x')  # This is actually *two* tests
 #             resnet_tests_fp.remove('conv2_x_fp')
-# 
+#
 #         # PR_AHA tests broken into three sub-parts: aha_pr2
 #         elif testname == 'pr_aha2':
 #             glb_tests = ["apps/gaussian"]  # conv2 breaks if don't do gaussian first :(
 #             resnet_tests = [ 'conv2_x' ]   # This is actually *two* tests
-# 
+#
 #         # PR_AHA tests broken into three sub-parts: aha_pr2
 #         elif testname == 'pr_aha3':
 #             glb_tests = ["apps/gaussian"]  # conv2 breaks if don't do gaussian first :(
@@ -268,7 +268,7 @@ class Tests:
                 "tests/fp_conv_7_7",
                 "apps/matrix_multiplication_fp",
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
-                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon 
+                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
 
             # FIXME would it be better here to do e.g.

@@ -100,15 +100,15 @@ def dispatch(args, extra_args=None):
         tests = [
             "handcrafted/conv_3_3_chain",
             #"apps/resnet_layer_auto", #will not run
-            "handcrafted/pond_accum", 
+            "handcrafted/pond_accum",
             "handcrafted/resnet_pond",
             "tests/conv_3_3",
             "apps/cascade",
             "tests/conv_1_2",
             "apps/harris",
-            #"tests/rom",  #test did notmatch 
+            #"tests/rom",  #test did notmatch
             "tests/ushift",
-            "tests/arith", 
+            "tests/arith",
             "apps/pointwise",
             "apps/gaussian",
             #"apps/resnet_layer_gen", #halide image

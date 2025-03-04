@@ -84,7 +84,7 @@ def dispatch(args, extra_args=None):
         )
     else:
         app_dir = (Path(args.base) / args.app).resolve()
-    
+
     if os.path.exists(str(app_dir / "bin/input.raw")):
         ext = ".raw"
     else:
@@ -114,7 +114,7 @@ def dispatch(args, extra_args=None):
         "--input-broadcast-max-leaves", "4"
     ]
 
-    dense_ready_valid = "DENSE_READY_VALID" in os.environ and os.environ.get("DENSE_READY_VALID") == "1" 
+    dense_ready_valid = "DENSE_READY_VALID" in os.environ and os.environ.get("DENSE_READY_VALID") == "1"
     if dense_ready_valid:
         map_args.append("--no-input-broadcast-pipelining")
 
@@ -137,7 +137,7 @@ def dispatch(args, extra_args=None):
             do_cmd = subprocess.Popen
         else:
             print(f"--- found the daemon, leaving do_cmd alone", flush=True)
-            
+
     subprocess_call_log (
         cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
         cwd=args.aha_dir / "garnet",
