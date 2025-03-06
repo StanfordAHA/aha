@@ -32,8 +32,8 @@
     branch = master
 [submodule "kratos"]
     path = kratos
-    url = https://github.com/kuree/kratos
-    branch = master
+    url = https://github.com/mbstrange2/kratos
+    branch = ignore_sync_reset_clk_en_pass
 [submodule "canal"]
     path = canal
     url = https://github.com/stanfordaha/canal
