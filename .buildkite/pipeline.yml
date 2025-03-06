@@ -1,6 +1,6 @@
 # All "docker"-tagged agents must live on a single machine
 # (e.g. r7cad-docker), so they can all share the same docker image.
-agents: { docker: true }
+agents: { khaki: true }
 
 env:
   # Default config is "pr_aha"
