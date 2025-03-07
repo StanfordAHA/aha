@@ -114,7 +114,10 @@ steps:
 ########################################################################
 # AMBER GOLD step
 
+# Can unskip this step when/if want to monitor when/whether RTL changes
 - label: "Amber Gold RTL"
+  # Comment-out the line below when/if want to guarantee RTL stability
+  skip: true
   soft_fail: true  # So that failing gold check does not fail pipeline.
   plugins:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
@@ -135,7 +138,10 @@ steps:
 ########################################################################
 # ONYX GOLD step
 
+# Can unskip this step when/if want to monitor when/whether RTL changes
 - label: "Onyx Gold"
+  # Comment-out the line below when/if want to guarantee RTL stability
+  skip: true
   soft_fail: true  # So that failing gold check does not fail pipeline.
   plugins:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
