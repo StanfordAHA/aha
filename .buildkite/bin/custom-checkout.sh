@@ -25,6 +25,11 @@ aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
+set -x
+echo "DEV_BRANCH = '$DEV_BRANCH'"
+echo "BUILDKITE_BRANCH = '$BUILDKITE_BRANCH'"
+echo "BUILDKITE_COMMIT = '$BUILDKITE_COMMIT'"
+
 # FIXME things break if DEV_BRANCH not set?
 [ "$DEV_BRANCH" ] || export DEV_BRANCH=master
 
