@@ -1,12 +1,8 @@
-# All "docker"-tagged agents must live on a single machine
-# (e.g. r7cad-docker), so they can all share the same docker image.
-agents: { khaki: true }
+# Agents must have tag hostname=<hostname>
+# And then this will guarantee that all steps run on the same host, see?
+agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
 
 env:
-  BUILDKITE_CLEAN_CHECKOUT: false
-  BUILDKITE_CLEAN_CHECKOUTTTT: false
-  CLEAN_CHECKOUTTTT: false
-
   # Default config is "pr_aha"
   CONFIG: ${CONFIG:-pr_aha}
 
@@ -20,11 +16,6 @@ env:
 steps:
 
 - label: "Build Docker Image"
-  env:
-    BUILDKITE_CLEAN_CHECKOUT: false
-    BUILDKITE_CLEAN_CHECKOUTTTT: false
-    CLEAN_CHECKOUTTTT: false
-
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
