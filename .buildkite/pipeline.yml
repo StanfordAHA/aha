@@ -4,6 +4,7 @@ agents: { khaki: true }
 
 env:
   BUILDKITE_CLEAN_CHECKOUT: false
+  BUILDKITE_CLEAN_CHECKOUTTTT: false
 
   # Default config is "pr_aha"
   CONFIG: ${CONFIG:-pr_aha}
@@ -20,6 +21,7 @@ steps:
 - label: "Build Docker Image"
   env:
     BUILDKITE_CLEAN_CHECKOUT: false
+    BUILDKITE_CLEAN_CHECKOUTTTT: false
 
   plugins:
   # Override standard checkout procedure with custom checkout script
