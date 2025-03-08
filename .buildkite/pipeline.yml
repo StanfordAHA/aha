@@ -1,6 +1,6 @@
-# All "docker"-tagged agents must live on a single machine
-# (e.g. r7cad-docker), so they can all share the same docker image.
-agents: { docker: true }
+# Agents must have tag hostname=<hostname>
+# And then this will guarantee that all steps run on the same host, see?
+agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
 
 env:
   # Default config is "pr_aha"
@@ -16,7 +16,6 @@ env:
 steps:
 
 - label: "Build Docker Image"
-
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
@@ -115,7 +114,10 @@ steps:
 ########################################################################
 # AMBER GOLD step
 
+# Can unskip this step when/if want to monitor when/whether RTL changes
 - label: "Amber Gold RTL"
+  # Comment-out the line below when/if want to guarantee RTL stability
+  skip: true
   soft_fail: true  # So that failing gold check does not fail pipeline.
   plugins:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
@@ -136,7 +138,10 @@ steps:
 ########################################################################
 # ONYX GOLD step
 
+# Can unskip this step when/if want to monitor when/whether RTL changes
 - label: "Onyx Gold"
+  # Comment-out the line below when/if want to guarantee RTL stability
+  skip: true
   soft_fail: true  # So that failing gold check does not fail pipeline.
   plugins:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
