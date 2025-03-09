@@ -83,6 +83,9 @@ class Tests:
             ]
             glb_tests_fp = [
                 "apps/matrix_multiplication_fp",
+                "apps/scalar_max_fp",
+                "apps/stable_softmax_pass2_fp",
+                "apps/stable_softmax_pass3_fp",
             ]
             resnet_tests = [
                 "conv1",
@@ -173,7 +176,9 @@ class Tests:
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
+                "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
+                "apps/stable_softmax_pass3_fp",
             ]
             resnet_tests = []
             resnet_tests_fp = []
