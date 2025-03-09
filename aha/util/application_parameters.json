@@ -5,7 +5,7 @@
         },
         "sweep":{
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/pointwise":{
@@ -23,7 +23,7 @@
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=8",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/pointwise_mu_io":{
@@ -41,7 +41,7 @@
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/gaussian":{
@@ -54,13 +54,13 @@
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",
             "HL_TARGET":"host-x86-64",
             "PNR_PLACER_EXP":"27",
-            "DISABLE_GP":"1"    
+            "DISABLE_GP":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/harris_color":{
@@ -73,13 +73,13 @@
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=1 schedule=31",
             "HL_TARGET":"host-x86-64",
             "PNR_PLACER_EXP":"13",
-            "DISABLE_GP":"1"    
+            "DISABLE_GP":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=1 schedule=31",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/unsharp":{
@@ -92,13 +92,13 @@
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=1 schedule=3",
             "HL_TARGET":"host-x86-64",
             "PNR_PLACER_EXP":"22",
-            "DISABLE_GP":"1"    
+            "DISABLE_GP":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=1 schedule=3",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/camera_pipeline_2x2":{
@@ -111,13 +111,13 @@
             "HALIDE_GEN_ARGS":"schedule=3",
             "HL_TARGET":"host-x86-64",
             "PNR_PLACER_EXP":"10",
-            "DISABLE_GP":"1"    
+            "DISABLE_GP":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"schedule=3",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/matrix_multiplication":{
@@ -135,7 +135,7 @@
             "HALIDE_GEN_ARGS":"input_height=64 input_height_tile=64 input_width=4 kernel_width=4 input_width_unroll=4 kernel_width_unroll=4 glb_i=4 glb_k=4 glb_o=4 m_input_width=1 m_kernel_width=1",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "apps/matrix_multiplication_fp":{
@@ -201,6 +201,38 @@
             "PIPELINED":"0"
         }
     },
+    "apps/scalar_reduction_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
+    "apps/scalar_max_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
+    "apps/stable_softmax_pass2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
+    "apps/stable_softmax_pass3_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_len=512 glb_i=8 glb_o=8",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
     "conv1":{
         "default":{
             "HALIDE_GEN_ARGS":"in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4 glb_i=1 glb_k=1 glb_o=1",
@@ -211,13 +243,13 @@
             "HALIDE_GEN_ARGS":"in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4 glb_i=1 glb_k=1 glb_o=1",
             "HL_TARGET":"host-x86-64",
             "PNR_PLACER_EXP":"1",
-            "DISABLE_GP":"1"    
+            "DISABLE_GP":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"in_img=32 pad=3 ksize=7 stride=2 n_ic=3 n_oc=64 k_ic=3 k_oc=4 glb_i=1 glb_k=1 glb_o=1",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "conv2_x":{
@@ -233,7 +265,7 @@
             "DISABLE_GP":"1",
             "MANUAL_PLACER":"1",
             "IO2MEM_REG_CHAIN":"1",
-            "MEM2PE_REG_CHAIN":"1"    
+            "MEM2PE_REG_CHAIN":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=14 k_oc=14 glb_i=7 glb_k=7 glb_o=7",
@@ -242,7 +274,7 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MANUAL_PLACER":"1",
             "IO2MEM_REG_CHAIN":"1",
-            "MEM2PE_REG_CHAIN":"1"    
+            "MEM2PE_REG_CHAIN":"1"
         }
     },
     "conv3_1":{
@@ -395,13 +427,13 @@
             "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=14 k_oc=14 glb_i=7 glb_k=7 glb_o=7",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "PNR_PLACER_EXP":"1",
-            "DISABLE_GP":"1"    
+            "DISABLE_GP":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"in_img=7 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=14 k_oc=14 glb_i=7 glb_k=7 glb_o=7",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1",
-            "SWEEP_PNR_PLACER_EXP":"1"    
+            "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
     "conv2_x_residual":{
