@@ -20,6 +20,15 @@ echo "--- Must have a (empty!) working directory"
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
 /bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
 
+# should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
+if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
+    echo "ERROR: BUILDKITE_CLEAN_CHECKOUT=$BUILDKITE_CLEAN_CHECKOUT"
+    echo "ERROR: It looks like maybe someone started a job manually from the"
+    echo "ERROR: buildkite web interface and clicked the 'clean checkout' option"
+    echo "ERROR: That's-a no good. I am .buildkite/bin/custom-checkout.sh"
+    exit 13
+fi
+
 echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
