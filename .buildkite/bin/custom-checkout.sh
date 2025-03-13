@@ -15,7 +15,6 @@ PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
-echo I see commit `git log | head -1` || echo okay
 
 # should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
 if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
