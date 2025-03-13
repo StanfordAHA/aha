@@ -16,9 +16,9 @@ PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 
-echo "--- Must have a (empty!) working directory"
-d=$BUILDKITE_BUILD_CHECKOUT_PATH;
-/bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
+set -x
+echo "I see BUILDKITE_CLEAN_CHECKOUT=$BUILDKITE_CLEAN_CHECKOUT"
+
 
 # should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
 if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
@@ -28,6 +28,10 @@ if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
     echo "ERROR: That's-a no good. I am .buildkite/bin/custom-checkout.sh"
     exit 13
 fi
+
+echo "--- Must have a (empty!) working directory"
+d=$BUILDKITE_BUILD_CHECKOUT_PATH;
+/bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
 
 echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
