@@ -17,19 +17,6 @@ echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 echo I see commit `git log | head -1` || echo okay
 
-
-
-
-
-
-set -x
-echo "I see BUILDKITE_CLEAN_CHECKOUT=$BUILDKITE_CLEAN_CHECKOUT"
-
-
-
-
-
-
 # should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
 if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
     echo "ERROR: BUILDKITE_CLEAN_CHECKOUT=$BUILDKITE_CLEAN_CHECKOUT"
@@ -50,24 +37,6 @@ cd $aha_clone;
 
 # FIXME things break if DEV_BRANCH not set?
 [ "$DEV_BRANCH" ] || export DEV_BRANCH=master
-
-
-
-
-# TODO TODO TODO
-# # TROUBLE maybe if DEV_BRANCH==HEAD but BUILDKITE_BRANCH==disallow-clean-checkout etc.
-# # Want this to work for HEAD, HEAD~1 etc.
-# if expr "$DEV_BRANCH" : "HEAD" > /dev/null; then
-#     if [ "$BUILDKITE_BRANCH" ]; then
-#         # This will turn "HEAD~1" into e.g. "disallow-clean-checkout~1"
-#         DEV_BRANCH=`echo $DEV_BRANCH | sed "s/HEAD/$BUILDKITE_BRANCH/"`
-#     fi
-# fi
-
-
-
-
-
 
 if ! git checkout -q $DEV_BRANCH; then
     export DEV_BRANCH=master
