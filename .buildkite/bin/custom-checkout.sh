@@ -16,6 +16,17 @@ PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 
+# should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
+if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
+    echo "
+    ERROR: BUILDKITE_CLEAN_CHECKOUT=$BUILDKITE_CLEAN_CHECKOUT
+    ERROR: It looks like maybe someone started a job manually from the
+    ERROR: buildkite web interface and clicked the 'clean checkout' option
+    ERROR: That's-a no good. I am .buildkite/bin/custom-checkout.sh
+"
+    exit 13
+fi
+
 echo "--- Must have a (empty!) working directory"
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
 /bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
@@ -121,7 +132,7 @@ else
     git fetch -v --prune -- origin $BUILDKITE_COMMIT || echo okay
 
     if ! git checkout -qf $BUILDKITE_COMMIT; then
-        echo "Submod commit hash found, using aha master branch";
+        echo "Submod commit hash not found, using aha master branch";
         git checkout -q $DEV_BRANCH || echo "No dev branch found, continuing w master..."; fi;
 fi
 
