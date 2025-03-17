@@ -86,6 +86,9 @@ class Tests:
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
                 "apps/stable_softmax_pass3_fp",
+                "apps/scalar_avg_fp",
+                "apps/layer_norm_pass2_fp",
+                "apps/layer_norm_pass3_fp",
             ]
             resnet_tests = [
                 "conv1",
@@ -179,6 +182,9 @@ class Tests:
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
                 "apps/stable_softmax_pass3_fp",
+                "apps/scalar_avg_fp",
+                "apps/layer_norm_pass2_fp",
+                "apps/layer_norm_pass3_fp",
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -276,6 +282,9 @@ class Tests:
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
                 "apps/stable_softmax_pass3_fp",
+                "apps/scalar_avg_fp",
+                "apps/layer_norm_pass2_fp",
+                "apps/layer_norm_pass3_fp",
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
