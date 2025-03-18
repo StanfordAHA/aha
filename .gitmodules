@@ -79,13 +79,14 @@
 [submodule "clockwork"]
 	path = clockwork
 	url = https://github.com/StanfordAHA/clockwork.git
-    branch = new_lake
+    	branch = new_lake
 [submodule "rdai"]
 	path = rdai
 	url = https://github.com/thenextged/rdai.git
 [submodule "MetaMapper"]
 	path = MetaMapper
-	url = https://github.com/rdaly525/MetaMapper
+	url = https://github.com/mbstrange2/MetaMapper
+	branch = pe_fifo_guard
 [submodule "peak_generator"]
 	path = peak_generator
 	url = https://github.com/jack-melchert/peak_generator
