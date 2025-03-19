@@ -1,6 +1,6 @@
 [submodule "coreir"]
     path = coreir
-    url = https://github.com/rdaly525/coreir
+    url = https://github.com/stanfordaha/coreir
     branch = master
 [submodule "pycoreir"]
     path = pycoreir
@@ -79,7 +79,7 @@
 [submodule "clockwork"]
 	path = clockwork
 	url = https://github.com/StanfordAHA/clockwork.git
-	branch = new_lake
+	branch = master
 [submodule "rdai"]
 	path = rdai
 	url = https://github.com/thenextged/rdai.git
