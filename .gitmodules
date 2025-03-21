@@ -1,6 +1,6 @@
 [submodule "coreir"]
     path = coreir
-    url = https://github.com/rdaly525/coreir
+    url = https://github.com/stanfordaha/coreir
     branch = master
 [submodule "pycoreir"]
     path = pycoreir
@@ -12,7 +12,7 @@
     branch = master
 [submodule "Halide-to-Hardware"]
     path = Halide-to-Hardware
-	url = https://github.com/yuchen-mei/Halide-to-Hardware.git
+	url = https://github.com/stanfordaha/Halide-to-Hardware.git
     branch = master
 [submodule "BufferMapping"]
     path = BufferMapping
@@ -60,11 +60,11 @@
     branch = master
 [submodule "archipelago"]
     path = archipelago
-	url = https://github.com/mcoduoza/archipelago
-	branch = master 
+	url = https://github.com/stanfordaha/archipelago
+	branch = master
 [submodule "cgra_pnr"]
     path = cgra_pnr
-	url = https://github.com/yuchen-mei/cgra_pnr.git
+	url = https://github.com/stanfordaha/cgra_pnr.git
 [submodule "ast_tools"]
     path = ast_tools
     url = https://github.com/leonardt/ast_tools
@@ -79,7 +79,7 @@
 [submodule "clockwork"]
 	path = clockwork
 	url = https://github.com/StanfordAHA/clockwork.git
-	branch = new_lake
+	branch = master
 [submodule "rdai"]
 	path = rdai
 	url = https://github.com/thenextged/rdai.git
@@ -98,4 +98,4 @@
 	url = https://github.com/upscale-project/pono.git
 [submodule "Lego_v0"]
 	path = Lego_v0
-	url = https://github.com/sgauthamr2001/Lego_v0.git
+	url = https://github.com/stanfordaha/Lego_v0.git

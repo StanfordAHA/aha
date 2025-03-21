@@ -80,6 +80,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/gaussian",
                 "apps/camera_pipeline_2x2",
+                "tests/bf2int8_pack_test",
             ]
             glb_tests_fp = [
                 "apps/matrix_multiplication_fp",
@@ -89,6 +90,11 @@ class Tests:
                 "apps/scalar_avg_fp",
                 "apps/layer_norm_pass2_fp",
                 "apps/layer_norm_pass3_fp",
+                "apps/gelu_pass1_fp",
+                "apps/gelu_pass2_fp",
+                "apps/silu_pass1_fp",
+                "apps/silu_pass2_fp",
+                "apps/swiglu_pass2_fp",
             ]
             resnet_tests = [
                 "conv1",
@@ -173,6 +179,7 @@ class Tests:
                 "tests/rom",
                 "tests/conv_1_2",
                 "tests/conv_2_1",
+                "tests/bf2int8_pack_test",
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
@@ -185,6 +192,11 @@ class Tests:
                 "apps/scalar_avg_fp",
                 "apps/layer_norm_pass2_fp",
                 "apps/layer_norm_pass3_fp",
+                "apps/gelu_pass1_fp",
+                "apps/gelu_pass2_fp",
+                "apps/silu_pass1_fp",
+                "apps/silu_pass2_fp",
+                "apps/swiglu_pass2_fp",
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -262,6 +274,7 @@ class Tests:
                 "tests/conv_1_2",
                 "tests/conv_2_1",
                 "tests/conv_3_3",
+                "tests/bf2int8_pack_test",
                 "apps/gaussian",
                 "apps/brighten_and_blur",
                 "apps/cascade",
@@ -285,6 +298,11 @@ class Tests:
                 "apps/scalar_avg_fp",
                 "apps/layer_norm_pass2_fp",
                 "apps/layer_norm_pass3_fp",
+                "apps/gelu_pass1_fp",
+                "apps/gelu_pass2_fp",
+                "apps/silu_pass1_fp",
+                "apps/silu_pass2_fp",
+                "apps/swiglu_pass2_fp",
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
