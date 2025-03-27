@@ -34,7 +34,7 @@ class Tests:
                 "apps/pointwise_RV_E64_MB",
             ]
             glb_tests_fp = [
-                # "tests/fp_pointwise",
+                "tests/fp_pointwise",
             ]
             resnet_tests = [
             ]
