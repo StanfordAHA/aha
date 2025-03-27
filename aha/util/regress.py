@@ -101,6 +101,7 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append("--mu-oc-0")
             buildkite_args.append(str(mu_oc_0))
             buildkite_args.append("--include-E64-hw")
+            buildkite_args.append("--include-multi-bank-hw")
 
         buildkite_call(buildkite_args)
         
@@ -313,7 +314,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -341,6 +342,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if E64_mode_on:
         env_vars["E64_MODE_ON"] = "1" 
         print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")  
+
+    if E64_multi_bank_mode_on:
+        print(f"\033[92mINFO: Running {test} with E64 MULTI BANK MODE ON\033[0m")
+        env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
@@ -378,6 +383,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")
         env_vars["E64_MODE_ON"] = "1" 
 
+    if E64_multi_bank_mode_on:
+        print(f"\033[92mINFO: Running {test} with E64 MULTI BANK MODE ON\033[0m")
+        env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
+
     if using_matrix_unit:
         #TODO: Make these all env vars? 
         buildkite_args.append("--using-matrix-unit")
@@ -389,8 +398,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append("--mu-oc-0")
         buildkite_args.append(str(mu_oc_0))
         buildkite_args.append("--include-E64-hw")
+        buildkite_args.append("--include-multi-bank-hw")
 
         env_vars["INCLUDE_E64_HW"] = "1"
+        env_vars["INCLUDE_MULTI_BANK_HW"] = "1"
         
         if num_fabric_cols_removed == 0: 
             env_vars["WEST_IN_IO_SIDES"] = "1"
@@ -558,6 +569,7 @@ def dispatch(args, extra_args=None):
 
     DRV_supported_tests = imported_tests.DRV_supported_tests
     E64_supported_tests = imported_tests.E64_supported_tests
+    E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
     # No zircon flag (generate default layout)
     if args.no_zircon:
@@ -662,59 +674,75 @@ def dispatch(args, extra_args=None):
             testname = test.replace("_E64", "")
         return testname, E64_mode_on
     
-    def feature_support_check(testname, dense_ready_valid, E64_mode_on):
+    # E64 MB mode
+    def parse_E64_MB_mode(testname):
+        E64_multi_bank_mode_on = False
+        if "_MB" in testname:
+            E64_multi_bank_mode_on = True
+            testname = test.replace("_MB", "")
+        return testname, E64_multi_bank_mode_on
+    
+    def feature_support_check(testname, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on):
         if dense_ready_valid:
             assert testname in DRV_supported_tests, f"ERROR: Dense ready-valid mode not yet supported for {testname}. Once it is supported, please add it to DRV_supported_tests in regress_tests/tests.py"
 
         if E64_mode_on:
             assert testname in E64_supported_tests, f"ERROR: E64 mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64 unroll is multiple of 4. Once done, please add the test to E64_supported_tests in regress_tests/tests.py"
     
+        if E64_multi_bank_mode_on:
+            assert testname in E64_MB_supported_tests, f"ERROR: E64 multi-bank mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64_MB unroll is multiple of 8. Once done, please add the test to E64_MB_supported_tests in regress_tests"
+            assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
+
     for test in glb_tests:
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, 
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests_fp:
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True, 
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
         if "residual" in test:
             t0, t1, t2 = test_dense_app("apps/resnet_residual", width, height, args.env_parameters, extra_args, layer=test, 
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
             t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, 
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests_fp:
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
         if "residual" in test:
             t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,  
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
             t0, t1, t2 = test_dense_app("apps/conv2D_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:

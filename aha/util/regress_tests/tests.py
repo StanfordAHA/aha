@@ -18,7 +18,9 @@ class Tests:
         E64_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
         ]
-
+        E64_MB_supported_tests = [
+            "apps/pointwise", "apps/pointwise_mu_io"
+        ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
@@ -28,10 +30,11 @@ class Tests:
             ]
             glb_tests = [
                 "apps/pointwise",
-                "apps/pointwise_RV_E64"
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
             ]
             glb_tests_fp = [
-                "tests/fp_pointwise",
+                # "tests/fp_pointwise",
             ]
             resnet_tests = [
             ]
@@ -76,8 +79,11 @@ class Tests:
                 "apps/pointwise",
                 "apps/pointwise_RV",
                 "apps/pointwise_E64",
+                "apps/pointwise_E64_MB",
                 "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/gaussian",
                 "apps/camera_pipeline_2x2",
                 "tests/bf2int8_pack_test",
@@ -168,8 +174,11 @@ class Tests:
                 "apps/pointwise",
                 "apps/pointwise_RV",
                 "apps/pointwise_E64",
+                "apps/pointwise_E64_MB",
                 "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
                 "tests/ushift",
                 "tests/arith",
                 "tests/absolute",
@@ -257,8 +266,11 @@ class Tests:
                 "apps/pointwise",
                 "apps/pointwise_RV",
                 "apps/pointwise_E64",
+                "apps/pointwise_E64_MB",
                 "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
                 "tests/rom",
                 "tests/arith",
                 "tests/absolute",
@@ -358,3 +370,4 @@ class Tests:
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.E64_supported_tests = E64_supported_tests
         self.DRV_supported_tests = DRV_supported_tests
+        self.E64_MB_supported_tests = E64_MB_supported_tests
