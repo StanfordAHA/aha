@@ -10,17 +10,17 @@
     },
     "apps/pointwise":{
         "default":{
-            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=8",
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=8 myunroll_E64_MB=16",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1"
         },
         "fastest":{
-            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=8",
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=8 myunroll_E64_MB=16",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1"
         },
         "sweep":{
-            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=8",
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=8 myunroll_E64_MB=16",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"
@@ -28,17 +28,17 @@
     },
     "apps/pointwise_mu_io":{
         "default":{
-            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16",
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=16",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1"
         },
         "fastest":{
-            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16",
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=16",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1"
         },
         "sweep":{
-            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16",
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=16",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1"
