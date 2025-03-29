@@ -2,7 +2,7 @@
 # If we put most-likely-to change submodules LAST in Dockerfile, we can
 # maximize cache usage and minimize average build time.  A histogram of
 # most-recent 256 submodule changes came up with this list.
-# 
+#
 #       ..<others w lower frequency occluded>..
 #       6 kratos <kratos was responsible for 6 of the last 256 changes>
 #       8 gemstone
@@ -49,7 +49,7 @@ RUN apt-get update && \
         # EDA Tools
         ksh tcsh tcl \
         dc libelf1 binutils \
-        libxp6 libxi6 libxrandr2 libtiff5 libmng2 \ 
+        libxp6 libxi6 libxrandr2 libtiff5 libmng2 \
         libjpeg62 libxft2 libxmu6 libglu1-mesa libxss1 \
         libxcb-render0 libglib2.0-0 \
         libc6-i386 \
@@ -58,7 +58,7 @@ RUN apt-get update && \
         graphviz \
         xxd \
         # pono
-        time \ 
+        time \
         m4 \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
@@ -73,13 +73,13 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
-    pip install cmake && \
+    pip install cmake==3.28.1 && \
     echo DONE
 
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Create an aha directory and prep a python environment. 
+# Create an aha directory and prep a python environment.
 # Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
 RUN mkdir -p /aha && cd /aha && python -m venv .
@@ -282,10 +282,10 @@ RUN echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && echo DONE
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
 
 # Cleanup / image-size-reduction notes:
-# 
+#
 # - cannot delete `clockwork/barvinok` directory entirely because
 #   regression tests use e.g. `barvinok-0.41/isl/isl_ast_build_expr.h`
-# 
+#
 # - if you don't delete files in the same layer (RUN command) where
 #   they were created, you don't get any space savings in the image.
 #
