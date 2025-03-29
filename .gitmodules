@@ -95,7 +95,7 @@
 	url = https://github.com/weiya711/sam.git
 [submodule "pono"]
 	path = pono
-	url = https://github.com/StanfordAHA/pono.git
+	url = https://github.com/upscale-project/pono.git
 [submodule "Lego_v0"]
 	path = Lego_v0
 	url = https://github.com/stanfordaha/Lego_v0.git
