@@ -102,6 +102,7 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append(str(mu_oc_0))
             buildkite_args.append("--include-E64-hw")
             buildkite_args.append("--include-multi-bank-hw")
+            buildkite_args.append("--include-mu-glb-hw")
 
         buildkite_call(buildkite_args)
         
