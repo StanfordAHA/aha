@@ -102,6 +102,8 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append(str(mu_oc_0))
             buildkite_args.append("--include-E64-hw")
             buildkite_args.append("--include-multi-bank-hw")
+            buildkite_args.append("--use-non-split-fifos")
+
 
         buildkite_call(buildkite_args)
         
@@ -146,7 +148,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--num-fabric-cols-removed")
             build_tb_cmd.append(str(num_fabric_cols_removed))
             build_tb_cmd.append("--include-E64-hw")
-            env_vars["INCLUDE_E64_HW"] = "1"
+            build_tb_cmd.append("--use-non-split-fifos")
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -184,7 +186,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--num-fabric-cols-removed")
             build_tb_cmd.append(str(num_fabric_cols_removed))
             build_tb_cmd.append("--include-E64-hw")
-            env_vars["INCLUDE_E64_HW"] = "1"
+            build_tb_cmd.append("--use-non-split-fifos")
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -399,6 +401,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append(str(mu_oc_0))
         buildkite_args.append("--include-E64-hw")
         buildkite_args.append("--include-multi-bank-hw")
+        buildkite_args.append("--use-non-split-fifos")
 
         env_vars["INCLUDE_E64_HW"] = "1"
         env_vars["INCLUDE_MULTI_BANK_HW"] = "1"
