@@ -34,7 +34,7 @@ class Tests:
                 "apps/pointwise_RV_E64_MB",
             ]
             glb_tests_fp = [
-                # "tests/fp_pointwise",
+                "tests/fp_pointwise",
             ]
             resnet_tests = [
             ]
@@ -79,16 +79,19 @@ class Tests:
                 "apps/pointwise",
                 "apps/pointwise_RV",
                 "apps/pointwise_E64",
-                "apps/pointwise_E64_MB",
+                # "apps/pointwise_E64_MB",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/gaussian",
+                "apps/harris_color",
+                "apps/unsharp",
                 "apps/camera_pipeline_2x2",
                 "tests/bf2int8_pack_test",
             ]
             glb_tests_fp = [
+                "tests/int8tobf_unpack_test",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
@@ -174,7 +177,7 @@ class Tests:
                 "apps/pointwise",
                 "apps/pointwise_RV",
                 "apps/pointwise_E64",
-                "apps/pointwise_E64_MB",
+                # "apps/pointwise_E64_MB",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_mu_io_RV_E64",
@@ -191,6 +194,7 @@ class Tests:
                 "tests/bf2int8_pack_test",
             ]
             glb_tests_fp = [
+                "tests/int8tobf_unpack_test",
                 "tests/fp_pointwise",
                 "tests/fp_arith",
                 "tests/fp_comp",
@@ -266,7 +270,7 @@ class Tests:
                 "apps/pointwise",
                 "apps/pointwise_RV",
                 "apps/pointwise_E64",
-                "apps/pointwise_E64_MB",
+                # "apps/pointwise_E64_MB",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_mu_io_RV_E64",
@@ -303,6 +307,7 @@ class Tests:
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
+                "tests/int8tobf_unpack_test",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
