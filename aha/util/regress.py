@@ -245,6 +245,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
         if num_fabric_cols_removed == 0: 
             env_vars["WEST_IN_IO_SIDES"] = "1"
         env_vars["USING_MATRIX_UNIT"] = "1"
+        env_vars["INCLUDE_MU_GLB_HW"] = "1" 
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
 
@@ -402,6 +403,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         buildkite_args.append(str(mu_oc_0))
         buildkite_args.append("--include-E64-hw")
         buildkite_args.append("--include-multi-bank-hw")
+        buildkite_args.append("--include-mu-glb-hw")
         buildkite_args.append("--use-non-split-fifos")
 
         env_vars["INCLUDE_E64_HW"] = "1"
@@ -411,6 +413,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
             env_vars["WEST_IN_IO_SIDES"] = "1"
   
         env_vars["USING_MATRIX_UNIT"] = "1"
+        env_vars["INCLUDE_MU_GLB_HW"] = "1" 
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
         env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
