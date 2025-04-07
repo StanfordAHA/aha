@@ -539,8 +539,14 @@ def dispatch(args, extra_args=None):
     if args.config == "pr_aha1":
         imported_tests = Tests("pr_aha")
         imported_tests.glb_tests.remove("apps/camera_pipeline_2x2")
-        imported_tests.glb_tests_fp.remove("apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp", "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp")
-        imported_tests.glb_tests_fp.remove("apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp")
+
+        glb_tests_fp_to_remove = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp", "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
+        glb_tests_fp_to_remove += ["apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
+
+        for test in glb_tests_fp_to_remove:
+            if test in imported_tests.glb_tests_fp:
+                imported_tests.glb_tests_fp.remove(test)
+       
         imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
         #imported_tests.resnet_tests_fp.remove('conv2_x_fp')
 
