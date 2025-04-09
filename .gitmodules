@@ -4,7 +4,7 @@
     branch = master
 [submodule "pycoreir"]
     path = pycoreir
-    url = https://github.com/leonardt/pycoreir
+    url = https://github.com/StanfordAHA/pycoreir
     branch = master
 [submodule "garnet"]
     path = garnet
