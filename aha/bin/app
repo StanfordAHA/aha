@@ -35,9 +35,6 @@ HELP="
 if [ "$1" == "--help" ]; then echo "$HELP"; exit; fi
 if [ "$1" == "" ];       then echo "$HELP"; exit; fi
 
-# TODO test and/or use REUSE_CONTAINER maybe
-# REUSE_CONTAINER=True  # Uncomment for reusable container (for debugging)
-
 # Unpack the args
 
 # Preserve original flags for later
@@ -88,49 +85,8 @@ done
 
 ########################################################################
 # Find file tests.py
-# TESTS_PY=/aha/aha/util/regress_tests/tests.py
-# test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
-
-# echo IN CONTAINER NOW\?
-# echo hostname=`hostname`
-# ls -l /aha
-# ls -l /aha/aha
-# ls -l /aha/aha/util
-
-set -x
 TESTS_PY=/aha/aha/util/regress_tests/tests.py
-echo "1 TESTS_PY='$TESTS_PY'"
-ls -l $TESTS_PY
-test -e $TESTS_PY && echo EXISTS || echo NOT EXISTS
-
 test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
-echo "2 TESTS_PY='$TESTS_PY'"
-ls -l $TESTS_PY
-
-
-
-
-
-set +x
-
-
-
-##############################################################################
-##############################################################################
-##############################################################################
-# # Override for debugging TODO remove it
-# TESTS_PY=/home/steveri/tmpdir/tests.py
-# test -e $TESTS_PY || TESTS_PY=/aha/aha/util/regress_tests/tests.py
-# 
-##############################################################################
-##############################################################################
-##############################################################################
-
-
-########################################################################
-# HLINE e.g. 'hline 5' = "-----\n"
-# Beware how you do this, can be a nightmare for 'set -x' if you get it wrong
-function hline { seq -s- $1 | sed 's/[^-]//g'; }
 
 ########################################################################
 # Parse 'tests.py' to find suite names e.g.
@@ -161,6 +117,8 @@ if [ "$LIST_SUITES" ]; then
     echo "$TEST_SUITES all" | xargs printf "  $bn --show-suite %s\n" | sed 's/,//'
     exit
 fi
+
+function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 
 ########################################################################
 # Build a COMPACT data structure containing all apps and suites e.g.
@@ -260,37 +218,22 @@ if [ "$SIM" == vcs ]; then
 fi
 
 if ! [ "$IN_DOCKER" ]; then
-# if [ '' ]; then
     echo '-------------------------------------------------'
     echo 'Looks like we are not (yet) in a docker container'
     echo 'What I will do is I will'
     echo '- launch a container using docker image "garnet:latest"'
-    echo '- copy this script to the container'
     echo '- execute the script there'
     echo '-------------------------------------------------'
 
     # Setup
     image=stanfordaha/garnet:latest
     docker pull $image
-    container=deleteme-$USER-aha-test-$$
+    container=deleteme-$USER-run-one-app-$$
     docker run -id --name $container --rm $CAD $image bash
 
     # Trap and kill docker container on exit ('--rm' no workee, but why?)
     function cleanup { printf '\n\n'; set -x; docker kill $container; }
     trap cleanup EXIT
-
-# We're gonna see if we can do this with UPDATE
-#     # Override for debugging TODO remove it
-#     docker cp ~/tmpdir/tests.py $container:/aha/aha/util/regress_tests/tests.py
-#     docker cp ~/tmpdir/regress.py $container:/aha/aha/util/regress.py
-
-# TODO: reuse-container mechanism
-# 
-# container=DELETEME-$USER-apptest-$$
-# [ "$REUSE_CONTAINER" ] && container=deleteme-steveri-testapp-dev
-# # Note for verilator CAD="" else CAD="-v /cad:/cad"
-# # Note this will err if reusing container, but that's okay maybe.
-# docker run -id --name $container --rm $CAD $image bash || echo okay
 
     ########################################################################
     # Update container repo if requested with --update switch, e.g.
@@ -512,3 +455,30 @@ exit
 #     echo "Run /tmp/$basename in container"
 #     # docker exec $container /tmp/$basename --$SIM $size $appname --cols-removed $FCR --mu_oc_0 $MU
 #     docker exec $container /tmp/$basename $app_flags
+
+# We're gonna see if we can do this with UPDATE
+#     # Override for debugging TODO remove it
+#     docker cp ~/tmpdir/tests.py $container:/aha/aha/util/regress_tests/tests.py
+#     docker cp ~/tmpdir/regress.py $container:/aha/aha/util/regress.py
+
+# TODO test and/or use REUSE_CONTAINER maybe
+# REUSE_CONTAINER=True  # Uncomment for reusable container (for debugging)
+
+#         --reuse*)  REUSE_CONTAINER=True ;;
+#         --keep*)   REUSE_CONTAINER=True ;;
+
+#     # If reuse-container requested, launch and/or use persistent container 'tmp-app-$USER'
+#     if [ "$REUSE_CONTAINER" ]; then
+#         container=tmp-app-$USER-persistent
+#         echo '-------------------------------------------------'
+#         echo "REUSING container '$container'"
+#         echo "Ignore name conflict errors below"
+#         echo '-------------------------------------------------'
+#         function cleanup {
+#             printf '\n\nREMINDER kill docker container $container when done\n\n';
+#         }
+#     else
+
+#     echo '-------------------------------------------------'
+#     echo "NEW CONTAINER '$container'"
+#     echo '-------------------------------------------------'
