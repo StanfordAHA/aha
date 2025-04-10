@@ -64,10 +64,8 @@ while [ $# -gt 0 ] ; do
         --help)        echo "$HELP";  exit ;;
 
         # New and undocumented
-        --update*) 
-            UPDATE_SRC=$1; shift;
-            UPDATE_DST=$1; shift;
-            ;;
+        --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
+
         # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
         --fp) echo 'WARNING "--fp" deprecated/unnecessary, stop using it'; ;;
 
@@ -90,8 +88,32 @@ done
 
 ########################################################################
 # Find file tests.py
+# TESTS_PY=/aha/aha/util/regress_tests/tests.py
+# test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
+
+# echo IN CONTAINER NOW\?
+# echo hostname=`hostname`
+# ls -l /aha
+# ls -l /aha/aha
+# ls -l /aha/aha/util
+
+set -x
 TESTS_PY=/aha/aha/util/regress_tests/tests.py
-test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github/$TESTS_PY
+echo "1 TESTS_PY='$TESTS_PY'"
+ls -l $TESTS_PY
+test -e $TESTS_PY && echo EXISTS || echo NOT EXISTS
+
+test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
+echo "2 TESTS_PY='$TESTS_PY'"
+ls -l $TESTS_PY
+
+
+
+
+
+set +x
+
+
 
 ##############################################################################
 ##############################################################################
@@ -107,7 +129,8 @@ test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github/$TESTS_PY
 
 ########################################################################
 # HLINE e.g. 'hline 5' = "-----\n"
-function hline { ncol=$1; while [ "$ncol" -gt 0 ] ; do echo -n -; ((ncol-=1)); done; echo ""; }
+# Beware how you do this, can be a nightmare for 'set -x' if you get it wrong
+function hline { seq -s- $1 | sed 's/[^-]//g'; }
 
 ########################################################################
 # Parse 'tests.py' to find suite names e.g.
@@ -163,6 +186,7 @@ for s in $TEST_SUITES; do
         echo '------------------------------------------------------------------------'
     fi
     this_suite=`python3 <(cat $TESTS_PY; printf "$tests_py_stub")`
+    # Gather all the this_suite's together in a single 'suites'
     suites="$(printf "%s\n%s" "$suites" "$this_suite")"
 done
 if [ "$DBG" ]; then hline 72; (echo "$suites" | head); fi
@@ -260,7 +284,6 @@ if ! [ "$IN_DOCKER" ]; then
 #     docker cp ~/tmpdir/tests.py $container:/aha/aha/util/regress_tests/tests.py
 #     docker cp ~/tmpdir/regress.py $container:/aha/aha/util/regress.py
 
-
 # TODO: reuse-container mechanism
 # 
 # container=DELETEME-$USER-apptest-$$
@@ -269,66 +292,48 @@ if ! [ "$IN_DOCKER" ]; then
 # # Note this will err if reusing container, but that's okay maybe.
 # docker run -id --name $container --rm $CAD $image bash || echo okay
 
-########################################################################
-########################################################################
-########################################################################
-# TODO
-if [ "$UPDATE_SRC" ]; then
-    # GROUP "UPDATE docker repo '$UPDATE_DST' w local repo '$UPDATE_SRC'"
-    echo "UPDATE docker repo '$UPDATE_DST' w local repo '$UPDATE_SRC'"
-    exit
+    ########################################################################
+    # Update container repo if requested with --update switch, e.g.
+    #    app ... --update /nobackup/steveri/github/garnet /aha/garnet
+    #    app ... --update . /aha/aha
 
-    # Copy local garnet branch to /tmp/deleteme-garnet-$$
+    if [ "$UPDATE_SRC" ]; then
+        echo "UPDATE docker repo '$UPDATE_DST' w local repo '$UPDATE_SRC'"
+        # GROUP "UPDATE docker repo '$UPDATE_DST' w local repo '$UPDATE_SRC'"
 
-    # bookmark
-    # TODO what happens if we do this using aha with active submodules???
+        # Copy (cp -r) contents of FROM/SRC repo to a temp dir
+        repo=$(echo $UPDATE_SRC | sed 's|/$||; s|.*/||')
+        tmpdir=/tmp/deleteme-update-$repo-$$
+        /bin/rm -rf $tmpdir; mkdir -p $tmpdir
+        (cd $UPDATE_SRC; git ls-files | xargs -I{} cp -r --parents {} $tmpdir)
 
+        # If updating aha repo, skip top level directory so as not to overwrite submodules :(
+        [ "$UPDATE_DST" == "/aha/" ]    && UPDATE_DST=/aha/aha
+        [ "$UPDATE_DST" == "/aha/aha" ] && tmpdir=$tmpdir/aha
 
-#     /bin/rm -rf /tmp/deleteme-garnet-$$; mkdir -p /tmp/deleteme-garnet-$$
-#     git ls-files | xargs -I{} cp -r --parents {} /tmp/deleteme-garnet-$$
+        # Copy contents of temp dir to its final location in the container
+        docker exec $container /bin/bash -c "rm -rf $UPDATE_DST"  # Remove old repo
+        docker cp $tmpdir $container:$UPDATE_DST                  # Insert new repo
 
-    repo=$(echo $UPDATE_SRC | sed 's|/$||; s|.*/||')
-    tmp=/tmp/deleteme-update-$repo-$$
-    /bin/rm -rf $tmp; mkdir -p $tmp
+        docker exec $container /bin/bash -c "chown -R root:root $UPDATE_DST"
+        /bin/rm -rf $tmpdir
+        # set +x; # ENDGROUP
+    fi
 
-    # Note submod files are not listed as part of 'git ls-files' so we're okay on that
-    git ls-files | xargs -I{} cp -r --parents {} $tmp
-
-    # Then copy into the container
-#     docker exec $container /bin/bash -c "rm -rf /aha/garnet"
-#     docker cp /tmp/deleteme-garnet-$$ $container:/aha/garnet
-#     /bin/rm -rf /tmp/deleteme-garnet-$$
-
-    docker exec $container /bin/bash -c "rm -rf $UPDATE_DST"
-    docker cp $tmp $container:$UPDATE_DST
-    /bin/rm -rf $tmp
-
-    # echo "##[endgroup]"
-    # set +x; echo "##[endgroup]"; set -x
-    set +x; ENDGROUP
-fi
-
-
-
-
-
-    # Copy this script to container and run it there
-    set -x
-    basename=$(basename $0)
-    echo "Copy script $0 to container /tmp/$basename"
-    docker cp $0 $container:/tmp
-    echo "Run /tmp/$basename in container"
-    # docker exec $container /tmp/$basename --$SIM $size $appname --cols-removed $FCR --mu_oc_0 $MU
-    docker exec $container /tmp/$basename $app_flags
+    echo "Run '$bn $app_flags' in container"
+    # docker cp $0 $container:/tmp; docker exec $container /tmp/$basename $app_flags
+    docker exec $container /aha/aha/bin/$bn $app_flags
     set +x
     exit
 fi
 
+# bookmark
 
 #############################################################################
 # E.g. app_flags='8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8'
 hline 78
-printf "Ready to do: app  --$SIM $size $appname --cols-removed $FCR --mu_oc_0 $MU\n\n"
+# printf "Ready to do: app  --$SIM $size $appname --cols-removed $FCR --mu_oc_0 $MU\n\n"
+printf "Ready to do: $bn $app_flags\n\n"
 
 
 ########################################################################
@@ -376,15 +381,13 @@ if True:
     $group = [ '$appname' ]
 EOF
 
-hline 72
-printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py:\n\n"
+echo '------------------------------------------------------------------------'
+printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py\n\n"
+# ls -l /aha/aha/util/regress_tests/$config.py
 cat /aha/aha/util/regress_tests/$config.py | sed 's/^/> /'
 echo ""
 
-# exit
-
 # BOOKMARK
-ls -l /aha/aha/util/regress_tests/config10.py
 
 # I dunno, just run it I guess?
 
@@ -472,3 +475,40 @@ exit
 #     script_home=`where_this_script_lives`
 #     cd $script_home/../..; pwd
 
+# ------------------------------------------------------------------------
+#     # Copy local garnet branch to /tmp/deleteme-garnet-$$
+# 
+#     # bookmark
+#     # TODO what happens if we do this using aha with active submodules???
+#     # /bin/rm -rf /tmp/deleteme-garnet-$$; mkdir -p /tmp/deleteme-garnet-$$
+#     # git ls-files | xargs -I{} cp -r --parents {} /tmp/deleteme-garnet-$$
+# 
+#     printf "\n\nBEFORE /aha/garnet/garnet.py=\n"
+#     docker exec $container /bin/bash -c "ls -l /aha/garnet/garnet.py"
+#     echo "BEFORE /aha/aha="
+#     docker exec $container /bin/bash -c "ls -l /aha/aha | egrep -v ^total"
+# 
+#     printf '\n\n\n'
+#     ls -l $tmpdir
+#     printf '\n\n\n'
+# 
+#     printf "\n\nAFTER /aha/garnet/garnet.py=\n"
+#     docker exec $container /bin/bash -c "ls -l /aha/garnet/garnet.py"
+# 
+#     echo "AFTER /aha/aha="
+#     docker exec $container /bin/bash -c "ls -l /aha/aha | egrep -v ^total"
+#     exit
+# 
+#     # echo "##[endgroup]"
+#     # set +x; echo "##[endgroup]"; set -x
+
+
+
+#     # Copy this script to container and run it there
+#     set -x
+#     basename=$(basename $0)
+#     echo "Copy script $0 to container /tmp/$basename"
+#     docker cp $0 $container:/tmp
+#     echo "Run /tmp/$basename in container"
+#     # docker exec $container /tmp/$basename --$SIM $size $appname --cols-removed $FCR --mu_oc_0 $MU
+#     docker exec $container /tmp/$basename $app_flags
