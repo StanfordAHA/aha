@@ -4,7 +4,7 @@ class Tests:
 
         # Defaults
         width, height = 28, 16  # default
-        cols_removed, mu_oc_0 = 8, 32 # zircon defaults
+        cols_removed, mu_oc_0 = 8, 32  # zircon defaults
         sparse_tests = []
         glb_tests = []
         glb_tests_fp = []

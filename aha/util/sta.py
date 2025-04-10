@@ -4,6 +4,7 @@ import subprocess
 import sys
 import copy
 
+
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("app")
@@ -43,10 +44,9 @@ def dispatch(args, extra_args=None):
         subprocess.check_call(["mkdir", "-p", log_path])
         subprocess.check_call(["rm", "-f", log_file_path])
 
-    subprocess_call_log (
-        cmd=[sys.executable, "sta.py", "-a", str(app_dir) + "/bin"]  + extra_args,
+    subprocess_call_log(
+        cmd=[sys.executable, "sta.py", "-a", str(app_dir) + "/bin"] + extra_args,
         cwd=args.aha_dir / "archipelago/archipelago",
         log=args.log,
         log_file_path=log_file_path
     )
-

@@ -40,6 +40,7 @@ def subprocess_call_log(cmd, cwd, env, log, log_file_path):
             env=env
         )
 
+
 # Same as lassen.util but have to redefine it here due to CI venv errors
 def bfbin2float(bfstr):
     sign = bfstr[0]
@@ -68,6 +69,7 @@ def bfbin2float(bfstr):
             lfrac = "0" + lfrac
         nfrac = int(lfrac, 2)
         return mult * nfrac * (2 ** (nexp - 7))
+
 
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
@@ -108,16 +110,16 @@ def dispatch(args, extra_args=None):
 
         try:
 
-            subprocess_call_log (
-                    cmd=["make", "clean_sparse_outputs"],
-                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-                    env=env,
-                    log=args.log,
-                    log_file_path=log_file_path
+            subprocess_call_log(
+                cmd=["make", "clean_sparse_outputs"],
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
             )
 
             if args.run:
-                subprocess_call_log (
+                subprocess_call_log(
                     cmd=["make", "run"] + extra_args,
                     cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
                     env=env,
@@ -125,7 +127,7 @@ def dispatch(args, extra_args=None):
                     log_file_path=log_file_path
                 )
             else:
-                subprocess_call_log (
+                subprocess_call_log(
                     cmd=["make", "sim"] + extra_args,
                     cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
                     env=env,
@@ -172,11 +174,11 @@ def dispatch(args, extra_args=None):
                     # the gold matrix were already in bf16, no need to truncate again
                     pass
                 sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
-                                                    format="CSF",
-                                                    shape=gold_matrix.shape, base=16, early_terminate='x',
-                                                    use_fp=(gold_matrix.dtype == numpy.float32),
-                                                    suffix=f"_batch{j}_tile{i}",
-                                                    tensor_ordering=output_mode_map).get_matrix()
+                                                   format="CSF",
+                                                   shape=gold_matrix.shape, base=16, early_terminate='x',
+                                                   use_fp=(gold_matrix.dtype == numpy.float32),
+                                                   suffix=f"_batch{j}_tile{i}",
+                                                   tensor_ordering=output_mode_map).get_matrix()
 
                 # Rearrange the axes of the sim_matrix base on the tensor ordering of the app
                 rearrng_axis = []
@@ -199,12 +201,10 @@ def dispatch(args, extra_args=None):
                     print(sim_matrix)
                     assert numpy.allclose(gold_matrix, sim_matrix), f"Check Failed.\n"
 
-
-
     else:
 
         if args.run:
-            subprocess_call_log (
+            subprocess_call_log(
                 cmd=["make", "run"] + extra_args,
                 cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
                 env=env,
@@ -212,7 +212,7 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path
             )
         else:
-            subprocess_call_log (
+            subprocess_call_log(
                 cmd=["make", "sim"] + extra_args,
                 cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
                 env=env,
@@ -274,10 +274,10 @@ def dispatch(args, extra_args=None):
             # TODO: Implement back to back apps
 
             # define custom absolute tolerance for floating point comparison
-            custom_atol = 1.5e-04 # default 1e-08
-            custom_rtol = 2.0e-01 # default 1e-05
-            sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype = numpy.float32)
-            gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype = numpy.float32)
+            custom_atol = 1.5e-04  # default 1e-08
+            custom_rtol = 2.0e-01  # default 1e-05
+            sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype=numpy.float32)
+            gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype=numpy.float32)
 
             # check diff array and print wrong pixels
             differences = numpy.abs(gold_array_fp - sim_array_fp)
@@ -311,7 +311,8 @@ def dispatch(args, extra_args=None):
 
             # do partial close check with small fraction tolerance
             close_elements = numpy.isclose(sim_array_fp, gold_array_fp, atol=custom_atol, rtol=custom_rtol)
-            if numpy.all(close_elements): print("All elements are close.")
+            if numpy.all(close_elements):
+                print("All elements are close.")
             else:
                 mismatch_idx = numpy.nonzero(~close_elements)[0]
                 mismatch_frac = len(mismatch_idx) / len(gold_array_fp)
