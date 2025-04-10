@@ -586,18 +586,12 @@ def dispatch(args, extra_args=None):
 
     # No zircon flag (generate default layout)
     if args.no_zircon:
+        print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         using_matrix_unit = False
         num_fabric_cols_removed = 0
+        mu_oc_0 = 0
 
-    # Check that num_fabric_cols_removed is legal 
-    assert num_fabric_cols_removed % 4 == 0, "ERROR: Number of cols removed must be a multiple of 4"
-    assert num_fabric_cols_removed <= 8, "ERROR: Removing more than 8 columns is not supported yet. Hardware modifications may be necessary to proceed."
-    assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
-
-    # Check that OC_0 is legal
-    assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
-
-    if not(args.no_zircon):
+    else:
         print(f"\033[92mINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.\033[0m")
         print(f"----ZIRCON LAYOUT INFO----")
         print(f"Tile array width: {width - num_fabric_cols_removed}") 
@@ -606,6 +600,12 @@ def dispatch(args, extra_args=None):
         print(f"MU OC 0: {mu_oc_0}")
         print(f"--------------------------\n")
 
+        # Verify legality of num_fabric_cols_removed, OC_0
+        assert num_fabric_cols_removed % 4 == 0, "ERROR: Number of cols removed must be a multiple of 4"
+        assert num_fabric_cols_removed <= 8, "ERROR: Removing more than 8 columns is not supported yet. Hardware modifications may be necessary to proceed."
+        assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
+        assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
+        
 
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
