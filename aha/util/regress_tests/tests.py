@@ -1,10 +1,13 @@
 class Tests:
 
-    def __init__(self, testname):
+    def __init__(self, testname, zircon=True):
+        use_custom = False
 
         # Defaults
+
         width, height = 28, 16  # default
-        cols_removed, mu_oc_0 = 8, 32 # zircon defaults
+        cols_removed, mu_oc_0 = 8, 32
+
         sparse_tests = []
         glb_tests = []
         glb_tests_fp = []
@@ -23,8 +26,7 @@ class Tests:
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
-            width, height = 8, 8,
-            cols_removed, mu_oc_0 = 4, 8
+            width, height = 4, 4
             sparse_tests = [
                 "vec_identity"
             ]
@@ -40,6 +42,18 @@ class Tests:
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
+
+            # New for zircon
+            # TODO need to scrub through remaining tests and add "if zircon" clauses for RV, MB etc.!!!
+            # OR (more hacky) could do "if not zircon delete RV/MB from all groups kinda thing..."
+            if zircon:
+                width, height = 8, 8,
+                cols_removed, mu_oc_0 = 4, 8
+                glb_tests += [
+                    "apps/pointwise_RV_E64",
+                    "apps/pointwise_RV_E64_MB",
+                ]
+
 
         # PR_AHA test suite for aha-repo push/pull
         elif testname == "pr_aha":
@@ -368,7 +382,7 @@ class Tests:
             pass
 
         else:
-            raise NotImplementedError(f"Unknown test config: {args.config}")
+            use_custom = True
 
         self.width, self.height = width, height
         self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
@@ -381,3 +395,55 @@ class Tests:
         self.E64_supported_tests = E64_supported_tests
         self.DRV_supported_tests = DRV_supported_tests
         self.E64_MB_supported_tests = E64_MB_supported_tests
+
+        if use_custom:
+
+            # Read a custom suite from external file <testname>.py
+            # E.g. custom config testname='custom4485' to define a 4x2 pointwise run:
+            # 
+            # cat /aha/aha/util/regress_tests/custom4485.py
+            #     width, height = 4, 2"
+            #     glb_tests_fp = [ 'tests/fp_pointwise' ]
+
+            try:
+                # Update self parms w those found in custom config {testname}.py
+                import importlib
+                tmpmodule = importlib.import_module('aha.util.regress_tests.' + testname)
+
+                print('\n\n')
+                print(f"BEFORE self.(w,h)=({self.width},{self.height})")
+                print(f'selfdict={self.__dict__}\n\n')
+
+                self.__dict__.update(tmpmodule.__dict__)
+                print(f"AFTER  self.(w,h)=({self.width},{self.height})\n\n")
+                print(f'tdict={tmpmodule.__dict__}\n\n')
+                print(f'selfdict={self.__dict__}\n\n')
+
+            except:
+                # should be more like cannot find config aha/utile/...testname.py or some such
+                raise NotImplementedError(f"Cannot find custom config /aha/aha/util/regress_tests/{testname}.py")
+
+    def show_suite(self, suite_name='', zircon=True):
+        # Dump regression suite contents in compact form e.g. show_suite('fast'):
+        # 
+        # fast    sparse_tests   vec_identity             8x8 --removed 4 --mu 8
+        # fast    glb_tests      apps/pointwise           8x8 --removed 4 --mu 8
+        # fast    glb_tests      apps/pointwise_RV_E64    8x8 --removed 4 --mu 8
+        # fast    glb_tests      apps/pointwise_RV_E64_MB 8x8 --removed 4 --mu 8
+        # fast    glb_tests_fp   tests/fp_pointwise       8x8 --removed 4 --mu 8
+
+        d = self.__dict__
+        size = "%sx%s" % (d['width'], d['height'])
+        zparms = " --removed %s --mu %s" % (d["cols_removed"], d["mu_oc_0"])
+        if zircon: parms = size + zparms
+        else:      parms = size + ' --no-zircon'
+
+        not_groups = ("width", "height", "cols_removed", "mu_oc_0")
+        for group in d:
+            if not d[group]:               continue  # Dont care about empty sets
+            if group in not_groups:        continue  # Not a group
+            if "supported_tests" in group: continue  # Also not a group
+            for app in d[group]:
+                fmt = "%-12s %-16s %-32s %-s"
+                print(fmt % (suite_name, group, app, parms))
+                # rval += (fmt % (suite_name, group, app, d["app_parms"]))
