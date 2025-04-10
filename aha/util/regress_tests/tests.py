@@ -397,31 +397,21 @@ class Tests:
         self.E64_MB_supported_tests = E64_MB_supported_tests
 
         if use_custom:
-
             # Read a custom suite from external file <testname>.py
-            # E.g. custom config testname='custom4485' to define a 4x2 pointwise run:
-            # 
-            # cat /aha/aha/util/regress_tests/custom4485.py
-            #     width, height = 4, 2"
-            #     glb_tests_fp = [ 'tests/fp_pointwise' ]
-
+            # E.g. if we build a config file '/aha/aha/util/regress_tests/custom4485.py'
+            # "if True:
+            #     width, height = 4, 2
+            #     glb_tests = [ 'tests/pointwise' ]"
+            # then 'aha regress custom4485' would run a 4x2 pointwise test.
             try:
                 # Update self parms w those found in custom config {testname}.py
                 import importlib
                 tmpmodule = importlib.import_module('aha.util.regress_tests.' + testname)
-
-                print('\n\n')
-                print(f"BEFORE self.(w,h)=({self.width},{self.height})")
-                print(f'selfdict={self.__dict__}\n\n')
-
                 self.__dict__.update(tmpmodule.__dict__)
-                print(f"AFTER  self.(w,h)=({self.width},{self.height})\n\n")
-                print(f'tdict={tmpmodule.__dict__}\n\n')
-                print(f'selfdict={self.__dict__}\n\n')
-
             except:
-                # should be more like cannot find config aha/utile/...testname.py or some such
-                raise NotImplementedError(f"Cannot find custom config /aha/aha/util/regress_tests/{testname}.py")
+                raise NotImplementedError(
+                    f"Cannot find custom config /aha/aha/util/regress_tests/{testname}.py"
+                )
 
     def show_suite(self, suite_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_suite('fast'):
