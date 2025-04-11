@@ -160,6 +160,7 @@ if [ "$DBG" ]; then hline 72; (echo "$suites" | head); fi
 #     app 8x8 vec_identity       --num-fabric-cols-removed 4 --mu_oc_0 8
 #     app 8x8 tests/fp_pointwise --num-fabric-cols-removed 4 --mu_oc_0 8
 
+type column || yes | apt-get install bsdmainutils || function column { echo; }
 function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 
 ########################################################################
@@ -268,8 +269,6 @@ fi
 echo '------------------------------------------------------------------------------'
 printf "Ready to do: $bn $app_flags\n\n"
 
-# bookmark
-
 ########################################################################
 # Find which group 'appname' belongs to,
 # e.g. group('apps/pointwise') = 'glb_tests' maybe
@@ -321,27 +320,29 @@ printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py\n\n"
 cat /aha/aha/util/regress_tests/$config.py | sed 's/^/> /'
 echo ""
 
-# BOOKMARK
-
 # I dunno, just run it I guess?
 
-# echo \#\#[group]SETUP
+########################################################################
+# Set up access to requested RTL simulator vcs or verilator
+
 rm -f garnet/garnet.v  # Get rid of old verilog if it exists
 source /aha/bin/activate
 if [ "$SIM" == vcs ]; then
-    echo "PREPARING VCS b/c SIM=$SIM"
+    printf "PREPARING VCS b/c SIM=$SIM\n\n"
     . /cad/modules/tcl/init/bash; module load base; module load vcs
 else
-    echo "PREPARING VERILATOR b/c SIM=$SIM"
+    printf "PREPARING VERILATOR b/c SIM=$SIM\n\n"
     echo /aha/garnet/tests/install-verilator.sh
     /aha/garnet/tests/install-verilator.sh
 fi
 
-(cd /aha/garnet; make clean)  # In case of e.g. CONTAINER_REUSE
+########################################################################
+# Clean up from possible previous run(s) e.g. in case of CONTAINER_REUSE
+# (which no longer exists maybe) and/or maybe just plain old paranoia...
+(cd /aha/garnet; make clean)
 
-# echo \#\#[endgroup]
-# set -x
-# ls -l /aha/aha/util/regress_tests/
+########################################################################
+# Finally: run it!!
 
 if [ "$ZIRCON" == True ]; then
     echo aha regress $config
@@ -350,126 +351,3 @@ else
     echo aha regress $config --no-zircon
     aha regress $config --no-zircon
 fi
-
-exit
-########################################################################
-# TRASH maybe
-
-# ########################################################################
-# # Remaining flags are the app-run command flags e.g.
-# #   '8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8'
-# 
-# # app_flags=("$@")
-# app_flags=`echo "$@"`
-# if [ "$DBG" ]; then
-#     # Arg check, see if args are surviving through all the shenanigans
-#     echo -n ARGS1:; for a in "$@"; do echo -n "'$a' "; done; echo ';'
-#     echo app_flags="'$app_flags'"
-# fi
-# 
-# # ???
-# # echo 1 aha garnet $size ${garnet_flags[@]} --verilog --use_sim_sram --glb_tile_mem_size 128
-
-# ########################################################################
-# # Check on simulator settings
-# if [ "$DBG" ]; then
-#     echo "SIM='$SIM'"; echo "CAD='$CAD'"; echo ""
-# fi
-# 
-# # ########################################################################
-# # # Install verilator if requested
-# # if [ "$SIM" == verilator ]; then
-# #     echo "INSTALLING VERILATOR"
-# #     echo /aha/garnet/tests/install-verilator.sh
-# #     /aha/garnet/tests/install-verilator.sh
-# # fi
-# # which verilator
-# 
-# 
-# ########################################################################
-# DBG=1
-# hline 72
-# echo now we are in docker. are we in docker\?
-# echo hostname=`hostname`
-# hline 72
-
-#     # Find local garnet home dir $GARNET, based on where this script lives
-#     # Assume this script is $GARNET/tests/test_app/$0
-#     function where_this_script_lives {
-# 
-#       local cmd="$0"    # Is script being executed or sourced?
-#       [ "${BASH_SOURCE[0]}" -ef "$0" ] || cmd="${BASH_SOURCE[0]}" 
-# 
-#       local scriptpath=`realpath $cmd`       # Full path of script e.g. "/foo/bar/baz.sh"
-#       local scriptdir=${scriptpath%/*}       # Script dir e.g. "/foo/bar"
-#       scriptdir=$(cd $scriptdir; pwd)       # Get abs path instead of rel
-#       [ "$scriptdir" == `pwd` ] && scriptdir="."
-#       echo $scriptdir
-#     }
-#     script_home=`where_this_script_lives`
-#     cd $script_home/../..; pwd
-
-# ------------------------------------------------------------------------
-#     # Copy local garnet branch to /tmp/deleteme-garnet-$$
-# 
-#     # bookmark
-#     # TODO what happens if we do this using aha with active submodules???
-#     # /bin/rm -rf /tmp/deleteme-garnet-$$; mkdir -p /tmp/deleteme-garnet-$$
-#     # git ls-files | xargs -I{} cp -r --parents {} /tmp/deleteme-garnet-$$
-# 
-#     printf "\n\nBEFORE /aha/garnet/garnet.py=\n"
-#     docker exec $container /bin/bash -c "ls -l /aha/garnet/garnet.py"
-#     echo "BEFORE /aha/aha="
-#     docker exec $container /bin/bash -c "ls -l /aha/aha | egrep -v ^total"
-# 
-#     printf '\n\n\n'
-#     ls -l $tmpdir
-#     printf '\n\n\n'
-# 
-#     printf "\n\nAFTER /aha/garnet/garnet.py=\n"
-#     docker exec $container /bin/bash -c "ls -l /aha/garnet/garnet.py"
-# 
-#     echo "AFTER /aha/aha="
-#     docker exec $container /bin/bash -c "ls -l /aha/aha | egrep -v ^total"
-#     exit
-# 
-#     # echo "##[endgroup]"
-#     # set +x; echo "##[endgroup]"; set -x
-
-
-
-#     # Copy this script to container and run it there
-#     set -x
-#     basename=$(basename $0)
-#     echo "Copy script $0 to container /tmp/$basename"
-#     docker cp $0 $container:/tmp
-#     echo "Run /tmp/$basename in container"
-#     # docker exec $container /tmp/$basename --$SIM $size $appname --cols-removed $FCR --mu_oc_0 $MU
-#     docker exec $container /tmp/$basename $app_flags
-
-# We're gonna see if we can do this with UPDATE
-#     # Override for debugging TODO remove it
-#     docker cp ~/tmpdir/tests.py $container:/aha/aha/util/regress_tests/tests.py
-#     docker cp ~/tmpdir/regress.py $container:/aha/aha/util/regress.py
-
-# TODO test and/or use REUSE_CONTAINER maybe
-# REUSE_CONTAINER=True  # Uncomment for reusable container (for debugging)
-
-#         --reuse*)  REUSE_CONTAINER=True ;;
-#         --keep*)   REUSE_CONTAINER=True ;;
-
-#     # If reuse-container requested, launch and/or use persistent container 'tmp-app-$USER'
-#     if [ "$REUSE_CONTAINER" ]; then
-#         container=tmp-app-$USER-persistent
-#         echo '-------------------------------------------------'
-#         echo "REUSING container '$container'"
-#         echo "Ignore name conflict errors below"
-#         echo '-------------------------------------------------'
-#         function cleanup {
-#             printf '\n\nREMINDER kill docker container $container when done\n\n';
-#         }
-#     else
-
-#     echo '-------------------------------------------------'
-#     echo "NEW CONTAINER '$container'"
-#     echo '-------------------------------------------------'
