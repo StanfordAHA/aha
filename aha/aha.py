@@ -52,7 +52,7 @@ def main():
 
         # Keeping this as a catchall backup; the SIGSEGV should have already
         # been caught by similar retry mechanisms in garnet.py and regress.py
-        for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
+        for retry in [1, 2, 3]:  # In case of SIGSEGV, retry up to three times
             try:
                 args.dispatch(args, extra_args)
                 break

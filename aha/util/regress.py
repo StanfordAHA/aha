@@ -37,7 +37,7 @@ def buildkite_filter(s):
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     env = {**os.environ.copy(), **env}
-    for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
+    for retry in [1, 2, 3]:  # In case of SIGSEGV, retry up to three times
         try:
             if return_output:
                 app = subprocess.run(
@@ -47,13 +47,13 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
                     env=env,
                     stdout=out_file,
                 )
-            else: 
+            else:
                 app = subprocess.run(
                     command,
                     check=True,
                     text=True,
                     env=env,
-            )
+                )
             break
         except subprocess.CalledProcessError as e:
             if 'SIGSEGV' in str(e):
@@ -70,23 +70,24 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
             else:
                 raise
 
-def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0 = 32):
+
+def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
     print("--- Generating Garnet", flush=True)
     start = time.time()
     if not os.path.exists("/aha/garnet/garnet.v"):
         # Daemon is no good if/when we build new/different verilog
         buildkite_call("aha garnet --daemon kill".split())
-        
+
         # No garnet verilog yet, so build it now.
         buildkite_args = [
-                            "aha",
-                            "garnet",
-                            "--width", str(width),
-                            "--height", str(height),
-                            "--verilog",
-                            "--use_sim_sram",
-                            "--glb_tile_mem_size", str(128),
-                         ]
+            "aha",
+            "garnet",
+            "--width", str(width),
+            "--height", str(height),
+            "--verilog",
+            "--use_sim_sram",
+            "--glb_tile_mem_size", str(128),
+        ]
 
         if dense_only:
             buildkite_args.append("--dense-only")
@@ -104,19 +105,18 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append("--include-multi-bank-hw")
             buildkite_args.append("--use-non-split-fifos")
 
-
         buildkite_call(buildkite_args)
-        
+
     return time.time() - start
 
 
 def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1, using_matrix_unit=False, num_fabric_cols_removed=0):
     if len(sparse_tests) == 0:
         return 0
-    
+
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE": "1"}
     # env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
@@ -153,7 +153,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd,
             env=env_vars,
         )
-    else: 
+    else:
         build_tb_cmd = [
             "python",
             "/aha/garnet/tests/test_memory_core/build_tb.py",
@@ -211,7 +211,7 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unr
         all_tiles.append(tile_format_t)
 
         if i + pipeline_num < len(test_l):
-            test_l_s = test_l[i:i+pipeline_num]
+            test_l_s = test_l[i:i + pipeline_num]
         else:
             test_l_s = test_l[i:]
         true_pipeline_num = len(test_l_s)
@@ -227,7 +227,7 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unr
                 str(unroll),
                 *test_l_s,
             ],
-            cwd = script_path
+            cwd=script_path
         )
 
     return all_tiles, num_list
@@ -241,7 +241,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
 
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
     if using_matrix_unit:
-        if num_fabric_cols_removed == 0: 
+        if num_fabric_cols_removed == 0:
             env_vars["WEST_IN_IO_SIDES"] = "1"
         env_vars["USING_MATRIX_UNIT"] = "1"
         env_vars["MU_OC_0"] = str(mu_oc_0)
@@ -286,7 +286,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
                 tile_pair_batches = [tile_pairs[i:i + 64] for i in range(0, len(tile_pairs), 64)]
                 for tile_pair in tile_pair_batches:
                     cmd_list.append(["aha", "test"] + tile_pair + ["--sparse", "--multiles", str(pipeline_num)])
-            
+
             if testname not in test_dataset_runtime_dict:
                 test_dataset_runtime_dict[testname] = defaultdict(float)
         else:
@@ -340,10 +340,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
         print(f"\033[92mINFO: Running {test} in dense ready-valid mode\033[0m")
-    
+
     if E64_mode_on:
-        env_vars["E64_MODE_ON"] = "1" 
-        print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")  
+        env_vars["E64_MODE_ON"] = "1"
+        print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")
 
     if E64_multi_bank_mode_on:
         print(f"\033[92mINFO: Running {test} with E64 MULTI BANK MODE ON\033[0m")
@@ -352,7 +352,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
     time_compile = time.time() - start
-    
+
     print(f"--- {testname} - pnr and pipelining", flush=True)
     start = time.time()
 
@@ -361,20 +361,20 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     use_daemon = []
     if (extra_args):
         if ('--daemon' in extra_args) and ('auto' in extra_args):
-            use_daemon = [ "--daemon", "auto" ]
+            use_daemon = ["--daemon", "auto"]
 
     buildkite_args = [
-            "aha",
-            "pnr",
-            test,
-            "--width", str(width),
-            "--height", str(height),
-            "--env-parameters", env_parameters,
-        ] + use_daemon + layer_array
+        "aha",
+        "pnr",
+        test,
+        "--width", str(width),
+        "--height", str(height),
+        "--env-parameters", env_parameters,
+    ] + use_daemon + layer_array
 
     if dense_only:
         buildkite_args.append("--dense-only")
-    
+
     env_vars = {}
     if dense_ready_valid:
         print(f"\033[92mINFO: Running {test} in dense ready-valid mode\033[0m")
@@ -383,14 +383,14 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     if E64_mode_on:
         print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")
-        env_vars["E64_MODE_ON"] = "1" 
+        env_vars["E64_MODE_ON"] = "1"
 
     if E64_multi_bank_mode_on:
         print(f"\033[92mINFO: Running {test} with E64 MULTI BANK MODE ON\033[0m")
         env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     if using_matrix_unit:
-        #TODO: Make these all env vars? 
+        # TODO: Make these all env vars?
         buildkite_args.append("--using-matrix-unit")
         buildkite_args.append("--mu-datawidth")
         buildkite_args.append(str(mu_datawidth))
@@ -405,15 +405,14 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
         env_vars["INCLUDE_E64_HW"] = "1"
         env_vars["INCLUDE_MULTI_BANK_HW"] = "1"
-        
-        if num_fabric_cols_removed == 0: 
+
+        if num_fabric_cols_removed == 0:
             env_vars["WEST_IN_IO_SIDES"] = "1"
-  
+
         env_vars["USING_MATRIX_UNIT"] = "1"
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
         env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
-
 
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
@@ -427,7 +426,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
-
 
 
 def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0):
@@ -464,17 +462,17 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
     use_daemon = []
     if (extra_args):
         if ('--daemon' in extra_args) and ('auto' in extra_args):
-            use_daemon = [ "--daemon", "auto" ]
+            use_daemon = ["--daemon", "auto"]
 
     try:
         buildkite_args = [
-                "aha",
-                "pnr",
-                test,
-                "--width", str(width),
-                "--height", str(height),
-                "--env-parameters", env_parameters,
-            ] + use_daemon + layer_array
+            "aha",
+            "pnr",
+            test,
+            "--width", str(width),
+            "--height", str(height),
+            "--env-parameters", env_parameters,
+        ] + use_daemon + layer_array
         buildkite_call(buildkite_args)
     except:
         print("[INFO] Finished PnR which is expected to fail", flush=True)
@@ -483,27 +481,27 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
     shutil.copy(f"{app_path}/bin_hardcoded/design_top.json", f"{app_path}/bin/design_top.json")
 
     buildkite_args = [
-                "aha",
-                "pnr",
-                test,
-                "--width", str(width),
-                "--height", str(height),
-                "--generate-bitstream-only",
-                "--env-parameters", env_parameters,
-            ] + use_daemon + layer_array
+        "aha",
+        "pnr",
+        test,
+        "--width", str(width),
+        "--height", str(height),
+        "--generate-bitstream-only",
+        "--env-parameters", env_parameters,
+    ] + use_daemon + layer_array
 
     if dense_only:
         buildkite_args.append("--dense-only")
-    
+
     env_vars = {}
 
     if using_matrix_unit:
         buildkite_args.append("--using-matrix-unit")
         buildkite_args.append("--give-north-io-sbs")
 
-        if num_fabric_cols_removed == 0: 
+        if num_fabric_cols_removed == 0:
             env_vars["WEST_IN_IO_SIDES"] = "1"
-       
+
         env_vars["USING_MATRIX_UNIT"] = "1"
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
@@ -519,6 +517,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
     return time_compile, time_map, time_test
 
+
 def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
@@ -528,8 +527,10 @@ def dispatch(args, extra_args=None):
     unroll = args.unroll
 
     # Preserve backward compatibility
-    if args.config == "daily": args.config = "pr_aha"  # noqa
-    if args.config == "pr": args.config = "pr_submod"  # noqa
+    if args.config == "daily":
+        args.config = "pr_aha"  # noqa
+    if args.config == "pr":
+        args.config = "pr_submod"  # noqa
 
     from aha.util.regress_tests.tests import Tests
     imported_tests = None
@@ -546,9 +547,9 @@ def dispatch(args, extra_args=None):
         for test in glb_tests_fp_to_remove:
             if test in imported_tests.glb_tests_fp:
                 imported_tests.glb_tests_fp.remove(test)
-       
+
         imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
-        #imported_tests.resnet_tests_fp.remove('conv2_x_fp')
+        # imported_tests.resnet_tests_fp.remove('conv2_x_fp')
 
     # pr_aha2 is just conv2 by itself (it runs both sparse and dense versions tho)
     # NOTE conv2 breaks if don't do gaussian first(!) for details see issues:
@@ -558,7 +559,7 @@ def dispatch(args, extra_args=None):
         imported_tests.glb_tests = ["apps/gaussian"]
         imported_tests.glb_tests_fp = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp", "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
         # Note conv2 here is actually *two* tests, one sparse and one dense
-        imported_tests.resnet_tests = [ 'conv2_x' ]
+        imported_tests.resnet_tests = ['conv2_x']
 
     elif args.config == "pr_aha3":
         imported_tests = Tests("BLANK")
@@ -592,11 +593,14 @@ def dispatch(args, extra_args=None):
         mu_oc_0 = 0
 
     else:
+
+    # Check that OC_0 is legal
+
         print(f"\033[92mINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.\033[0m")
         print(f"----ZIRCON LAYOUT INFO----")
-        print(f"Tile array width: {width - num_fabric_cols_removed}") 
-        print(f"Tile array height: {height}") 
-        print(f"Num GLB tiles: {int (width/2)}") 
+        print(f"Tile array width: {width - num_fabric_cols_removed}")
+        print(f"Tile array height: {height}")
+        print(f"Num GLB tiles: {int (width/2)}")
         print(f"MU OC 0: {mu_oc_0}")
         print(f"--------------------------\n")
 
@@ -607,6 +611,8 @@ def dispatch(args, extra_args=None):
         assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
         
 
+=======
+>>>>>>> master
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
@@ -622,7 +628,7 @@ def dispatch(args, extra_args=None):
             perf_out_file.write("SPARSE TEST        SS DATASET        TOTAL RUNTIME (ns)\n\n")
 
         test_dataset_runtime_dict = {}
-        
+
         data_tile_pairs_lists = []
         for sparse_tile_pairs_list in args.sparse_tile_pairs_list:
             data_tile_pairs_lists.extend(glob.glob(sparse_tile_pairs_list))
@@ -636,21 +642,21 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, 
-                                        opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+                                       opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
 
             for test in sparse_tests:
                 if use_pipeline:
                     assert (not seed_flow), "Pipeline mode is not supported with seed flow"
                     tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict, 
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
+                                                 using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
                 else:
                     # calling this function to append the id to the input matrix, find a better way to do so in the future
                     tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, 1, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict, 
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
+                                                 using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
                 # remove the generated collateral for tiles that passed to avoid overrunning the disk
@@ -660,25 +666,25 @@ def dispatch(args, extra_args=None):
         with open("/aha/garnet/perf_stats.txt", 'a') as perf_out_file:
             for testname, dataset_runtime_dict in test_dataset_runtime_dict.items():
                 for dataset, time_value in dataset_runtime_dict.items():
-                    perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")   
+                    perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
     else:
-        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, 
-                                    opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+                                   opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
 
         for test in sparse_tests:
             assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
-            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround, 
-                                            using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround,
+                                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    # Dense ready-valid mode 
+    # Dense ready-valid mode
     def parse_RV_mode(testname):
         dense_ready_valid = False
         if "_RV" in testname:
             dense_ready_valid = True
             testname = test.replace("_RV", "")
         return testname, dense_ready_valid
-    
+
     # E64 mode
     def parse_E64_mode(testname):
         E64_mode_on = False
@@ -686,7 +692,7 @@ def dispatch(args, extra_args=None):
             E64_mode_on = True
             testname = test.replace("_E64", "")
         return testname, E64_mode_on
-    
+
     # E64 MB mode
     def parse_E64_MB_mode(testname):
         E64_multi_bank_mode_on = False
@@ -694,14 +700,14 @@ def dispatch(args, extra_args=None):
             E64_multi_bank_mode_on = True
             testname = test.replace("_MB", "")
         return testname, E64_multi_bank_mode_on
-    
+
     def feature_support_check(testname, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on):
         if dense_ready_valid:
             assert testname in DRV_supported_tests, f"ERROR: Dense ready-valid mode not yet supported for {testname}. Once it is supported, please add it to DRV_supported_tests in regress_tests/tests.py"
 
         if E64_mode_on:
             assert testname in E64_supported_tests, f"ERROR: E64 mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64 unroll is multiple of 4. Once done, please add the test to E64_supported_tests in regress_tests/tests.py"
-    
+
         if E64_multi_bank_mode_on:
             assert testname in E64_MB_supported_tests, f"ERROR: E64 multi-bank mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64_MB unroll is multiple of 8. Once done, please add the test to E64_MB_supported_tests in regress_tests"
             assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
@@ -711,9 +717,9 @@ def dispatch(args, extra_args=None):
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
         feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
-        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, 
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
+        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
+                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                                    dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in glb_tests_fp:
@@ -721,9 +727,9 @@ def dispatch(args, extra_args=None):
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
         feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
-        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True, 
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
+        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True,
+                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                                    dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests:
@@ -732,14 +738,14 @@ def dispatch(args, extra_args=None):
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
         feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
         if "residual" in test:
-            t0, t1, t2 = test_dense_app("apps/resnet_residual", width, height, args.env_parameters, extra_args, layer=test, 
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
+            t0, t1, t2 = test_dense_app("apps/resnet_residual", width, height, args.env_parameters, extra_args, layer=test,
+                                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
-            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, 
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
+            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test,
+                                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in resnet_tests_fp:
@@ -748,60 +754,58 @@ def dispatch(args, extra_args=None):
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
         feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
         if "residual" in test:
-            t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,  
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
+            t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True,
+                                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
         else:
-            t0, t1, t2 = test_dense_app("apps/conv2D_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True, 
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0, 
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
+            t0, t1, t2 = test_dense_app("apps/conv2D_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True,
+                                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
-        t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args, 
-                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+        t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
+                                              using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
 
     if args.include_no_zircon_tests:
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
-        
+
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
 
-        no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp",  "matmul_ikj", "tensor3_mttkrp"]
+        no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp", "matmul_ikj", "tensor3_mttkrp"]
         data_tile_pairs = []
         kernel_name = ""
         seed_flow = True
-        generate_sparse_bitstreams(no_zircon_sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, 
-                                    opal_workaround=args.opal_workaround, unroll=unroll)
+        generate_sparse_bitstreams(no_zircon_sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+                                   opal_workaround=args.opal_workaround, unroll=unroll)
         for test in no_zircon_sparse_tests:
             t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         no_zircon_glb_tests = ["apps/pointwise", "apps/camera_pipeline_2x2", "apps/gaussian"]
         for test in no_zircon_glb_tests:
-            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0, 
-                        dense_ready_valid=False, E64_mode_on=False)
+            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0,
+                                        dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         no_zircon_resnet_tests = ["conv5_x"]
         for test in no_zircon_resnet_tests:
-            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=False, num_fabric_cols_removed=0, 
-                        dense_ready_valid=False, E64_mode_on=False)
+            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=False, num_fabric_cols_removed=0,
+                                        dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
 
     if args.include_dense_only_tests:
         # DENSE ONLY TESTS
-        # Remove sparse+dense garnet.v first 
+        # Remove sparse+dense garnet.v first
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
-        
+
         t = gen_garnet(width, height, dense_only=True)
         info.append(["garnet with dense only", t])
 
@@ -818,7 +822,7 @@ def dispatch(args, extra_args=None):
                 t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
                                             width, height, args.env_parameters, extra_args, layer=test)
                 info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
- 
+
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test"], floatfmt=".0f"), flush=True)
 

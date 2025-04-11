@@ -90,7 +90,7 @@ def dispatch(args, extra_args=None):
 
     if "handcrafted" in str(args.app):
         # Generate pgm Images
-        subprocess_call_log (
+        subprocess_call_log(
             cmd=["make", "-C", str(app_dir), "bin/input.raw", "bin/output_cpu.raw"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
@@ -101,10 +101,10 @@ def dispatch(args, extra_args=None):
         os.rename(
             app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
         )
-    
+
     else:
         # Raw Images
-        subprocess_call_log (
+        subprocess_call_log(
             cmd=["make", "-C", str(app_dir), "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
@@ -119,19 +119,17 @@ def dispatch(args, extra_args=None):
             app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
         )
 
-
     if not chain:
-        subprocess_call_log (
+        subprocess_call_log(
             cmd=["make", "-C", str(app_dir), "tree"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
             log=args.log,
             log_file_path=log_file_path
         )
- 
 
     if run_sim:
-        subprocess_call_log (
+        subprocess_call_log(
             cmd=["make", "-C", str(app_dir), "test-mem"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
@@ -139,7 +137,7 @@ def dispatch(args, extra_args=None):
             log_file_path=log_file_path
         )
     else:
-        subprocess_call_log (
+        subprocess_call_log(
             cmd=["make", "-C", str(app_dir), "map"],
             cwd=args.aha_dir / "Halide-to-Hardware",
             env=env,
@@ -147,7 +145,7 @@ def dispatch(args, extra_args=None):
             log_file_path=log_file_path
         )
 
-    #move to apps/bin
-    clkwrk_design = app_name +"/" + app_name + "_garnet.json"
-    if os.path.exists(str(app_dir / "bin/map_result"/ clkwrk_design)):
+    # move to apps/bin
+    clkwrk_design = app_name + "/" + app_name + "_garnet.json"
+    if os.path.exists(str(app_dir / "bin/map_result" / clkwrk_design)):
         shutil.copyfile(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
