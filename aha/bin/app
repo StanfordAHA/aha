@@ -160,7 +160,6 @@ if [ "$DBG" ]; then hline 72; (echo "$suites" | head); fi
 #     app 8x8 vec_identity       --num-fabric-cols-removed 4 --mu_oc_0 8
 #     app 8x8 tests/fp_pointwise --num-fabric-cols-removed 4 --mu_oc_0 8
 
-type column || yes | apt-get install bsdmainutils || function column { echo; }
 function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 
 ########################################################################
@@ -172,6 +171,7 @@ function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 #     app 8x8 tests/fp_pointwise --removed 4 --mu 8
 
 if [ "$SUITE" ]; then
+    type column || yes | apt-get install bsdmainutils || function column { echo; }
     suites_to_print="$SUITE"
     [ "$SUITE" == ALL ] && SUITE=all
     [ "$SUITE" == all ] && suites_to_print="$TEST_SUITES"
