@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bn=$(basename $0)
+bn=$(basename $0); basename=$bn
 HELP="
   DESCRIPTION:
     Launch a docker container and run the indicated app.
@@ -9,6 +9,7 @@ HELP="
     $bn <width>x<height> <app> [ OPTIONAL-FLAGS ]
     $bn --list-suites          # Tell names of regression suites e.g. 'fast', 'pr_aha' etc.
     $bn --show-suite <suite>   # Show contents of specified suite
+    $bn --show                 # Same as '--show-suite all'
 
   OPTIONAL FLAGS
     --vcs          # Use vcs for RTL simulation (requires vcs license) [DEFAULT]
@@ -49,16 +50,17 @@ FCR=0; MU=0  # (fabric_)cols_removed, mu_oc_0 = 0, 0
 UPDATE_SRC=; UPDATE_DST=;
 while [ $# -gt 0 ] ; do
     case "$1" in
+        --show*)      [ "$2" ] && SUITE=$2 || SUITE=all; shift ;;
+
         --*remove*)    FCR=$2;       shift ;;
         --mu*)         MU=$2;        shift ;;
 
-        --list*suite*) LIST_SUITES=notnull ;;
-        --show*suite*) SUITE=$2;     shift ;;
-        --no*zircon)   ZIRCON=False        ;;
-        --zircon)      ZIRCON=True         ;;
-        --ver*)        SIM=verilator       ;;
-        --vcs)         SIM=vcs             ;;
-        --help)        echo "$HELP";  exit ;;
+        --list*)      LIST_SUITES=notnull ;;
+        --no*zircon)  ZIRCON=False        ;;
+        --zircon)     ZIRCON=True         ;;
+        --ver*)       SIM=verilator       ;;
+        --vcs)        SIM=vcs             ;;
+        --help)       echo "$HELP";  exit ;;
 
         # New and undocumented
         --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
@@ -150,7 +152,7 @@ done
 if [ "$DBG" ]; then hline 72; (echo "$suites" | head); fi
 
 ########################################################################
-# FILTER function to tabulate output
+# FILTER function to tabulate output w/o changing arg spacing
 #   BEFORE:
 #     app 8x8 vec_identity --num-fabric-cols-removed 4 --mu_oc_0 8
 #     app 8x8 tests/fp_pointwise --num-fabric-cols-removed 4 --mu_oc_0 8
@@ -164,9 +166,9 @@ function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 # Print contents of indicated suite "$SUITE" e.g.
 # 
 #     % app --show-suite fast
-#     app 8x8 vec_identity               --num-fabric-cols-removed 4 --mu_oc_0 8
-#     app 8x8 apps/pointwise             --num-fabric-cols-removed 4 --mu_oc_0 8
-#     app 8x8 tests/fp_pointwise         --num-fabric-cols-removed 4 --mu_oc_0 8
+#     app 8x8 vec_identity       --removed 4 --mu 8
+#     app 8x8 apps/pointwise     --removed 4 --mu 8
+#     app 8x8 tests/fp_pointwise --removed 4 --mu 8
 
 if [ "$SUITE" ]; then
     suites_to_print="$SUITE"
@@ -191,11 +193,6 @@ if [ "$SUITE" ]; then
     exit
 fi
 
-
-# # ------------------------------------------------------------
-# # REGRESSION SUITE: pr_submod
-# app 28x16 vec_elemadd                      --removed 8 --mu 32
-
 ########################################################################
 # If we get this far, it means we are going to to try and run an app
 [ "$DBG" ] && echo "okay here we are we gonna run app '$appname'"
@@ -203,20 +200,7 @@ fi
 ########################################################################
 # App must run inside a docker container.
 # If we are not in a container yet, fire one up.
-
-IN_DOCKER=
-test -e /aha/aha && IN_DOCKER=True
-
-########################################################################
-# Figure out which simulator to use
-
-CAD=
-# TOOL='export TOOL=VERILATOR'  # no more tool! maybe
-if [ "$SIM" == vcs ]; then
-    CAD='-v /cad:/cad'
-    # export TOOL='. /cad/modules/tcl/init/bash; module load base; module load vcs'
-fi
-
+test -e /aha/aha && IN_DOCKER=True || IN_DOCKER=
 if ! [ "$IN_DOCKER" ]; then
     echo '-------------------------------------------------'
     echo 'Looks like we are not (yet) in a docker container'
@@ -225,6 +209,9 @@ if ! [ "$IN_DOCKER" ]; then
     echo '- execute the script there'
     echo '-------------------------------------------------'
 
+    # Must mount /cad if want to use VCS
+    [ "$SIM" == vcs ] && CAD='-v /cad:/cad' || CAD=
+
     # Setup
     image=stanfordaha/garnet:latest
     docker pull $image
@@ -232,7 +219,7 @@ if ! [ "$IN_DOCKER" ]; then
     docker run -id --name $container --rm $CAD $image bash
 
     # Trap and kill docker container on exit ('--rm' no workee, but why?)
-    function cleanup { printf '\n\n'; set -x; docker kill $container; }
+    function cleanup { printf '\n\n'; set -x; docker kill $container || echo okay; }
     trap cleanup EXIT
 
     ########################################################################
@@ -263,21 +250,25 @@ if ! [ "$IN_DOCKER" ]; then
         # set +x; # ENDGROUP
     fi
 
+    # For debugging; copy latest script in dev to container
+    COPY_SCRIPT=
+    if [ "$COPY_SCRIPT" ]; then
+        echo "DEBUGGING: Copy contents of '$0' over as '/aha/aha/bin/app'"
+        docker cp $0 $container:/aha/aha/bin/$bn
+    fi
+
+    # Run script in container now
     echo "Run '$bn $app_flags' in container"
-    # docker cp $0 $container:/tmp; docker exec $container /tmp/$basename $app_flags
-    docker exec $container /aha/aha/bin/$bn $app_flags
-    set +x
+    docker exec $container /aha/aha/bin/$bn $app_flags || exit 13
     exit
 fi
 
-# bookmark
-
 #############################################################################
 # E.g. app_flags='8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8'
-hline 78
-# printf "Ready to do: app  --$SIM $size $appname --cols-removed $FCR --mu_oc_0 $MU\n\n"
+echo '------------------------------------------------------------------------------'
 printf "Ready to do: $bn $app_flags\n\n"
 
+# bookmark
 
 ########################################################################
 # Find which group 'appname' belongs to,
