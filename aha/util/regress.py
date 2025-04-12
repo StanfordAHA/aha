@@ -37,7 +37,7 @@ def buildkite_filter(s):
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     env = {**os.environ.copy(), **env}
-    for retry in [1,2,3]:  # In case of SIGSEGV, retry up to three times
+    for retry in [1, 2, 3]:  # In case of SIGSEGV, retry up to three times
         try:
             if return_output:
                 app = subprocess.run(
@@ -53,7 +53,7 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
                     check=True,
                     text=True,
                     env=env,
-            )
+                )
             break
         except subprocess.CalledProcessError as e:
             if 'SIGSEGV' in str(e):
@@ -70,7 +70,8 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
             else:
                 raise
 
-def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0 = 32):
+
+def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
     print("--- Generating Garnet", flush=True)
     start = time.time()
     if not os.path.exists("/aha/garnet/garnet.v"):
@@ -79,14 +80,14 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
 
         # No garnet verilog yet, so build it now.
         buildkite_args = [
-                            "aha",
-                            "garnet",
-                            "--width", str(width),
-                            "--height", str(height),
-                            "--verilog",
-                            "--use_sim_sram",
-                            "--glb_tile_mem_size", str(128),
-                         ]
+            "aha",
+            "garnet",
+            "--width", str(width),
+            "--height", str(height),
+            "--verilog",
+            "--use_sim_sram",
+            "--glb_tile_mem_size", str(128),
+        ]
 
         if dense_only:
             buildkite_args.append("--dense-only")
@@ -105,7 +106,6 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append("--include-mu-glb-hw")
             buildkite_args.append("--use-non-split-fifos")
 
-
         buildkite_call(buildkite_args)
 
     return time.time() - start
@@ -117,7 +117,7 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
 
     print(f"--- mapping all tests", flush=True)
     start = time.time()
-    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE":"1"}
+    env_vars = {"PYTHONPATH": "/aha/garnet/", "EXHAUSTIVE_PIPE": "1"}
     # env_vars = {"PYTHONPATH": "/aha/garnet/"}
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
@@ -212,7 +212,7 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unr
         all_tiles.append(tile_format_t)
 
         if i + pipeline_num < len(test_l):
-            test_l_s = test_l[i:i+pipeline_num]
+            test_l_s = test_l[i:i + pipeline_num]
         else:
             test_l_s = test_l[i:]
         true_pipeline_num = len(test_l_s)
@@ -228,7 +228,7 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unr
                 str(unroll),
                 *test_l_s,
             ],
-            cwd = script_path
+            cwd=script_path
         )
 
     return all_tiles, num_list
@@ -363,16 +363,16 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     use_daemon = []
     if (extra_args):
         if ('--daemon' in extra_args) and ('auto' in extra_args):
-            use_daemon = [ "--daemon", "auto" ]
+            use_daemon = ["--daemon", "auto"]
 
     buildkite_args = [
-            "aha",
-            "pnr",
-            test,
-            "--width", str(width),
-            "--height", str(height),
-            "--env-parameters", env_parameters,
-        ] + use_daemon + layer_array
+        "aha",
+        "pnr",
+        test,
+        "--width", str(width),
+        "--height", str(height),
+        "--env-parameters", env_parameters,
+    ] + use_daemon + layer_array
 
     if dense_only:
         buildkite_args.append("--dense-only")
@@ -418,7 +418,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
         env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
 
-
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
@@ -431,7 +430,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
-
 
 
 def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0):
@@ -468,17 +466,17 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
     use_daemon = []
     if (extra_args):
         if ('--daemon' in extra_args) and ('auto' in extra_args):
-            use_daemon = [ "--daemon", "auto" ]
+            use_daemon = ["--daemon", "auto"]
 
     try:
         buildkite_args = [
-                "aha",
-                "pnr",
-                test,
-                "--width", str(width),
-                "--height", str(height),
-                "--env-parameters", env_parameters,
-            ] + use_daemon + layer_array
+            "aha",
+            "pnr",
+            test,
+            "--width", str(width),
+            "--height", str(height),
+            "--env-parameters", env_parameters,
+        ] + use_daemon + layer_array
         buildkite_call(buildkite_args)
     except:
         print("[INFO] Finished PnR which is expected to fail", flush=True)
@@ -487,14 +485,14 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
     shutil.copy(f"{app_path}/bin_hardcoded/design_top.json", f"{app_path}/bin/design_top.json")
 
     buildkite_args = [
-                "aha",
-                "pnr",
-                test,
-                "--width", str(width),
-                "--height", str(height),
-                "--generate-bitstream-only",
-                "--env-parameters", env_parameters,
-            ] + use_daemon + layer_array
+        "aha",
+        "pnr",
+        test,
+        "--width", str(width),
+        "--height", str(height),
+        "--generate-bitstream-only",
+        "--env-parameters", env_parameters,
+    ] + use_daemon + layer_array
 
     if dense_only:
         buildkite_args.append("--dense-only")
@@ -523,6 +521,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
 
     return time_compile, time_map, time_test
 
+
 def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
@@ -532,8 +531,10 @@ def dispatch(args, extra_args=None):
     unroll = args.unroll
 
     # Preserve backward compatibility
-    if args.config == "daily": args.config = "pr_aha"  # noqa
-    if args.config == "pr": args.config = "pr_submod"  # noqa
+    if args.config == "daily":
+        args.config = "pr_aha"  # noqa
+    if args.config == "pr":
+        args.config = "pr_submod"  # noqa
 
     from aha.util.regress_tests.tests import Tests
     imported_tests = None
@@ -552,7 +553,7 @@ def dispatch(args, extra_args=None):
                 imported_tests.glb_tests_fp.remove(test)
 
         imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
-        #imported_tests.resnet_tests_fp.remove('conv2_x_fp')
+        # imported_tests.resnet_tests_fp.remove('conv2_x_fp')
 
     # pr_aha2 is just conv2 by itself (it runs both sparse and dense versions tho)
     # NOTE conv2 breaks if don't do gaussian first(!) for details see issues:
@@ -562,7 +563,7 @@ def dispatch(args, extra_args=None):
         imported_tests.glb_tests = ["apps/gaussian"]
         imported_tests.glb_tests_fp = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp", "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
         # Note conv2 here is actually *two* tests, one sparse and one dense
-        imported_tests.resnet_tests = [ 'conv2_x' ]
+        imported_tests.resnet_tests = ['conv2_x']
 
     elif args.config == "pr_aha3":
         imported_tests = Tests("BLANK")
@@ -609,7 +610,6 @@ def dispatch(args, extra_args=None):
         print(f"Num GLB tiles: {int (width/2)}")
         print(f"MU OC 0: {mu_oc_0}")
         print(f"--------------------------\n")
-
 
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
@@ -767,7 +767,6 @@ def dispatch(args, extra_args=None):
                                     using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-
     if args.include_no_zircon_tests:
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
@@ -776,7 +775,7 @@ def dispatch(args, extra_args=None):
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
 
-        no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp",  "matmul_ikj", "tensor3_mttkrp"]
+        no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp", "matmul_ikj", "tensor3_mttkrp"]
         data_tile_pairs = []
         kernel_name = ""
         seed_flow = True
@@ -797,7 +796,6 @@ def dispatch(args, extra_args=None):
             t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=False, num_fabric_cols_removed=0,
                         dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
 
     if args.include_dense_only_tests:
         # DENSE ONLY TESTS

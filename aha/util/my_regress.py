@@ -99,19 +99,19 @@ def dispatch(args, extra_args=None):
         width, height = 16, 16
         tests = [
             "handcrafted/conv_3_3_chain",
-            #"apps/resnet_layer_auto", #will not run
-            "handcrafted/pond_accum", 
+            # "apps/resnet_layer_auto", #will not run
+            "handcrafted/pond_accum",
             "handcrafted/resnet_pond",
             "tests/conv_3_3",
             "apps/cascade",
             "tests/conv_1_2",
             "apps/harris",
-            #"tests/rom",  #test did notmatch 
+            # "tests/rom",  #test did notmatch
             "tests/ushift",
-            "tests/arith", 
+            "tests/arith",
             "apps/pointwise",
             "apps/gaussian",
-            #"apps/resnet_layer_gen", #halide image
+            # "apps/resnet_layer_gen", #halide image
             "tests/absolute",
             "tests/scomp",
             "tests/ucomp",
@@ -142,18 +142,18 @@ def dispatch(args, extra_args=None):
         width, height = 32, 16
         tests = [
             "tests/boolean_ops",
-            ###"tests/bitwise", # problems with xor
+            # ##"tests/bitwise", # problems with xor
             "tests/equal",
             "tests/ternary",
             "tests/sminmax",
             "tests/sshift",
-            ###"tests/conv_5_5",         # KeyError: 'config_21_config_addr'
-            ###"tests/inout_cgraconfig", # doesn't work
-            ###"apps/unsharp",           # no divide
+            # ##"tests/conv_5_5",         # KeyError: 'config_21_config_addr'
+            # ##"tests/inout_cgraconfig", # doesn't work
+            # ##"apps/unsharp",           # no divide
             "apps/brighten_and_blur"
-            ###"apps/demosaic_complex",
-            ###"apps/resnet",
-            ###"apps/mobilenet",
+            # ##"apps/demosaic_complex",
+            # ##"apps/resnet",
+            # ##"apps/mobilenet",
         ]
     else:
         raise NotImplementedError(f"Unknown test config: {config}")
@@ -171,4 +171,3 @@ def dispatch(args, extra_args=None):
 
 def gather_tests(tags):
     pass
-
