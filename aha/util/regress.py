@@ -89,6 +89,9 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             "--glb_tile_mem_size", str(128),
         ]
 
+        if not(using_matrix_unit):
+            buildkite_args.append("--include-glb-ring-switch")
+
         if dense_only:
             buildkite_args.append("--dense-only")
 
