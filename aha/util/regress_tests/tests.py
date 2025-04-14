@@ -45,6 +45,7 @@ class Tests:
             # New for zircon
             # TODO need to scrub through remaining tests and add "if zircon" clauses for RV, MB etc.!!!
             # OR (more hacky) could do "if not zircon delete RV/MB from all groups kinda thing..."
+            # OR give up on no-zircon compatibility
             if zircon:
                 width, height = 8, 8,
                 cols_removed, mu_oc_0 = 4, 8

@@ -593,9 +593,6 @@ def dispatch(args, extra_args=None):
         mu_oc_0 = 0
 
     else:
-
-    # Check that OC_0 is legal
-
         print(f"\033[92mINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.\033[0m")
         print(f"----ZIRCON LAYOUT INFO----")
         print(f"Tile array width: {width - num_fabric_cols_removed}")
@@ -610,9 +607,6 @@ def dispatch(args, extra_args=None):
         assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
         assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
         
-
-=======
->>>>>>> master
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
