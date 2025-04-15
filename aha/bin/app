@@ -234,17 +234,17 @@ if ! [ "$IN_DOCKER" ]; then
 
         # Copy (cp -r) contents of FROM/SRC repo to a temp dir
         repo=$(echo $UPDATE_SRC | sed 's|/$||; s|.*/||')
-        tmpdir=/tmp/deleteme-update-$repo-$$
+        tmpdir=/tmp/deleteme-update-$repo-$$; clean_src=$tmpdir
         /bin/rm -rf $tmpdir; mkdir -p $tmpdir
         (cd $UPDATE_SRC; git ls-files | xargs -I{} cp -r --parents {} $tmpdir)
 
         # If updating aha repo, skip top level directory so as not to overwrite submodules :(
         [ "$UPDATE_DST" == "/aha/" ]    && UPDATE_DST=/aha/aha
-        [ "$UPDATE_DST" == "/aha/aha" ] && tmpdir=$tmpdir/aha
+        [ "$UPDATE_DST" == "/aha/aha" ] && clean_src=$tmpdir/aha
 
         # Copy contents of temp dir to its final location in the container
         docker exec $container /bin/bash -c "rm -rf $UPDATE_DST"  # Remove old repo
-        docker cp $tmpdir $container:$UPDATE_DST                  # Insert new repo
+        docker cp $clean_src $container:$UPDATE_DST               # Insert new repo
 
         docker exec $container /bin/bash -c "chown -R root:root $UPDATE_DST"
         /bin/rm -rf $tmpdir
