@@ -4,15 +4,16 @@ class Tests:
         use_custom = False
 
         # Defaults
-
         width, height = 28, 16  # default
-        cols_removed, mu_oc_0 = 8, 32  # zircon defaults
         sparse_tests = []
         glb_tests = []
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
+
+        # Zircon specific parms; 'regress.py --no-zircon' ignores these
+        cols_removed, mu_oc_0 = 8, 32
 
         DRV_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io"
@@ -25,7 +26,8 @@ class Tests:
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
-            width, height = 4, 4
+            width, height = 8, 8,
+            cols_removed, mu_oc_0 = 4, 8  # Ignored if --no-zircon is set
             sparse_tests = [
                 "vec_identity"
             ]
@@ -41,19 +43,6 @@ class Tests:
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
-
-            # New for zircon
-            # TODO need to scrub through remaining tests and add "if zircon" clauses for RV, MB etc.!!!
-            # OR (more hacky) could do "if not zircon delete RV/MB from all groups kinda thing..."
-            # OR give up on no-zircon compatibility
-            if zircon:
-                width, height = 8, 8,
-                cols_removed, mu_oc_0 = 4, 8
-                glb_tests += [
-                    "apps/pointwise_RV_E64",
-                    "apps/pointwise_RV_E64_MB",
-                ]
-
 
         # PR_AHA test suite for aha-repo push/pull
         elif testname == "pr_aha":
