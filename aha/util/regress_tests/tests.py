@@ -89,6 +89,7 @@ class Tests:
                 "apps/unsharp",
                 "apps/camera_pipeline_2x2",
                 "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test"
             ]
             glb_tests_fp = [
                 "tests/int8tobf_unpack_test",
@@ -104,6 +105,8 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp",
             ]
             resnet_tests = [
                 "conv1",
@@ -192,6 +195,7 @@ class Tests:
                 "tests/conv_1_2",
                 "tests/conv_2_1",
                 "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test"
             ]
             glb_tests_fp = [
                 "tests/int8tobf_unpack_test",
@@ -210,6 +214,8 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp"
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -296,6 +302,7 @@ class Tests:
                 "tests/conv_2_1",
                 "tests/conv_3_3",
                 "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test",
                 "apps/gaussian",
                 "apps/brighten_and_blur",
                 "apps/cascade",
@@ -325,6 +332,8 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp"
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
