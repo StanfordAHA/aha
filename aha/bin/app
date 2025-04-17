@@ -178,7 +178,13 @@ function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 #     app 8x8 tests/fp_pointwise --removed 4 --mu 8
 
 if [ "$SUITE" ]; then
-    type column || yes | apt-get install bsdmainutils || function column { echo; }
+    if ! type column >& /dev/null; then
+        echo "WARNING attempting to install bsdmainutils for 'column' command"
+        if ! (yes | apt-get install bsdmainutils >& /dev/null); then
+            echo "WARNING could not install bsdmainutils; using 'echo' instead of 'column'"
+            function column { echo; }
+        fi
+    fi
     suites_to_print="$SUITE"
     [ "$SUITE" == ALL ] && SUITE=all
     [ "$SUITE" == all ] && suites_to_print="$TEST_SUITES"
