@@ -4,6 +4,7 @@
 #   --update /local/aha    /aha/aha     # Update docker repo from local
 #   --update /local/garnet /aha/garnet  # Update docker repo from local
 #   --copy          # Copy working script to docker as /aha/aha/bin/app
+#   --container C   # Use existing container "C" to run the app
 
 # To test: see bottom of file, below
 
@@ -28,11 +29,11 @@ HELP="
     --mu <n>       # Same as --mu_oc_0
 
   EXAMPLE(S):
-    $bn 4x2 apps/pointwise
-    $bn 4x2 tests/fp_pointwise
-    $bn 4x2 tests/fp_pointwise --waveform
-    $bn 4x2 tests/fp_pointwise --cols-removed 4 --mu 8
-    $bn --verilator 4x2 apps/pointwise --cols-removed 4 --mu 8
+    $bn 4x2 apps/pointwise --no-zircon
+    $bn 8x8 tests/fp_pointwise
+    $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
+    $bn 8x8 tests/fp_pointwise --waveform
+    $bn --verilator 8x8 apps/pointwise
 
   QUICK REFERENCE:
     $bn --show-suite fast --zircon
@@ -55,12 +56,15 @@ DBG=
 SIM=vcs
 LIST_SUITES=
 ZIRCON=True
-FCR=0; MU=0  # (fabric_)cols_removed, mu_oc_0 = 0, 0
+FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
 UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
+CONTAINER=
+function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
 while [ $# -gt 0 ] ; do
     case "$1" in
-        --show*)      [ "$2" ] && SUITE=$2 || SUITE=all; shift ;;
+        --show*)      
+          if not_suite "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
 
         --*remove*)    FCR=$2;       shift ;;
         --mu*)         MU=$2;        shift ;;
@@ -76,6 +80,7 @@ while [ $# -gt 0 ] ; do
         # New and undocumented
         --copy*) COPY_SCRIPT=True ;;
         --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
+        --container) CONTAINER=$2; shift ;;
 
         # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
         --fp) echo 'WARNING "--fp" deprecated/unnecessary, stop using it'; ;;
@@ -223,6 +228,13 @@ fi
 # If we are not in a container yet, fire one up.
 test -e /aha/aha && IN_DOCKER=True || IN_DOCKER=
 if ! [ "$IN_DOCKER" ]; then
+
+    if [ "$CONTAINER" ]; then
+        echo "Run '$bn $app_flags' in existing container '$CONTAINER'"
+        docker exec $CONTAINER /aha/aha/bin/$bn $app_flags || exit 13
+        exit
+    fi
+
     echo '-------------------------------------------------'
     echo 'Looks like we are not (yet) in a docker container'
     echo 'What I will do is I will'
