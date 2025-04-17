@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Undocumented flags for debugging from outside docker
+#   --update /local/aha    /aha/aha     # Update docker repo from local
+#   --update /local/garnet /aha/garnet  # Update docker repo from local
+#   --copy          # Copy working script to docker as /aha/aha/bin/app
+
+# To test: see bottom of file, below
+
 bn=$(basename $0); basename=$bn
 HELP="
   DESCRIPTION:
@@ -372,5 +379,23 @@ if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"
     ls -l /aha/garnet/tests/test_app/cgra.fsdb
 fi
+exit
 
-    
+#############################################################################
+# TESTING - Use below script(s) to do exhaustive test of ALL apps in tests.py
+
+# app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
+# (bash <(echo set -x; cat /tmp/alltests)) >& alltests.log &
+# egrep '\+ app' alltests.log
+
+# Tools to summarize/monitor test output
+function tabbit { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
+function alltest-filter {
+  (egrep '(\+ app |PASS PASS|^Ordt)' $1; echo "+ app ") | awk '
+      /^[+]* app/      { n++; app[n]=$0; result[n]="FAIL "; no_date_yet=1 }
+      /^Ordt complete/ { if (no_date_yet) {date[n] = substr($(NF-2),1,5); no_date_yet=0} }
+      /PASS PASS/      { result[n]="PASS " }
+      END              { for (i=1;i<n; i++) print result[i] date[i] " " app[i] }
+  ' | sed 's/[+]* app ..update.*aha.aha / app /' # | tabbit
+}
+# alltests-filter alltests.log
