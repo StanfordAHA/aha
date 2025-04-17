@@ -318,12 +318,12 @@
     },
     "conv2_x":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=14 k_oc=14 glb_i=7 glb_k=7 glb_o=7",
+            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=7 k_oc=7 glb_i=7 glb_k=7 glb_o=7",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1"
         },
         "fastest":{
-            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=14 k_oc=14 glb_i=7 glb_k=7 glb_o=7",
+            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=7 k_oc=7 glb_i=7 glb_k=7 glb_o=7",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "PNR_PLACER_EXP":"1",
             "DISABLE_GP":"1",
@@ -332,7 +332,7 @@
             "MEM2PE_REG_CHAIN":"1"
         },
         "sweep":{
-            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=14 k_oc=14 glb_i=7 glb_k=7 glb_o=7",
+            "HALIDE_GEN_ARGS":"in_img=56 pad=1 ksize=3 stride=1 n_ic=28 n_oc=28 k_ic=7 k_oc=7 glb_i=7 glb_k=7 glb_o=7",
             "HL_TARGET":"host-x86-64-enable_ponds",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1",
