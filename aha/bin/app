@@ -14,6 +14,7 @@ HELP="
   OPTIONAL FLAGS
     --vcs          # Use vcs for RTL simulation (requires vcs license) [DEFAULT]
     --ver          # Use verilator for RTL simulation
+    --waveform     # Generate a waveform for the app test run
     --no-zircon    # Test old (non-zircon) version of CGRA
 
     --removed <n>  # Same as --num-fabric-cols-removed
@@ -22,6 +23,7 @@ HELP="
   EXAMPLE(S):
     $bn 4x2 apps/pointwise
     $bn 4x2 tests/fp_pointwise
+    $bn 4x2 tests/fp_pointwise --waveform
     $bn 4x2 tests/fp_pointwise --cols-removed 4 --mu 8
     $bn --verilator 4x2 apps/pointwise --cols-removed 4 --mu 8
 
@@ -61,6 +63,7 @@ while [ $# -gt 0 ] ; do
         --zircon)     ZIRCON=True         ;;
         --ver*)       SIM=verilator       ;;
         --vcs)        SIM=vcs             ;;
+        --wave*)      export WAVEFORM=1   ;;
         --help)       echo "$HELP";  exit ;;
 
         # New and undocumented
@@ -84,6 +87,8 @@ while [ $# -gt 0 ] ; do
     esac
     shift
 done
+
+[ "$WAVEFORM" ] && printf "\nINFO env var WAVEFORM=='$WAVEFORM'\n"
 
 # echo "remaining args = '$@'"
 
@@ -330,7 +335,8 @@ rm -f garnet/garnet.v  # Get rid of old verilog if it exists
 source /aha/bin/activate
 if [ "$SIM" == vcs ]; then
     printf "PREPARING VCS b/c SIM=$SIM\n\n"
-    . /cad/modules/tcl/init/bash; module load base; module load vcs
+    source /cad/modules/tcl/init/bash; module load base; module load vcs
+    [ "$WAVEFORM" ] && module load verdi
 else
     printf "PREPARING VERILATOR b/c SIM=$SIM\n\n"
     echo /aha/garnet/tests/install-verilator.sh
@@ -352,3 +358,13 @@ else
     echo aha regress $config --no-zircon
     aha regress $config --no-zircon
 fi
+
+if [ "$WAVEFORM" ]; then
+    echo "----------------------------------------------------------------"
+    echo "Looking for waveform file..."
+    echo "ls -l /aha/garnet/tests/test_app/cgra.fsdb"
+    echo "----------------------------------------------------------------"
+    ls -l /aha/garnet/tests/test_app/cgra.fsdb
+fi
+
+    
