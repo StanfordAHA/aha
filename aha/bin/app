@@ -48,6 +48,7 @@ LIST_SUITES=
 ZIRCON=True
 FCR=0; MU=0  # (fabric_)cols_removed, mu_oc_0 = 0, 0
 UPDATE_SRC=; UPDATE_DST=;
+COPY_SCRIPT=
 while [ $# -gt 0 ] ; do
     case "$1" in
         --show*)      [ "$2" ] && SUITE=$2 || SUITE=all; shift ;;
@@ -63,6 +64,7 @@ while [ $# -gt 0 ] ; do
         --help)       echo "$HELP";  exit ;;
 
         # New and undocumented
+        --copy*) COPY_SCRIPT=True ;;
         --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
 
         # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
@@ -252,7 +254,6 @@ if ! [ "$IN_DOCKER" ]; then
     fi
 
     # For debugging; copy latest script in dev to container
-    COPY_SCRIPT=
     if [ "$COPY_SCRIPT" ]; then
         echo "DEBUGGING: Copy contents of '$0' over as '/aha/aha/bin/app'"
         docker cp $0 $container:/aha/aha/bin/$bn
