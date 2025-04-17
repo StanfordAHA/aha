@@ -396,18 +396,40 @@ exit
 #############################################################################
 # TESTING - Use below script(s) to do exhaustive test of ALL apps in tests.py
 
-# app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
-# (bash <(echo set -x; cat /tmp/alltests)) >& alltests.log &
-# egrep '\+ app' alltests.log
+function testing {
+  # Do not try to execute this as a function!  Cut'n'paste only for now.
 
-# Tools to summarize/monitor test output
-function tabbit { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
-function alltest-filter {
-  (egrep '(\+ app |PASS PASS|^Ordt)' $1; echo "+ app ") | awk '
+  # 'tabbit' prevents duplicates e.g.
+  #   app 28x16 conv1                --removed 8 --mu 32
+  #   app 28x16 conv1     --removed 8 --mu 32
+  function tabbit { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
+
+  # Build a script
+  nz=`app --show --no-zircon | egrep '^app ' | sort | uniq`
+  zi=`app --show    --zircon | egrep '^app ' | sort | uniq`
+  printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | shuf > alltests
+
+  # Run the script
+  (bash <(echo set -x; cat alltests)) >& alltests.log &
+
+  # Tools to summarize/monitor test output
+  function alltest-filter {
+    (egrep '(\+ app |PASS PASS|^Ordt)' $1; echo "+ app ") | awk '
       /^[+]* app/      { n++; app[n]=$0; result[n]="FAIL "; no_date_yet=1 }
       /^Ordt complete/ { if (no_date_yet) {date[n] = substr($(NF-2),1,5); no_date_yet=0} }
       /PASS PASS/      { result[n]="PASS " }
       END              { for (i=1;i<n; i++) print result[i] date[i] " " app[i] }
   ' | sed 's/[+]* app ..update.*aha.aha / app /' # | tabbit
+  }
+  egrep '\+ app' alltests.log
+  alltests-filter alltests.log
+
+
+  # (bash <(echo set -x; printf "$zi\$nz\n")) | shuf > alltests
+  # echo "$nz" | head
+  # echo "$z" | head
+  # printf "$nz\n$z\n" | less -N
+  # printf "$zi\n$nz\n" | sed 's/  */ /g' | less
+  # printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | less
+  # # app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
 }
-# alltests-filter alltests.log
