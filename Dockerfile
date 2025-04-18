@@ -24,8 +24,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
-    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
-    add-apt-repository -y ppa:zeehio/libxp && \
+    # add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    # add-apt-repository -y ppa:zeehio/libxp && \
     dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y \
