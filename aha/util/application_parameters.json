@@ -44,6 +44,24 @@
             "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
+    "apps/zircon_hello_world_mu_io":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1"
+        }
+    },
     "apps/gaussian":{
         "default":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",
