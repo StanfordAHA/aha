@@ -2,6 +2,8 @@ source /aha/bin/activate
 mkdir -p /root/.modules
 source /cad/modules/tcl/init/sh
 
+PATH="$PATH:/aha/aha/bin"
+
 cat << EOF
 
   For pre-compiled Halide gch headers:

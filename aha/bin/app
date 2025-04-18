@@ -1,0 +1,435 @@
+#!/bin/bash
+
+# Undocumented flags for debugging from outside docker
+#   --update /local/aha    /aha/aha     # Update docker repo from local
+#   --update /local/garnet /aha/garnet  # Update docker repo from local
+#   --copy          # Copy working script to docker as /aha/aha/bin/app
+#   --container C   # Use existing container "C" to run the app
+
+# To test: see bottom of file, below
+
+bn=$(basename $0); basename=$bn
+HELP="
+  DESCRIPTION:
+    Launch a docker container and run the indicated app.
+
+  USAGE:
+    $bn <width>x<height> <app> [ OPTIONAL-FLAGS ]
+    $bn --list-suites          # Tell names of regression suites e.g. 'fast', 'pr_aha' etc.
+    $bn --show-suite <suite>   # Show contents of specified suite
+    $bn --show                 # Same as '--show-suite all'
+
+  OPTIONAL FLAGS
+    --vcs          # Use vcs for RTL simulation (requires vcs license) [DEFAULT]
+    --ver          # Use verilator for RTL simulation
+    --waveform     # Generate a waveform for the app test run
+    --no-zircon    # Test old (non-zircon) version of CGRA
+
+    --removed <n>  # Same as --num-fabric-cols-removed
+    --mu <n>       # Same as --mu_oc_0
+
+  EXAMPLE(S):
+    $bn 4x2 apps/pointwise --no-zircon
+    $bn 8x8 tests/fp_pointwise
+    $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
+    $bn 8x8 tests/fp_pointwise --waveform
+    $bn --verilator 8x8 apps/pointwise
+
+  QUICK REFERENCE:
+    $bn --show-suite fast --zircon
+    $bn --show-suite fast --nozircon
+    $bn --show-suite full
+    $bn --show-suite resnet
+    $bn --show-suite all
+
+"
+if [ "$1" == "--help" ]; then echo "$HELP"; exit; fi
+if [ "$1" == "" ];       then echo "$HELP"; exit; fi
+
+# Unpack the args
+
+# Preserve original flags for later
+app_flags="$@"
+
+# Defaults
+DBG=
+SIM=vcs
+LIST_SUITES=
+ZIRCON=True
+FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
+UPDATE_SRC=; UPDATE_DST=;
+COPY_SCRIPT=
+CONTAINER=
+function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
+while [ $# -gt 0 ] ; do
+    case "$1" in
+        --show*)      
+          if not_suite "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
+
+        --*remove*)    FCR=$2;       shift ;;
+        --mu*)         MU=$2;        shift ;;
+
+        --list*)      LIST_SUITES=notnull ;;
+        --no*zircon)  ZIRCON=False        ;;
+        --zircon)     ZIRCON=True         ;;
+        --ver*)       SIM=verilator       ;;
+        --vcs)        SIM=vcs             ;;
+        --wave*)      export WAVEFORM=1   ;;
+        --help)       echo "$HELP";  exit ;;
+
+        # New and undocumented
+        --copy*) COPY_SCRIPT=True ;;
+        --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
+        --container) CONTAINER=$2; shift ;;
+
+        # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
+        --fp) echo 'WARNING "--fp" deprecated/unnecessary, stop using it'; ;;
+
+        # If first arg is e.g. 8x8, that means we want to actually run a test e.g.
+        # aha-test.sh 8x8 --removed 4 --mu 8 apps/pointwise
+        --*) echo "$HELP"; echo "ERROR: Unknown flag '$1'"; exit 13 ;;
+
+        # E.g. "8x8 apps/pointwise"
+        *x*) size=$1; appname=$2; shift; ;;
+        *) 
+            printf "\n***ERROR*** Unknown command-line arg '$1'\n"
+            echo "$HELP"
+            printf "\n***ERROR*** Unknown command-line arg '$1'\n"
+            exit ;;
+    esac
+    shift
+done
+
+[ "$WAVEFORM" ] && printf "\nINFO env var WAVEFORM=='$WAVEFORM'\n"
+
+# echo "remaining args = '$@'"
+
+########################################################################
+# Find file tests.py
+TESTS_PY=/aha/aha/util/regress_tests/tests.py
+test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
+
+########################################################################
+# Parse 'tests.py' to find suite names e.g.
+# TEST_SUITES = "fast pr_aha pr_submod full resnet"
+
+# This selects lines like 'elif testname == "pr_aha":'
+function filter1 { sed -n '/BLANK/d;/^[^#]*if testname/p'; }
+
+# This selects the last word in the above line
+function filter2 { awk -F '"' '{print $(NF-1)}'; }
+
+TEST_SUITES=`cat $TESTS_PY | filter1 | filter2`
+TEST_SUITES=`echo $TEST_SUITES`  # Remove newlines maybe
+
+[ "$DBG" ] && printf "\nDBG Scrubbed tests.py, found test suites: '$TEST_SUITES'\n\n"
+
+########################################################################
+# List suite names if requested, e.g.
+#   app --show-suite fast
+#   app --show-suite pr_aha
+#   app --show-suite pr_submod
+#   app --show-suite full
+#   app --show-suite resnet
+#   app --show-suite all
+
+if [ "$LIST_SUITES" ]; then
+    echo AVAILABLE REGRESSION SUITES:
+    echo "$TEST_SUITES all" | xargs printf "  $bn --show-suite %s\n" | sed 's/,//'
+    exit
+fi
+
+function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
+
+########################################################################
+# Build a COMPACT data structure containing all apps and suites e.g.
+# 
+# fast   sparse_tests   vec_identity       8x8 --removed 4 --mu 8
+# fast   glb_tests      apps/pointwise     8x8 --removed 4 --mu 8
+# fast   glb_tests_fp   tests/fp_pointwise 8x8 --removed 4 --mu 8
+# 
+# pr_aha sparse_tests   vec_elemmul        28x16
+# pr_aha sparse_tests   mat_vecmul_ij      28x16
+
+# TODO sort by group name etc.
+# DBG=
+for s in $TEST_SUITES; do
+    sq="'$s'"
+    tests_py_stub='\nTests('$sq', zircon='$ZIRCON').show_suite('$sq', zircon='$ZIRCON')\n'
+    if [ "$DBG" ]; then
+        printf "$tests_py_stub"
+        echo '------------------------------------------------------------------------'
+        cat -n <(cat $TESTS_PY; printf "$tests_py_stub")
+        echo '------------------------------------------------------------------------'
+        python3 <(cat $TESTS_PY; printf "$tests_py_stub")
+        echo '------------------------------------------------------------------------'
+    fi
+    this_suite=`python3 <(cat $TESTS_PY; printf "$tests_py_stub")`
+    # Gather all the this_suite's together in a single 'suites'
+    suites="$(printf "%s\n%s" "$suites" "$this_suite")"
+done
+if [ "$DBG" ]; then hline 72; (echo "$suites" | head); fi
+
+########################################################################
+# FILTER function to tabulate output w/o changing arg spacing
+#   BEFORE:
+#     app 8x8 vec_identity --num-fabric-cols-removed 4 --mu_oc_0 8
+#     app 8x8 tests/fp_pointwise --num-fabric-cols-removed 4 --mu_oc_0 8
+#   AFTER:
+#     app 8x8 vec_identity       --num-fabric-cols-removed 4 --mu_oc_0 8
+#     app 8x8 tests/fp_pointwise --num-fabric-cols-removed 4 --mu_oc_0 8
+
+function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
+
+########################################################################
+# Print contents of indicated suite "$SUITE" e.g.
+# 
+#     % app --show-suite fast
+#     app 8x8 vec_identity       --removed 4 --mu 8
+#     app 8x8 apps/pointwise     --removed 4 --mu 8
+#     app 8x8 tests/fp_pointwise --removed 4 --mu 8
+
+if [ "$SUITE" ]; then
+    if ! type column >& /dev/null; then
+        echo "WARNING attempting to install bsdmainutils for 'column' command"
+        if ! (yes | apt-get install bsdmainutils >& /dev/null); then
+            echo "WARNING could not install bsdmainutils; using 'echo' instead of 'column'"
+            function column { echo; }
+        fi
+    fi
+    suites_to_print="$SUITE"
+    [ "$SUITE" == ALL ] && SUITE=all
+    [ "$SUITE" == all ] && suites_to_print="$TEST_SUITES"
+    for s in $suites_to_print; do
+        if [ "$SUITE" == all ]; then
+            echo -n "# "; hline 60
+            echo "# REGRESSION SUITE: $s"
+        else 
+            echo ""
+        fi
+        [ "$DBG" ] && echo "$suites" | egrep ^"$s"
+        [ "$DBG" ] && hline 72
+
+        (echo "$suites" | egrep ^"$s" | awk '{
+          suite=$1; group=$2; app=$3; size=$4; $1=$2=$3=$4="";
+          gsub(/^ */, "", $0); parms = $0
+          printf("'$bn' %s %s %s\n", size, app, parms)
+        }') | filter
+    done
+    exit
+fi
+
+########################################################################
+# If we get this far, it means we are going to to try and run an app
+[ "$DBG" ] && echo "okay here we are we gonna run app '$appname'"
+
+########################################################################
+# App must run inside a docker container.
+# If we are not in a container yet, fire one up.
+test -e /aha/aha && IN_DOCKER=True || IN_DOCKER=
+if ! [ "$IN_DOCKER" ]; then
+
+    if [ "$CONTAINER" ]; then
+        echo "Run '$bn $app_flags' in existing container '$CONTAINER'"
+        docker exec $CONTAINER /aha/aha/bin/$bn $app_flags || exit 13
+        exit
+    fi
+
+    echo '-------------------------------------------------'
+    echo 'Looks like we are not (yet) in a docker container'
+    echo 'What I will do is I will'
+    echo '- launch a container using docker image "garnet:latest"'
+    echo '- execute the script there'
+    echo '-------------------------------------------------'
+
+    # Must mount /cad if want to use VCS
+    [ "$SIM" == vcs ] && CAD='-v /cad:/cad' || CAD=
+
+    # Setup
+    image=stanfordaha/garnet:latest
+    docker pull $image
+    container=deleteme-$USER-run-one-app-$$
+    docker run -id --name $container --rm $CAD $image bash
+
+    # Trap and kill docker container on exit ('--rm' no workee, but why?)
+    function cleanup { printf '\n\n'; set -x; docker kill $container || echo okay; }
+    trap cleanup EXIT
+
+    ########################################################################
+    # Update container repo if requested with --update switch, e.g.
+    #    app ... --update /nobackup/steveri/github/garnet /aha/garnet
+    #    app ... --update . /aha/aha
+
+    if [ "$UPDATE_SRC" ]; then
+        echo "UPDATE docker repo '$UPDATE_DST' w local repo '$UPDATE_SRC'"
+        # GROUP "UPDATE docker repo '$UPDATE_DST' w local repo '$UPDATE_SRC'"
+
+        # Copy (cp -r) contents of FROM/SRC repo to a temp dir
+        repo=$(echo $UPDATE_SRC | sed 's|/$||; s|.*/||')
+        tmpdir=/tmp/deleteme-update-$repo-$$; clean_src=$tmpdir
+        /bin/rm -rf $tmpdir; mkdir -p $tmpdir
+        (cd $UPDATE_SRC; git ls-files | xargs -I{} cp -r --parents {} $tmpdir)
+
+        # If updating aha repo, skip top level directory so as not to overwrite submodules :(
+        [ "$UPDATE_DST" == "/aha/" ]    && UPDATE_DST=/aha/aha
+        [ "$UPDATE_DST" == "/aha/aha" ] && clean_src=$tmpdir/aha
+
+        # Copy contents of temp dir to its final location in the container
+        docker exec $container /bin/bash -c "rm -rf $UPDATE_DST"  # Remove old repo
+        docker cp $clean_src $container:$UPDATE_DST               # Insert new repo
+
+        docker exec $container /bin/bash -c "chown -R root:root $UPDATE_DST"
+        /bin/rm -rf $tmpdir
+        # set +x; # ENDGROUP
+    fi
+
+    # For debugging; copy latest script in dev to container
+    if [ "$COPY_SCRIPT" ]; then
+        echo "DEBUGGING: Copy contents of '$0' over as '/aha/aha/bin/app'"
+        docker cp $0 $container:/aha/aha/bin/$bn
+    fi
+
+    # Run script in container now
+    echo "Run '$bn $app_flags' in container"
+    docker exec $container /aha/aha/bin/$bn $app_flags || exit 13
+    exit
+fi
+
+#############################################################################
+# E.g. app_flags='8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8'
+echo '------------------------------------------------------------------------------'
+printf "Ready to do: $bn $app_flags\n\n"
+
+########################################################################
+# Find which group 'appname' belongs to,
+# e.g. group('apps/pointwise') = 'glb_tests' maybe
+
+group=`echo "$suites" | grep $appname | awk '{print $2}' | sort | uniq`
+n_groups_found=`echo "$group" | wc -l`
+if ! [ "$n_groups_found" -eq 1 ]; then
+    echo "WARNING: Found multiple possible groups for app '$appname': " $groups
+    group=`echo "$group" | head -1`
+    echo "Will use first group found '$group'"
+fi
+echo "Found group('$appname') = '$group'"
+
+########################################################################
+# Extract width, height, groupname, regression flags
+# '8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8' =>
+#     colrow: 'self.width, self.height = 4, 2'
+#     rflags: '--num-fabric-cols-removed 4 --mu_oc_0 8'
+
+# colrow=$(echo $size | awk -F x '{printf("self.width, self.height = %s, %s", $1, $2)}')
+colrow=$(echo $size | awk -F x '{printf("width, height = %s, %s", $1, $2)}')
+rflags=$(echo $* | awk '{$1=""; $2=""; gsub(/^ */, "", $0); print $0}')
+if [ "$DBG" ]; then
+    hline 20
+    echo "group:  '$group'"
+    echo "colrow: '$colrow'"
+    echo "rflags: '$rflags'"
+    echo ""
+fi
+
+########################################################################
+# Prepare a custom suite containing ONLY the desired app e.g.
+#     > if True:
+#     >     width, height = 8, 8
+#     >     cols_removed, mu_oc_0 = 8, 32
+#     >     glb_tests = [ 'apps/pointwise' ]
+
+config=config$$
+cat <<EOF > /aha/aha/util/regress_tests/$config.py
+if True:
+    $colrow
+    cols_removed, mu_oc_0 = $FCR, $MU
+    $group = [ '$appname' ]
+EOF
+
+echo '------------------------------------------------------------------------'
+printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py\n\n"
+# ls -l /aha/aha/util/regress_tests/$config.py
+cat /aha/aha/util/regress_tests/$config.py | sed 's/^/> /'
+echo ""
+
+# I dunno, just run it I guess?
+
+########################################################################
+# Set up access to requested RTL simulator vcs or verilator
+
+rm -f garnet/garnet.v  # Get rid of old verilog if it exists
+source /aha/bin/activate
+if [ "$SIM" == vcs ]; then
+    printf "PREPARING VCS b/c SIM=$SIM\n\n"
+    source /cad/modules/tcl/init/bash; module load base; module load vcs
+    [ "$WAVEFORM" ] && module load verdi
+else
+    printf "PREPARING VERILATOR b/c SIM=$SIM\n\n"
+    echo /aha/garnet/tests/install-verilator.sh
+    /aha/garnet/tests/install-verilator.sh
+fi
+
+########################################################################
+# Clean up from possible previous run(s) e.g. in case of CONTAINER_REUSE
+# (which no longer exists maybe) and/or maybe just plain old paranoia...
+(cd /aha/garnet; make clean)
+
+########################################################################
+# Finally: run it!!
+
+if [ "$ZIRCON" == True ]; then
+    echo aha regress $config
+    aha regress $config
+else
+    echo aha regress $config --no-zircon
+    aha regress $config --no-zircon
+fi
+
+if [ "$WAVEFORM" ]; then
+    echo "----------------------------------------------------------------"
+    echo "Looking for waveform file..."
+    echo "ls -l /aha/garnet/tests/test_app/cgra.fsdb"
+    echo "----------------------------------------------------------------"
+    ls -l /aha/garnet/tests/test_app/cgra.fsdb
+fi
+exit
+
+#############################################################################
+# TESTING - Use below script(s) to do exhaustive test of ALL apps in tests.py
+
+function testing {
+  # Do not try to execute this as a function!  Cut'n'paste only for now.
+
+  # 'tabbit' prevents duplicates e.g.
+  #   app 28x16 conv1                --removed 8 --mu 32
+  #   app 28x16 conv1     --removed 8 --mu 32
+  function tabbit { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
+
+  # Build a script
+  nz=`app --show --no-zircon | egrep '^app ' | sort | uniq`
+  zi=`app --show    --zircon | egrep '^app ' | sort | uniq`
+  printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | shuf > alltests
+
+  # Run the script
+  (bash <(echo set -x; cat alltests)) >& alltests.log &
+
+  # Tools to summarize/monitor test output
+  function alltest-filter {
+    (egrep '(\+ app |PASS PASS|^Ordt)' $1; echo "+ app ") | awk '
+      /^[+]* app/      { n++; app[n]=$0; result[n]="FAIL "; no_date_yet=1 }
+      /^Ordt complete/ { if (no_date_yet) {date[n] = substr($(NF-2),1,5); no_date_yet=0} }
+      /PASS PASS/      { result[n]="PASS " }
+      END              { for (i=1;i<n; i++) print result[i] date[i] " " app[i] }
+  ' | sed 's/[+]* app ..update.*aha.aha / app /' # | tabbit
+  }
+  egrep '\+ app' alltests.log
+  alltests-filter alltests.log
+
+
+  # (bash <(echo set -x; printf "$zi\$nz\n")) | shuf > alltests
+  # echo "$nz" | head
+  # echo "$z" | head
+  # printf "$nz\n$z\n" | less -N
+  # printf "$zi\n$nz\n" | sed 's/  */ /g' | less
+  # printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | less
+  # # app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
+}
