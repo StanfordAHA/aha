@@ -91,11 +91,10 @@ class Tests:
                 "apps/harris_color",
                 "apps/unsharp",
                 "apps/camera_pipeline_2x2",
-                "tests/bf2int8_pack_test",
-                "tests/bit8_packing_test"
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test"
             ]
             glb_tests_fp = [
-                "tests/int8tobf_unpack_test",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
@@ -197,11 +196,10 @@ class Tests:
                 "tests/rom",
                 "tests/conv_1_2",
                 "tests/conv_2_1",
-                "tests/bf2int8_pack_test",
-                "tests/bit8_packing_test"
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test"
             ]
             glb_tests_fp = [
-                "tests/int8tobf_unpack_test",
                 "tests/fp_pointwise",
                 "tests/fp_arith",
                 "tests/fp_comp",
@@ -304,8 +302,8 @@ class Tests:
                 "tests/conv_1_2",
                 "tests/conv_2_1",
                 "tests/conv_3_3",
-                "tests/bf2int8_pack_test",
                 "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
                 "apps/gaussian",
                 "apps/brighten_and_blur",
                 "apps/cascade",
@@ -322,7 +320,6 @@ class Tests:
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
-                "tests/int8tobf_unpack_test",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
