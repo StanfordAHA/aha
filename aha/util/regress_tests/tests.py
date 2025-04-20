@@ -92,7 +92,8 @@ class Tests:
                 "apps/unsharp",
                 "apps/camera_pipeline_2x2",
                 "tests/bit8_packing_test",
-                "tests/bit8_unpack_test"
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test"
             ]
             glb_tests_fp = [
                 "apps/matrix_multiplication_fp",
@@ -197,7 +198,8 @@ class Tests:
                 "tests/conv_1_2",
                 "tests/conv_2_1",
                 "tests/bit8_packing_test",
-                "tests/bit8_unpack_test"
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test"
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
@@ -304,6 +306,7 @@ class Tests:
                 "tests/conv_3_3",
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
                 "apps/gaussian",
                 "apps/brighten_and_blur",
                 "apps/cascade",
@@ -410,7 +413,7 @@ class Tests:
 
     def show_suite(self, suite_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_suite('fast'):
-        # 
+        #
         # fast    sparse_tests   vec_identity             8x8 --removed 4 --mu 8
         # fast    glb_tests      apps/pointwise           8x8 --removed 4 --mu 8
         # fast    glb_tests      apps/pointwise_RV_E64    8x8 --removed 4 --mu 8
