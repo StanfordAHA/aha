@@ -26,9 +26,11 @@ RUN apt-get update && \
         build-essential software-properties-common && \
     set -x && \
     echo "RESOLV.CONF1a:" && cat /etc/resolv.conf && \
-    ls -l /etc/resolv.conf && \
-    sed '1 a nameserver 8.8.8.8' /etc/resolv.conf > resolv.conf.tmp && \
-    cp resolv.conf.tmp /etc/resolv.conf && \
+    # ls -l /etc/resolv.conf && \
+    # sed '1 a nameserver 8.8.8.8' /etc/resolv.conf > resolv.conf.tmp && \
+    # cp resolv.conf.tmp /etc/resolv.conf && \
+    apt-get install -y iproute2 && ip route show && \
+    apt-get install -y net-tools && route -n && \
     echo "RESOLV.CONF1b:" && cat /etc/resolv.conf && df /etc/resolv.conf && \
     set +x && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
