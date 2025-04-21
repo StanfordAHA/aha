@@ -23,6 +23,15 @@ jobs:
         du -shx     .git/modules/clockwork .git/modules/Halide-to-Hardware
         /bin/rm -rf .git/modules/clockwork .git/modules/Halide-to-Hardware
 
+    - name: Do some networking like
+      run: |
+        set -x
+        which route && route -n || echo no route
+        which ip && ip route show || echo no ip
+        ls -l /etc/resolv.conf
+        df /etc/resolv.conf
+        exit 13
+
     - name: Publish Docker image
       uses: elgohr/Publish-Docker-Github-Action@2.12
       with:
