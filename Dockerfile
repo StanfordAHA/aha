@@ -25,7 +25,8 @@ RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
     echo "RESOLV.CONF1a:" && cat /etc/resolv.conf && \
-    sed -i '1 a nameserver 8.8.8.8' /etc/resolv.conf && \
+    sed '1 a nameserver 8.8.8.8' /etc/resolv.conf > resolv.conf.tmp && \
+    cp resolv.conf.tmp /etc/resolv.conf && \
     echo "RESOLV.CONF1b:" && cat /etc/resolv.conf && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     add-apt-repository -y ppa:zeehio/libxp && \
