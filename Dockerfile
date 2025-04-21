@@ -24,7 +24,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
-    echo "RESOLV.CONF1:" && cat /etc/resolv.conf && \
+    echo "RESOLV.CONF1a:" && cat /etc/resolv.conf && \
+    sed -i '1 a nameserver 8.8.8.8' /etc/resolv.conf && \
+    echo "RESOLV.CONF1b:" && cat /etc/resolv.conf && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     add-apt-repository -y ppa:zeehio/libxp && \
     dpkg --add-architecture i386 && \
@@ -75,7 +77,7 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install cmake==3.28.1 && \
-    echo "RESOLV.CONF1:" && cat /etc/resolv.conf && \
+    echo "RESOLV.CONF2:" && cat /etc/resolv.conf && \
     echo DONE
 
 # Switch shell to bash
