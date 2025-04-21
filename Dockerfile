@@ -29,7 +29,7 @@ RUN apt-get update && \
     ls -l /etc/resolv.conf && \
     sed '1 a nameserver 8.8.8.8' /etc/resolv.conf > resolv.conf.tmp && \
     cp resolv.conf.tmp /etc/resolv.conf && \
-    echo "RESOLV.CONF1b:" && cat /etc/resolv.conf && \
+    echo "RESOLV.CONF1b:" && cat /etc/resolv.conf && df /etc/resolv.conf && \
     set +x && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     add-apt-repository -y ppa:zeehio/libxp && \
