@@ -93,7 +93,8 @@ class Tests:
                 "apps/camera_pipeline_2x2",
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test"
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test"
             ]
             glb_tests_fp = [
                 "apps/matrix_multiplication_fp",
@@ -199,7 +200,8 @@ class Tests:
                 "tests/conv_2_1",
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test"
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test"
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
@@ -307,6 +309,7 @@ class Tests:
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
                 "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
                 "apps/gaussian",
                 "apps/brighten_and_blur",
                 "apps/cascade",
