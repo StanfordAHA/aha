@@ -91,10 +91,12 @@ class Tests:
                 "apps/harris_color",
                 "apps/unsharp",
                 "apps/camera_pipeline_2x2",
-                "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test"
             ]
             glb_tests_fp = [
-                "tests/int8tobf_unpack_test",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
@@ -107,6 +109,8 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp",
             ]
             resnet_tests = [
                 "conv1",
@@ -194,10 +198,12 @@ class Tests:
                 "tests/rom",
                 "tests/conv_1_2",
                 "tests/conv_2_1",
-                "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test"
             ]
             glb_tests_fp = [
-                "tests/int8tobf_unpack_test",
                 "tests/fp_pointwise",
                 "tests/fp_arith",
                 "tests/fp_comp",
@@ -213,6 +219,8 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp"
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -298,7 +306,10 @@ class Tests:
                 "tests/conv_1_2",
                 "tests/conv_2_1",
                 "tests/conv_3_3",
-                "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
                 "apps/gaussian",
                 "apps/brighten_and_blur",
                 "apps/cascade",
@@ -315,7 +326,6 @@ class Tests:
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
-                "tests/int8tobf_unpack_test",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
@@ -328,6 +338,8 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp"
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
@@ -404,7 +416,7 @@ class Tests:
 
     def show_suite(self, suite_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_suite('fast'):
-        # 
+        #
         # fast    sparse_tests   vec_identity             8x8 --removed 4 --mu 8
         # fast    glb_tests      apps/pointwise           8x8 --removed 4 --mu 8
         # fast    glb_tests      apps/pointwise_RV_E64    8x8 --removed 4 --mu 8
