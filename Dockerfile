@@ -121,6 +121,7 @@ RUN \
      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
  : SMT-SWITCH && \
+     set -x && apt-get install -y automake && ls -l /usr/share/automake*/config.* && \
      ./contrib/setup-smt-switch.sh --python && \
      :                                                 && \
      echo "# cleanup: 1.3GB smt-switch build tests"    && \
