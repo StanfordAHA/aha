@@ -30,7 +30,8 @@ jobs:
         which ip && ip route show || echo no ip
         ls -l /etc/resolv.conf
         df /etc/resolv.conf
-        exit 13
+        cat /etc/resolv.conf
+        # exit 13
 
     - name: Publish Docker image
       uses: elgohr/Publish-Docker-Github-Action@2.12
