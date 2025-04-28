@@ -16,7 +16,7 @@ class Tests:
         cols_removed, mu_oc_0 = 8, 32
 
         DRV_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io"
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/abs_max_full_unroll_fp"
         ]
         E64_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
@@ -97,6 +97,8 @@ class Tests:
                 "tests/fp_e8m0_quant_test"
             ]
             glb_tests_fp = [
+                "tests/fp_arith",
+                "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
@@ -111,6 +113,7 @@ class Tests:
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
                 "apps/rope_pass2_fp",
+                "apps/abs_max_full_unroll_fp_RV"
             ]
             resnet_tests = [
                 "conv1",
@@ -220,7 +223,8 @@ class Tests:
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp"
+                "apps/rope_pass2_fp",
+                "apps/abs_max_full_unroll_fp_RV"
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -339,7 +343,8 @@ class Tests:
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp"
+                "apps/rope_pass2_fp",
+                "apps/abs_max_full_unroll_fp_RV"
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
