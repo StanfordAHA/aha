@@ -17,7 +17,7 @@ class Tests:
         cols_removed, mu_oc_0 = 8, 32
 
         DRV_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io",
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/abs_max_full_unroll_fp", "apps/zircon_hello_world_mu_io",
         ]
         E64_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io",
@@ -95,10 +95,14 @@ class Tests:
                 "apps/harris_color",
                 "apps/unsharp",
                 "apps/camera_pipeline_2x2",
-                "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test"
             ]
             glb_tests_fp = [
-                "tests/int8tobf_unpack_test",
+                "tests/fp_arith",
+                "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
@@ -111,6 +115,9 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp",
+                "apps/abs_max_full_unroll_fp_RV"
             ]
             resnet_tests = [
                 "conv1",
@@ -199,10 +206,12 @@ class Tests:
                 "tests/rom",
                 "tests/conv_1_2",
                 "tests/conv_2_1",
-                "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test"
             ]
             glb_tests_fp = [
-                "tests/int8tobf_unpack_test",
                 "tests/fp_pointwise",
                 "tests/fp_arith",
                 "tests/fp_comp",
@@ -218,6 +227,9 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp",
+                "apps/abs_max_full_unroll_fp_RV"
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -304,7 +316,10 @@ class Tests:
                 "tests/conv_1_2",
                 "tests/conv_2_1",
                 "tests/conv_3_3",
-                "tests/bf2int8_pack_test",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
                 "apps/gaussian",
                 "apps/brighten_and_blur",
                 "apps/cascade",
@@ -321,7 +336,6 @@ class Tests:
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
-                "tests/int8tobf_unpack_test",
                 "apps/matrix_multiplication_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
@@ -334,6 +348,9 @@ class Tests:
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp",
+                "apps/abs_max_full_unroll_fp_RV"
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
