@@ -319,7 +319,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False, external_MU_active=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -418,6 +418,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
         env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
+
+        if external_MU_active:
+            env_vars["EXTERNAL_MU_ACTIVE"] = "1"
+            env_vars["EXTERNAL_GOLD"] = "1"
 
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
@@ -584,6 +588,7 @@ def dispatch(args, extra_args=None):
     glb_tests_fp = imported_tests.glb_tests_fp
     resnet_tests = imported_tests.resnet_tests
     resnet_tests_fp = imported_tests.resnet_tests_fp
+    external_mu_tests = imported_tests.external_mu_tests
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
 
     DRV_supported_tests = imported_tests.DRV_supported_tests
@@ -608,10 +613,10 @@ def dispatch(args, extra_args=None):
 
         # Verify legality of num_fabric_cols_removed, OC_0
         assert num_fabric_cols_removed % 4 == 0, "ERROR: Number of cols removed must be a multiple of 4"
-        assert num_fabric_cols_removed <= 8, "ERROR: Removing more than 8 columns is not supported yet. Hardware modifications may be necessary to proceed."
+        # assert num_fabric_cols_removed <= 8, "ERROR: Removing more than 8 columns is not supported yet. Hardware modifications may be necessary to proceed."
         assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
         assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
-        
+
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
@@ -762,6 +767,17 @@ def dispatch(args, extra_args=None):
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+
+    for test in external_mu_tests:
+        test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
+        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
+                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, external_MU_active=True)
+        info.append([test + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
         t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,

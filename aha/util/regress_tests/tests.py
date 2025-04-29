@@ -10,19 +10,20 @@ class Tests:
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
+        external_mu_tests = []
         hardcoded_dense_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 8, 32
 
         DRV_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io"
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io",
         ]
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io",
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io"
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -42,6 +43,9 @@ class Tests:
             resnet_tests = [
             ]
             resnet_tests_fp = []
+            external_mu_tests = [
+                "apps/zircon_hello_world_mu_io_RV_E64_MB"
+            ]
             hardcoded_dense_tests = []
 
         # PR_AHA test suite for aha-repo push/pull
@@ -116,6 +120,7 @@ class Tests:
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
             ]
+            external_mu_tests = []
             hardcoded_dense_tests = [
                 # "apps/depthwise_conv" # down on Zircon
             ]
@@ -216,6 +221,7 @@ class Tests:
             ]
             resnet_tests = []
             resnet_tests_fp = []
+            external_mu_tests = []
             hardcoded_dense_tests = [
                 # "apps/depthwise_conv" # down on Zircon
             ]
@@ -349,6 +355,7 @@ class Tests:
                 "InvRes3_pw_exp_fp",
                 "InvRes3_pw_sq_residual_fp"
             ]
+            external_mu_tests = []
             hardcoded_dense_tests = [
                 # "apps/depthwise_conv" # down on Zircon
             ]
@@ -364,6 +371,7 @@ class Tests:
                 "conv5_x_E64",
             ]
             resnet_tests_fp = []
+            external_mu_tests = []
             hardcoded_dense_tests = []
 
         # BLANK can be used to return default height, width, and blank test lists
@@ -380,6 +388,7 @@ class Tests:
         self.glb_tests_fp = glb_tests_fp
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
+        self.external_mu_tests = external_mu_tests
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.E64_supported_tests = E64_supported_tests
         self.DRV_supported_tests = DRV_supported_tests
@@ -404,7 +413,7 @@ class Tests:
 
     def show_suite(self, suite_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_suite('fast'):
-        # 
+        #
         # fast    sparse_tests   vec_identity             8x8 --removed 4 --mu 8
         # fast    glb_tests      apps/pointwise           8x8 --removed 4 --mu 8
         # fast    glb_tests      apps/pointwise_RV_E64    8x8 --removed 4 --mu 8
