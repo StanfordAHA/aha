@@ -25,13 +25,13 @@ cat << EOF
 EOF
 # Restore 420MB of clockwork .git data + 320MB of halide data
 
-( echo '  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
-  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork
+( echo '  /aha/aha/bin/restore-dotgit.sh clockwork'
+  /aha/aha/bin/restore-dotgit.sh clockwork
   printf "\nFinished restoring clockwork metadata\n"
 ) &
 
-( echo '  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
-  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide
+( echo '  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware'
+  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware
   printf "\nFinished restoring halide metadata\n"
 ) &
 
