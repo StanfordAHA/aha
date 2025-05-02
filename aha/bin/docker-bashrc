@@ -45,11 +45,21 @@ test -f /usr/bin/clang-7 || cat << EOF
       tail /tmp/restore-clang
 
 EOF
+
+# wget timeout-and-retry
+# Try <ntries> times with progressively longer timeouts
+ntries=8; timeouts=(x 20 30 60 120 300 600 1200 1200)
+
 test -f /usr/bin/clang-7 || (
   url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-  echo "  wget $url"
-  wget -nv -O ~/clang7.tar.xz $url
-  echo ""
+
+  # wget -nv -O ~/clang7.tar.xz $url
+  for i in `seq $ntries`; do
+    timeout=${timeouts[$i]}
+    echo timeout $timeout wget -nv -O ~/clang7.tar.xz $url
+    timeout $timeout wget -nv -O ~/clang7.tar.xz $url && break
+  done
+
   tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ >& /tmp/restore-clang
   rm -rf ~/clang7.tar.xz
   printf "\nFinished restoring clang\n"
