@@ -1,8 +1,11 @@
 source /aha/bin/activate
 mkdir -p /root/.modules
 source /cad/modules/tcl/init/sh
-
 PATH="$PATH:/aha/aha/bin"
+
+# Early-out options
+[ "$1" == "--fast" ] && return
+[ "$1" == "--no-restore-metadata" ] && return
 
 cat << EOF
 
