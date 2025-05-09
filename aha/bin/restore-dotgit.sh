@@ -34,7 +34,42 @@ submod_sha=`git submodule | grep $submod | cut -b 2-10`
 echo ""
 url=`git config --file=/aha/.gitmodules submodule.$submod.url`
 echo "--- Restore metadata from repo '$url'"
-git clone --bare "$url" /aha/.git/modules/$submod
+
+# Use timeout-and-retry method b/c netowrk is flaky
+# git clone --bare "$url" /aha/.git/modules/$submod
+
+ntries=8; timeouts=(x 20 30 60 120 300 600 1200 1200)
+clone_dest=/aha/.git/modules/$submod
+
+# Cleanup is necessary in case child process of a failed clone
+# keeps clone-dest directory locked during attempted retry
+function cleanup_after_failed_attempt {
+    printf '\n\n'
+    me=$$; kids=`pgrep -P $me`; grandkids=$(for k in $kids; do pgrep -g $k; done)
+    for p in $grandkids $kids; do
+        exists $p || continue
+        echo CLEANUP kill $p; kill $p; tail --pid=$p -f /dev/null
+    done
+    echo CLEANUP /bin/rm -rf $clone_dest
+    /bin/rm -rf $clone_dest || echo okay;
+}
+
+echo "[`date +"%H:%M"`] BEGIN clone w up to $ntries with timeout(s)=(${timeouts[@]:1})"
+for i in `seq $ntries`; do
+    FAIL=
+    timeout=${timeouts[$i]}
+    try_begin=`date +%s`
+    echo -n "[`date +"%H:%M"`] Clone attempt $i/$ntries timeout $timeout "
+    # cloney $timeout && break
+    /bin/rm -rf $clone_dest
+    timeout $timeout git clone --bare $url $clone_dest && break
+
+    FAIL=True
+    try_end=`date +%s`
+    echo -n "[`date +"%H:%M"`] Clone attempt $i/$ntries timeout $timeout "
+    printf "FAIL after $(($try_end-$try_begin)) seconds\n\n"; 
+    cleanup_after_failed_attempt >& /dev/null
+   done
 
 # Convert bare repo into something useful, with a work tree
 cd /aha/$submod; git config --local --bool core.bare false
