@@ -787,7 +787,7 @@ def dispatch(args, extra_args=None):
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         for test in glb_tests_fp:
-            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0,
+            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0,
                         dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 

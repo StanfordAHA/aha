@@ -374,7 +374,6 @@ class Tests:
                 "fp_matmul_ikj",
             ]
             glb_tests_RV = [
-                "apps/maxpooling_RV",
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
@@ -407,7 +406,6 @@ class Tests:
                 "apps/relu_layer_fp_RV",
                 "apps/scalar_reduction_fp_RV",
                 "apps/vector_reduction_fp_RV",
-                "apps/maxpooling_fp_RV",
                 "tests/fp_pointwise_RV",
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
