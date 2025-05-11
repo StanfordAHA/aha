@@ -124,7 +124,7 @@ class Tests:
             glb_tests_RV = [
                 # pr_aha1
                 "tests/conv_2_1_RV",
-                "tests/fp_e8m0_quant_test_RV"
+                "tests/fp_e8m0_quant_test_RV",
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
@@ -405,7 +405,7 @@ class Tests:
                 "apps/unsharp",
                 "apps/harris_color",
                 "apps/camera_pipeline_2x2",
-                "apps/matrix_multiplication"
+                "apps/matrix_multiplication",
             ]
             glb_tests_fp = [
                 "apps/maxpooling_fp",
@@ -428,7 +428,7 @@ class Tests:
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
                 "apps/rope_pass2_fp",
-                "apps/abs_max_full_unroll_fp_RV"
+                "apps/abs_max_full_unroll_fp_RV",
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
@@ -471,7 +471,7 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "tests/fp_conv_7_7_RV",
-                "apps/abs_max_full_unroll_fp_RV"
+                "apps/abs_max_full_unroll_fp_RV",
                 # "apps/scalar_max_fp_RV",
                 # "apps/stable_softmax_pass2_fp_RV",
                 # "apps/stable_softmax_pass3_fp_RV",
