@@ -8,6 +8,8 @@ class Tests:
         sparse_tests = []
         glb_tests = []
         glb_tests_fp = []
+        glb_tests_RV = []
+        glb_tests_fp_RV = []
         resnet_tests = []
         resnet_tests_fp = []
         hardcoded_dense_tests = []
@@ -15,9 +17,6 @@ class Tests:
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 8, 32
 
-        DRV_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/abs_max_full_unroll_fp"
-        ]
         E64_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
         ]
@@ -33,11 +32,16 @@ class Tests:
             ]
             glb_tests = [
                 "apps/pointwise",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
+            ]
+            glb_tests_RV = [
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+            ]
+            glb_tests_fp_RV = [
+                "tests/fp_pointwise_RV",
             ]
             resnet_tests = [
             ]
@@ -79,47 +83,90 @@ class Tests:
                 "tensor3_ttv",
             ]
             glb_tests = [
+                # pr_aha1
                 "apps/maxpooling",
                 "apps/pointwise",
-                "apps/pointwise_RV",
                 "apps/pointwise_E64",
                 # "apps/pointwise_E64_MB",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/gaussian",
                 "apps/harris_color",
                 "apps/unsharp",
-                "apps/camera_pipeline_2x2",
+                # pr_aha2
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
                 "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test"
+                "tests/fp_e8m0_quant_test",
+                # pr_aha3
+                "apps/camera_pipeline_2x2",
             ]
             glb_tests_fp = [
+                # pr_aha1
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
+                "apps/rope_pass1_fp",
+                "apps/rope_pass2_fp",
+                "apps/relu_layer_fp",
+                # pr_aha2
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
                 "apps/stable_softmax_pass3_fp",
                 "apps/scalar_avg_fp",
                 "apps/layer_norm_pass2_fp",
                 "apps/layer_norm_pass3_fp",
+                # pr_aha3
                 "apps/gelu_pass1_fp",
                 "apps/gelu_pass2_fp",
                 "apps/silu_pass1_fp",
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
-                "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp",
-                "apps/abs_max_full_unroll_fp_RV"
+            ]
+            glb_tests_RV = [
+                # pr_aha1
+                "tests/conv_2_1_RV",
+                "tests/fp_e8m0_quant_test_RV"
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                # pr_aha2
+                "apps/gaussian_RV",
+                # pr_aha3
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+            ]
+            glb_tests_fp_RV = [
+                # pr_aha1
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "apps/relu_layer_fp_RV",
+                # pr_aha2
+                "apps/abs_max_full_unroll_fp_RV",
+                "apps/scalar_reduction_fp_RV",
+                # pr_aha3
+                "apps/vector_reduction_fp_RV",
+                # "apps/scalar_max_fp_RV",
+                # "apps/stable_softmax_pass2_fp_RV",
+                # "apps/stable_softmax_pass3_fp_RV",
+                # "apps/scalar_avg_fp_RV",
+                # "apps/layer_norm_pass2_fp_RV",
+                # "apps/layer_norm_pass3_fp_RV",
+                # "apps/gelu_pass1_fp_RV",
+                # "apps/gelu_pass2_fp_RV",
+                # "apps/silu_pass1_fp_RV",
+                # "apps/silu_pass2_fp_RV",
+                # "apps/swiglu_pass2_fp_RV",
+                # "apps/rope_pass1_fp_RV",
+                # "apps/rope_pass2_fp_RV",
             ]
             resnet_tests = [
+                # pr_aha1
                 "conv1",
-                "conv2_x",
                 "conv5_x_E64",
+                # pr_aha2
+                "conv2_x",
             ]
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
@@ -186,13 +233,8 @@ class Tests:
             ]
             glb_tests = [
                 "apps/pointwise",
-                "apps/pointwise_RV",
                 "apps/pointwise_E64",
                 # "apps/pointwise_E64_MB",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "tests/ushift",
                 "tests/arith",
                 "tests/absolute",
@@ -212,6 +254,7 @@ class Tests:
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
+                "apps/relu_layer_fp",
                 "apps/scalar_max_fp",
                 "apps/stable_softmax_pass2_fp",
                 "apps/stable_softmax_pass3_fp",
@@ -224,8 +267,51 @@ class Tests:
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp",
-                "apps/abs_max_full_unroll_fp_RV"
+                "apps/rope_pass2_fp"
+            ]
+            glb_tests_RV = [
+                "tests/ushift_RV",
+                "tests/arith_RV",
+                "tests/absolute_RV",
+                "tests/scomp_RV",
+                "tests/ucomp_RV",
+                "tests/uminmax_RV",
+                "tests/rom_RV",
+                "tests/conv_1_2_RV",
+                "tests/conv_2_1_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+                "tests/fp_e8m0_quant_test_RV"
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/gaussian_RV",
+            ]
+            glb_tests_fp_RV = [
+                "tests/fp_pointwise_RV",
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "tests/fp_conv_7_7_RV",
+                "apps/relu_layer_fp_RV",
+                "apps/abs_max_full_unroll_fp_RV",
+                "apps/scalar_reduction_fp_RV",
+                "apps/vector_reduction_fp_RV",
+                # "apps/scalar_max_fp_RV",
+                # "apps/stable_softmax_pass2_fp_RV",
+                # "apps/stable_softmax_pass3_fp_RV",
+                # "apps/scalar_avg_fp_RV",
+                # "apps/layer_norm_pass2_fp_RV",
+                # "apps/layer_norm_pass3_fp_RV",
+                # "apps/gelu_pass1_fp_RV",
+                # "apps/gelu_pass2_fp_RV",
+                # "apps/silu_pass1_fp_RV",
+                # "apps/silu_pass2_fp_RV",
+                # "apps/swiglu_pass2_fp_RV",
+                # "apps/rope_pass1_fp_RV",
+                # "apps/rope_pass2_fp_RV",
             ]
             resnet_tests = []
             resnet_tests_fp = []
@@ -290,13 +376,8 @@ class Tests:
             glb_tests = [
                 "apps/maxpooling",
                 "apps/pointwise",
-                "apps/pointwise_RV",
                 "apps/pointwise_E64",
                 # "apps/pointwise_E64_MB",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "tests/rom",
                 "tests/arith",
                 "tests/absolute",
@@ -328,6 +409,7 @@ class Tests:
             ]
             glb_tests_fp = [
                 "apps/maxpooling_fp",
+                "apps/relu_layer_fp",
                 "tests/fp_pointwise",
                 "tests/fp_arith",
                 "tests/fp_comp",
@@ -349,6 +431,60 @@ class Tests:
                 "apps/abs_max_full_unroll_fp_RV"
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
+            ]
+            glb_tests_RV = [
+                "apps/maxpooling_RV",
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "tests/rom_RV",
+                "tests/arith_RV",
+                "tests/absolute_RV",
+                "tests/boolean_ops_RV",
+                "tests/equal_RV",
+                "tests/ternary_RV",
+                "tests/scomp_RV",
+                "tests/ucomp_RV",
+                "tests/sminmax_RV",
+                "tests/uminmax_RV",
+                "tests/sshift_RV",
+                "tests/ushift_RV",
+                "tests/conv_1_2_RV",
+                "tests/conv_2_1_RV",
+                "tests/conv_3_3_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/gaussian_RV",
+                "apps/brighten_and_blur_RV",
+                "apps/cascade_RV",
+            ]
+            glb_tests_fp_RV = [
+                "apps/relu_layer_fp_RV",
+                "apps/scalar_reduction_fp_RV",
+                "apps/vector_reduction_fp_RV",
+                "apps/maxpooling_fp_RV",
+                "tests/fp_pointwise_RV",
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "tests/fp_conv_7_7_RV",
+                "apps/abs_max_full_unroll_fp_RV"
+                # "apps/scalar_max_fp_RV",
+                # "apps/stable_softmax_pass2_fp_RV",
+                # "apps/stable_softmax_pass3_fp_RV",
+                # "apps/scalar_avg_fp_RV",
+                # "apps/layer_norm_pass2_fp_RV",
+                # "apps/layer_norm_pass3_fp_RV",
+                # "apps/gelu_pass1_fp_RV",
+                # "apps/gelu_pass2_fp_RV",
+                # "apps/silu_pass1_fp_RV",
+                # "apps/silu_pass2_fp_RV",
+                # "apps/swiglu_pass2_fp_RV",
+                # "apps/rope_pass1_fp_RV",
+                # "apps/rope_pass2_fp_RV",
             ]
 
             # FIXME would it be better here to do e.g.
@@ -377,6 +513,8 @@ class Tests:
             sparse_tests = []
             glb_tests = []
             glb_tests_fp = []
+            glb_tests_RV = []
+            glb_tests_fp_RV = []
             resnet_tests = [
                 "conv1",
                 "conv2_x",
@@ -397,11 +535,12 @@ class Tests:
         self.sparse_tests = sparse_tests
         self.glb_tests = glb_tests
         self.glb_tests_fp = glb_tests_fp
+        self.glb_tests_RV = glb_tests_RV
+        self.glb_tests_fp_RV = glb_tests_fp_RV
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.E64_supported_tests = E64_supported_tests
-        self.DRV_supported_tests = DRV_supported_tests
         self.E64_MB_supported_tests = E64_MB_supported_tests
 
         if use_custom:
