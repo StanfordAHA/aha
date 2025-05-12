@@ -209,6 +209,14 @@
             "PIPELINED":"0"
         }
     },
+    "apps/vector_reduction_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=512 vec_height=4 glb_i=8 glb_o=1 tree_stages=3",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
     "apps/scalar_max_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
@@ -311,6 +319,14 @@
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"1"
+        }
+    },
+    "apps/abs_max_full_unroll_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_height=3136 vec_width=32 glb_i=32 glb_o=1 tree_stages=5",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
         }
     },
     "conv1":{
