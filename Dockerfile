@@ -94,6 +94,7 @@ RUN source bin/activate && \
   pip install packaging && \
   pip install importlib_resources && \
   pip install Pillow && \
+  pip install matplotlib && \
   echo DONE
 
 # Pono
