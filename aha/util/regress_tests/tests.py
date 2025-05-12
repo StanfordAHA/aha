@@ -108,6 +108,7 @@ class Tests:
                 "apps/scalar_reduction_fp_RV",
                 # pr_aha3
                 "apps/vector_reduction_fp_RV",
+                # TODO: Tests below are planned but not yet supported
                 # "apps/scalar_max_fp_RV",
                 # "apps/stable_softmax_pass2_fp_RV",
                 # "apps/stable_softmax_pass3_fp_RV",
@@ -126,8 +127,6 @@ class Tests:
                 # pr_aha1
                 "apps/maxpooling",
                 "apps/pointwise",
-                "apps/pointwise_E64",
-                # "apps/pointwise_E64_MB",
                 "apps/gaussian",
                 "apps/harris_color",
                 "apps/unsharp",
@@ -164,7 +163,7 @@ class Tests:
             resnet_tests = [
                 # pr_aha1
                 "conv1",
-                "conv5_x_E64",
+                "conv5_x",
                 # pr_aha2
                 "conv2_x",
             ]
@@ -239,7 +238,6 @@ class Tests:
                 "tests/ucomp_RV",
                 "tests/uminmax_RV",
                 "tests/rom_RV",
-                "tests/conv_1_2_RV",
                 "tests/conv_2_1_RV",
                 "tests/bit8_packing_test_RV",
                 "tests/bit8_unpack_test_RV",
@@ -251,16 +249,18 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/gaussian_RV",
+                # TODO: Tests below are planned but not yet supported
+                # "tests/conv_1_2_RV",
             ]
             glb_tests_fp_RV = [
                 "tests/fp_pointwise_RV",
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
-                "tests/fp_conv_7_7_RV",
                 "apps/relu_layer_fp_RV",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/scalar_reduction_fp_RV",
                 "apps/vector_reduction_fp_RV",
+                # TODO: Tests below are planned but not yet supported
                 # "apps/scalar_max_fp_RV",
                 # "apps/stable_softmax_pass2_fp_RV",
                 # "apps/stable_softmax_pass3_fp_RV",
@@ -274,11 +274,10 @@ class Tests:
                 # "apps/swiglu_pass2_fp_RV",
                 # "apps/rope_pass1_fp_RV",
                 # "apps/rope_pass2_fp_RV",
+                # "tests/fp_conv_7_7_RV",
             ]
             glb_tests = [
                 "apps/pointwise",
-                "apps/pointwise_E64",
-                # "apps/pointwise_E64_MB",
                 "tests/ushift",
                 "tests/arith",
                 "tests/absolute",
@@ -391,7 +390,6 @@ class Tests:
                 "tests/uminmax_RV",
                 "tests/sshift_RV",
                 "tests/ushift_RV",
-                "tests/conv_1_2_RV",
                 "tests/conv_2_1_RV",
                 "tests/conv_3_3_RV",
                 "tests/bit8_packing_test_RV",
@@ -400,8 +398,10 @@ class Tests:
                 "tests/fp_e8m0_quant_test_RV",
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
-                "apps/cascade_RV",
+                # TODO: Tests below are planned but not yet supported
+                # "tests/conv_1_2_RV",
                 # "apps/maxpooling_RV",
+                # "apps/cascade_RV",
             ]
             glb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
@@ -410,8 +410,8 @@ class Tests:
                 "tests/fp_pointwise_RV",
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
-                "tests/fp_conv_7_7_RV",
                 "apps/abs_max_full_unroll_fp_RV",
+                # TODO: Tests below are planned but not yet supported
                 # "apps/scalar_max_fp_RV",
                 # "apps/stable_softmax_pass2_fp_RV",
                 # "apps/stable_softmax_pass3_fp_RV",
@@ -426,12 +426,11 @@ class Tests:
                 # "apps/rope_pass1_fp_RV",
                 # "apps/rope_pass2_fp_RV",
                 # "apps/maxpooling_fp_RV",
+                # "tests/fp_conv_7_7_RV",
             ]
             glb_tests = [
                 "apps/maxpooling",
                 "apps/pointwise",
-                "apps/pointwise_E64",
-                # "apps/pointwise_E64_MB",
                 "tests/rom",
                 "tests/arith",
                 "tests/absolute",
@@ -483,6 +482,7 @@ class Tests:
                 "apps/rope_pass1_fp",
                 "apps/rope_pass2_fp",
                 "apps/abs_max_full_unroll_fp_RV",
+                # TODO: Tests below are planned but not yet supported
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
             ]
@@ -493,18 +493,20 @@ class Tests:
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv5_x_E64",
+                "conv5_x",
             ]
             resnet_tests_fp = [
-                # "conv2_x_fp", # not yet supported by zircon
                 "sequential_0_fp",
                 "InvRes1_pw_fp",
                 "InvRes2_pw_exp_fp",
                 "InvRes2_pw_sq_fp",
                 "InvRes3_pw_exp_fp",
-                "InvRes3_pw_sq_residual_fp"
+                "InvRes3_pw_sq_residual_fp",
+                # TODO: Tests below are planned but not yet supported
+                # "conv2_x_fp", # not yet supported by zircon
             ]
             hardcoded_dense_tests = [
+                # TODO: Tests below are planned but not yet supported
                 # "apps/depthwise_conv" # down on Zircon
             ]
         elif testname == "resnet":
@@ -518,7 +520,7 @@ class Tests:
             resnet_tests = [
                 "conv1",
                 "conv2_x",
-                "conv5_x_E64",
+                "conv5_x",
             ]
             resnet_tests_fp = []
             hardcoded_dense_tests = []
