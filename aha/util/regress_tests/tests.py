@@ -401,6 +401,7 @@ class Tests:
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
                 "apps/cascade_RV",
+                # "apps/maxpooling_RV",
             ]
             glb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
@@ -424,6 +425,7 @@ class Tests:
                 # "apps/swiglu_pass2_fp_RV",
                 # "apps/rope_pass1_fp_RV",
                 # "apps/rope_pass2_fp_RV",
+                # "apps/maxpooling_fp_RV",
             ]
             glb_tests = [
                 "apps/maxpooling",

@@ -766,6 +766,7 @@ def dispatch(args, extra_args=None):
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
+        print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
 
