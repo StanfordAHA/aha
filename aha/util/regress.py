@@ -540,8 +540,12 @@ def dispatch(args, extra_args=None):
     from aha.util.regress_tests.tests import Tests
     imported_tests = None
 
+    # For sparse tests, we cherry pick some representative tests to run
+    no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp", "matmul_ikj", "tensor3_mttkrp"]
+
     # pr_aha1 starts with the pr_aha suite and remove some tests
     if args.config == "pr_aha1":
+        no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("pr_aha")
 
         # Define all tests to remove for pr_aha1
@@ -580,6 +584,7 @@ def dispatch(args, extra_args=None):
 
     # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
+        no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("BLANK")
         imported_tests.glb_tests_RV = ["apps/gaussian_RV"]
         imported_tests.glb_tests_fp_RV = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV"]
