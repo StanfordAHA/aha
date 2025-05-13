@@ -31,6 +31,7 @@ class Tests:
                 "vec_identity"
             ]
             glb_tests_RV = [
+                "tests/conv_2_1_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
             ]
@@ -108,21 +109,24 @@ class Tests:
                 "apps/scalar_reduction_fp_RV",
                 # pr_aha3
                 "apps/vector_reduction_fp_RV",
-                # TODO: Tests below are planned but not yet supported
-                # "apps/scalar_max_fp_RV",
-                # "apps/stable_softmax_pass2_fp_RV",
-                # "apps/stable_softmax_pass3_fp_RV",
-                # "apps/scalar_avg_fp_RV",
-                # "apps/layer_norm_pass2_fp_RV",
-                # "apps/layer_norm_pass3_fp_RV",
-                # "apps/gelu_pass1_fp_RV",
-                # "apps/gelu_pass2_fp_RV",
-                # "apps/silu_pass1_fp_RV",
-                # "apps/silu_pass2_fp_RV",
-                # "apps/swiglu_pass2_fp_RV",
-                # "apps/rope_pass1_fp_RV",
-                # "apps/rope_pass2_fp_RV",
+                "apps/scalar_max_fp_RV",
+                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/scalar_avg_fp_RV",
+                "apps/layer_norm_pass2_fp_RV",
+                "apps/layer_norm_pass3_fp_RV",
+                "apps/gelu_pass1_fp_RV",
+                "apps/gelu_pass2_fp_RV",
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
             ]
+            hardcoded_dense_tests = [
+                # "apps/depthwise_conv" # down on Zircon
+            ]
+            # Tests below are non-zircon and won't run by default
             glb_tests = [
                 # pr_aha1
                 "apps/maxpooling",
@@ -169,9 +173,6 @@ class Tests:
             ]
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
-            ]
-            hardcoded_dense_tests = [
-                # "apps/depthwise_conv" # down on Zircon
             ]
 
 # Found the better way maybe
@@ -242,7 +243,7 @@ class Tests:
                 "tests/bit8_packing_test_RV",
                 "tests/bit8_unpack_test_RV",
                 "tests/fp_get_shared_exp_test_RV",
-                "tests/fp_e8m0_quant_test_RV"
+                "tests/fp_e8m0_quant_test_RV",
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
@@ -260,22 +261,26 @@ class Tests:
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/scalar_reduction_fp_RV",
                 "apps/vector_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/scalar_avg_fp_RV",
+                "apps/layer_norm_pass2_fp_RV",
+                "apps/layer_norm_pass3_fp_RV",
+                "apps/gelu_pass1_fp_RV",
+                "apps/gelu_pass2_fp_RV",
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
                 # TODO: Tests below are planned but not yet supported
-                # "apps/scalar_max_fp_RV",
-                # "apps/stable_softmax_pass2_fp_RV",
-                # "apps/stable_softmax_pass3_fp_RV",
-                # "apps/scalar_avg_fp_RV",
-                # "apps/layer_norm_pass2_fp_RV",
-                # "apps/layer_norm_pass3_fp_RV",
-                # "apps/gelu_pass1_fp_RV",
-                # "apps/gelu_pass2_fp_RV",
-                # "apps/silu_pass1_fp_RV",
-                # "apps/silu_pass2_fp_RV",
-                # "apps/swiglu_pass2_fp_RV",
-                # "apps/rope_pass1_fp_RV",
-                # "apps/rope_pass2_fp_RV",
                 # "tests/fp_conv_7_7_RV",
             ]
+            hardcoded_dense_tests = [
+                # "apps/depthwise_conv" # down on Zircon
+            ]
+            # Tests below are non-zircon and won't run by default
             glb_tests = [
                 "apps/pointwise",
                 "tests/ushift",
@@ -290,7 +295,7 @@ class Tests:
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
                 "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test"
+                "tests/fp_e8m0_quant_test",
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
@@ -310,13 +315,10 @@ class Tests:
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp"
+                "apps/rope_pass2_fp",
             ]
             resnet_tests = []
             resnet_tests_fp = []
-            hardcoded_dense_tests = [
-                # "apps/depthwise_conv" # down on Zircon
-            ]
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -411,23 +413,28 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/abs_max_full_unroll_fp_RV",
+                "apps/scalar_max_fp_RV",
+                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/scalar_avg_fp_RV",
+                "apps/layer_norm_pass2_fp_RV",
+                "apps/layer_norm_pass3_fp_RV",
+                "apps/gelu_pass1_fp_RV",
+                "apps/gelu_pass2_fp_RV",
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
                 # TODO: Tests below are planned but not yet supported
-                # "apps/scalar_max_fp_RV",
-                # "apps/stable_softmax_pass2_fp_RV",
-                # "apps/stable_softmax_pass3_fp_RV",
-                # "apps/scalar_avg_fp_RV",
-                # "apps/layer_norm_pass2_fp_RV",
-                # "apps/layer_norm_pass3_fp_RV",
-                # "apps/gelu_pass1_fp_RV",
-                # "apps/gelu_pass2_fp_RV",
-                # "apps/silu_pass1_fp_RV",
-                # "apps/silu_pass2_fp_RV",
-                # "apps/swiglu_pass2_fp_RV",
-                # "apps/rope_pass1_fp_RV",
-                # "apps/rope_pass2_fp_RV",
                 # "apps/maxpooling_fp_RV",
                 # "tests/fp_conv_7_7_RV",
             ]
+            hardcoded_dense_tests = [
+                # TODO: Tests below are planned but not yet supported
+                # "apps/depthwise_conv" # down on Zircon
+            ]
+            # Tests below are non-zircon and won't run by default
             glb_tests = [
                 "apps/maxpooling",
                 "apps/pointwise",
@@ -504,10 +511,6 @@ class Tests:
                 "InvRes3_pw_sq_residual_fp",
                 # TODO: Tests below are planned but not yet supported
                 # "conv2_x_fp", # not yet supported by zircon
-            ]
-            hardcoded_dense_tests = [
-                # TODO: Tests below are planned but not yet supported
-                # "apps/depthwise_conv" # down on Zircon
             ]
         elif testname == "resnet":
             width, height = 28, 16

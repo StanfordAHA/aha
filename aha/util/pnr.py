@@ -64,7 +64,13 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
             else:
                 new_env_vars.update(env_vars_fin[app_name][str(env_parameters)])
 
+    # We always set compute pipelining to 0 for dense ready-valid case
+    if os.getenv("DENSE_READY_VALID") == "1":
+        new_env_vars["PIPELINED"] = "0"
+
+    print(f"--- Setting environment variables for {app}")
     for n, v in new_env_vars.items():
+        print(f"--- {n} = {v}")
         env[n] = v
 
 
