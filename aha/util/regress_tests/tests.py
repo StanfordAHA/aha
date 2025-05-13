@@ -243,7 +243,7 @@ class Tests:
                 "tests/bit8_packing_test_RV",
                 "tests/bit8_unpack_test_RV",
                 "tests/fp_get_shared_exp_test_RV",
-                "tests/fp_e8m0_quant_test_RV"
+                "tests/fp_e8m0_quant_test_RV",
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
@@ -295,7 +295,7 @@ class Tests:
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
                 "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test"
+                "tests/fp_e8m0_quant_test",
             ]
             glb_tests_fp = [
                 "tests/fp_pointwise",
@@ -315,7 +315,7 @@ class Tests:
                 "apps/silu_pass2_fp",
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp"
+                "apps/rope_pass2_fp",
             ]
             resnet_tests = []
             resnet_tests_fp = []
