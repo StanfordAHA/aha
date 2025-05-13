@@ -541,7 +541,13 @@ def dispatch(args, extra_args=None):
     imported_tests = None
 
     # For sparse tests, we cherry pick some representative tests to run
-    no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp", "matmul_ikj", "tensor3_mttkrp"]
+    no_zircon_sparse_tests = [
+        "vec_elemmul", 
+        "mat_vecmul_ij", 
+        "mat_elemadd_leakyrelu_exp", 
+        "matmul_ikj", 
+        "tensor3_mttkrp",
+    ]
 
     # pr_aha1 starts with the pr_aha suite and remove some tests
     if args.config == "pr_aha1":
