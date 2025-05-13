@@ -544,34 +544,60 @@ def dispatch(args, extra_args=None):
     from aha.util.regress_tests.tests import Tests
     imported_tests = None
 
-    # pr_aha1,2,3 are 4-hour, 3-hour, and 3-hour slices of pr_aha, respectively
-    # pr_aha1 starts with the full pr_aha suite and removes conv2, conv2_fp
+    # pr_aha1 starts with the pr_aha suite and remove some tests
     if args.config == "pr_aha1":
         imported_tests = Tests("pr_aha")
-        imported_tests.glb_tests.remove("apps/camera_pipeline_2x2")
 
-        glb_tests_fp_to_remove = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp", "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
-        glb_tests_fp_to_remove += ["apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
+        # Define all tests to remove for pr_aha1
+        glb_tests_RV_to_remove = ["apps/gaussian_RV", "tests/bit8_packing_test_RV", "tests/bit8_unpack_test_RV", "tests/fp_get_shared_exp_test_RV"]
+        glb_tests_fp_RV_to_remove = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV", "apps/vector_reduction_fp_RV"]
+        glb_tests_to_remove = ["tests/bit8_packing_test", "tests/bit8_unpack_test", "tests/fp_get_shared_exp_test", "tests/fp_e8m0_quant_test", "apps/camera_pipeline_2x2",]
+        glb_tests_fp_to_remove = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp",
+                                  "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp", "apps/gelu_pass1_fp", "apps/gelu_pass2_fp",
+                                  "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
+        resnet_tests_to_remove = ["conv2_x"]
 
+        # Remove integer RV tests
+        for test in glb_tests_RV_to_remove:
+            if test in imported_tests.glb_tests_RV:
+                imported_tests.glb_tests_RV.remove(test)
+
+        # Remove fp RV tests
+        for test in glb_tests_fp_RV_to_remove:
+            if test in imported_tests.glb_tests_fp_RV:
+                imported_tests.glb_tests_fp_RV.remove(test)
+
+        # Remove integer static tests
+        for test in glb_tests_to_remove:
+            if test in imported_tests.glb_tests:
+                imported_tests.glb_tests.remove(test)
+
+        # Remove fp static tests
         for test in glb_tests_fp_to_remove:
             if test in imported_tests.glb_tests_fp:
                 imported_tests.glb_tests_fp.remove(test)
 
-        imported_tests.resnet_tests.remove('conv2_x')  # This is actually *two* tests
-        # imported_tests.resnet_tests_fp.remove('conv2_x_fp')
+        # Remove integer static resnet tests
+        for test in resnet_tests_to_remove:
+            if test in imported_tests.resnet_tests:
+                imported_tests.resnet_tests.remove(test)
 
-    # pr_aha2 is just conv2 by itself (it runs both sparse and dense versions tho)
-    # NOTE conv2 breaks if don't do gaussian first(!) for details see issues:
-    # https://github.com/StanfordAHA/aha/issues/1897
+    # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
         imported_tests = Tests("BLANK")
-        imported_tests.glb_tests = ["apps/gaussian"]
-        imported_tests.glb_tests_fp = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp", "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
-        # Note conv2 here is actually *two* tests, one sparse and one dense
-        imported_tests.resnet_tests = ['conv2_x']
+        imported_tests.glb_tests_RV = ["apps/gaussian_RV"]
+        imported_tests.glb_tests_fp_RV = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV"]
+        # We know gaussian is redundant here but we keep it for some reasons
+        imported_tests.glb_tests = ["apps/gaussian", "tests/bit8_packing_test", "tests/bit8_unpack_test", "tests/fp_get_shared_exp_test", "tests/fp_e8m0_quant_test"]
+        imported_tests.glb_tests_fp = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp",
+                                  "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
+        imported_tests.resnet_tests = ["conv2_x"]
 
+    # pr_aha3 contains all the remaining tests
     elif args.config == "pr_aha3":
         imported_tests = Tests("BLANK")
+        imported_tests.glb_tests_RV = ["tests/bit8_packing_test_RV", "tests/bit8_unpack_test_RV", "tests/fp_get_shared_exp_test_RV"]
+        imported_tests.glb_tests_fp_RV = ["apps/vector_reduction_fp_RV"]
         imported_tests.glb_tests = ["apps/camera_pipeline_2x2"]
         imported_tests.glb_tests_fp = ["apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
         # imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
@@ -586,12 +612,13 @@ def dispatch(args, extra_args=None):
     sparse_tests = imported_tests.sparse_tests
     glb_tests = imported_tests.glb_tests
     glb_tests_fp = imported_tests.glb_tests_fp
+    glb_tests_RV = imported_tests.glb_tests_RV
+    glb_tests_fp_RV = imported_tests.glb_tests_fp_RV
     resnet_tests = imported_tests.resnet_tests
     resnet_tests_fp = imported_tests.resnet_tests_fp
     external_mu_tests = imported_tests.external_mu_tests
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
 
-    DRV_supported_tests = imported_tests.DRV_supported_tests
     E64_supported_tests = imported_tests.E64_supported_tests
     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
@@ -705,10 +732,7 @@ def dispatch(args, extra_args=None):
             testname = test.replace("_MB", "")
         return testname, E64_multi_bank_mode_on
 
-    def feature_support_check(testname, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on):
-        if dense_ready_valid:
-            assert testname in DRV_supported_tests, f"ERROR: Dense ready-valid mode not yet supported for {testname}. Once it is supported, please add it to DRV_supported_tests in regress_tests/tests.py"
-
+    def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
         if E64_mode_on:
             assert testname in E64_supported_tests, f"ERROR: E64 mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64 unroll is multiple of 4. Once done, please add the test to E64_supported_tests in regress_tests/tests.py"
 
@@ -716,57 +740,26 @@ def dispatch(args, extra_args=None):
             assert testname in E64_MB_supported_tests, f"ERROR: E64 multi-bank mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64_MB unroll is multiple of 8. Once done, please add the test to E64_MB_supported_tests in regress_tests"
             assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
 
-    for test in glb_tests:
+    # For Zircon, we run all dense apps in RV mode, i.e. glb_tests_RV and glb_tests_fp_RV
+    for test in glb_tests_RV:
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
+        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    for test in glb_tests_fp:
+    for test in glb_tests_fp_RV:
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
+        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
-    for test in resnet_tests:
-        test, dense_ready_valid = parse_RV_mode(test)
-        test, E64_mode_on = parse_E64_mode(test)
-        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
-        if "residual" in test:
-            t0, t1, t2 = test_dense_app("apps/resnet_residual", width, height, args.env_parameters, extra_args, layer=test,
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-        else:
-            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test,
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
-    for test in resnet_tests_fp:
-        test, dense_ready_valid = parse_RV_mode(test)
-        test, E64_mode_on = parse_E64_mode(test)
-        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
-        if "residual" in test:
-            t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True,
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-        else:
-            t0, t1, t2 = test_dense_app("apps/conv2D_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True,
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
 
     for test in external_mu_tests:
@@ -789,9 +782,11 @@ def dispatch(args, extra_args=None):
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
+        print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
 
+        # For sparse tests, we cherry pick some representative tests to run
         no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp", "matmul_ikj", "tensor3_mttkrp"]
         data_tile_pairs = []
         kernel_name = ""
@@ -802,17 +797,36 @@ def dispatch(args, extra_args=None):
             t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-        no_zircon_glb_tests = ["apps/pointwise", "apps/camera_pipeline_2x2", "apps/gaussian"]
-        for test in no_zircon_glb_tests:
+        # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
+        for test in glb_tests:
             t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0,
                         dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-        no_zircon_resnet_tests = ["conv5_x"]
-        for test in no_zircon_resnet_tests:
-            t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test, using_matrix_unit=False, num_fabric_cols_removed=0,
+        for test in glb_tests_fp:
+            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0,
                         dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+        for test in resnet_tests:
+            if "residual" in test:
+                t0, t1, t2 = test_dense_app("apps/resnet_residual", width, height, args.env_parameters, extra_args, layer=test,
+                            dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0, dense_ready_valid=False, E64_mode_on=False)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+            else:
+                t0, t1, t2 = test_dense_app("apps/resnet_output_stationary", width, height, args.env_parameters, extra_args, layer=test,
+                            dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0, dense_ready_valid=False, E64_mode_on=False)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+        for test in resnet_tests_fp:
+            if "residual" in test:
+                t0, t1, t2 = test_dense_app("apps/conv2D_residual_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True,
+                            dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0, dense_ready_valid=False, E64_mode_on=False)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+            else:
+                t0, t1, t2 = test_dense_app("apps/conv2D_fp", width, height, args.env_parameters, extra_args, layer=test, use_fp=True,
+                            dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0, dense_ready_valid=False, E64_mode_on=False)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     if args.include_dense_only_tests:
         # DENSE ONLY TESTS
