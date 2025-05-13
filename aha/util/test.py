@@ -258,8 +258,9 @@ def dispatch(args, extra_args=None):
                 # HACK for conv2 since we are writing data linearly to glb: reorder data in order accelerator outputs it
                 # gold_array = gold_array.reshape(1, 56, 7, 8, 2, 32)
                 # gold_array = gold_array.transpose(0, 2, 4, 1, 3, 5)
-                gold_array = gold_array.reshape(1, 16, 1, 16, 2, 32)
-                gold_array = gold_array.transpose(0, 2, 4, 1, 3, 5)
+
+                gold_array = gold_array.reshape(4, 14, 8, 7, 2, 32)
+                gold_array = gold_array.transpose(4, 0, 2, 1, 3, 5)
                 gold_array = gold_array.flatten()
 
 
