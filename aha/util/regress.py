@@ -589,8 +589,8 @@ def dispatch(args, extra_args=None):
                 imported_tests.resnet_tests.remove(test)
 
 
-#         # FOR TAPEOUT remove all glb_tests_fp, move them to aha2/aha3
-#         imported_tests.glb_tests_fp = [];
+        # FOR TAPEOUT remove all glb_tests_fp, move them to aha2/aha3
+        imported_tests.glb_tests_fp_RV = [];
 
     # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
@@ -604,6 +604,13 @@ def dispatch(args, extra_args=None):
                                   "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
         imported_tests.resnet_tests = ["conv2_x"]
 
+        # FOR TAPEOUT aha2 gets first half of these tests
+        pr_aha_tests = Tests("pr_aha")
+        half = int(len(pr_aha_tests)/2)
+        half1 = pr_aha_tests[half:]
+        half2 = pr_aha_tests[:half]
+        imported_tests.glb_tests_fp_RV = half1
+
     # pr_aha3 contains all the remaining tests
     elif args.config == "pr_aha3":
         imported_tests = Tests("BLANK")
@@ -612,6 +619,14 @@ def dispatch(args, extra_args=None):
         imported_tests.glb_tests = ["apps/camera_pipeline_2x2"]
         imported_tests.glb_tests_fp = ["apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
         # imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
+
+        # FOR TAPEOUT aha3 gets first half of these tests
+        pr_aha_tests = Tests("pr_aha")
+        half = int(len(pr_aha_tests)/2)
+        half1 = pr_aha_tests[half:]
+        half2 = pr_aha_tests[:half]
+        imported_tests.glb_tests_fp_RV = half2
+
 
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
     else:
