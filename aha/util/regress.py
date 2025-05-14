@@ -651,11 +651,17 @@ def dispatch(args, extra_args=None):
 
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
+
+    print(f"\n\n---- BUILD SPARSE CHIP (zircon) ----\n\n")
     t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-    info.append(["garnet (Zircon) with sparse and dense", t])
+    info.append(["gen_garnet + sparse hw (zircon)", t])  # dense_only=False
 
     data_tile_pairs = []
     kernel_name = ""
+
+    if sparse_tests:
+        print(f"\n\n---- "SPARSE APPS ON SPARSE CHIP (zircon)" ----\n\n")
+        info.append(    ["SPARSE APPS ON SPARSE CHIP (zircon)"])
 
     if not(seed_flow):
         if os.path.exists("/aha/garnet/perf_stats.txt"):
@@ -745,6 +751,9 @@ def dispatch(args, extra_args=None):
             assert testname in E64_MB_supported_tests, f"ERROR: E64 multi-bank mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64_MB unroll is multiple of 8. Once done, please add the test to E64_MB_supported_tests in regress_tests"
             assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
 
+    print(f"\n\n---- DENSE APPS ON SPARSE CHIP (zircon) ----\n\n")
+    info.append(   ["DENSE APPS ON SPARSE CHIP (zircon)"])
+
     # For Zircon, we run all dense apps in RV mode, i.e. glb_tests_RV and glb_tests_fp_RV
     for test in glb_tests_RV:
         test, dense_ready_valid = parse_RV_mode(test)
@@ -777,10 +786,15 @@ def dispatch(args, extra_args=None):
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
+
+        print(f"\n\n---- BUILD SPARSE CHIP (not-zircon) ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
-        info.append(["garnet (NO Zircon) with sparse and dense", t])
+        info.append(["gen_garnet + sparse hw (not-zircon)", t])
 
         if no_zircon_sparse_tests:
+            print(f"\n\n---- SPARSE APPS ON SPARSE CHIP (not-zircon) ----\n\n")
+            info.append(   ["SPARSE APPS ON SPARSE CHIP (not-zircon)"])
+
             # See above for no_zircon_sparse_tests[]
             data_tile_pairs = []
             kernel_name = ""
@@ -792,6 +806,9 @@ def dispatch(args, extra_args=None):
             for test in no_zircon_sparse_tests:
                 t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+
+        print(f"\n\n---- DENSE APPS ON SPARSE CHIP (not-zircon) ----\n\n")
+        info.append(   ["DENSE APPS ON SPARSE CHIP (not-zircon)"])
 
         # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
         for test in glb_tests:
@@ -825,6 +842,10 @@ def dispatch(args, extra_args=None):
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     if args.include_dense_only_tests:
+        # Is this path ever used???
+        print(f"\n\n---- DENSE APPS ON DENSE CHIP ----\n\n")
+        info.append(   ["DENSE APPS ON DENSE CHIP"])
+
         # DENSE ONLY TESTS
         # Remove sparse+dense garnet.v first
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
