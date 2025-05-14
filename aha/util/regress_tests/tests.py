@@ -15,7 +15,7 @@ class Tests:
         hardcoded_dense_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
-        cols_removed, mu_oc_0 = 8, 32
+        cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
@@ -64,7 +64,7 @@ class Tests:
             # tests pr_aha1,2,3 that can all run in parallel.
 
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemmul",
                 "mat_vecmul_ij",
@@ -211,7 +211,7 @@ class Tests:
             # of tests was called simply "pr"
 
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
@@ -322,7 +322,7 @@ class Tests:
         elif testname == "full":
 
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
@@ -511,7 +511,7 @@ class Tests:
             ]
         elif testname == "resnet":
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = []
             glb_tests = []
             glb_tests_fp = []
