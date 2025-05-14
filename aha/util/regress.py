@@ -588,6 +588,10 @@ def dispatch(args, extra_args=None):
             if test in imported_tests.resnet_tests:
                 imported_tests.resnet_tests.remove(test)
 
+
+#         # FOR TAPEOUT remove all glb_tests_fp, move them to aha2/aha3
+#         imported_tests.glb_tests_fp = [];
+
     # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
         no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
