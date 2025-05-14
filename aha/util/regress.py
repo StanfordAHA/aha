@@ -660,8 +660,8 @@ def dispatch(args, extra_args=None):
     kernel_name = ""
 
     if sparse_tests:
-        print(f"\n\n---- "SPARSE APPS ON SPARSE CHIP (zircon)" ----\n\n")
-        info.append(    ["SPARSE APPS ON SPARSE CHIP (zircon)"])
+        print(f"\n\n---- SPARSE APPS ON SPARSE CHIP (zircon) ----\n\n")
+        info.append(   ["SPARSE APPS ON SPARSE CHIP (zircon)"])
 
     if not(seed_flow):
         if os.path.exists("/aha/garnet/perf_stats.txt"):
