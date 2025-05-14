@@ -540,8 +540,18 @@ def dispatch(args, extra_args=None):
     from aha.util.regress_tests.tests import Tests
     imported_tests = None
 
+    # For sparse tests, we cherry pick some representative tests to run
+    no_zircon_sparse_tests = [
+        "vec_elemmul", 
+        "mat_vecmul_ij", 
+        "mat_elemadd_leakyrelu_exp", 
+        "matmul_ikj", 
+        "tensor3_mttkrp",
+    ]
+
     # pr_aha1 starts with the pr_aha suite and remove some tests
     if args.config == "pr_aha1":
+        no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("pr_aha")
 
         # Define all tests to remove for pr_aha1
@@ -580,6 +590,7 @@ def dispatch(args, extra_args=None):
 
     # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
+        no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("BLANK")
         imported_tests.glb_tests_RV = ["apps/gaussian_RV"]
         imported_tests.glb_tests_fp_RV = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV"]
@@ -769,16 +780,18 @@ def dispatch(args, extra_args=None):
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
 
-        # For sparse tests, we cherry pick some representative tests to run
-        no_zircon_sparse_tests = ["vec_elemmul", "mat_vecmul_ij", "mat_elemadd_leakyrelu_exp", "matmul_ikj", "tensor3_mttkrp"]
-        data_tile_pairs = []
-        kernel_name = ""
-        seed_flow = True
-        generate_sparse_bitstreams(no_zircon_sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
-                                    opal_workaround=args.opal_workaround, unroll=unroll)
-        for test in no_zircon_sparse_tests:
-            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        if no_zircon_sparse_tests:
+            # See above for no_zircon_sparse_tests[]
+            data_tile_pairs = []
+            kernel_name = ""
+            seed_flow = True
+            generate_sparse_bitstreams(no_zircon_sparse_tests, width, height,
+                                       seed_flow, data_tile_pairs, kernel_name,
+                                       opal_workaround=args.opal_workaround, unroll=unroll)
+
+            for test in no_zircon_sparse_tests:
+                t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
         for test in glb_tests:
