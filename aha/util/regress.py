@@ -542,10 +542,10 @@ def dispatch(args, extra_args=None):
 
     # For sparse tests, we cherry pick some representative tests to run
     no_zircon_sparse_tests = [
-        "vec_elemmul", 
-        "mat_vecmul_ij", 
-        "mat_elemadd_leakyrelu_exp", 
-        "matmul_ikj", 
+        "vec_elemmul",
+        "mat_vecmul_ij",
+        "mat_elemadd_leakyrelu_exp",
+        "matmul_ikj",
         "tensor3_mttkrp",
     ]
 
@@ -555,13 +555,52 @@ def dispatch(args, extra_args=None):
         imported_tests = Tests("pr_aha")
 
         # Define all tests to remove for pr_aha1
-        glb_tests_RV_to_remove = ["apps/gaussian_RV", "tests/bit8_packing_test_RV", "tests/bit8_unpack_test_RV", "tests/fp_get_shared_exp_test_RV"]
-        glb_tests_fp_RV_to_remove = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV", "apps/vector_reduction_fp_RV"]
-        glb_tests_to_remove = ["tests/bit8_packing_test", "tests/bit8_unpack_test", "tests/fp_get_shared_exp_test", "tests/fp_e8m0_quant_test", "apps/camera_pipeline_2x2",]
-        glb_tests_fp_to_remove = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp",
-                                  "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp", "apps/gelu_pass1_fp", "apps/gelu_pass2_fp",
-                                  "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
-        resnet_tests_to_remove = ["conv2_x"]
+        glb_tests_RV_to_remove = [
+            "apps/gaussian_RV",
+            "tests/bit8_packing_test_RV",
+            "tests/bit8_unpack_test_RV",
+            "tests/fp_get_shared_exp_test_RV",
+        ]
+        glb_tests_fp_RV_to_remove = [
+            "apps/scalar_reduction_fp_RV",
+            "apps/scalar_max_fp_RV",
+            "apps/layer_norm_pass2_fp_RV",
+            "apps/layer_norm_pass3_fp_RV",
+            "apps/abs_max_full_unroll_fp_RV",
+            "apps/scalar_avg_fp_RV",
+            "apps/stable_softmax_pass2_fp_RV",
+            "apps/stable_softmax_pass3_fp_RV",
+            "apps/vector_reduction_fp_RV",
+            "apps/gelu_pass1_fp_RV",
+            "apps/gelu_pass2_fp_RV",
+            "apps/silu_pass1_fp_RV",
+            "apps/silu_pass2_fp_RV",
+            "apps/swiglu_pass2_fp_RV",
+            "apps/rope_pass1_fp_RV",
+            "apps/rope_pass2_fp_RV",
+        ]
+        hardcoded_dense_tests_to_remove = [
+            "apps/unsharp_RV",
+        ]
+        glb_tests_to_remove = [
+            "apps/maxpooling",
+            "tests/bit8_packing_test",
+            "tests/bit8_unpack_test",
+            "tests/fp_get_shared_exp_test",
+            "tests/fp_e8m0_quant_test",
+            "apps/camera_pipeline_2x2",
+            "apps/gaussian",
+            "apps/harris_color",
+            "apps/unsharp",
+        ]
+        glb_tests_fp_to_remove = [
+            "apps/scalar_max_fp",
+            "apps/scalar_avg_fp",
+        ]
+        resnet_tests_to_remove = [
+            "conv2_x",
+            "conv1",
+        ]
 
         # Remove integer RV tests
         for test in glb_tests_RV_to_remove:
@@ -592,22 +631,66 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr_aha2":
         no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("BLANK")
-        imported_tests.glb_tests_RV = ["apps/gaussian_RV"]
-        imported_tests.glb_tests_fp_RV = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV"]
-        # We know gaussian is redundant here but we keep it for some reasons
-        imported_tests.glb_tests = ["apps/gaussian", "tests/bit8_packing_test", "tests/bit8_unpack_test", "tests/fp_get_shared_exp_test", "tests/fp_e8m0_quant_test"]
-        imported_tests.glb_tests_fp = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp",
-                                  "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
-        imported_tests.resnet_tests = ["conv2_x"]
+        imported_tests.glb_tests_RV = [
+            "apps/gaussian_RV",
+        ]
+        imported_tests.glb_tests_fp_RV = [
+            "apps/scalar_reduction_fp_RV",
+            "apps/scalar_max_fp_RV",
+            "apps/layer_norm_pass2_fp_RV",
+            "apps/layer_norm_pass3_fp_RV",
+            "apps/abs_max_full_unroll_fp_RV",
+            "apps/scalar_avg_fp_RV",
+        ]
+        imported_tests.glb_tests = [
+            "apps/maxpooling",
+            "tests/bit8_packing_test",
+            "tests/bit8_unpack_test",
+            "tests/fp_get_shared_exp_test",
+            "tests/fp_e8m0_quant_test",
+        ]
+        imported_tests.glb_tests_fp = [
+            "apps/scalar_max_fp",
+        ]
+        imported_tests.resnet_tests = [
+            "conv2_x",
+        ]
 
     # pr_aha3 contains all the remaining tests
     elif args.config == "pr_aha3":
         imported_tests = Tests("BLANK")
-        imported_tests.glb_tests_RV = ["tests/bit8_packing_test_RV", "tests/bit8_unpack_test_RV", "tests/fp_get_shared_exp_test_RV"]
-        imported_tests.glb_tests_fp_RV = ["apps/vector_reduction_fp_RV"]
-        imported_tests.glb_tests = ["apps/camera_pipeline_2x2"]
-        imported_tests.glb_tests_fp = ["apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
-        # imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
+        imported_tests.glb_tests_RV = [
+            "tests/bit8_packing_test_RV",
+            "tests/bit8_unpack_test_RV",
+            "tests/fp_get_shared_exp_test_RV",
+        ]
+        imported_tests.glb_tests_fp_RV = [
+            "apps/stable_softmax_pass2_fp_RV",
+            "apps/stable_softmax_pass3_fp_RV",
+            "apps/vector_reduction_fp_RV",
+            "apps/gelu_pass1_fp_RV",
+            "apps/gelu_pass2_fp_RV",
+            "apps/silu_pass1_fp_RV",
+            "apps/silu_pass2_fp_RV",
+            "apps/swiglu_pass2_fp_RV",
+            "apps/rope_pass1_fp_RV",
+            "apps/rope_pass2_fp_RV",
+        ]
+        imported_tests.hardcoded_dense_tests = [
+            "apps/unsharp_RV",
+        ]
+        imported_tests.glb_tests = [
+            "apps/camera_pipeline_2x2",
+            "apps/gaussian",
+            "apps/harris_color",
+            "apps/unsharp",
+        ]
+        imported_tests.glb_tests_fp = [
+            "apps/scalar_avg_fp",
+        ]
+        imported_tests.resnet_tests = [
+            "conv1",
+        ]
 
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
     else:
