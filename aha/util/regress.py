@@ -355,7 +355,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
     time_compile = time.time() - start
-    breakpoint()
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
     start = time.time()
