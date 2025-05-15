@@ -586,6 +586,7 @@ def dispatch(args, extra_args=None):
                                   "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp", "apps/gelu_pass1_fp", "apps/gelu_pass2_fp",
                                   "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
         resnet_tests_to_remove = ["conv2_x"]
+        hardcoded_dense_tests_to_remove = ["apps/unsharp_RV"]
 
         # Remove integer RV tests
         for test in glb_tests_RV_to_remove:
@@ -596,6 +597,11 @@ def dispatch(args, extra_args=None):
         for test in glb_tests_fp_RV_to_remove:
             if test in imported_tests.glb_tests_fp_RV:
                 imported_tests.glb_tests_fp_RV.remove(test)
+
+        # Remove hardcoded dense tests
+        for test in hardcoded_dense_tests_to_remove:
+            if test in imported_tests.hardcoded_dense_tests:
+                imported_tests.hardcoded_dense_tests.remove(test)
 
         # Remove integer static tests
         for test in glb_tests_to_remove:
@@ -631,6 +637,7 @@ def dispatch(args, extra_args=None):
         imported_tests.glb_tests_fp_RV = ["apps/vector_reduction_fp_RV"]
         imported_tests.glb_tests = ["apps/camera_pipeline_2x2"]
         imported_tests.glb_tests_fp = ["apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
+        imported_tests.hardcoded_dense_tests = ["apps/unsharp_RV"]
         # imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
 
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py

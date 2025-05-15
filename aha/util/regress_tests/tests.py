@@ -124,6 +124,7 @@ class Tests:
                 "apps/rope_pass2_fp_RV",
             ]
             hardcoded_dense_tests = [
+                # pr_aha3
                 "apps/unsharp_RV",
                 # "apps/depthwise_conv" # down on Zircon
             ]
