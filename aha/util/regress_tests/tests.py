@@ -124,6 +124,7 @@ class Tests:
                 "apps/rope_pass2_fp_RV",
             ]
             hardcoded_dense_tests = [
+                "apps/unsharp_RV",
                 # "apps/depthwise_conv" # down on Zircon
             ]
             # Tests below are non-zircon and won't run by default
@@ -278,6 +279,7 @@ class Tests:
                 # "tests/fp_conv_7_7_RV",
             ]
             hardcoded_dense_tests = [
+                "apps/unsharp_RV",
                 # "apps/depthwise_conv" # down on Zircon
             ]
             # Tests below are non-zircon and won't run by default
@@ -431,6 +433,7 @@ class Tests:
                 # "tests/fp_conv_7_7_RV",
             ]
             hardcoded_dense_tests = [
+                "apps/unsharp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/depthwise_conv" # down on Zircon
             ]

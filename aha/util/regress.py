@@ -355,6 +355,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     start = time.time()
     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
     time_compile = time.time() - start
+    breakpoint()
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
     start = time.time()
@@ -433,7 +434,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     return time_compile, time_map, time_test
 
 
-def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0):
+def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -469,21 +470,15 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = ["--daemon", "auto"]
 
-    try:
-        buildkite_args = [
-            "aha",
-            "pnr",
-            test,
-            "--width", str(width),
-            "--height", str(height),
-            "--env-parameters", env_parameters,
-        ] + use_daemon + layer_array
-        buildkite_call(buildkite_args)
-    except:
-        print("[INFO] Finished PnR which is expected to fail", flush=True)
+    print(f"--- {testname} - pnr and pipelining", flush=True)
+    start = time.time()
 
-    print(f"[INFO] Re-copying design_top.json configuration", flush=True)
-    shutil.copy(f"{app_path}/bin_hardcoded/design_top.json", f"{app_path}/bin/design_top.json")
+    # To use daemon, call regress.py with args '--daemon auto'
+    # --- extra_args=['--daemon', 'auto']
+    use_daemon = []
+    if (extra_args):
+        if ('--daemon' in extra_args) and ('auto' in extra_args):
+            use_daemon = ["--daemon", "auto"]
 
     buildkite_args = [
         "aha",
@@ -491,7 +486,6 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         test,
         "--width", str(width),
         "--height", str(height),
-        "--generate-bitstream-only",
         "--env-parameters", env_parameters,
     ] + use_daemon + layer_array
 
@@ -499,25 +493,55 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         buildkite_args.append("--dense-only")
 
     env_vars = {}
+    if dense_ready_valid:
+        print(f"\033[92mINFO: Running {test} in dense ready-valid mode\033[0m")
+        env_vars["DENSE_READY_VALID"] = "1"
+        env_vars["EXHAUSTIVE_PIPE"] = "1"
+
+    if E64_mode_on:
+        print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")
+        env_vars["E64_MODE_ON"] = "1"
+
+    if E64_multi_bank_mode_on:
+        print(f"\033[92mINFO: Running {test} with E64 MULTI BANK MODE ON\033[0m")
+        env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     if using_matrix_unit:
+        #TODO: Make these all env vars?
         buildkite_args.append("--using-matrix-unit")
+        buildkite_args.append("--mu-datawidth")
+        buildkite_args.append(str(mu_datawidth))
         buildkite_args.append("--give-north-io-sbs")
+        buildkite_args.append("--num-fabric-cols-removed")
+        buildkite_args.append(str(num_fabric_cols_removed))
+        buildkite_args.append("--mu-oc-0")
+        buildkite_args.append(str(mu_oc_0))
+        buildkite_args.append("--include-E64-hw")
+        buildkite_args.append("--include-multi-bank-hw")
+        buildkite_args.append("--include-mu-glb-hw")
+        buildkite_args.append("--use-non-split-fifos")
+
+        env_vars["INCLUDE_E64_HW"] = "1"
+        env_vars["INCLUDE_MULTI_BANK_HW"] = "1"
 
         if num_fabric_cols_removed == 0:
             env_vars["WEST_IN_IO_SIDES"] = "1"
 
         env_vars["USING_MATRIX_UNIT"] = "1"
+        env_vars["INCLUDE_MU_GLB_HW"] = "1"
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
+        env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
 
-    buildkite_call(buildkite_args)
-
+    buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test], env=env_vars)
+    if use_fp:
+        buildkite_call(["aha", "test", test, "--dense-fp"], env=env_vars)
+    else:
+        buildkite_call(["aha", "test", test], env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -542,10 +566,10 @@ def dispatch(args, extra_args=None):
 
     # For sparse tests, we cherry pick some representative tests to run
     no_zircon_sparse_tests = [
-        "vec_elemmul", 
-        "mat_vecmul_ij", 
-        "mat_elemadd_leakyrelu_exp", 
-        "matmul_ikj", 
+        "vec_elemmul",
+        "mat_vecmul_ij",
+        "mat_elemadd_leakyrelu_exp",
+        "matmul_ikj",
         "tensor3_mttkrp",
     ]
 
@@ -767,8 +791,13 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
+        test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
-                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     if args.include_no_zircon_tests:
