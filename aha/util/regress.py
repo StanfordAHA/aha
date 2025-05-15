@@ -433,7 +433,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     return time_compile, time_map, time_test
 
 
-def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0):
+def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -469,21 +469,15 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = ["--daemon", "auto"]
 
-    try:
-        buildkite_args = [
-            "aha",
-            "pnr",
-            test,
-            "--width", str(width),
-            "--height", str(height),
-            "--env-parameters", env_parameters,
-        ] + use_daemon + layer_array
-        buildkite_call(buildkite_args)
-    except:
-        print("[INFO] Finished PnR which is expected to fail", flush=True)
+    print(f"--- {testname} - pnr and pipelining", flush=True)
+    start = time.time()
 
-    print(f"[INFO] Re-copying design_top.json configuration", flush=True)
-    shutil.copy(f"{app_path}/bin_hardcoded/design_top.json", f"{app_path}/bin/design_top.json")
+    # To use daemon, call regress.py with args '--daemon auto'
+    # --- extra_args=['--daemon', 'auto']
+    use_daemon = []
+    if (extra_args):
+        if ('--daemon' in extra_args) and ('auto' in extra_args):
+            use_daemon = ["--daemon", "auto"]
 
     buildkite_args = [
         "aha",
@@ -491,7 +485,6 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         test,
         "--width", str(width),
         "--height", str(height),
-        "--generate-bitstream-only",
         "--env-parameters", env_parameters,
     ] + use_daemon + layer_array
 
@@ -499,25 +492,55 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         buildkite_args.append("--dense-only")
 
     env_vars = {}
+    if dense_ready_valid:
+        print(f"\033[92mINFO: Running {test} in dense ready-valid mode\033[0m")
+        env_vars["DENSE_READY_VALID"] = "1"
+        env_vars["EXHAUSTIVE_PIPE"] = "1"
+
+    if E64_mode_on:
+        print(f"\033[92mINFO: Running {test} with E64 MODE ON\033[0m")
+        env_vars["E64_MODE_ON"] = "1"
+
+    if E64_multi_bank_mode_on:
+        print(f"\033[92mINFO: Running {test} with E64 MULTI BANK MODE ON\033[0m")
+        env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     if using_matrix_unit:
+        #TODO: Make these all env vars?
         buildkite_args.append("--using-matrix-unit")
+        buildkite_args.append("--mu-datawidth")
+        buildkite_args.append(str(mu_datawidth))
         buildkite_args.append("--give-north-io-sbs")
+        buildkite_args.append("--num-fabric-cols-removed")
+        buildkite_args.append(str(num_fabric_cols_removed))
+        buildkite_args.append("--mu-oc-0")
+        buildkite_args.append(str(mu_oc_0))
+        buildkite_args.append("--include-E64-hw")
+        buildkite_args.append("--include-multi-bank-hw")
+        buildkite_args.append("--include-mu-glb-hw")
+        buildkite_args.append("--use-non-split-fifos")
+
+        env_vars["INCLUDE_E64_HW"] = "1"
+        env_vars["INCLUDE_MULTI_BANK_HW"] = "1"
 
         if num_fabric_cols_removed == 0:
             env_vars["WEST_IN_IO_SIDES"] = "1"
 
         env_vars["USING_MATRIX_UNIT"] = "1"
+        env_vars["INCLUDE_MU_GLB_HW"] = "1"
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
+        env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
 
-    buildkite_call(buildkite_args)
-
+    buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    buildkite_call(["aha", "test", test], env=env_vars)
+    if use_fp:
+        buildkite_call(["aha", "test", test, "--dense-fp"], env=env_vars)
+    else:
+        buildkite_call(["aha", "test", test], env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -542,10 +565,10 @@ def dispatch(args, extra_args=None):
 
     # For sparse tests, we cherry pick some representative tests to run
     no_zircon_sparse_tests = [
-        "vec_elemmul", 
-        "mat_vecmul_ij", 
-        "mat_elemadd_leakyrelu_exp", 
-        "matmul_ikj", 
+        "vec_elemmul",
+        "mat_vecmul_ij",
+        "mat_elemadd_leakyrelu_exp",
+        "matmul_ikj",
         "tensor3_mttkrp",
     ]
 
@@ -555,13 +578,52 @@ def dispatch(args, extra_args=None):
         imported_tests = Tests("pr_aha")
 
         # Define all tests to remove for pr_aha1
-        glb_tests_RV_to_remove = ["apps/gaussian_RV", "tests/bit8_packing_test_RV", "tests/bit8_unpack_test_RV", "tests/fp_get_shared_exp_test_RV"]
-        glb_tests_fp_RV_to_remove = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV", "apps/vector_reduction_fp_RV"]
-        glb_tests_to_remove = ["tests/bit8_packing_test", "tests/bit8_unpack_test", "tests/fp_get_shared_exp_test", "tests/fp_e8m0_quant_test", "apps/camera_pipeline_2x2",]
-        glb_tests_fp_to_remove = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp",
-                                  "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp", "apps/gelu_pass1_fp", "apps/gelu_pass2_fp",
-                                  "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
-        resnet_tests_to_remove = ["conv2_x"]
+        glb_tests_RV_to_remove = [
+            "apps/gaussian_RV",
+            "tests/bit8_packing_test_RV",
+            "tests/bit8_unpack_test_RV",
+            "tests/fp_get_shared_exp_test_RV",
+        ]
+        glb_tests_fp_RV_to_remove = [
+            "apps/scalar_reduction_fp_RV",
+            "apps/scalar_max_fp_RV",
+            "apps/layer_norm_pass2_fp_RV",
+            "apps/layer_norm_pass3_fp_RV",
+            "apps/abs_max_full_unroll_fp_RV",
+            "apps/scalar_avg_fp_RV",
+            "apps/stable_softmax_pass2_fp_RV",
+            "apps/stable_softmax_pass3_fp_RV",
+            "apps/vector_reduction_fp_RV",
+            "apps/gelu_pass1_fp_RV",
+            "apps/gelu_pass2_fp_RV",
+            "apps/silu_pass1_fp_RV",
+            "apps/silu_pass2_fp_RV",
+            "apps/swiglu_pass2_fp_RV",
+            "apps/rope_pass1_fp_RV",
+            "apps/rope_pass2_fp_RV",
+        ]
+        hardcoded_dense_tests_to_remove = [
+            "apps/unsharp_RV",
+        ]
+        glb_tests_to_remove = [
+            "apps/maxpooling",
+            "tests/bit8_packing_test",
+            "tests/bit8_unpack_test",
+            "tests/fp_get_shared_exp_test",
+            "tests/fp_e8m0_quant_test",
+            "apps/camera_pipeline_2x2",
+            "apps/gaussian",
+            "apps/harris_color",
+            "apps/unsharp",
+        ]
+        glb_tests_fp_to_remove = [
+            "apps/scalar_max_fp",
+            "apps/scalar_avg_fp",
+        ]
+        resnet_tests_to_remove = [
+            "conv2_x",
+            "conv1",
+        ]
 
         # Remove integer RV tests
         for test in glb_tests_RV_to_remove:
@@ -572,6 +634,11 @@ def dispatch(args, extra_args=None):
         for test in glb_tests_fp_RV_to_remove:
             if test in imported_tests.glb_tests_fp_RV:
                 imported_tests.glb_tests_fp_RV.remove(test)
+
+        # Remove hardcoded dense tests
+        for test in hardcoded_dense_tests_to_remove:
+            if test in imported_tests.hardcoded_dense_tests:
+                imported_tests.hardcoded_dense_tests.remove(test)
 
         # Remove integer static tests
         for test in glb_tests_to_remove:
@@ -592,22 +659,66 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr_aha2":
         no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("BLANK")
-        imported_tests.glb_tests_RV = ["apps/gaussian_RV"]
-        imported_tests.glb_tests_fp_RV = ["apps/abs_max_full_unroll_fp_RV", "apps/scalar_reduction_fp_RV"]
-        # We know gaussian is redundant here but we keep it for some reasons
-        imported_tests.glb_tests = ["apps/gaussian", "tests/bit8_packing_test", "tests/bit8_unpack_test", "tests/fp_get_shared_exp_test", "tests/fp_e8m0_quant_test"]
-        imported_tests.glb_tests_fp = ["apps/scalar_max_fp", "apps/stable_softmax_pass2_fp", "apps/stable_softmax_pass3_fp", "apps/scalar_avg_fp",
-                                  "apps/layer_norm_pass2_fp", "apps/layer_norm_pass3_fp"]
-        imported_tests.resnet_tests = ["conv2_x"]
+        imported_tests.glb_tests_RV = [
+            "apps/gaussian_RV",
+        ]
+        imported_tests.glb_tests_fp_RV = [
+            "apps/scalar_reduction_fp_RV",
+            "apps/scalar_max_fp_RV",
+            "apps/layer_norm_pass2_fp_RV",
+            "apps/layer_norm_pass3_fp_RV",
+            "apps/abs_max_full_unroll_fp_RV",
+            "apps/scalar_avg_fp_RV",
+        ]
+        imported_tests.glb_tests = [
+            "apps/maxpooling",
+            "tests/bit8_packing_test",
+            "tests/bit8_unpack_test",
+            "tests/fp_get_shared_exp_test",
+            "tests/fp_e8m0_quant_test",
+        ]
+        imported_tests.glb_tests_fp = [
+            "apps/scalar_max_fp",
+        ]
+        imported_tests.resnet_tests = [
+            "conv2_x",
+        ]
 
     # pr_aha3 contains all the remaining tests
     elif args.config == "pr_aha3":
         imported_tests = Tests("BLANK")
-        imported_tests.glb_tests_RV = ["tests/bit8_packing_test_RV", "tests/bit8_unpack_test_RV", "tests/fp_get_shared_exp_test_RV"]
-        imported_tests.glb_tests_fp_RV = ["apps/vector_reduction_fp_RV"]
-        imported_tests.glb_tests = ["apps/camera_pipeline_2x2"]
-        imported_tests.glb_tests_fp = ["apps/gelu_pass1_fp", "apps/gelu_pass2_fp", "apps/silu_pass1_fp", "apps/silu_pass2_fp", "apps/swiglu_pass2_fp"]
-        # imported_tests.resnet_tests_fp = [ 'conv2_x_fp' ]
+        imported_tests.glb_tests_RV = [
+            "tests/bit8_packing_test_RV",
+            "tests/bit8_unpack_test_RV",
+            "tests/fp_get_shared_exp_test_RV",
+        ]
+        imported_tests.glb_tests_fp_RV = [
+            "apps/stable_softmax_pass2_fp_RV",
+            "apps/stable_softmax_pass3_fp_RV",
+            "apps/vector_reduction_fp_RV",
+            "apps/gelu_pass1_fp_RV",
+            "apps/gelu_pass2_fp_RV",
+            "apps/silu_pass1_fp_RV",
+            "apps/silu_pass2_fp_RV",
+            "apps/swiglu_pass2_fp_RV",
+            "apps/rope_pass1_fp_RV",
+            "apps/rope_pass2_fp_RV",
+        ]
+        imported_tests.hardcoded_dense_tests = [
+            "apps/unsharp_RV",
+        ]
+        imported_tests.glb_tests = [
+            "apps/camera_pipeline_2x2",
+            "apps/gaussian",
+            "apps/harris_color",
+            "apps/unsharp",
+        ]
+        imported_tests.glb_tests_fp = [
+            "apps/scalar_avg_fp",
+        ]
+        imported_tests.resnet_tests = [
+            "conv1",
+        ]
 
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
     else:
@@ -767,8 +878,13 @@ def dispatch(args, extra_args=None):
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
+        test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
-                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     if args.include_no_zircon_tests:

@@ -149,11 +149,9 @@ elif [ "$1" == '--commands' ]; then
 
       # For fast prototyping: ECHO ONLY and/or try config 'fast'
       # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
-      # Temporarily disable the no-zircon-tests before tapeout but should bring this back when have time
       set -x
       echo "aha regress $CONFIG"
-      # aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
-      aha regress $CONFIG --daemon auto || exit 13
+      aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
       set +x
     fi
 
