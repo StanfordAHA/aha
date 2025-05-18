@@ -61,6 +61,8 @@ RUN apt-get update && \
         # pono
         time \
         m4 \
+        # fault
+        verilator \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
     ln -s /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.1 && \
