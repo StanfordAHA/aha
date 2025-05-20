@@ -482,7 +482,6 @@ class Tests:
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
                 "apps/rope_pass2_fp",
-                "apps/abs_max_full_unroll_fp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
