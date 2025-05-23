@@ -53,9 +53,21 @@ wh="--width $width --height $height"
 # This would require some kind of --no-docker flag for gen_rtl.sh or some such...
 
 # RTL-build flags (flags are very different b/c divergence of garnet.py, garnet_amber.py
-amber_flags  =" $wh --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
-onyx_flags   =" $wh --verilog --use_sim_sram        --glb_tile_mem_size 128"
-zircon_flags =" $wh --verilog --use_sim_sram        --glb_tile_mem_size 128 --num_fabric_cols_removed 4 --mu_oc_0 8"
+amber_flags="$wh --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
+onyx_flags="$wh --verilog --use_sim_sram --glb_tile_mem_size 128"
+zircon_flags="$wh --verilog \
+--use_sim_sram \
+--glb_tile_mem_size 128 \
+--using-matrix-unit \
+--mu-datawidth 16 \
+--give-north-io-sbs \
+--num-fabric-cols-removed 4 \
+--mu-oc-0 8 \
+--include-E64-hw \
+--include-multi-bank-hw \
+--include-mu-glb-hw \
+--use-non-split-fifos \
+--exclude-glb-ring-switch"
 
 export WHICH_SOC=$1
 
@@ -126,7 +138,7 @@ printf "\n"
 
 ########################################################################
 echo "+++ Compare result to reference build"
-echo "+++ Compare result to reference build FAIL"
+# echo "+++ Compare result to reference build FAIL"
 
 cd /aha/garnet  # This is where design.v lives
 

@@ -164,6 +164,7 @@ steps:
 
 # Can unskip this step when/if want to monitor when/whether RTL changes
 - label: "Zircon Gold"
+  key: "zircon_gold"
   # Change this to true if want to make changes to zircon RTL
   skip: false
   soft_fail: false  # Failing gold check will fail pipeline.
@@ -197,6 +198,7 @@ steps:
 
 - label: "Regress 1"
   key: "regress1"
+  depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -213,6 +215,7 @@ steps:
 
 - label: "Regress 2"
   key: "regress2"
+  depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -228,6 +231,7 @@ steps:
 
 - label: "Regress 3"
   key: "regress3"
+  depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
