@@ -521,6 +521,7 @@ def test_hardcoded_dense_app(test, width, height, env_parameters, extra_args, la
         buildkite_args.append("--include-multi-bank-hw")
         buildkite_args.append("--include-mu-glb-hw")
         buildkite_args.append("--use-non-split-fifos")
+        buildkite_args.append("--pipeline-mu2cgra")
 
         env_vars["INCLUDE_E64_HW"] = "1"
         env_vars["INCLUDE_MULTI_BANK_HW"] = "1"
