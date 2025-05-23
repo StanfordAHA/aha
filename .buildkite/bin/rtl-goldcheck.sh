@@ -13,12 +13,13 @@ cmd=$0
 
 HELP="
 DESCRIPTION:
-  Builds '/aha/garnet/design.v' RTL for a 4x2 amber or onyx SoC.
+  Builds '/aha/garnet/design.v' RTL for a 4x2 amber, onyx or zircon SoC.
   Compares to reference build.
 
 USAGE:
    $cmd amber      # Build and compare amber RTL
    $cmd onyx       # Build and compare onyx RTL
+   $cmd zircon     # Build and compare zircon RTL
 
 EXAMPLE
    $cmd amber && echo PASS || echo FAIL
@@ -43,14 +44,18 @@ echo "--- Found GARNET_HOME=$GARNET_HOME"
 
 width=32; height=$((width/2))  # slow 32x16
 width=4;  height=$((width/2))  # quick 4x2
+if [ "$1" == "zircon" ]; then
+    width=8; height=2  # zircon 8x8
+fi
 wh="--width $width --height $height"
 
 # FIXME should really use garnet's gen_rtl.sh to generate the RTL and flags etc.
 # This would require some kind of --no-docker flag for gen_rtl.sh or some such...
 
 # RTL-build flags (flags are very different b/c divergence of garnet.py, garnet_amber.py
-amber_flags="$wh --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
-onyx_flags=" $wh --verilog --use_sim_sram        --glb_tile_mem_size 128"
+amber_flags  =" $wh --pipeline_config_interval 8 -v --glb_tile_mem_size 256"
+onyx_flags   =" $wh --verilog --use_sim_sram        --glb_tile_mem_size 128"
+zircon_flags =" $wh --verilog --use_sim_sram        --glb_tile_mem_size 128 --num_fabric_cols_removed 4 --mu_oc_0 8"
 
 export WHICH_SOC=$1
 
@@ -65,6 +70,9 @@ if [ "$1" == "amber" ]; then
 
 elif [ "$1" == "onyx" ]; then
     flags="$onyx_flags"
+
+elif [ "$1" == "zircon" ]; then
+    flags="$zircon_flags"
 
 else
     echo "$HELP" && exit 13
