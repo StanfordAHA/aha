@@ -106,6 +106,7 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
             buildkite_args.append("--include-mu-glb-hw")
             buildkite_args.append("--use-non-split-fifos")
             buildkite_args.append("--exclude-glb-ring-switch")
+            buildkite_args.append("--pipeline-mu2cgra")
 
         buildkite_call(buildkite_args)
 

@@ -67,7 +67,8 @@ zircon_flags="$wh --verilog \
 --include-multi-bank-hw \
 --include-mu-glb-hw \
 --use-non-split-fifos \
---exclude-glb-ring-switch"
+--exclude-glb-ring-switch \
+--pipeline-mu2cgra"
 
 export WHICH_SOC=$1
 
