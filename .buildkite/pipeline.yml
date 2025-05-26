@@ -160,6 +160,31 @@ steps:
     fi
 
 ########################################################################
+# ZIRCON GOLD step
+
+# Can unskip this step when/if want to monitor when/whether RTL changes
+- label: "Zircon Gold"
+  key: "zircon_gold"
+  # Change this to true if want to make changes to zircon RTL
+  skip: false
+  soft_fail: false  # Failing gold check will fail pipeline.
+  plugins:
+    - uber-workflow/run-without-clone:  # Don't need clone when using docker
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes: ["/cad/:/cad"]
+        shell:   ["/bin/bash", "-e", "-c"]
+        mount-checkout: false
+  commands: |
+    echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
+    if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
+        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+        echo "++ $$msg"
+        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+        exit 13
+    fi
+
+########################################################################
 # NOTES: onyx regressions
 
 # We report success to the aha-flow app by removing the .TEST file, which is
@@ -173,6 +198,7 @@ steps:
 
 - label: "Regress 1"
   key: "regress1"
+  depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -189,6 +215,7 @@ steps:
 
 - label: "Regress 2"
   key: "regress2"
+  depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -204,6 +231,7 @@ steps:
 
 - label: "Regress 3"
   key: "regress3"
+  depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -219,7 +247,7 @@ steps:
 
 # Wait for all steps to complete before sending out final status
 # This step should run regardless of whether prev steps failed
-- wait: { continue_on_failure: true } 
+- wait: { continue_on_failure: true }
 
 - label: "Cleanup"
 
