@@ -16,7 +16,7 @@ class Tests:
         hardcoded_dense_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
-        cols_removed, mu_oc_0 = 8, 32
+        cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io",
@@ -69,7 +69,7 @@ class Tests:
             # tests pr_aha1,2,3 that can all run in parallel.
 
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemmul",
                 "mat_vecmul_ij",
@@ -109,16 +109,16 @@ class Tests:
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
                 # pr_aha2
-                "apps/abs_max_full_unroll_fp_RV",
                 "apps/scalar_reduction_fp_RV",
-                # pr_aha3
-                "apps/vector_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
-                "apps/stable_softmax_pass2_fp_RV",
-                "apps/stable_softmax_pass3_fp_RV",
-                "apps/scalar_avg_fp_RV",
                 "apps/layer_norm_pass2_fp_RV",
                 "apps/layer_norm_pass3_fp_RV",
+                "apps/abs_max_full_unroll_fp_RV",
+                "apps/scalar_avg_fp_RV",
+                # pr_aha3
+                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/vector_reduction_fp_RV",
                 "apps/gelu_pass1_fp_RV",
                 "apps/gelu_pass2_fp_RV",
                 "apps/silu_pass1_fp_RV",
@@ -128,52 +128,44 @@ class Tests:
                 "apps/rope_pass2_fp_RV",
             ]
             hardcoded_dense_tests = [
+                # pr_aha3
+                "apps/unsharp_RV",
                 # "apps/depthwise_conv" # down on Zircon
             ]
             # Tests below are non-zircon and won't run by default
             glb_tests = [
                 # pr_aha1
-                "apps/maxpooling",
                 "apps/pointwise",
-                "apps/gaussian",
-                "apps/harris_color",
-                "apps/unsharp",
                 # pr_aha2
+                "apps/maxpooling",
                 "tests/bit8_packing_test",
                 "tests/bit8_unpack_test",
                 "tests/fp_get_shared_exp_test",
                 "tests/fp_e8m0_quant_test",
                 # pr_aha3
                 "apps/camera_pipeline_2x2",
+                "apps/gaussian",
+                "apps/harris_color",
+                "apps/unsharp",
             ]
             glb_tests_fp = [
                 # pr_aha1
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
-                "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp",
                 "apps/relu_layer_fp",
                 # pr_aha2
                 "apps/scalar_max_fp",
-                "apps/stable_softmax_pass2_fp",
-                "apps/stable_softmax_pass3_fp",
-                "apps/scalar_avg_fp",
-                "apps/layer_norm_pass2_fp",
-                "apps/layer_norm_pass3_fp",
                 # pr_aha3
-                "apps/gelu_pass1_fp",
-                "apps/gelu_pass2_fp",
-                "apps/silu_pass1_fp",
-                "apps/silu_pass2_fp",
-                "apps/swiglu_pass2_fp",
+                "apps/scalar_avg_fp",
             ]
             resnet_tests = [
                 # pr_aha1
-                "conv1",
                 "conv5_x",
                 # pr_aha2
                 "conv2_x",
+                # pr_aha3
+                "conv1",
             ]
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
@@ -217,7 +209,7 @@ class Tests:
             # of tests was called simply "pr"
 
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
@@ -283,6 +275,7 @@ class Tests:
                 # "tests/fp_conv_7_7_RV",
             ]
             hardcoded_dense_tests = [
+                "apps/unsharp_RV",
                 # "apps/depthwise_conv" # down on Zircon
             ]
             # Tests below are non-zircon and won't run by default
@@ -330,7 +323,7 @@ class Tests:
         elif testname == "full":
 
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
@@ -437,6 +430,7 @@ class Tests:
                 # "tests/fp_conv_7_7_RV",
             ]
             hardcoded_dense_tests = [
+                "apps/unsharp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/depthwise_conv" # down on Zircon
             ]
@@ -494,7 +488,6 @@ class Tests:
                 "apps/swiglu_pass2_fp",
                 "apps/rope_pass1_fp",
                 "apps/rope_pass2_fp",
-                "apps/abs_max_full_unroll_fp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
@@ -521,7 +514,7 @@ class Tests:
             external_mu_tests = []
         elif testname == "resnet":
             width, height = 28, 16
-            cols_removed, mu_oc_0 = 8, 32
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = []
             glb_tests = []
             glb_tests_fp = []
