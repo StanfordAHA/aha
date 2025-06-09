@@ -80,6 +80,16 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
+# Install Miniconda
+ENV CONDA_DIR=/opt/conda
+RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
+    && bash miniconda.sh -b -p $CONDA_DIR \
+    && rm miniconda.sh \
+    && $CONDA_DIR/bin/conda clean -afy
+
+# Make conda globally available
+ENV PATH=$CONDA_DIR/bin:$PATH
+
 # Create an aha directory and prep a python environment.
 # Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
@@ -228,6 +238,42 @@ RUN set -e && \
     cd cyclone/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j router
+
+# voyager
+COPY ./voyager /aha/voyager
+echo "--- ..Voyager step 1"
+RUN cd /aha/voyager && git submodule update --init --recursive && \
+conda install -y -c conda-forge \
+    libprotobuf<6 \
+    llvmdev \
+    llvm-tools \
+    clang \
+    clangdev \
+    python=3.10 \
+    pip && \
+    pip install --no-cache-dir \
+        torch==2.3.1 \
+        torchvision==0.18.1 \
+        torchaudio==2.3.1 \
+        deepdiff \
+        xonsh \
+        git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
+        pandas \
+        compiledb \
+        -r quantized-training/requirements.txt
+echo "--- ..Voyager step 2"
+RUN cd /aha/voyager/quantized-training && \
+    pip install -r requirements.txt && \
+    pip install -e .
+
+echo "--- ..Voyager step 3"
+RUN cd /aha/voyager && pip install quantized-training
+
+
+# Optional: Set default command
+CMD ["/bin/bash"]
+
+
 
 # ------------------------------------------------------------------------------
 # Final pip installs: AHA Tools etc.
