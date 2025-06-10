@@ -112,6 +112,7 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
   cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
