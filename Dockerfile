@@ -137,8 +137,9 @@ conda install -y -c conda-forge \
         xonsh \
         git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
         pandas \
-        compiledb \
-        -r quantized-training/requirements.txt
+        compiledb
+        #\
+        #-r quantized-training/requirements.txt
 RUN echo "--- ..Voyager step 3"
 RUN cd /aha/voyager/quantized-training && \
     pip install -r requirements.txt && \
