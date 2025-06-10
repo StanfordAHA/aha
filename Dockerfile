@@ -80,16 +80,6 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-# Install Miniconda
-ENV CONDA_DIR=/opt/conda
-RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
-    && bash miniconda.sh -b -p $CONDA_DIR \
-    && rm miniconda.sh \
-    && $CONDA_DIR/bin/conda clean -afy
-
-# Make conda globally available
-ENV PATH=$CONDA_DIR/bin:$PATH
-
 # Create an aha directory and prep a python environment.
 # Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
@@ -221,6 +211,17 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
 COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
+
+# Install Miniconda
+ENV CONDA_DIR=/opt/conda
+RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
+    && bash miniconda.sh -b -p $CONDA_DIR \
+    && rm miniconda.sh \
+    && $CONDA_DIR/bin/conda clean -afy
+
+# Make conda globally available
+ENV PATH=$CONDA_DIR/bin:$PATH
 
 # Voyager 1 - clone voyager
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
