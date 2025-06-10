@@ -222,28 +222,19 @@ COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
-# cgra_pnr
-COPY ./cgra_pnr /aha/cgra_pnr
-WORKDIR /aha/cgra_pnr
-RUN set -e && \
-    # thunder
-    mkdir -p thunder/build && \
-    cd thunder/build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j placer && \
-    cd ../.. && \
-    \
-    # cyclone
-    mkdir -p cyclone/build && \
-    cd cyclone/build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j router
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
+  cd /aha/voyager && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
-# voyager
+# Voyager 2: setup voyager
 COPY ./voyager /aha/voyager
-RUN echo "--- ..Voyager step 1"
-RUN cd /aha/voyager && git submodule update --init --recursive && \
-conda install -y -c conda-forge \
+RUN echo "--- ..Voyager step 2"
+# RUN cd /aha/voyager && git submodule update --init --recursive && \
+RUN conda install -y -c conda-forge \
     libprotobuf<6 \
     llvmdev \
     llvm-tools \
@@ -261,19 +252,31 @@ conda install -y -c conda-forge \
         pandas \
         compiledb \
         -r quantized-training/requirements.txt
-RUN echo "--- ..Voyager step 2"
+RUN echo "--- ..Voyager step 3"
 RUN cd /aha/voyager/quantized-training && \
     pip install -r requirements.txt && \
     pip install -e .
 
-RUN echo "--- ..Voyager step 3"
+RUN echo "--- ..Voyager step 4"
 RUN cd /aha/voyager && pip install quantized-training
 
 
-# Optional: Set default command
-CMD ["/bin/bash"]
-
-
+# cgra_pnr
+COPY ./cgra_pnr /aha/cgra_pnr
+WORKDIR /aha/cgra_pnr
+RUN set -e && \
+    # thunder
+    mkdir -p thunder/build && \
+    cd thunder/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j placer && \
+    cd ../.. && \
+    \
+    # cyclone
+    mkdir -p cyclone/build && \
+    cd cyclone/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j router
 
 # ------------------------------------------------------------------------------
 # Final pip installs: AHA Tools etc.
