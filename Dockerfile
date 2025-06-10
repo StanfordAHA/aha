@@ -241,7 +241,7 @@ RUN set -e && \
 
 # voyager
 COPY ./voyager /aha/voyager
-echo "--- ..Voyager step 1"
+RUN echo "--- ..Voyager step 1"
 RUN cd /aha/voyager && git submodule update --init --recursive && \
 conda install -y -c conda-forge \
     libprotobuf<6 \
@@ -261,12 +261,12 @@ conda install -y -c conda-forge \
         pandas \
         compiledb \
         -r quantized-training/requirements.txt
-echo "--- ..Voyager step 2"
+RUN echo "--- ..Voyager step 2"
 RUN cd /aha/voyager/quantized-training && \
     pip install -r requirements.txt && \
     pip install -e .
 
-echo "--- ..Voyager step 3"
+RUN echo "--- ..Voyager step 3"
 RUN cd /aha/voyager && pip install quantized-training
 
 
