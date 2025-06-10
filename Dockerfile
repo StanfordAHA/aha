@@ -97,6 +97,55 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
+
+# Install Miniconda
+ENV CONDA_DIR=/opt/conda
+RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
+    && bash miniconda.sh -b -p $CONDA_DIR \
+    && rm miniconda.sh \
+    && $CONDA_DIR/bin/conda clean -afy
+
+# Make conda globally available
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
+  cd /aha/voyager && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
+# Voyager 2: setup voyager
+COPY ./voyager /aha/voyager
+RUN echo "--- ..Voyager step 2"
+RUN cd /aha/voyager && \
+conda install -y -c conda-forge \
+    libprotobuf<6 \
+    llvmdev \
+    llvm-tools \
+    clang \
+    clangdev \
+    python=3.10 \
+    pip && \
+    pip install --no-cache-dir \
+        torch==2.3.1 \
+        torchvision==0.18.1 \
+        torchaudio==2.3.1 \
+        deepdiff \
+        xonsh \
+        git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
+        pandas \
+        compiledb \
+        -r quantized-training/requirements.txt
+RUN echo "--- ..Voyager step 3"
+RUN cd /aha/voyager/quantized-training && \
+    pip install -r requirements.txt && \
+    pip install -e .
+
+RUN echo "--- ..Voyager step 4"
+RUN cd /aha/voyager && pip install quantized-training
+
 # Pono
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
@@ -211,56 +260,6 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
 COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
-
-
-# Install Miniconda
-ENV CONDA_DIR=/opt/conda
-RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
-    && bash miniconda.sh -b -p $CONDA_DIR \
-    && rm miniconda.sh \
-    && $CONDA_DIR/bin/conda clean -afy
-
-# Make conda globally available
-ENV PATH=$CONDA_DIR/bin:$PATH
-
-# Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
-  cd /aha/voyager && \
-  mv .git/ /aha/.git/modules/voyager/ && \
-  ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
-
-# Voyager 2: setup voyager
-COPY ./voyager /aha/voyager
-RUN echo "--- ..Voyager step 2"
-# RUN cd /aha/voyager && git submodule update --init --recursive && \
-RUN conda install -y -c conda-forge \
-    libprotobuf<6 \
-    llvmdev \
-    llvm-tools \
-    clang \
-    clangdev \
-    python=3.10 \
-    pip && \
-    pip install --no-cache-dir \
-        torch==2.3.1 \
-        torchvision==0.18.1 \
-        torchaudio==2.3.1 \
-        deepdiff \
-        xonsh \
-        git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
-        pandas \
-        compiledb \
-        -r quantized-training/requirements.txt
-RUN echo "--- ..Voyager step 3"
-RUN cd /aha/voyager/quantized-training && \
-    pip install -r requirements.txt && \
-    pip install -e .
-
-RUN echo "--- ..Voyager step 4"
-RUN cd /aha/voyager && pip install quantized-training
-
 
 # cgra_pnr
 COPY ./cgra_pnr /aha/cgra_pnr
