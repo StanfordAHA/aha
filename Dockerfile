@@ -121,7 +121,8 @@ RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyag
 COPY ./voyager /aha/voyager
 RUN echo "--- ..Voyager step 2"
 RUN cd /aha/voyager
-RUN source $CONDA_DIR/etc/profile.d/conda.sh && conda install -y -c conda-forge \
+RUN source $CONDA_DIR/etc/profile.d/conda.sh 
+RUN conda install -y -c conda-forge \
      libprotobuf<6
 #     \
 #     llvmdev \
