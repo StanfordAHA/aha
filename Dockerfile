@@ -120,15 +120,16 @@ RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyag
 # Voyager 2: setup voyager
 COPY ./voyager /aha/voyager
 RUN echo "--- ..Voyager step 2"
-RUN cd /aha/voyager && \
-conda install -y -c conda-forge \
-    libprotobuf<6 \
-    llvmdev \
-    llvm-tools \
-    clang \
-    clangdev \
-    python=3.10 \
-    pip
+RUN cd /aha/voyager
+RUN conda install -y -c conda-forge
+# \
+#     libprotobuf<6 \
+#     llvmdev \
+#     llvm-tools \
+#     clang \
+#     clangdev \
+#     python=3.10 \
+#     pip
 RUN pip install --no-cache-dir \
         torch==2.3.1 \
         torchvision==0.18.1 \
