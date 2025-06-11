@@ -16,7 +16,7 @@
 #      85 garnet
 #      ..<garnet is the submodule that changed the most>..
 
-FROM docker.io/ubuntu:21.04
+FROM docker.io/ubuntu:22.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,7 +32,7 @@ RUN apt-get update && \
     apt-get install -y \
         wget \
         git make gcc-9 g++-9 \
-        python3 python3-dev python3-pip python3-venv python3-distutils\
+        python3.9 python3.9-dev python3-pip python3.9-venv python3.9-distutils \
         # Garnet
         default-jre \
         # Halide-to-Hardware
@@ -76,13 +76,17 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 100 && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
     pip install --upgrade pip && \
     pip install cmake==3.28.1 && \
     echo DONE
+
+RUN python --version && \
+pip --version && \
+echo "Checking python and pip versions"
 
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
@@ -235,10 +239,6 @@ RUN set -e && \
     cd cyclone/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j router
-
-RUN python --version && \
-    pip --version && \
-    echo "Checking python and pip versions"
 
 # # Install Miniconda
 # ENV CONDA_DIR=/opt/conda
