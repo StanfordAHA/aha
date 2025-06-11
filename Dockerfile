@@ -103,6 +103,10 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
+RUN python --version && \
+    pip --version && \
+    echo "Checking python and pip versions" 
+
 # # Install Miniconda
 # ENV CONDA_DIR=/opt/conda
 # RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
