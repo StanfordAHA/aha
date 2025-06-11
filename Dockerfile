@@ -16,7 +16,7 @@
 #      85 garnet
 #      ..<garnet is the submodule that changed the most>..
 
-FROM docker.io/ubuntu:20.04
+FROM docker.io/ubuntu:22.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
