@@ -32,7 +32,7 @@ RUN apt-get update && \
     apt-get install -y \
         wget \
         git make gcc-9 g++-9 \
-        python3.10 python3.10-dev python3-pip python3.10-venv \
+        python3.10 python3.10-dev python3-pip python3.10-venv python3.10-distutils\
         # Garnet
         default-jre \
         # Halide-to-Hardware
