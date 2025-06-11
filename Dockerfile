@@ -80,6 +80,7 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
+    pip install --upgrade pip && \
     pip install cmake==3.28.1 && \
     echo DONE
 
@@ -105,7 +106,7 @@ RUN source bin/activate && \
 
 RUN python --version && \
     pip --version && \
-    echo "Checking python and pip versions" 
+    echo "Checking python and pip versions"
 
 # # Install Miniconda
 # ENV CONDA_DIR=/opt/conda
