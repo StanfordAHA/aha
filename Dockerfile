@@ -21,12 +21,12 @@ LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN add-apt-repository ppa:deadsnakes/ppa && apt-get update
 RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
     # add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     # add-apt-repository -y ppa:zeehio/libxp && \
+    add-apt-repository ppa:deadsnakes/ppa && \
     dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y \
