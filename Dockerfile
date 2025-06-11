@@ -116,7 +116,7 @@ WORKDIR /aha/pono
 # Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
 RUN \
  : SETUP && \
-     pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
+     pip install Cython==3.0 pytest toml scikit-build==0.13.0 && \
  : FLEX && \
      apt-get update && apt-get install -y flex && \
  : BISON && \
