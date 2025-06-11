@@ -16,7 +16,7 @@
 #      85 garnet
 #      ..<garnet is the submodule that changed the most>..
 
-FROM docker.io/ubuntu:22.04
+FROM docker.io/ubuntu:21.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,7 +32,7 @@ RUN apt-get update && \
     apt-get install -y \
         wget \
         git make gcc-9 g++-9 \
-        python3.10 python3.10-dev python3-pip python3.10-venv python3.10-distutils\
+        python3 python3-dev python3-pip python3-venv python3-distutils\
         # Garnet
         default-jre \
         # Halide-to-Hardware
@@ -76,7 +76,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.10 100 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
@@ -270,7 +270,7 @@ RUN cd /aha/voyager
 #     "llvm-tools" \
 #     "clang" \
 #     "clangdev" \
-#     "python=3.10" \
+#     "python=3" \
 #     "pip"
 RUN pip install --no-cache-dir \
         torch==2.3.1 \
