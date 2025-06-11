@@ -122,14 +122,13 @@ COPY ./voyager /aha/voyager
 RUN echo "--- ..Voyager step 2"
 RUN cd /aha/voyager
 RUN source $CONDA_DIR/etc/profile.d/conda.sh && conda install -y -c conda-forge \
-     "libprotobuf<6"
-#     \
-#     llvmdev \
-#     llvm-tools \
-#     clang \
-#     clangdev \
-#     python=3.10 \
-#     pip
+    "libprotobuf<6" \
+    "llvmdev" \
+    "llvm-tools" \
+    "clang" \
+    "clangdev" \
+    "python=3.10" \
+    "pip"
 RUN pip install --no-cache-dir \
         torch==2.3.1 \
         torchvision==0.18.1 \
@@ -139,7 +138,7 @@ RUN pip install --no-cache-dir \
         git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
         pandas \
         compiledb \
-        -r quantized-training/requirements.txt
+        -r /aha/voyager/quantized-training/requirements.txt
 RUN echo "--- ..Voyager step 3"
 RUN cd /aha/voyager/quantized-training && \
     pip install -r requirements.txt && \
