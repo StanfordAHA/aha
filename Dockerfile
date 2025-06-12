@@ -26,12 +26,13 @@ RUN apt-get update && \
         build-essential software-properties-common && \
     # add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     # add-apt-repository -y ppa:zeehio/libxp && \
+    add-apt-repository ppa:deadsnakes/ppa && \
     dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y \
         wget \
         git make gcc-9 g++-9 \
-        python3 python3-dev python3-pip python3-venv \
+        python3.9 python3.9-dev python3-pip python3.9-venv python3.9-distutils \
         # Garnet
         default-jre \
         # Halide-to-Hardware
@@ -61,6 +62,11 @@ RUN apt-get update && \
         # pono
         time \
         m4 \
+        # voyager
+        git-lfs \
+        libprotobuf-dev \
+        llvm \
+        clang \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
     ln -s /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.1 && \
@@ -70,25 +76,21 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 100 && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 && \
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.9 - && \
+    pip install --upgrade pip && \
     pip install cmake==3.28.1 && \
     echo DONE
 
+RUN python --version && \
+pip --version && \
+echo "Checking python and pip versions"
+
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
-
-# Install Miniconda
-ENV CONDA_DIR=/opt/conda
-RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
-    && bash miniconda.sh -b -p $CONDA_DIR \
-    && rm miniconda.sh \
-    && $CONDA_DIR/bin/conda clean -afy
-
-# Make conda globally available
-ENV PATH=$CONDA_DIR/bin:$PATH
 
 # Create an aha directory and prep a python environment.
 # Don't copy aha repo (yet) else cannot cache subsequent layers...
@@ -107,41 +109,42 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
-# Pono
-COPY ./pono /aha/pono
-COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
-WORKDIR /aha/pono
-# Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
-RUN \
- : SETUP && \
-     pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
- : FLEX && \
-     apt-get update && apt-get install -y flex && \
- : BISON && \
-     echo "# Cannot use standard dist bison 3.5, must have 3.7 or better :(" && \
-     ./contrib/setup-bison.sh                                     && \
-     echo "# bison cleanup /aha/pono 77M => 48M"                  && \
-     (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
- : SMT-SWITCH && \
-     ./contrib/setup-smt-switch.sh --python && \
-     :                                                 && \
-     echo "# cleanup: 1.3GB smt-switch build tests"    && \
-     /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
-     :                                                           && \
-     echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
-     /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
-     :                                                                 && \
-     echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
-     /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
- : BTOR2TOOLS && \
-    ./contrib/setup-btor2tools.sh && \
-  : PIP INSTALL && \
-     cd /aha/pono && ./configure.sh --python && \
-     cd /aha/pono/build && make -j4 && pip install -e ./python && \
-     cd /aha && \
-       source /aha/bin/activate && \
-       pip install -e ./pono/deps/smt-switch/build/python && \
-       pip install -e pono/build/python/
+# # Pono
+# COPY ./pono /aha/pono
+# COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
+# WORKDIR /aha/pono
+# # Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
+# RUN \
+#  : SETUP && \
+#      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
+#  : FLEX && \
+#      apt-get update && apt-get install -y flex && \
+#  : BISON && \
+#      echo "# Cannot use standard dist bison 3.5, must have 3.7 or better :(" && \
+#      ./contrib/setup-bison.sh                                     && \
+#      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
+#      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
+#  : SMT-SWITCH && \
+#      ./contrib/setup-smt-switch.sh --python && \
+#      :                                                 && \
+#      echo "# cleanup: 1.3GB smt-switch build tests"    && \
+#      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
+#      :                                                           && \
+#      echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
+#      /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
+#      :                                                                 && \
+#      echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
+#      /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
+#  : BTOR2TOOLS && \
+#     ./contrib/setup-btor2tools.sh && \
+#   : PIP INSTALL && \
+#      cd /aha/pono && ./configure.sh --python && \
+#      cd /aha/pono/build && make -j4 && pip install -e ./python && \
+#      cd /aha && \
+#        source /aha/bin/activate && \
+#        pip install -e ./pono/deps/smt-switch/build/python && \
+#        pip install -e pono/build/python/
+
 
 # CoreIR
 WORKDIR /aha
@@ -162,7 +165,8 @@ ENV MFLOWGEN=/aha/mflowgen
 WORKDIR /aha
 RUN source /aha/bin/activate && \
   export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
-  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  # pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  pip install --cache-dir=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
   echo "# Remove 700M tmp files created during install" && \
   rm -rf $TMPDIR
 
@@ -222,45 +226,6 @@ COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
-# Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
-  cd /aha/voyager && \
-  mv .git/ /aha/.git/modules/voyager/ && \
-  ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
-
-# Voyager 2: setup voyager
-COPY ./voyager /aha/voyager
-RUN echo "--- ..Voyager step 2"
-# RUN cd /aha/voyager && git submodule update --init --recursive && \
-RUN conda install -y -c conda-forge \
-    libprotobuf<6 \
-    llvmdev \
-    llvm-tools \
-    clang \
-    clangdev \
-    python=3.10 \
-    pip && \
-    pip install --no-cache-dir \
-        torch==2.3.1 \
-        torchvision==0.18.1 \
-        torchaudio==2.3.1 \
-        deepdiff \
-        xonsh \
-        git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
-        pandas \
-        compiledb \
-        -r quantized-training/requirements.txt
-RUN echo "--- ..Voyager step 3"
-RUN cd /aha/voyager/quantized-training && \
-    pip install -r requirements.txt && \
-    pip install -e .
-
-RUN echo "--- ..Voyager step 4"
-RUN cd /aha/voyager && pip install quantized-training
-
-
 # cgra_pnr
 COPY ./cgra_pnr /aha/cgra_pnr
 WORKDIR /aha/cgra_pnr
@@ -277,6 +242,57 @@ RUN set -e && \
     cd cyclone/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j router
+
+# # Install Miniconda
+# ENV CONDA_DIR=/opt/conda
+# RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
+#     && bash miniconda.sh -b -p $CONDA_DIR \
+#     && rm miniconda.sh \
+#     && $CONDA_DIR/bin/conda clean -afy
+
+# # Make conda globally available
+# ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+RUN git lfs install
+RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
+  cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
+# Voyager 2: setup voyager
+COPY ./voyager /aha/voyager
+RUN echo "--- ..Voyager step 2"
+RUN cd /aha/voyager
+# RUN source $CONDA_DIR/etc/profile.d/conda.sh && conda install -y -c conda-forge \
+#     "libprotobuf<6" \
+#     "llvmdev" \
+#     "llvm-tools" \
+#     "clang" \
+#     "clangdev" \
+#     "python=3" \
+#     "pip"
+RUN pip install --no-cache-dir \
+        torch==2.3.1 \
+        torchvision==0.18.1 \
+        torchaudio==2.3.1 \
+        deepdiff \
+        xonsh \
+        git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
+        pandas \
+        compiledb \
+        protobuf \
+        -r /aha/voyager/quantized-training/requirements.txt
+RUN echo "--- ..Voyager step 3"
+RUN cd /aha/voyager/quantized-training && \
+    pip install -r requirements.txt && \
+    pip install -e .
+
+RUN echo "--- ..Voyager step 4"
+RUN cd /aha/voyager && pip install quantized-training
 
 # ------------------------------------------------------------------------------
 # Final pip installs: AHA Tools etc.
