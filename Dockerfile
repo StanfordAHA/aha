@@ -146,23 +146,6 @@ RUN source bin/activate && \
 #        pip install -e pono/build/python/
 
 
-# cgra_pnr
-COPY ./cgra_pnr /aha/cgra_pnr
-WORKDIR /aha/cgra_pnr
-RUN set -e && \
-    # thunder
-    mkdir -p thunder/build && \
-    cd thunder/build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j placer && \
-    cd ../.. && \
-    \
-    # cyclone
-    mkdir -p cyclone/build && \
-    cd cyclone/build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j router
-
 # CoreIR
 WORKDIR /aha
 COPY ./coreir /aha/coreir
@@ -243,6 +226,22 @@ COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
   source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
 
+# cgra_pnr
+COPY ./cgra_pnr /aha/cgra_pnr
+WORKDIR /aha/cgra_pnr
+RUN set -e && \
+    # thunder
+    mkdir -p thunder/build && \
+    cd thunder/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j placer && \
+    cd ../.. && \
+    \
+    # cyclone
+    mkdir -p cyclone/build && \
+    cd cyclone/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j router
 
 # # Install Miniconda
 # ENV CONDA_DIR=/opt/conda
