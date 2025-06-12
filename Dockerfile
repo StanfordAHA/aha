@@ -145,6 +145,57 @@ RUN source bin/activate && \
 #        pip install -e ./pono/deps/smt-switch/build/python && \
 #        pip install -e pono/build/python/
 
+# # Install Miniconda
+# ENV CONDA_DIR=/opt/conda
+# RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
+#     && bash miniconda.sh -b -p $CONDA_DIR \
+#     && rm miniconda.sh \
+#     && $CONDA_DIR/bin/conda clean -afy
+
+# # Make conda globally available
+# ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
+  cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
+# Voyager 2: setup voyager
+COPY ./voyager /aha/voyager
+RUN echo "--- ..Voyager step 2"
+WORKDIR /aha/voyager
+RUN git lfs install
+RUN cd /aha/voyager
+# RUN source $CONDA_DIR/etc/profile.d/conda.sh && conda install -y -c conda-forge \
+#     "libprotobuf<6" \
+#     "llvmdev" \
+#     "llvm-tools" \
+#     "clang" \
+#     "clangdev" \
+#     "python=3" \
+#     "pip"
+RUN pip install --no-cache-dir \
+        torch==2.3.1 \
+        torchvision==0.18.1 \
+        torchaudio==2.3.1 \
+        deepdiff \
+        xonsh \
+        git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
+        pandas \
+        compiledb \
+        protobuf \
+        -r /aha/voyager/quantized-training/requirements.txt
+RUN echo "--- ..Voyager step 3"
+RUN cd /aha/voyager/quantized-training && \
+    pip install -r requirements.txt && \
+    pip install -e .
+
+RUN echo "--- ..Voyager step 4"
+RUN cd /aha/voyager && pip install quantized-training
 
 # CoreIR
 WORKDIR /aha
@@ -255,7 +306,6 @@ RUN set -e && \
 
 # Voyager 1 - clone voyager
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN git lfs install
 RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
@@ -266,6 +316,8 @@ RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyag
 # Voyager 2: setup voyager
 COPY ./voyager /aha/voyager
 RUN echo "--- ..Voyager step 2"
+WORKDIR /aha/voyager
+RUN git lfs install
 RUN cd /aha/voyager
 # RUN source $CONDA_DIR/etc/profile.d/conda.sh && conda install -y -c conda-forge \
 #     "libprotobuf<6" \
