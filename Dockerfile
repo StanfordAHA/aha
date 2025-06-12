@@ -164,7 +164,8 @@ ENV MFLOWGEN=/aha/mflowgen
 WORKDIR /aha
 RUN source /aha/bin/activate && \
   export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
-  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  # pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  pip install --cache-dir=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
   echo "# Remove 700M tmp files created during install" && \
   rm -rf $TMPDIR
 
