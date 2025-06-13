@@ -99,38 +99,6 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
-  # Install Miniconda, needed by voyager
-ENV CONDA_DIR=/opt/conda
-RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
-    && bash miniconda.sh -b -p $CONDA_DIR \
-    && rm miniconda.sh \
-    && $CONDA_DIR/bin/conda clean -afy
-
-# Make conda globally available
-ENV PATH=$CONDA_DIR/bin:$PATH
-
-# Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
-  cd /aha/voyager && \
-  mkdir -p /aha/.git/modules && \
-  mv .git/ /aha/.git/modules/voyager/ && \
-  ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
-
-# Voyager 2: setup voyager
-COPY ./voyager /aha/voyager
-RUN echo "--- ..Voyager step 2"
-WORKDIR /aha/voyager
-RUN git lfs install
-RUN cd /aha/voyager
-RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
-    export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
-    conda activate /aha/voyager/.conda-env && \
-    cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
-    cd /aha/voyager && pip install quantized-training && \
-    conda deactivate && export PATH="$ORIGINAL_PATH"
-
 # Pono
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
@@ -282,18 +250,19 @@ RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyag
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
-# Voyager 2: setup voyager
+# Voyager 2 - setup voyager
 COPY ./voyager /aha/voyager
 RUN echo "--- ..Voyager step 2"
 WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager
-RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml
-RUN export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)"
-RUN conda activate /aha/voyager/.conda-env
-RUN cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e .
-RUN cd /aha/voyager && pip install quantized-training
-RUN conda deactivate && export PATH="$ORIGINAL_PATH"
+RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
+    export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
+    conda activate /aha/voyager/.conda-env && \
+    cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
+    cd /aha/voyager && pip install quantized-training && \
+    source env.sh && \
+    conda deactivate && export PATH="$ORIGINAL_PATH"
 
 # ------------------------------------------------------------------------------
 # Final pip installs: AHA Tools etc.
