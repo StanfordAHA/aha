@@ -125,7 +125,7 @@ WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager
 RUN conda env create -p .conda-env -f environment.yml
-RUN export ORIGINAL_PATH="$PATH" && eval "$(conda shell.bash hook)"
+RUN export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)"
 RUN conda activate /aha/voyager/.conda-env
 RUN cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e .
 RUN cd /aha/voyager && pip install quantized-training
@@ -289,7 +289,7 @@ WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager
 RUN conda env create -p .conda-env -f environment.yml
-RUN export ORIGINAL_PATH="$PATH" && eval "$(conda shell.bash hook)"
+RUN export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)"
 RUN conda activate /aha/voyager/.conda-env
 RUN cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e .
 RUN cd /aha/voyager && pip install quantized-training
