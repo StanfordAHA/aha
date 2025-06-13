@@ -124,12 +124,12 @@ RUN echo "--- ..Voyager step 2"
 WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager
-RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml
-RUN export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)"
-RUN conda activate /aha/voyager/.conda-env
-RUN cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e .
-RUN cd /aha/voyager && pip install quantized-training
-RUN conda deactivate && export PATH="$ORIGINAL_PATH"
+RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
+    export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
+    conda activate /aha/voyager/.conda-env && \
+    cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
+    cd /aha/voyager && pip install quantized-training && \
+    conda deactivate && export PATH="$ORIGINAL_PATH"
 
 # Pono
 COPY ./pono /aha/pono
