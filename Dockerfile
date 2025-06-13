@@ -109,65 +109,6 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
-# Voyager 0 - Voyager misc.
-RUN echo "--- ..Voyager step 0"
-RUN apt-get update && apt-get install -y unzip
-
-# Download prebuilt protoc 29.3 binary
-RUN curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip && \
-    unzip protoc-29.3-linux-x86_64.zip -d /opt/protoc && \
-    mv /opt/protoc/bin/protoc /usr/local/bin/protoc && \
-    chmod +x /usr/local/bin/protoc && \
-    rm -rf protoc-29.3-linux-x86_64.zip
-
-# Optional: install headers/libs if building C++ code with Protobuf
-ENV PATH="/opt/protoc/bin:$PATH"
-ENV LD_LIBRARY_PATH="/opt/protoc/lib:$LD_LIBRARY_PATH"
-
-# Install additional dependencies for building C++ code
-RUN mkdir -p /usr/include/sys && \
-    curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
-
-RUN apt-get install -y libc6-dev-amd64
-RUN apt-get update && apt-get install -y linux-headers-generic
-
-RUN ln -s /usr/include/asm-generic/ /usr/include/asm
-
-# Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
-  cd /aha/voyager && \
-  mkdir -p /aha/.git/modules && \
-  mv .git/ /aha/.git/modules/voyager/ && \
-  ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
-
-# Voyager 2: setup voyager
-COPY ./voyager /aha/voyager
-RUN echo "--- ..Voyager step 2"
-WORKDIR /aha/voyager
-RUN git lfs install
-RUN cd /aha/voyager
-RUN source /aha/bin/activate && pip install --no-cache-dir \
-        torch==2.3.1 \
-        torchvision==0.18.1 \
-        torchaudio==2.3.1 \
-        deepdiff \
-        xonsh \
-        git+https://github.com/mflowgen/mflowgen.git@69412255acc2c509e98105804e5a97d9738ddfe1#egg=mflowgen \
-        pandas \
-        compiledb \
-        protobuf==5.29.4 \
-        -r /aha/voyager/quantized-training/requirements.txt
-RUN echo "--- ..Voyager step 3"
-RUN cd /aha/voyager/quantized-training && \
-    source /aha/bin/activate && \
-    pip install -r requirements.txt && \
-    pip install -e .
-
-RUN echo "--- ..Voyager step 4"
-RUN cd /aha/voyager && source /aha/bin/activate && pip install quantized-training
-
 # # Pono
 # COPY ./pono /aha/pono
 # COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
