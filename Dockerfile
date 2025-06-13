@@ -124,7 +124,7 @@ RUN echo "--- ..Voyager step 2"
 WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager
-RUN conda env create -p .conda-env -f environment.yml
+RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml
 RUN export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)"
 RUN conda activate /aha/voyager/.conda-env
 RUN cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e .
@@ -288,7 +288,7 @@ RUN echo "--- ..Voyager step 2"
 WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager
-RUN conda env create -p .conda-env -f environment.yml
+RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml
 RUN export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)"
 RUN conda activate /aha/voyager/.conda-env
 RUN cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e .
