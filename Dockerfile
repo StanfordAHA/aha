@@ -260,7 +260,7 @@ RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.ym
     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
     conda activate /aha/voyager/.conda-env && \
     cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
-    cd /aha/voyager && pip install -e quantized-training && pip install -e interstellar && \
+    cd /aha/voyager && pip install quantized-training && \
     source env.sh && \
     conda deactivate && export PATH="$ORIGINAL_PATH"
 
