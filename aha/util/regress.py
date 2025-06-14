@@ -312,8 +312,9 @@ def dispatch(args, extra_args=None):
     # suitesparse_data = ["bcsstm26"]
     suitesparse_data = ["rand_large_tensor5"]
     if args.config == "fast":
-        width, height = 28, 16
-        # to unroll, use 12x16
+        width, height = 12, 16
+        # first use 28x16 to generate rtl
+        # to unroll, use 12x16 to generate bitstream
         sparse_tests = [
             # sparse matrix expressions
             # "mat_elemadd3",
@@ -335,6 +336,7 @@ def dispatch(args, extra_args=None):
             # "fp_spmm_ikj", # unrolled
             # "fp_matmul_ijk_crddrop", # unrolled
             # "fp_spmm_ijk_crddrop", # unrolled
+            # "mat_dn2sp", # have to use different cgra size unrolling (10x16)
             # "fp_mat_elemadd_relu", # unrolled
             # "fp_mat_elemadd", # unrolled
             # "fp_dense_mat_elemadd_relu" # unrolled
