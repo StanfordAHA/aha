@@ -99,49 +99,49 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
-# # Pono
-# COPY ./pono /aha/pono
-# COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
-# WORKDIR /aha/pono
-# # Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
-# RUN \
-#  : SETUP && \
-#      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
-#  : FLEX && \
-#      apt-get update && apt-get install -y flex && \
-#  : BISON && \
-#      echo "# Cannot use standard dist bison 3.5, must have 3.7 or better :(" && \
-#      ./contrib/setup-bison.sh                                     && \
-#      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
-#      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
-#  : SMT-SWITCH && \
-#      ./contrib/setup-smt-switch.sh --python && \
-#      :                                                 && \
-#      echo "# cleanup: 1.3GB smt-switch build tests"    && \
-#      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
-#      :                                                           && \
-#      echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
-#      /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
-#      :                                                                 && \
-#      echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
-#      /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
-#  : BTOR2TOOLS && \
-#     ./contrib/setup-btor2tools.sh && \
-#   : PIP INSTALL && \
-#      cd /aha/pono && ./configure.sh --python && \
-#      cd /aha/pono/build && make -j4 && pip install -e ./python && \
-#      cd /aha && \
-#        source /aha/bin/activate && \
-#        pip install -e ./pono/deps/smt-switch/build/python && \
-#        pip install -e pono/build/python/
+# Pono
+COPY ./pono /aha/pono
+COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
+WORKDIR /aha/pono
+# Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
+RUN \
+ : SETUP && \
+     pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
+ : FLEX && \
+     apt-get update && apt-get install -y flex && \
+ : BISON && \
+     echo "# Cannot use standard dist bison 3.5, must have 3.7 or better :(" && \
+     ./contrib/setup-bison.sh                                     && \
+     echo "# bison cleanup /aha/pono 77M => 48M"                  && \
+     (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
+ : SMT-SWITCH && \
+     ./contrib/setup-smt-switch.sh --python && \
+     :                                                 && \
+     echo "# cleanup: 1.3GB smt-switch build tests"    && \
+     /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
+     :                                                           && \
+     echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
+     /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
+     :                                                                 && \
+     echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
+     /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
+ : BTOR2TOOLS && \
+    ./contrib/setup-btor2tools.sh && \
+  : PIP INSTALL && \
+     cd /aha/pono && ./configure.sh --python && \
+     cd /aha/pono/build && make -j4 && pip install -e ./python && \
+     cd /aha && \
+       source /aha/bin/activate && \
+       pip install -e ./pono/deps/smt-switch/build/python && \
+       pip install -e pono/build/python/
 
-# # CoreIR
-# WORKDIR /aha
-# COPY ./coreir /aha/coreir
-# WORKDIR /aha/coreir/build
-# RUN cmake .. && make && make install && /bin/rm -rf src bin tests
+# CoreIR
+WORKDIR /aha
+COPY ./coreir /aha/coreir
+WORKDIR /aha/coreir/build
+RUN cmake .. && make && make install && /bin/rm -rf src bin tests
 
-# Lake
+Lake
 COPY ./BufferMapping /aha/BufferMapping
 WORKDIR /aha/BufferMapping/cfunc
 RUN export COREIR_DIR=/aha/coreir && make lib
@@ -150,57 +150,57 @@ RUN export COREIR_DIR=/aha/coreir && make lib
 ENV GARNET_HOME=/aha/garnet
 ENV MFLOWGEN=/aha/mflowgen
 
-# # Install torch (need big tmp folder)
-# WORKDIR /aha
-# RUN source /aha/bin/activate && \
-#   export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
-#   pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
-#   echo "# Remove 700M tmp files created during install" && \
-#   rm -rf $TMPDIR
+# Install torch (need big tmp folder)
+WORKDIR /aha
+RUN source /aha/bin/activate && \
+  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
+  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  echo "# Remove 700M tmp files created during install" && \
+  rm -rf $TMPDIR
 
-# # clockwork
-# COPY clockwork /aha/clockwork
-# WORKDIR /aha/clockwork
-# ENV COREIR_PATH=/aha/coreir
-# ENV LAKE_PATH=/aha/lake
-# RUN ./misc/install_deps_ahaflow.sh && \
-#     source user_settings/aha_settings.sh && \
-#     make all -j4 && \
-#     source misc/copy_cgralib.sh && \
-#     echo "Cleanup: 10M ntl, 440M barvinok, 390M dot-o files" && \
-#       rm -rf ntl* && \
-#       (cd /aha/clockwork/barvinok-0.41; make clean) && \
-#       rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
-#     echo DONE
+# clockwork
+COPY clockwork /aha/clockwork
+WORKDIR /aha/clockwork
+ENV COREIR_PATH=/aha/coreir
+ENV LAKE_PATH=/aha/lake
+RUN ./misc/install_deps_ahaflow.sh && \
+    source user_settings/aha_settings.sh && \
+    make all -j4 && \
+    source misc/copy_cgralib.sh && \
+    echo "Cleanup: 10M ntl, 440M barvinok, 390M dot-o files" && \
+      rm -rf ntl* && \
+      (cd /aha/clockwork/barvinok-0.41; make clean) && \
+      rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
+    echo DONE
 
-# # Halide-install step, below, modified to delete 1G of clang when finished.
-# # Clang will be restored by way of .bashrc (aha/bin/docker-bashrc).
+# Halide-install step, below, modified to delete 1G of clang when finished.
+# Clang will be restored by way of .bashrc (aha/bin/docker-bashrc).
 
-# # Halide-to-Hardware - Step 32/65 ish - requires clang
-# COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
-# WORKDIR /aha/Halide-to-Hardware
-# RUN \
-#   : CLANG-INSTALL && \
-#     echo "Install 1G of clang/llvm" && \
-#       url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz && \
-#       wget -nv -O ~/clang7.tar.xz $url && \
-#       tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ && \
-#       rm -rf ~/clang7.tar.xz && \
-#   : BUILD && \
-#     echo "Build and test Halide compiler" && \
-#       export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
-#   : CLEANUP && \
-#     echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
-#       rm -rf lib/* && \
-#       rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
-#       rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
-#       rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
-#     echo "Cleanup: 1G clang in /usr, will be restored by bashrc" && \
-#       rm -rf /usr/*/{*clang*,*llvm*,*LLVM*} && \
-#   : DONE && \
-#     echo DONE
+# Halide-to-Hardware - Step 32/65 ish - requires clang
+COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
+WORKDIR /aha/Halide-to-Hardware
+RUN \
+  : CLANG-INSTALL && \
+    echo "Install 1G of clang/llvm" && \
+      url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz && \
+      wget -nv -O ~/clang7.tar.xz $url && \
+      tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ && \
+      rm -rf ~/clang7.tar.xz && \
+  : BUILD && \
+    echo "Build and test Halide compiler" && \
+      export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
+  : CLEANUP && \
+    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
+      rm -rf lib/* && \
+      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
+      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
+      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+    echo "Cleanup: 1G clang in /usr, will be restored by bashrc" && \
+      rm -rf /usr/*/{*clang*,*llvm*,*LLVM*} && \
+  : DONE && \
+    echo DONE
 
-# Sam 1 - clone and set up sam
+Sam 1 - clone and set up sam
 COPY ./.git/modules/sam/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   cd /aha/sam && \
