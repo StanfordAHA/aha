@@ -141,7 +141,7 @@ COPY ./coreir /aha/coreir
 WORKDIR /aha/coreir/build
 RUN cmake .. && make && make install && /bin/rm -rf src bin tests
 
-Lake
+# Lake
 COPY ./BufferMapping /aha/BufferMapping
 WORKDIR /aha/BufferMapping/cfunc
 RUN export COREIR_DIR=/aha/coreir && make lib
@@ -200,7 +200,7 @@ RUN \
   : DONE && \
     echo DONE
 
-Sam 1 - clone and set up sam
+# Sam 1 - clone and set up sam
 COPY ./.git/modules/sam/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   cd /aha/sam && \
