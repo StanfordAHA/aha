@@ -241,6 +241,17 @@ RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64
 # Make conda globally available
 ENV PATH=$CONDA_DIR/bin:$PATH
 
+# Voyager 0 - voyager misc
+RUN echo "--- ..Voyager step 0"
+# Install additional dependencies for building C++ code
+RUN mkdir -p /usr/include/sys && \
+    curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
+
+RUN apt-get install -y libc6-dev-amd64
+RUN apt-get update && apt-get install -y linux-headers-generic
+
+RUN ln -s /usr/include/asm-generic/ /usr/include/asm
+
 # Voyager 1 - clone voyager
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
