@@ -312,7 +312,7 @@ def dispatch(args, extra_args=None):
     # suitesparse_data = ["bcsstm26"]
     suitesparse_data = ["rand_large_tensor5"]
     if args.config == "fast":
-        width, height = 12, 16
+        width, height = 28, 16
         # first use 28x16 to generate rtl
         # to unroll, use 12x16 to generate bitstream
         sparse_tests = [
@@ -342,7 +342,7 @@ def dispatch(args, extra_args=None):
             # "fp_dense_mat_elemadd_relu" # unrolled
             # sparse ml micro-benchmarks
             # "fp_spmm_ijk_crddrop_relu",
-            "fp_spmm_ijk_crddrop_elu",
+            # "fp_spmm_ijk_crddrop_elu",
             # "mat_elemadd_leakyrelu_exp",
             # "fp_mat_elemadd",
             # "fp_spmm_ijk",
@@ -364,7 +364,9 @@ def dispatch(args, extra_args=None):
             # "conv5_x"
         ]
         glb_tests_fp = [
-            # "apps/matrix_multiplication_fp"
+            # "apps/matrix_multiplication_fp",
+            # "apps/relu_layer_fp",
+            # "apss/relu_layer3_fp",
         ]
         hardcoded_dense_tests = []
     elif args.config == "pr":
