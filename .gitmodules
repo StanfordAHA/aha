@@ -101,5 +101,5 @@
 	url = https://github.com/stanfordaha/Lego_v0.git
 [submodule "voyager"]
 	path = voyager
-	url = https://code.stanford.edu/voyager/accelerator.git
+	url = https://github.com/mcoduoza/voyager.git
     branch = zircon

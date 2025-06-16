@@ -254,7 +254,7 @@ RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 
 # Voyager 1 - clone voyager
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN cd /aha && git clone https://code.stanford.edu/voyager/accelerator.git voyager && \
+RUN cd /aha && git clone https://github.com/mcoduoza/voyager.git voyager && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
