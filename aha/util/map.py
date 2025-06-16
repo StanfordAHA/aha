@@ -202,8 +202,11 @@ def dispatch(args, extra_args=None):
             f'bash -c \''
             f'cd /aha/voyager/ && '
             f'source ~/.bashrc && '
+            f'source /cad/modules/tcl/init/bash && '
+            f'module load catapult/2024.2_2 && '
             f'eval "$(conda shell.bash hook)" && '
             f'conda activate ./.conda-env && '
             f'{compile_cmd} && '
+            f'module unload catapult/2024.2_2 && '
             f'conda deactivate\''
         )
