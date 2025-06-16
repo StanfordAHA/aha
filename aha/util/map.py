@@ -1,5 +1,6 @@
 import copy
 import os
+import sys
 import shutil
 from pathlib import Path
 import subprocess
@@ -17,7 +18,7 @@ def add_subparser(subparser):
     parser.set_defaults(dispatch=dispatch)
 
 
-def subprocess_call_log(cmd, cwd, env, log, log_file_path):
+def subprocess_call_log(cmd, cwd, env, log, log_file_path, use_shell=False):
     if log:
         print("[log] Command  : {}".format(" ".join(cmd)))
         print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
@@ -27,14 +28,16 @@ def subprocess_call_log(cmd, cwd, env, log, log_file_path):
                 cwd=cwd,
                 env=env,
                 stdout=flog,
-                stderr=flog
+                stderr=flog,
+                shell=use_shell
             )
         print("done")
     else:
         subprocess.check_call(
             cmd,
             cwd=cwd,
-            env=env
+            env=env,
+            shell=use_shell
         )
 
 
@@ -155,3 +158,52 @@ def dispatch(args, extra_args=None):
     clkwrk_design = app_name + "/" + app_name + "_garnet.json"
     if os.path.exists(str(app_dir / "bin/map_result" / clkwrk_design)):
         shutil.copyfile(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
+
+    # Call voyager compiler where necessary
+    is_voyager_app = False # TODO: just a placeholder for now. Will replace in near future with real condition check
+    if is_voyager_app:
+        # Create conda environment
+        subprocess_call_log(
+            cmd=["make", "create-env"],
+            cwd=args.aha_dir / "voyager",
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
+        )
+
+        # Set necessary env vars
+        # PATH
+        voyager_path = "/aha/voyager/VOYAGER_PATH.txt"
+        if not os.path.isfile(voyager_path):
+            sys.exit(f"Error: File '{voyager_path}' does not exist. It should have been generated during make create-env")
+        with open(voyager_path, 'r') as f:
+            first_line = f.readline().strip()
+        os.environ['PATH'] = first_line
+        print(f"PATH for voyager has been set to: {os.environ['PATH']}")
+
+        # LD_LIBRARY_PATH
+        conda_prefix = "/aha/voyager/.conda-env"
+        ld_library_path = os.environ.get("LD_LIBRARY_PATH", "")
+        new_ld_library_path = f"/cad/mentor/2024.2_2/Mgc_home/lib:/cad/mentor/2024.2_2/Mgc_home/shared/lib:{conda_prefix}/lib:{ld_library_path}"
+        os.environ["LD_LIBRARY_PATH"] = new_ld_library_path
+        print(f"LD_LIBRARY_PATH for voyager has been set to: {os.environ['LD_LIBRARY_PATH']}")
+
+        # Other
+        os.environ["PROJECT_ROOT"] = "/aha/voyager"
+        os.environ["CODEGEN_DIR"] = "test/compiler"
+
+        # Activate conda environment and run compiler. Deactivate when done
+        print("Running voyager compiler...")
+
+        # TODO: This cmd is just a placeholder example for now
+        compile_cmd = "DATATYPE=MXINT8 IC_DIMENSION=64 OC_DIMENSION=32 CLOCK_PERIOD=5 python run_regression.py --models resnet18 --sims fast-systemc --num_processes 32 --tests conv2d_mx_default_6"
+
+        os.system(
+            f'bash -c \''
+            f'cd /aha/voyager/ && '
+            f'source ~/.bashrc && '
+            f'eval "$(conda shell.bash hook)" && '
+            f'conda activate ./.conda-env && '
+            f'{compile_cmd} && '
+            f'conda deactivate\''
+        )
