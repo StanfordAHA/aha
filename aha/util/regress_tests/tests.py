@@ -12,17 +12,19 @@ class Tests:
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
+        behavioral_mu_tests = []
         external_mu_tests = []
+        external_mu_tests_fp = []
         hardcoded_dense_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io",
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io", "apps/residual_relu_fp",
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io",
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io", "apps/residual_relu_fp",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -48,7 +50,12 @@ class Tests:
             resnet_tests = [
             ]
             resnet_tests_fp = []
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+            ]
             external_mu_tests = [
+            ]
+            external_mu_tests_fp = [
                 "apps/residual_relu_fp_RV_E64_MB",
             ]
             hardcoded_dense_tests = []
@@ -94,8 +101,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 # pr_aha2
                 "apps/gaussian_RV",
                 # pr_aha3
@@ -170,7 +175,12 @@ class Tests:
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
             ]
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+            ]
             external_mu_tests = []
+            external_mu_tests_fp = []
 
 # Found the better way maybe
 #
@@ -244,8 +254,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/gaussian_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "tests/conv_1_2_RV",
@@ -317,7 +325,13 @@ class Tests:
             ]
             resnet_tests = []
             resnet_tests_fp = []
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+            ]
             external_mu_tests = []
+            external_mu_tests_fp = []
+
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -377,8 +391,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "tests/rom_RV",
                 "tests/arith_RV",
                 "tests/absolute_RV",
@@ -511,7 +523,12 @@ class Tests:
                 # TODO: Tests below are planned but not yet supported
                 # "conv2_x_fp", # not yet supported by zircon
             ]
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+            ]
             external_mu_tests = []
+            external_mu_tests_fp = []
         elif testname == "resnet":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -525,9 +542,13 @@ class Tests:
                 "conv2_x",
                 "conv5_x",
             ]
-            resnet_tests_fp = []
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+            ]
             external_mu_tests = []
-            hardcoded_dense_tests = []
+            external_mu_tests_fp = []
+
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
@@ -545,7 +566,9 @@ class Tests:
         self.glb_tests_fp_RV = glb_tests_fp_RV
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
+        self.behavioral_mu_tests = behavioral_mu_tests
         self.external_mu_tests = external_mu_tests
+        self.external_mu_tests_fp = external_mu_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.E64_supported_tests = E64_supported_tests
         self.E64_MB_supported_tests = E64_MB_supported_tests

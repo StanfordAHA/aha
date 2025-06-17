@@ -320,7 +320,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False, external_MU_active=False):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False, behavioral_MU=False, external_MU_active=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -420,6 +420,9 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["MU_OC_0"] = str(mu_oc_0)
         env_vars["MU_DATAWIDTH"] = str(mu_datawidth)
         env_vars["ADD_MU_INPUT_BUBBLES"] = "1"
+
+        if behavioral_MU:
+            env_vars["BEHAVIORAL_MATRIX_UNIT"] = "1"
 
         if external_MU_active:
             env_vars["EXTERNAL_MU_ACTIVE"] = "1"
@@ -741,7 +744,9 @@ def dispatch(args, extra_args=None):
     glb_tests_fp_RV = imported_tests.glb_tests_fp_RV
     resnet_tests = imported_tests.resnet_tests
     resnet_tests_fp = imported_tests.resnet_tests_fp
+    behavioral_mu_tests = imported_tests.behavioral_mu_tests
     external_mu_tests = imported_tests.external_mu_tests
+    external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
 
     E64_supported_tests = imported_tests.E64_supported_tests
@@ -885,13 +890,33 @@ def dispatch(args, extra_args=None):
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
+    for test in behavioral_mu_tests:
+        test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
+        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
+                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, behavioral_MU=True)
+        info.append([test + "_MU_behavioral", t0 + t1 + t2, t0, t1, t2])
 
     for test in external_mu_tests:
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-        feature_support_check(test, dense_ready_valid, E64_mode_on, E64_multi_bank_mode_on)
+        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
+                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, external_MU_active=True)
+        info.append([test + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
+
+
+    for test in external_mu_tests_fp:
+        test, dense_ready_valid = parse_RV_mode(test)
+        test, E64_mode_on = parse_E64_mode(test)
+        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
+        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, external_MU_active=True)
         info.append([test + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
