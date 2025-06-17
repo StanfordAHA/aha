@@ -99,3 +99,7 @@
 [submodule "Lego_v0"]
 	path = Lego_v0
 	url = https://github.com/stanfordaha/Lego_v0.git
+[submodule "voyager"]
+	path = voyager
+	url = https://github.com/mcoduoza/voyager.git
+    branch = zircon

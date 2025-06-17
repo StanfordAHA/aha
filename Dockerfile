@@ -61,6 +61,8 @@ RUN apt-get update && \
         # pono
         time \
         m4 \
+        # voyager
+        git-lfs \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
     ln -s /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.1 && \
@@ -228,6 +230,50 @@ RUN set -e && \
     cd cyclone/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j router
+
+# Install Miniconda, needed by voyager
+ENV CONDA_DIR=/opt/conda
+RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
+    && bash miniconda.sh -b -p $CONDA_DIR \
+    && rm miniconda.sh \
+    && $CONDA_DIR/bin/conda clean -afy
+
+# Make conda globally available
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Voyager 0 - voyager misc
+RUN echo "--- ..Voyager step 0"
+# Install additional dependencies for building C++ code
+RUN mkdir -p /usr/include/sys && \
+    curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
+
+RUN apt-get install -y libc6-dev-amd64
+RUN apt-get update && apt-get install -y linux-headers-generic
+
+RUN ln -s /usr/include/asm-generic/ /usr/include/asm
+
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+RUN cd /aha && git clone https://github.com/mcoduoza/voyager.git voyager && \
+  cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
+# Voyager 2 - setup voyager
+COPY ./voyager /aha/voyager
+RUN echo "--- ..Voyager step 2"
+WORKDIR /aha/voyager
+RUN git lfs install
+# RUN cd /aha/voyager
+# RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
+#     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
+#     conda activate /aha/voyager/.conda-env && \
+#     cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
+#     cd /aha/voyager && pip install quantized-training && \
+#     source env.sh && \
+#     conda deactivate && export PATH="$ORIGINAL_PATH"
 
 # ------------------------------------------------------------------------------
 # Final pip installs: AHA Tools etc.
