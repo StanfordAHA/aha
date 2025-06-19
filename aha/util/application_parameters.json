@@ -156,6 +156,13 @@
             "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
+    "apps/mat_vec_mul_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"matrix_width=512 matrix_height=128 glb_i=4 glb_o=1 tree_stages=2 matrix_width_fake=32 matrix_height_fake=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1"
+        }
+    },
     "apps/maxpooling":{
         "default":{
             "HALIDE_GEN_ARGS":"in_img=58 ksize=3 stride=2 n_ic=56 unroll=7",
@@ -329,6 +336,21 @@
             "PIPELINED":"0"
         }
     },
+    "apps/relu_layer_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"out_img=28 n_oc=8 unroll=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1"
+        }
+    },
+    "apps/avgpool_layer_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=7 n_ic=512 glb_i=16 glb_o=16",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
     "tests/mem_transpose_test":{
         "default":{
             "HALIDE_GEN_ARGS":"in_img_x=64 in_img_y=32 in_img_x_fake=64 in_img_y_fake=32",
@@ -340,6 +362,14 @@
     "tests/mem_slice_test":{
         "default":{
             "HALIDE_GEN_ARGS":"in_img_x=32 in_img_y=64 in_img_x_fake=64 in_img_y_fake=32",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
+        }
+    },
+    "tests/mem_filter_test":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img_x=32 in_img_y=64 write_stride=4 in_img_x_fake=64 in_img_y_fake=32",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "PIPELINED":"0"

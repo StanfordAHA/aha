@@ -18,7 +18,7 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x"
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp"
         ]
         E64_MB_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io"
@@ -104,6 +104,8 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
+                "apps/avgpool_layer_fp_RV_E64",
+                "apps/mat_vec_mul_fp_RV",
                 # pr_aha2
                 "apps/scalar_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
@@ -266,6 +268,8 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
+                "apps/avgpool_layer_fp_RV_E64",
+                "apps/mat_vec_mul_fp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "tests/fp_conv_7_7_RV",
             ]
@@ -390,6 +394,9 @@ class Tests:
                 "tests/bit8_packing_test_RV",
                 "tests/bit8_unpack_test_RV",
                 "tests/fp_get_shared_exp_test_RV",
+                "tests/mem_slice_test_RV",
+                "tests/mem_transpose_test_RV",
+                "tests/mem_filter_test_RV",
                 "tests/fp_e8m0_quant_test_RV",
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
@@ -419,6 +426,8 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
+                "apps/avgpool_layer_fp_RV_E64",
+                "apps/mat_vec_mul_fp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/maxpooling_fp_RV",
                 # "tests/fp_conv_7_7_RV",
