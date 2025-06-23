@@ -63,6 +63,7 @@ RUN apt-get update && \
         m4 \
         # voyager
         git-lfs \
+        nlohmann-json3-dev \
         && \
     ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.3 && \
     ln -s /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.1 && \

@@ -17,6 +17,7 @@ def add_subparser(subparser):
     parser.add_argument("--dense-fp", action="store_true")
     parser.add_argument("--multiles", type=int, default=None)
     parser.add_argument("--dpr", action="store_true")
+    parser.add_argument("--mu-test", nargs="+", type=str, help="Specifies the test to run on the external voyager matrix unit. If not specified, or specified as \"inactive\", the test is skipped.")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -73,6 +74,8 @@ def bfbin2float(bfstr):
 
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
+    if args.mu_test is not None and len(args.mu_test) > 0:
+        assert len(args.app) == len(args.mu_test), "If using --mu_tests, number of apps and mu tests must match."
     env = os.environ.copy()
     app_args = []
     for idx, app in enumerate(args.app):
@@ -84,6 +87,13 @@ def dispatch(args, extra_args=None):
         else:
             arg_path = f"{args.aha_dir}/garnet/SPARSE_TESTS/{app}"
         app_args.append(f"+{arg_name}={arg_path}")
+
+        mu_test = args.mu_test[idx]
+        if mu_test != "inactive":
+            mu_test_path = f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}"
+            app_args.append(f"+MU_TEST{idx}={mu_test_path}")
+        else:
+            app_args.append(f"+MU_TEST{idx}=inactive")
 
     if args.dpr is True:
         app_args.append(f"+DPR=1")
@@ -239,12 +249,14 @@ def dispatch(args, extra_args=None):
 
         golds = []
         for app in args.app:
+            mu_test = args.mu_test[args.app.index(app)] if args.mu_test is not None else "inactive"
             app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
+            voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}")
 
             use_external_gold = "EXTERNAL_GOLD" in os.environ and os.environ["EXTERNAL_GOLD"] == "1"
             # Use external gold pre-supplied by the user
             if use_external_gold:
-                gold_output_path = f"{app_dir}/external_gold_output.txt"
+                gold_output_path = f"{voyager_app_dir}/compare/gold_data.txt"
 
                 with open(gold_output_path, "r") as gold_file:
                     gold_array = []
@@ -265,8 +277,8 @@ def dispatch(args, extra_args=None):
                 # gold_array = gold_array.transpose(0, 2, 4, 1, 3, 5)
 
                 # Residual Relu Test (submodule_2)
-                gold_array = gold_array.reshape(4, 14, 8, 7, 2, 32)
-                gold_array = gold_array.transpose(4, 0, 2, 1, 3, 5)
+                # gold_array = gold_array.reshape(4, 14, 8, 7, 2, 32)
+                # gold_array = gold_array.transpose(4, 0, 2, 1, 3, 5)
 
                 gold_array = gold_array.flatten()
 

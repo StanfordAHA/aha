@@ -320,12 +320,13 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
     return 0, 0, time_test
 
 
-def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False, behavioral_MU=False, external_MU_active=False):
+def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False, behavioral_MU=False, mu_test="", external_MU_active=False):
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
     print(f"--- {testname} - compiling and mapping")
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
+    voyager_collateral_path = "/aha/voyager/compiled_collateral"
     print(app_path, flush=True)
 
     if layer is not None:
@@ -337,6 +338,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         subprocess.call(["make", "clean"], cwd=app_path)
     except:
         pass
+
+    if mu_test is not None and mu_test != "":
+        # Clean up old mu_test collateral
+        os.system(f"rm -rf {voyager_collateral_path}/{mu_test}")
 
     env_vars = {}
     if dense_ready_valid:
@@ -354,7 +359,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     start = time.time()
-    buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
+    buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
     time_compile = time.time() - start
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
@@ -374,6 +379,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         "--width", str(width),
         "--height", str(height),
         "--env-parameters", env_parameters,
+        "--mu-test", mu_test,
     ] + use_daemon + layer_array
 
     if dense_only:
@@ -394,7 +400,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     if using_matrix_unit:
-        #TODO: Make these all env vars?
         buildkite_args.append("--using-matrix-unit")
         buildkite_args.append("--mu-datawidth")
         buildkite_args.append(str(mu_datawidth))
@@ -424,6 +429,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         if behavioral_MU:
             env_vars["BEHAVIORAL_MATRIX_UNIT"] = "1"
 
+        # TODO: Can infer EXTERNAL_MU_ACTIVE from mu_test being not empty
         if external_MU_active:
             env_vars["EXTERNAL_MU_ACTIVE"] = "1"
             env_vars["EXTERNAL_GOLD"] = "1"
@@ -433,10 +439,13 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
+
+    if mu_test == "" or mu_test is None:
+        mu_test = "inactive"
     if use_fp:
-        buildkite_call(["aha", "test", test, "--dense-fp"], env=env_vars)
+        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test], env=env_vars)
     else:
-        buildkite_call(["aha", "test", test], env=env_vars)
+        buildkite_call(["aha", "test", test, "--mu-test", mu_test], env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -842,7 +851,7 @@ def dispatch(args, extra_args=None):
         dense_ready_valid = False
         if "_RV" in testname:
             dense_ready_valid = True
-            testname = test.replace("_RV", "")
+            testname = testname.replace("_RV", "")
         return testname, dense_ready_valid
 
     # E64 mode
@@ -850,7 +859,7 @@ def dispatch(args, extra_args=None):
         E64_mode_on = False
         if "_E64" in testname:
             E64_mode_on = True
-            testname = test.replace("_E64", "")
+            testname = testname.replace("_E64", "")
         return testname, E64_mode_on
 
     # E64 MB mode
@@ -858,8 +867,15 @@ def dispatch(args, extra_args=None):
         E64_multi_bank_mode_on = False
         if "_MB" in testname:
             E64_multi_bank_mode_on = True
-            testname = test.replace("_MB", "")
+            testname = testname.replace("_MB", "")
         return testname, E64_multi_bank_mode_on
+
+    # External MU test parsing
+    def parse_mu_cgra_test(testname):
+        assert " -> " in testname, f"ERROR: External MU test {testname} does not contain ' -> '. Please check the test name format. Format should be 'mu_testname -> cgra_testname'."
+        mu_test, cgra_test = testname.split(" -> ")
+        assert "-" in mu_test, f"ERROR: mu_test portion of {testname} does not contain '-'. Please check the test name format. Format should be 'model-layer', e.g., resnet18-submodule_2."
+        return mu_test, cgra_test
 
     def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
         if E64_mode_on:
@@ -901,13 +917,14 @@ def dispatch(args, extra_args=None):
         info.append([test + "_MU_behavioral", t0 + t1 + t2, t0, t1, t2])
 
     for test in external_mu_tests:
-        test, dense_ready_valid = parse_RV_mode(test)
-        test, E64_mode_on = parse_E64_mode(test)
-        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
-        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
+        mu_test, cgra_test = parse_mu_cgra_test(test)
+        cgra_test, dense_ready_valid = parse_RV_mode(cgra_test)
+        cgra_test, E64_mode_on = parse_E64_mode(cgra_test)
+        cgra_test, E64_multi_bank_mode_on = parse_E64_MB_mode(cgra_test)
+        feature_support_check(cgra_test, E64_mode_on, E64_multi_bank_mode_on)
+        t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, external_MU_active=True)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, external_MU_active=True)
         info.append([test + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
 
 
