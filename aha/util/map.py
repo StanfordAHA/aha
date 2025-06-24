@@ -216,7 +216,7 @@ def dispatch(args, extra_args=None):
 
         compile_cmd = f"DATATYPE=MXINT8 IC_DIMENSION=64 OC_DIMENSION=32 CLOCK_PERIOD=5 python run_regression.py --models {model} --sims fast-systemc --num_processes 32 --tests {layer}"
 
-        # If the voyager test fails, regression exits with an error. 
+        # If the voyager test fails, regression exits with an error.
         original_dir = os.getcwd()
         try:
             os.chdir("/aha/voyager/")
@@ -241,7 +241,7 @@ def dispatch(args, extra_args=None):
 
         # Parse the dnnLayer tensors and write them to tensor_files directory
         print(f"\nParsing tensors for layer {layer} of {model}...\n")
-        parse_tensors(model, layer, datatype="MXINT8", debug_mode=False)
+        parse_tensors(model, layer, datatype="MXINT8", h2h_dir=app_dir, debug_mode=False)
 
         # Move collateral to desired folders
         subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])

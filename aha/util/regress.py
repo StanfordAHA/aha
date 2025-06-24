@@ -929,13 +929,14 @@ def dispatch(args, extra_args=None):
 
 
     for test in external_mu_tests_fp:
-        test, dense_ready_valid = parse_RV_mode(test)
-        test, E64_mode_on = parse_E64_mode(test)
-        test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-        feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
-        t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True,
+        mu_test, cgra_test = parse_mu_cgra_test(test)
+        cgra_test, dense_ready_valid = parse_RV_mode(cgra_test)
+        cgra_test, E64_mode_on = parse_E64_mode(cgra_test)
+        cgra_test, E64_multi_bank_mode_on = parse_E64_MB_mode(cgra_test)
+        feature_support_check(cgra_test, E64_mode_on, E64_multi_bank_mode_on)
+        t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args, use_fp=True,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, external_MU_active=True)
+                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, external_MU_active=True)
         info.append([test + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:

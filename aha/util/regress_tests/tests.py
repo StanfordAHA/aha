@@ -21,10 +21,10 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io", "apps/residual_relu_fp", "apps/zircon_nop"
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop"
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io", "apps/residual_relu_fp", "apps/zircon_nop"
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop"
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -55,9 +55,10 @@ class Tests:
             ]
             external_mu_tests = [
                 # "resnet18-conv2d_mx_default_11 -> apps/zircon_hello_world_mu_io_RV_E64_MB",
-                "resnet18-conv2d_mx_default_11 -> apps/zircon_nop_RV_E64_MB",
+                # "resnet18-conv2d_mx_default_11 -> apps/zircon_nop_RV_E64_MB",
             ]
             external_mu_tests_fp = [
+                 "resnet18-submodule_2 -> apps/zircon_residual_relu_fp_RV_E64_MB",
                 # "apps/residual_relu_fp_RV_E64_MB",
             ]
             hardcoded_dense_tests = []
