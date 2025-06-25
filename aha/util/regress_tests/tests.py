@@ -73,26 +73,106 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "mat_elemdiv",
+                "mat_mattransmul",
+                "fp_relu_matmul_ikj",
+                "matmul_ikj",
+                "matmul_jik",
+                "fp_relu_spmm_ijk_crddrop",
+                "fp_spmm_ijk_crddrop_locator",
+                "spmv_relu",
+                "masked_broadcast",
+                "mat_sddmm",
+                "tensor3_mttkrp",
+                "tensor3_ttv",
             ]
             glb_tests_RV = [
                 # pr_aha1
                 "tests/conv_2_1_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                # pr_aha2
+                "apps/gaussian_RV",
+                # pr_aha3
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
             ]
             glb_tests_fp_RV = [
+                # pr_aha1
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "apps/relu_layer_fp_RV",
+                "apps/avgpool_layer_fp_RV_E64",
+                "apps/mat_vec_mul_fp_RV",
+                # pr_aha2
+                "apps/scalar_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+                "apps/layer_norm_pass2_fp_RV",
+                "apps/layer_norm_pass3_fp_RV",
+                "apps/scalar_avg_fp_RV",
+                # pr_aha3
+                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/vector_reduction_fp_RV",
+                "apps/gelu_pass1_fp_RV",
+                "apps/gelu_pass2_fp_RV",
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
             ]
             hardcoded_dense_tests = [
+                # pr_aha3
+                "apps/unsharp_RV",
+                # "apps/depthwise_conv" # down on Zircon
             ]
             # Tests below are non-zircon and won't run by default
             glb_tests = [
+                # pr_aha1
+                "apps/pointwise",
+                # pr_aha2
+                "apps/maxpooling",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
+                # pr_aha3
+                "apps/camera_pipeline_2x2",
+                "apps/gaussian",
+                "apps/harris_color",
+                "apps/unsharp",
             ]
             glb_tests_fp = [
+                # pr_aha1
+                "tests/fp_arith",
+                "tests/fp_comp",
+                "apps/matrix_multiplication_fp",
+                "apps/relu_layer_fp",
+                # pr_aha2
+                "apps/scalar_max_fp",
+                # pr_aha3
+                "apps/scalar_avg_fp",
             ]
             resnet_tests = [
+                # pr_aha1
+                "conv5_x",
+                # pr_aha2
+                "conv2_x",
+                # pr_aha3
+                "conv1",
             ]
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
             ]
             behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
             ]
             external_mu_tests = [
@@ -101,6 +181,8 @@ class Tests:
                 "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
             ]
             external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
             ]
 
 # Found the better way maybe
