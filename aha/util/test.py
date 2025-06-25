@@ -266,20 +266,6 @@ def dispatch(args, extra_args=None):
                             values = [int(value, 16) for value in line.split()]
                             gold_array.extend(values)
                 gold_array = numpy.array(gold_array, dtype=numpy.uint16)
-
-                # HACK for conv2 since we are writing data linearly to glb: reorder data in order accelerator outputs it\
-                # conv2d_mx_default_11
-                # gold_array = gold_array.reshape(1, 14, 1, 14, 8, 32)
-                # gold_array = gold_array.transpose(0, 2, 4, 1, 3, 5)
-
-                # Fake conv2d test
-                # gold_array = gold_array.reshape(1, 8, 1, 8, 2, 32)
-                # gold_array = gold_array.transpose(0, 2, 4, 1, 3, 5)
-
-                # Residual Relu Test (submodule_2)
-                # gold_array = gold_array.reshape(4, 14, 8, 7, 2, 32)
-                # gold_array = gold_array.transpose(4, 0, 2, 1, 3, 5)
-
                 gold_array = gold_array.flatten()
 
 

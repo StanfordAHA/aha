@@ -101,68 +101,9 @@ def dispatch(args, extra_args=None):
         subprocess.check_call(["mkdir", "-p", log_path])
         subprocess.check_call(["rm", "-f", log_file_path])
 
-    if "handcrafted" in str(args.app):
-        # Generate pgm Images
-        subprocess_call_log(
-            cmd=["make", "-C", str(app_dir), "bin/input.raw", "bin/output_cpu.raw"],
-            cwd=args.aha_dir / "Halide-to-Hardware",
-            env=env,
-            log=args.log,
-            log_file_path=log_file_path
-        )
-
-        os.rename(
-            app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
-        )
-
-    else:
-        # Raw Images
-        subprocess_call_log(
-            cmd=["make", "-C", str(app_dir), "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
-            cwd=args.aha_dir / "Halide-to-Hardware",
-            env=env,
-            log=args.log,
-            log_file_path=log_file_path
-        )
-
-        os.rename(
-            app_dir / "bin/input_cgra.pgm", app_dir / "bin/input.pgm",
-        )
-        os.rename(
-            app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
-        )
-
-    if not chain:
-        subprocess_call_log(
-            cmd=["make", "-C", str(app_dir), "tree"],
-            cwd=args.aha_dir / "Halide-to-Hardware",
-            env=env,
-            log=args.log,
-            log_file_path=log_file_path
-        )
-
-    if run_sim:
-        subprocess_call_log(
-            cmd=["make", "-C", str(app_dir), "test-mem"],
-            cwd=args.aha_dir / "Halide-to-Hardware",
-            env=env,
-            log=args.log,
-            log_file_path=log_file_path
-        )
-    else:
-        subprocess_call_log(
-            cmd=["make", "-C", str(app_dir), "map"],
-            cwd=args.aha_dir / "Halide-to-Hardware",
-            env=env,
-            log=args.log,
-            log_file_path=log_file_path
-        )
-
-    # move to apps/bin
-    clkwrk_design = app_name + "/" + app_name + "_garnet.json"
-    if os.path.exists(str(app_dir / "bin/map_result" / clkwrk_design)):
-        shutil.copyfile(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))
-
+    #############################################
+    #-----MAP CONV/MATMUL TO MATRIX UNIT -------#
+    #############################################
     # Call voyager compiler where necessary
     is_voyager_app = mu_test is not None and mu_test != ""
     if is_voyager_app:
@@ -251,3 +192,69 @@ def dispatch(args, extra_args=None):
         subprocess.check_call(["mv", "/aha/voyager/gold_data.raw", compare_path])
         subprocess.check_call(["mv", "/aha/voyager/tensor_metadata.json", voyager_app_base_path])
         subprocess.check_call(["mv", "/aha/voyager/output_tiling.txt", voyager_app_base_path])
+
+
+    #####################################
+    #-----MAP CGRA TEST TO CGRA -------#
+    #####################################
+    if "handcrafted" in str(args.app):
+        # Generate pgm Images
+        subprocess_call_log(
+            cmd=["make", "-C", str(app_dir), "bin/input.raw", "bin/output_cpu.raw"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
+        )
+
+        os.rename(
+            app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
+        )
+
+    else:
+        # Raw Images
+        subprocess_call_log(
+            cmd=["make", "-C", str(app_dir), "compare", "bin/input_cgra.pgm", "bin/output_cgra_comparison.pgm"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
+        )
+
+        os.rename(
+            app_dir / "bin/input_cgra.pgm", app_dir / "bin/input.pgm",
+        )
+        os.rename(
+            app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
+        )
+
+    if not chain:
+        subprocess_call_log(
+            cmd=["make", "-C", str(app_dir), "tree"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
+        )
+
+    if run_sim:
+        subprocess_call_log(
+            cmd=["make", "-C", str(app_dir), "test-mem"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
+        )
+    else:
+        subprocess_call_log(
+            cmd=["make", "-C", str(app_dir), "map"],
+            cwd=args.aha_dir / "Halide-to-Hardware",
+            env=env,
+            log=args.log,
+            log_file_path=log_file_path
+        )
+
+    # move to apps/bin
+    clkwrk_design = app_name + "/" + app_name + "_garnet.json"
+    if os.path.exists(str(app_dir / "bin/map_result" / clkwrk_design)):
+        shutil.copyfile(str(app_dir / "bin/map_result" / clkwrk_design), str(app_dir / "bin/design_top.json"))

@@ -877,6 +877,14 @@ def dispatch(args, extra_args=None):
         assert "-" in mu_test, f"ERROR: mu_test portion of {testname} does not contain '-'. Please check the test name format. Format should be 'model-layer', e.g., resnet18-submodule_2."
         return mu_test, cgra_test
 
+
+    # Parametrized test parsing (for running generic functions on various NN layers with different shapes)
+    def parse_layer_parametrized_test(testname, keyword):
+        layer = testname
+        if keyword in testname:
+            testname = f"apps/{keyword}"
+        return testname, layer
+
     def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
         if E64_mode_on:
             assert testname in E64_supported_tests, f"ERROR: E64 mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64 unroll is multiple of 4. Once done, please add the test to E64_supported_tests in regress_tests/tests.py"
@@ -921,8 +929,9 @@ def dispatch(args, extra_args=None):
         cgra_test, dense_ready_valid = parse_RV_mode(cgra_test)
         cgra_test, E64_mode_on = parse_E64_mode(cgra_test)
         cgra_test, E64_multi_bank_mode_on = parse_E64_MB_mode(cgra_test)
+        cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_nop")
         feature_support_check(cgra_test, E64_mode_on, E64_multi_bank_mode_on)
-        t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args,
+        t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args, layer=layer,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, external_MU_active=True)
         info.append([test + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
@@ -933,8 +942,9 @@ def dispatch(args, extra_args=None):
         cgra_test, dense_ready_valid = parse_RV_mode(cgra_test)
         cgra_test, E64_mode_on = parse_E64_mode(cgra_test)
         cgra_test, E64_multi_bank_mode_on = parse_E64_MB_mode(cgra_test)
+        cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_residual_relu_fp")
         feature_support_check(cgra_test, E64_mode_on, E64_multi_bank_mode_on)
-        t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args, use_fp=True,
+        t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args, layer=layer, use_fp=True,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, external_MU_active=True)
         info.append([test + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
