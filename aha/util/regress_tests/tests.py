@@ -21,47 +21,37 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_hello_world_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_hello_world_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
-            width, height = 28, 16,
-            cols_removed, mu_oc_0 = 12, 32  # Ignored if --no-zircon is set
+            width, height = 8, 8,
+            cols_removed, mu_oc_0 = 4, 8  # Ignored if --no-zircon is set
             sparse_tests = [
-                # "vec_identity"
+                "vec_identity"
             ]
             glb_tests_RV = [
-                # "tests/conv_2_1_RV",
-                # "apps/pointwise_RV_E64",
-                # "apps/pointwise_RV_E64_MB",
+                "tests/conv_2_1_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
             ]
             glb_tests_fp_RV = [
-                # "tests/fp_pointwise_RV",
+                "tests/fp_pointwise_RV",
             ]
             glb_tests = [
-                # "apps/pointwise",
+                "apps/pointwise",
             ]
             glb_tests_fp = [
-                # "tests/fp_pointwise",
+                "tests/fp_pointwise",
             ]
-            resnet_tests = [
-            ]
+            resnet_tests = []
             resnet_tests_fp = []
-            behavioral_mu_tests = [
-                # "apps/pointwise_mu_io_RV_E64",
-            ]
-            external_mu_tests = [
-                # "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-                # "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-                # "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
-            ]
-            external_mu_tests_fp = [
-                # "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-            ]
+            behavioral_mu_tests = []
+            external_mu_tests = []
+            external_mu_tests_fp = []
             hardcoded_dense_tests = []
 
         # PR_AHA test suite for aha-repo push/pull
@@ -183,8 +173,15 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
             ]
-            external_mu_tests = []
-            external_mu_tests_fp = []
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
 
 # Found the better way maybe
 #
@@ -333,8 +330,15 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
             ]
-            external_mu_tests = []
-            external_mu_tests_fp = []
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
 
 
         # FULL test is used by scheduled weekly aha regressions
@@ -531,8 +535,15 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
             ]
-            external_mu_tests = []
-            external_mu_tests_fp = []
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
         elif testname == "resnet":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -546,12 +557,32 @@ class Tests:
                 "conv2_x",
                 "conv5_x",
             ]
+            behavioral_mu_tests = []
+            external_mu_tests = []
+            external_mu_tests_fp = []
+
+        elif testname == "mu":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            sparse_tests = []
+            glb_tests = []
+            glb_tests_fp = []
+            glb_tests_RV = []
+            glb_tests_fp_RV = []
+            resnet_tests = []
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
             ]
-            external_mu_tests = []
-            external_mu_tests_fp = []
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
 
 
         # BLANK can be used to return default height, width, and blank test lists
