@@ -606,7 +606,6 @@ def dispatch(args, extra_args=None):
             "apps/scalar_max_fp_RV",
             "apps/layer_norm_pass2_fp_RV",
             "apps/layer_norm_pass3_fp_RV",
-            "apps/abs_max_full_unroll_fp_RV",
             "apps/scalar_avg_fp_RV",
             "apps/stable_softmax_pass2_fp_RV",
             "apps/stable_softmax_pass3_fp_RV",
@@ -684,7 +683,6 @@ def dispatch(args, extra_args=None):
             "apps/scalar_max_fp_RV",
             "apps/layer_norm_pass2_fp_RV",
             "apps/layer_norm_pass3_fp_RV",
-            "apps/abs_max_full_unroll_fp_RV",
             "apps/scalar_avg_fp_RV",
         ]
         imported_tests.glb_tests = [

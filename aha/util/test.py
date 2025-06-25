@@ -88,12 +88,13 @@ def dispatch(args, extra_args=None):
             arg_path = f"{args.aha_dir}/garnet/SPARSE_TESTS/{app}"
         app_args.append(f"+{arg_name}={arg_path}")
 
-        mu_test = args.mu_test[idx]
-        if mu_test != "inactive":
-            mu_test_path = f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}"
-            app_args.append(f"+MU_TEST{idx}={mu_test_path}")
-        else:
-            app_args.append(f"+MU_TEST{idx}=inactive")
+        if args.mu_test is not None and len(args.mu_test) > 0:
+            mu_test = args.mu_test[idx]
+            if mu_test != "inactive":
+                mu_test_path = f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}"
+                app_args.append(f"+MU_TEST{idx}={mu_test_path}")
+            else:
+                app_args.append(f"+MU_TEST{idx}=inactive")
 
     if args.dpr is True:
         app_args.append(f"+DPR=1")
