@@ -44,6 +44,120 @@
             "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
+    "zircon_nop_post_fakeconv2d":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=8 n_oc=64",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "1310720"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=8 n_oc=64",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "1310720"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=8 n_oc=64",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "1310720"
+        }
+    },
+    "zircon_nop_post_conv3_x":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        }
+    },
+    "zircon_nop_post_conv4_x":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        }
+    },
+    "zircon_residual_relu_fp_post_conv2_x":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        }
+    },
+    "zircon_residual_relu_fp_post_conv3_x":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0"
+        }
+    },
     "apps/gaussian":{
         "default":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",

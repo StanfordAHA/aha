@@ -12,16 +12,19 @@ class Tests:
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
+        behavioral_mu_tests = []
+        external_mu_tests = []
+        external_mu_tests_fp = []
         hardcoded_dense_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp"
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io"
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -44,9 +47,11 @@ class Tests:
             glb_tests_fp = [
                 "tests/fp_pointwise",
             ]
-            resnet_tests = [
-            ]
+            resnet_tests = []
             resnet_tests_fp = []
+            behavioral_mu_tests = []
+            external_mu_tests = []
+            external_mu_tests_fp = []
             hardcoded_dense_tests = []
 
         # PR_AHA test suite for aha-repo push/pull
@@ -90,8 +95,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 # pr_aha2
                 "apps/gaussian_RV",
                 # pr_aha3
@@ -111,7 +114,6 @@ class Tests:
                 "apps/scalar_max_fp_RV",
                 "apps/layer_norm_pass2_fp_RV",
                 "apps/layer_norm_pass3_fp_RV",
-                "apps/abs_max_full_unroll_fp_RV",
                 "apps/scalar_avg_fp_RV",
                 # pr_aha3
                 "apps/stable_softmax_pass2_fp_RV",
@@ -167,6 +169,20 @@ class Tests:
             ]
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
+            ]
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/abs_max_full_unroll_fp_RV",
+            ]
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
             ]
 
 # Found the better way maybe
@@ -241,8 +257,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/gaussian_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "tests/conv_1_2_RV",
@@ -252,7 +266,6 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
-                "apps/abs_max_full_unroll_fp_RV",
                 "apps/scalar_reduction_fp_RV",
                 "apps/vector_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
@@ -316,6 +329,21 @@ class Tests:
             ]
             resnet_tests = []
             resnet_tests_fp = []
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/abs_max_full_unroll_fp_RV",
+            ]
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
+
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -375,8 +403,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "tests/rom_RV",
                 "tests/arith_RV",
                 "tests/absolute_RV",
@@ -412,7 +438,6 @@ class Tests:
                 "tests/fp_pointwise_RV",
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
-                "apps/abs_max_full_unroll_fp_RV",
                 "apps/scalar_max_fp_RV",
                 "apps/stable_softmax_pass2_fp_RV",
                 "apps/stable_softmax_pass3_fp_RV",
@@ -514,6 +539,20 @@ class Tests:
                 # TODO: Tests below are planned but not yet supported
                 # "conv2_x_fp", # not yet supported by zircon
             ]
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/abs_max_full_unroll_fp_RV",
+            ]
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
         elif testname == "resnet":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -527,8 +566,33 @@ class Tests:
                 "conv2_x",
                 "conv5_x",
             ]
-            resnet_tests_fp = []
-            hardcoded_dense_tests = []
+            behavioral_mu_tests = []
+            external_mu_tests = []
+            external_mu_tests_fp = []
+
+        elif testname == "mu":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            sparse_tests = []
+            glb_tests = []
+            glb_tests_fp = []
+            glb_tests_RV = []
+            glb_tests_fp_RV = []
+            resnet_tests = []
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+            ]
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
+
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
@@ -546,6 +610,9 @@ class Tests:
         self.glb_tests_fp_RV = glb_tests_fp_RV
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
+        self.behavioral_mu_tests = behavioral_mu_tests
+        self.external_mu_tests = external_mu_tests
+        self.external_mu_tests_fp = external_mu_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.E64_supported_tests = E64_supported_tests
         self.E64_MB_supported_tests = E64_MB_supported_tests
