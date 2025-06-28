@@ -18,7 +18,7 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp"
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/pointwise_custom_packing", "apps/get_e8m0_scale_test_fp"
         ]
         E64_MB_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io"
@@ -92,6 +92,8 @@ class Tests:
                 "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
+                "apps/get_e8m0_scale_test_fp_RV_E64",
                 # pr_aha2
                 "apps/gaussian_RV",
                 # pr_aha3
