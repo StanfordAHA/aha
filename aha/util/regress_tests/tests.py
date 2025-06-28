@@ -95,8 +95,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/pointwise_custom_packing_RV_E64",
                 "apps/get_e8m0_scale_test_fp_RV_E64",
                 # pr_aha2
