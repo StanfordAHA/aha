@@ -96,7 +96,6 @@ class Tests:
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
                 "apps/pointwise_custom_packing_RV_E64",
-                "apps/get_e8m0_scale_test_fp_RV_E64",
                 # pr_aha2
                 "apps/gaussian_RV",
                 # pr_aha3
@@ -176,6 +175,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_test_fp_RV_E64",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
