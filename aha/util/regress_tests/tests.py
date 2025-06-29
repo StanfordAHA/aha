@@ -21,7 +21,7 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/pointwise_custom_packing", "apps/get_e8m0_scale_test_fp", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
         ]
         E64_MB_supported_tests = [
             "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
@@ -95,6 +95,7 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
                 # pr_aha2
                 "apps/gaussian_RV",
                 # pr_aha3
@@ -174,6 +175,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_test_fp_RV_E64",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
