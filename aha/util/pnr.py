@@ -73,6 +73,9 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
     for n, v in new_env_vars.items():
         print(f"--- {n} = {v}")
         env[n] = v
+    # Also add app variable to env
+    print(f"--- HALIDE_APP_PATH = {app}")
+    env["HALIDE_APP_PATH"] = str(app)
 
 
 def dispatch(args, extra_args=None):
