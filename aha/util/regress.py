@@ -876,8 +876,9 @@ def dispatch(args, extra_args=None):
 
     # Parametrized test parsing (for running generic functions on various NN layers with different shapes)
     def parse_layer_parametrized_test(testname, keyword):
-        layer = testname
+        layer = ""
         if keyword in testname:
+            layer = testname
             testname = f"apps/{keyword}"
         return testname, layer
 
@@ -939,6 +940,7 @@ def dispatch(args, extra_args=None):
         cgra_test, E64_mode_on = parse_E64_mode(cgra_test)
         cgra_test, E64_multi_bank_mode_on = parse_E64_MB_mode(cgra_test)
         cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_residual_relu_fp")
+        cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_psum_reduction_fp")
         feature_support_check(cgra_test, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args, layer=layer, use_fp=True,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,

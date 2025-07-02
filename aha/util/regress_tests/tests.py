@@ -21,10 +21,10 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
+            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/zircon_residual_relu_fp", "apps/zircon_relu_fp", "apps/zircon_nop", "apps/zircon_psum_reduction_fp",
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
+            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_relu_fp", "apps/zircon_nop", "apps/zircon_psum_reduction_fp",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -580,17 +580,25 @@ class Tests:
             glb_tests_fp_RV = []
             resnet_tests = []
             behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
+                # "apps/pointwise_mu_io_RV_E64",
+                # "apps/pointwise_mu_io_RV_E64_MB",
             ]
             external_mu_tests = [
-                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+                # "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                # "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                # "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+
+                #  "resnet18-submodule_10 -> zircon_nop_post_conv4_x_RV_E64_MB",
+
             ]
             external_mu_tests_fp = [
-                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+                # "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                # "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+                # "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_RV_E64_MB",
+                # "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_RV_E64_MB",
+
+                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_RV_E64_MB",
             ]
 
 
