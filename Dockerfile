@@ -266,6 +266,7 @@ COPY ./voyager /aha/voyager
 RUN echo "--- ..Voyager step 2"
 WORKDIR /aha/voyager
 RUN git lfs install
+RUN cd /aha/voyager && git lfs pull
 # RUN cd /aha/voyager
 # RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
 #     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
