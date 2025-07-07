@@ -21,10 +21,23 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/pointwise_custom_packing", "apps/get_e8m0_scale_test_fp", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "conv5_x",
+            "apps/avgpool_layer_fp",
+            "apps/pointwise_custom_packing",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_test_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_nop",
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_test_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -175,7 +188,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64",
+                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
@@ -336,7 +349,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64",
+                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
@@ -548,7 +561,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64",
+                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
