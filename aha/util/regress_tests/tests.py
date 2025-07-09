@@ -596,9 +596,12 @@ class Tests:
 
                 # "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_RV_E64_MB",
 
-                # "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_RV_E64_MB",
+                # PSUM WORKAROUND CONV4_X
+                # "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+
                 # "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_hack_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_hack_RV_E64_MB",
+                # "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_hack_RV_E64_MB",
 
             ]
 
