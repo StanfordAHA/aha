@@ -378,10 +378,10 @@ fi
 
 if [ "$ZIRCON" == True ]; then
     echo aha regress $config
-    aha regress $config
+    aha regress $config --include-dense-only-tests
 else
     echo aha regress $config --no-zircon
-    aha regress $config --no-zircon
+    aha regress $config --no-zircon --include-dense-only-tests
 fi
 
 if [ "$WAVEFORM" ]; then
