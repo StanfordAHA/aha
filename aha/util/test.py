@@ -18,6 +18,7 @@ def add_subparser(subparser):
     parser.add_argument("--multiles", type=int, default=None)
     parser.add_argument("--dpr", action="store_true")
     parser.add_argument("--mu-test", nargs="+", type=str, help="Specifies the test to run on the external voyager matrix unit. If not specified, or specified as \"inactive\", the test is skipped.")
+    parser.add_argument("--layer", type=str, help="Specifies layer parameters if running 'aha halide apps/resnet_output_stationary', options for LAYER are in application_parameters.json")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -72,11 +73,41 @@ def bfbin2float(bfstr):
         return mult * nfrac * (2 ** (nexp - 7))
 
 
+def load_environmental_vars(env, app, layer=None, env_parameters=None):
+    filename = os.path.realpath(os.path.dirname(__file__)) + "/application_parameters.json"
+    new_env_vars = {}
+    app_name = str(app) if layer is None else str(layer)
+
+    if not os.path.exists(filename):
+        print(f"{filename} not found, not setting environmental variables")
+    else:
+        fin = open(filename, 'r')
+        env_vars_fin = json.load(fin)
+        if "global_parameters" in env_vars_fin:
+            if env_parameters is None or str(env_parameters) not in env_vars_fin["global_parameters"]:
+                new_env_vars.update(env_vars_fin["global_parameters"]["default"])
+            else:
+                new_env_vars.update(env_vars_fin["global_parameters"][str(env_parameters)])
+
+        if app_name in env_vars_fin:
+            if env_parameters is None or str(env_parameters) not in env_vars_fin[app_name]:
+                new_env_vars.update(env_vars_fin[app_name]["default"])
+            else:
+                new_env_vars.update(env_vars_fin[app_name][str(env_parameters)])
+
+    print(f"--- Setting environment variables for {app}")
+    for n, v in new_env_vars.items():
+        print(f"--- {n} = {v}")
+        env[n] = v
+        os.environ[n] = v
+
+
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
     if args.mu_test is not None and len(args.mu_test) > 0:
         assert len(args.app) == len(args.mu_test), "If using --mu_tests, number of apps and mu tests must match."
     env = os.environ.copy()
+    load_environmental_vars(env, args.app, layer=args.layer)
     app_args = []
     for idx, app in enumerate(args.app):
         # this is how many apps we 're running
@@ -213,7 +244,7 @@ def dispatch(args, extra_args=None):
                     assert numpy.allclose(gold_matrix, sim_matrix), f"Check Failed.\n"
 
     else:
-
+        
         if args.run:
             subprocess_call_log(
                 cmd=["make", "run"] + extra_args,
@@ -254,10 +285,26 @@ def dispatch(args, extra_args=None):
             app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
             voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}")
 
-            use_external_gold = "EXTERNAL_GOLD" in os.environ and os.environ["EXTERNAL_GOLD"] == "1"
-            # Use external gold pre-supplied by the user
-            if use_external_gold:
+            use_voyager_gold = "VOYAGER_GOLD" in os.environ and os.environ["VOYAGER_GOLD"] == "1"
+            use_psum_workaround_gold = "USE_PSUM_WORKAROUND_GOLD" in os.environ and os.environ["USE_PSUM_WORKAROUND_GOLD"] == "1"
+
+            if use_psum_workaround_gold:
+                psum_idx = int(os.environ.get("PSUM_IDX", 1))
+                gold_output_path = f"{app_dir}/{mu_test}_gold/kernel_{psum_idx}_output.txt"
+                assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
+                gold_array = []
+                with open(gold_output_path, "r") as gold_output:
+                    for line in gold_output:
+                        if line.strip():  # Check if the line is not empty
+                            values = [int(value, 16) for value in line.split()]
+                            gold_array.extend(values)
+                gold_array = numpy.array(gold_array, dtype=numpy.uint16)
+                gold_array = gold_array.flatten()
+
+            # Use voyager gold pre-supplied by the user
+            elif use_voyager_gold:
                 gold_output_path = f"{voyager_app_dir}/compare/gold_data.txt"
+                assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
 
                 with open(gold_output_path, "r") as gold_file:
                     gold_array = []

@@ -430,7 +430,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
             env_vars["BEHAVIORAL_MATRIX_UNIT"] = "1"
 
         if mu_test is not None and mu_test != "":
-            env_vars["EXTERNAL_GOLD"] = "1"
+            env_vars["VOYAGER_GOLD"] = "1"
 
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
@@ -441,9 +441,9 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if mu_test == "" or mu_test is None:
         mu_test = "inactive"
     if use_fp:
-        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test], env=env_vars)
+        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test] + layer_array, env=env_vars)
     else:
-        buildkite_call(["aha", "test", test, "--mu-test", mu_test], env=env_vars)
+        buildkite_call(["aha", "test", test, "--mu-test", mu_test] + layer_array, env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
