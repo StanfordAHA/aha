@@ -30,6 +30,7 @@ class Tests:
             "apps/get_e8m0_scale_test_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp"
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -38,6 +39,7 @@ class Tests:
             "apps/get_e8m0_scale_test_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp"
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -198,6 +200,16 @@ class Tests:
             external_mu_tests_fp = [
                 "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV4_X downsample
+                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV5_X downsample
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
             ]
 
 # Found the better way maybe
@@ -359,6 +371,16 @@ class Tests:
             external_mu_tests_fp = [
                 "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV4_X downsample
+                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV5_X downsample
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
             ]
 
 
@@ -571,6 +593,16 @@ class Tests:
             external_mu_tests_fp = [
                 "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV4_X downsample
+                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV5_X downsample
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
             ]
         elif testname == "resnet":
             width, height = 28, 16
@@ -610,6 +642,16 @@ class Tests:
             external_mu_tests_fp = [
                 "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV4_X downsample
+                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV5_X downsample
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
             ]
 
 
