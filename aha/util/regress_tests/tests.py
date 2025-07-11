@@ -21,10 +21,25 @@ class Tests:
         cols_removed, mu_oc_0 = 12, 32
 
         E64_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "conv5_x", "apps/avgpool_layer_fp", "apps/zircon_residual_relu_fp", "apps/zircon_relu_fp", "apps/zircon_nop", "apps/zircon_psum_reduction_fp",
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "conv5_x",
+            "apps/avgpool_layer_fp",
+            "apps/pointwise_custom_packing",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_test_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp"
         ]
         E64_MB_supported_tests = [
-            "apps/pointwise", "apps/pointwise_mu_io", "apps/zircon_residual_relu_fp", "apps/zircon_relu_fp", "apps/zircon_nop", "apps/zircon_psum_reduction_fp",
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_test_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp"
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -97,6 +112,7 @@ class Tests:
                 "apps/pointwise_RV_E64_MB",
                 # pr_aha2
                 "apps/gaussian_RV",
+                "apps/pointwise_custom_packing_RV_E64",
                 # pr_aha3
                 "tests/bit8_packing_test_RV",
                 "tests/bit8_unpack_test_RV",
@@ -174,6 +190,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
@@ -257,6 +274,7 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
                 "apps/gaussian_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "tests/conv_1_2_RV",
@@ -333,6 +351,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
@@ -426,6 +445,7 @@ class Tests:
                 "tests/fp_e8m0_quant_test_RV",
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
+                "apps/pointwise_custom_packing_RV_E64",
                 # TODO: Tests below are planned but not yet supported
                 # "tests/conv_1_2_RV",
                 # "apps/maxpooling_RV",
@@ -543,6 +563,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
@@ -580,17 +601,17 @@ class Tests:
             glb_tests_fp_RV = []
             resnet_tests = []
             behavioral_mu_tests = [
-                # "apps/pointwise_mu_io_RV_E64",
-                # "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
             ]
             external_mu_tests = [
-                # "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-                # "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-                # "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
             ]
             external_mu_tests_fp = [
-                # "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                # "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV4_X downsample
                 "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",

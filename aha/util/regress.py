@@ -677,6 +677,7 @@ def dispatch(args, extra_args=None):
         imported_tests = Tests("BLANK")
         imported_tests.glb_tests_RV = [
             "apps/gaussian_RV",
+            "apps/pointwise_custom_packing_RV_E64",
         ]
         imported_tests.glb_tests_fp_RV = [
             "apps/scalar_reduction_fp_RV",
