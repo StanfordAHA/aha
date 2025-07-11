@@ -640,6 +640,20 @@ def dispatch(args, extra_args=None):
             "conv2_x",
             "conv1",
         ]
+        external_mu_tests_fp_to_remove = [
+            "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+            "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+            # PSUM WORKAROUND CONV4_X downsample
+            "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+
+            # PSUM WORKAROUND CONV5_X downsample
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+        ]
 
         # Remove integer RV tests
         for test in glb_tests_RV_to_remove:
@@ -671,6 +685,11 @@ def dispatch(args, extra_args=None):
             if test in imported_tests.resnet_tests:
                 imported_tests.resnet_tests.remove(test)
 
+        # Remove external_mu_tests_fp
+        for test in external_mu_tests_fp_to_remove:
+            if test in imported_tests.external_mu_tests_fp:
+                imported_tests.external_mu_tests_fp.remove(test)
+
     # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
         no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
@@ -698,6 +717,14 @@ def dispatch(args, extra_args=None):
         ]
         imported_tests.resnet_tests = [
             "conv2_x",
+        ]
+        imported_tests.external_mu_tests_fp = [
+            "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+            "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+            # PSUM WORKAROUND CONV4_X downsample
+            "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
         ]
 
     # pr_aha3 contains all the remaining tests
@@ -734,6 +761,13 @@ def dispatch(args, extra_args=None):
         ]
         imported_tests.resnet_tests = [
             "conv1",
+        ]
+        imported_tests.external_mu_tests_fp = [
+            # PSUM WORKAROUND CONV5_X downsample
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
         ]
 
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
