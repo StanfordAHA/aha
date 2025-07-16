@@ -30,6 +30,10 @@ HELP="
 
   EXAMPLE(S):
     $bn 4x2 apps/pointwise --no-zircon
+    [NOTE this (temporarily) does not work...see notes...]
+    [Michael is working on a solution...]
+    [For now must use 8x8 instead, that works...]
+
     $bn 8x8 tests/fp_pointwise
     $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
     $bn 8x8 tests/fp_pointwise --waveform
@@ -50,6 +54,8 @@ if [ "$1" == "" ];       then echo "$HELP"; exit; fi
 
 # Preserve original flags for later
 app_flags="$@"
+
+[ "$CONTAINER" ] && printf "\nWARNING found env var CONTAINER=$CONTAINER\n\n"
 
 # Defaults
 DBG=
@@ -376,13 +382,10 @@ fi
 ########################################################################
 # Finally: run it!!
 
-if [ "$ZIRCON" == True ]; then
-    echo aha regress $config
-    aha regress $config --include-dense-only-tests
-else
-    echo aha regress $config --no-zircon
-    aha regress $config --no-zircon --include-dense-only-tests
-fi
+[ "$ZIRCON" == True ] && zflag="" || zflag="--no-zircon"
+
+echo aha regress $config $zflag
+aha regress $config $zflag --include-dense-only-tests
 
 if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"
