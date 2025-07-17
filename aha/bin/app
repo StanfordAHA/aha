@@ -383,7 +383,7 @@ fi
 
 [ "$ZIRCON" == True ] && zflag="" || zflag="--no-zircon"
 
-echo aha regress $config $zflag
+echo TOOL=$SIM aha regress $config $zflag
 TOOL=$SIM aha regress $config $zflag --include-dense-only-tests
 
 if [ "$WAVEFORM" ]; then
