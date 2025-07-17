@@ -59,7 +59,7 @@ app_flags="$@"
 
 # Defaults
 DBG=
-SIM=vcs
+SIM=VCS
 LIST_SUITES=
 ZIRCON=True
 FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
@@ -78,8 +78,8 @@ while [ $# -gt 0 ] ; do
         --list*)      LIST_SUITES=notnull ;;
         --no*zircon)  ZIRCON=False        ;;
         --zircon)     ZIRCON=True         ;;
-        --ver*)       SIM=verilator       ;;
-        --vcs)        SIM=vcs             ;;
+        --ver*)       SIM=VERILATOR       ;;
+        --vcs)        SIM=VCS             ;;
         --wave*)      export WAVEFORM=1   ;;
         --help)       echo "$HELP";  exit ;;
 
@@ -249,7 +249,7 @@ if ! [ "$IN_DOCKER" ]; then
     echo '-------------------------------------------------'
 
     # Must mount /cad if want to use VCS
-    [ "$SIM" == vcs ] && CAD='-v /cad:/cad' || CAD=
+    [ "$SIM" == VCS ] && CAD='-v /cad:/cad' || CAD=
 
     # Setup
     image=stanfordaha/garnet:latest
@@ -364,12 +364,11 @@ echo ""
 
 rm -f garnet/garnet.v  # Get rid of old verilog if it exists
 source /aha/bin/activate
-if [ "$SIM" == vcs ]; then
-    printf "PREPARING VCS b/c SIM=$SIM\n\n"
+printf "PREPARING $SIM b/c SIM=$SIM\n\n"
+if [ "$SIM" == VCS ]; then
     source /cad/modules/tcl/init/bash; module load base; module load vcs
     [ "$WAVEFORM" ] && module load verdi
 else
-    printf "PREPARING VERILATOR b/c SIM=$SIM\n\n"
     echo /aha/garnet/tests/install-verilator.sh
     /aha/garnet/tests/install-verilator.sh
 fi
@@ -385,7 +384,7 @@ fi
 [ "$ZIRCON" == True ] && zflag="" || zflag="--no-zircon"
 
 echo aha regress $config $zflag
-aha regress $config $zflag --include-dense-only-tests
+TOOL=$SIM aha regress $config $zflag --include-dense-only-tests
 
 if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"
