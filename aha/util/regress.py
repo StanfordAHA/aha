@@ -430,7 +430,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
             env_vars["BEHAVIORAL_MATRIX_UNIT"] = "1"
 
         if mu_test is not None and mu_test != "":
-            env_vars["EXTERNAL_GOLD"] = "1"
+            env_vars["VOYAGER_GOLD"] = "1"
 
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
@@ -441,9 +441,9 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if mu_test == "" or mu_test is None:
         mu_test = "inactive"
     if use_fp:
-        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test], env=env_vars)
+        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test] + layer_array, env=env_vars)
     else:
-        buildkite_call(["aha", "test", test, "--mu-test", mu_test], env=env_vars)
+        buildkite_call(["aha", "test", test, "--mu-test", mu_test] + layer_array, env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -640,6 +640,20 @@ def dispatch(args, extra_args=None):
             "conv2_x",
             "conv1",
         ]
+        external_mu_tests_fp_to_remove = [
+            "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+            "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+            # PSUM WORKAROUND CONV4_X downsample
+            "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+
+            # PSUM WORKAROUND CONV5_X downsample
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+        ]
 
         # Remove integer RV tests
         for test in glb_tests_RV_to_remove:
@@ -671,6 +685,11 @@ def dispatch(args, extra_args=None):
             if test in imported_tests.resnet_tests:
                 imported_tests.resnet_tests.remove(test)
 
+        # Remove external_mu_tests_fp
+        for test in external_mu_tests_fp_to_remove:
+            if test in imported_tests.external_mu_tests_fp:
+                imported_tests.external_mu_tests_fp.remove(test)
+
     # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
         no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
@@ -698,6 +717,14 @@ def dispatch(args, extra_args=None):
         ]
         imported_tests.resnet_tests = [
             "conv2_x",
+        ]
+        imported_tests.external_mu_tests_fp = [
+            "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+            "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+            # PSUM WORKAROUND CONV4_X downsample
+            "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
         ]
 
     # pr_aha3 contains all the remaining tests
@@ -734,6 +761,13 @@ def dispatch(args, extra_args=None):
         ]
         imported_tests.resnet_tests = [
             "conv1",
+        ]
+        imported_tests.external_mu_tests_fp = [
+            # PSUM WORKAROUND CONV5_X downsample
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+            "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
         ]
 
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
@@ -876,9 +910,10 @@ def dispatch(args, extra_args=None):
 
 
     # Parametrized test parsing (for running generic functions on various NN layers with different shapes)
-    def parse_layer_parametrized_test(testname, keyword):
-        layer = testname
+    def parse_layer_parametrized_test(testname, keyword, layer_in=""):
+        layer = layer_in
         if keyword in testname:
+            layer = testname
             testname = f"apps/{keyword}"
         return testname, layer
 
@@ -940,6 +975,7 @@ def dispatch(args, extra_args=None):
         cgra_test, E64_mode_on = parse_E64_mode(cgra_test)
         cgra_test, E64_multi_bank_mode_on = parse_E64_MB_mode(cgra_test)
         cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_residual_relu_fp")
+        cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_psum_reduction_fp", layer_in=layer)
         feature_support_check(cgra_test, E64_mode_on, E64_multi_bank_mode_on)
         t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args, layer=layer, use_fp=True,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,

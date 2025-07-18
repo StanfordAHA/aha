@@ -6,7 +6,6 @@ import shutil
 from pathlib import Path
 import subprocess
 import json
-from voyager.scripts.aha_flow.parse_dnnLayer_tensors import parse_tensors
 
 
 def add_subparser(subparser):
@@ -182,7 +181,21 @@ def dispatch(args, extra_args=None):
 
         # Parse the dnnLayer tensors and write them to tensor_files directory
         print(f"\nParsing tensors for layer {layer} of {model}...\n")
-        parse_tensors(model, layer, datatype="MXINT8", h2h_dir=app_dir, debug_mode=False)
+
+        subprocess_call_log(
+            cmd=[sys.executable,
+                    f"{args.aha_dir}/voyager/scripts/aha_flow/parse_dnnLayer_tensors.py",
+                    "--model", model,
+                    "--layer", layer,
+                    "--datatype", "MXINT8",
+                    "--h2h_dir", app_dir
+                    ],
+            cwd=args.aha_dir / "voyager",
+            log=args.log,
+            log_file_path=log_file_path,
+            env=env
+        )
+        # parse_tensors(model, layer, datatype="MXINT8", h2h_dir=app_dir, debug_mode=False)
 
         # Move collateral to desired folders
         subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])
@@ -192,7 +205,6 @@ def dispatch(args, extra_args=None):
         subprocess.check_call(["mv", "/aha/voyager/gold_data.raw", compare_path])
         subprocess.check_call(["mv", "/aha/voyager/tensor_metadata.json", voyager_app_base_path])
         subprocess.check_call(["mv", "/aha/voyager/output_tiling.txt", voyager_app_base_path])
-
 
     #####################################
     #-----MAP CGRA TEST TO CGRA -------#
