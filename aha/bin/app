@@ -29,10 +29,11 @@ HELP="
     --mu <n>       # Same as --mu_oc_0
 
   EXAMPLE(S):
-    $bn 4x2 apps/pointwise --no-zircon
-    [NOTE this (temporarily) does not work...see notes...]
-    [Michael is working on a solution...]
-    [For now must use 8x8 instead, that works...]
+
+    # $bn 4x2 apps/pointwise --no-zircon
+    #   [NOTE this (temporarily) does not work...see notes...]
+    #   [Michael is working on a solution...]
+    #   [For now must use 8x8 instead, that works...]
 
     $bn 8x8 tests/fp_pointwise
     $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
