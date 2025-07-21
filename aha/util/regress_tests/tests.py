@@ -2,6 +2,7 @@ class Tests:
 
     def __init__(self, testname, zircon=True):
         use_custom = False
+        use_json = False  # Oh you is a crazy man
 
         # Defaults
         width, height = 28, 16  # default
@@ -660,7 +661,14 @@ class Tests:
             pass
 
         else:
-            use_custom = True
+            # But what if it's json hawwww
+            # regress.py does import json so maybe I don't have to (yeah right)
+            # import json
+            # Assume that curly-brace means json
+            if "{" in testname:
+                use_json = True
+            else:                
+                use_custom = True
 
         self.width, self.height = width, height
         self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
@@ -678,22 +686,24 @@ class Tests:
         self.E64_supported_tests = E64_supported_tests
         self.E64_MB_supported_tests = E64_MB_supported_tests
 
-        if use_custom:
+        if use_json:
+            # "testname" is the actual json structure, e.g. "{ foo : bar }" see?
+            print("hello i am use_json")
+            tmpmodule = json.loads(testname)
+            self.__dict__.update(tmpmodule.__dict__)
+
+        elif use_custom:
             # Read a custom suite from external file <testname>.py
             # E.g. if we build a config file '/aha/aha/util/regress_tests/custom4485.py'
             # "if True:
             #     width, height = 4, 2
             #     glb_tests = [ 'tests/pointwise' ]"
             # then 'aha regress custom4485' would run a 4x2 pointwise test.
-            try:
-                # Update self parms w those found in custom config {testname}.py
-                import importlib
-                tmpmodule = importlib.import_module('aha.util.regress_tests.' + testname)
-                self.__dict__.update(tmpmodule.__dict__)
-            except:
-                raise NotImplementedError(
-                    f"Cannot find custom config /aha/aha/util/regress_tests/{testname}.py"
-                )
+
+            # Update self parms w those found in custom config {testname}.py
+            import importlib
+            tmpmodule = importlib.import_module('aha.util.regress_tests.' + testname)
+            self.__dict__.update(tmpmodule.__dict__)
 
     def show_suite(self, suite_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_suite('fast'):
