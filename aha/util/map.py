@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 import subprocess
 import json
+import re
 
 
 def add_subparser(subparser):
@@ -195,14 +196,24 @@ def dispatch(args, extra_args=None):
             log_file_path=log_file_path,
             env=env
         )
-        # parse_tensors(model, layer, datatype="MXINT8", h2h_dir=app_dir, debug_mode=False)
+
+        subprocess_call_log(
+            cmd=[sys.executable,
+                    f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_gold_for_k_tiling.py",
+                    "--input", f"/aha/voyager/gold_data.txt",
+                    "--output", f"/aha/voyager/gold_data.txt"
+                    ],
+            cwd=args.aha_dir / "voyager",
+            log=args.log,
+            log_file_path=log_file_path,
+            env=env
+        )
 
         # Move collateral to desired folders
         subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])
         systemC_comparison_files = glob.glob("/aha/voyager/*systemC.txt")
         subprocess.check_call(["mv"] + systemC_comparison_files + [compare_path])
         subprocess.check_call(["mv", "/aha/voyager/gold_data.txt", compare_path])
-        subprocess.check_call(["mv", "/aha/voyager/gold_data.raw", compare_path])
         subprocess.check_call(["mv", "/aha/voyager/tensor_metadata.json", voyager_app_base_path])
         subprocess.check_call(["mv", "/aha/voyager/output_tiling.txt", voyager_app_base_path])
 
