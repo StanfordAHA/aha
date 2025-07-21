@@ -836,6 +836,15 @@ def dispatch(args, extra_args=None):
         assert num_fabric_cols_removed <= width - 4, "ERROR: Removing too many columns. There will be no columns left in the CGRA. Please adjust num_fabric_cols_removed and/or CGRA width."
         assert mu_oc_0 <= 2 * (width - num_fabric_cols_removed), "ERROR: OC_0 cannot be greater than 2 * num CGRA cols. Please double-check OC_0, num_fabric_cols_removed, and CGRA width"
 
+    ZIRCON_TAPEOUT_MU_OC0 = 32
+    ZIRCON_TAPEOUT_OC_PER_CGRA_COL = 2
+    if width - num_fabric_cols_removed < (ZIRCON_TAPEOUT_MU_OC0 // ZIRCON_TAPEOUT_OC_PER_CGRA_COL):
+        print(f"\033[93mINFO: CGRA width ({width - num_fabric_cols_removed}) is less than the ZIRCON tapeout width ({ZIRCON_TAPEOUT_MU_OC0 // ZIRCON_TAPEOUT_OC_PER_CGRA_COL}). Hence, the external matrix unit will NOT be included in the simulation.\033[0m")
+        if using_matrix_unit:
+            os.environ["BEHAVIORAL_MATRIX_UNIT"] = "1"
+        assert imported_tests.external_mu_tests == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests from the test list."
+        assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
+
     print(f"--- Running regression: {args.config}", flush=True)
     info = []
     t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
