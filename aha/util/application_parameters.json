@@ -488,6 +488,162 @@
             "ZIRCON_FX_FY_STRIDE_WORKAROUND":"1"
         }
     },
+    "zircon_residual_relu_fp_post_conv5_x_kernel0":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        }
+    },
+    "zircon_residual_relu_fp_post_conv5_x_kernel1":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        }
+    },
+    "zircon_residual_relu_fp_post_conv5_x_kernel2":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "2",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "2",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "2",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        }
+    },
+    "zircon_residual_relu_fp_post_conv5_x_kernel3":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "3",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "3",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "3",
+            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+        }
+    },
     "apps/gaussian":{
         "default":{
             "HALIDE_GEN_ARGS":"mywidth=62 myunroll=2 schedule=3",
