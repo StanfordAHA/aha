@@ -687,10 +687,16 @@ class Tests:
         self.E64_MB_supported_tests = E64_MB_supported_tests
 
         if use_json:
+            import json
             # "testname" is the actual json structure, e.g. "{ foo : bar }" see?
             print("hello i am use_json")
+            print(f"found testname/json '{testname}'")
             tmpmodule = json.loads(testname)
-            self.__dict__.update(tmpmodule.__dict__)
+            print(f"GOT TMPMODULE:")
+            print(json.dumps(tmpmodule, indent=4))
+#             self.__dict__.update(tmpmodule.__dict__)
+            self.__dict__.update(tmpmodule)
+            print(f'okay now width={width}')
 
         elif use_custom:
             # Read a custom suite from external file <testname>.py
