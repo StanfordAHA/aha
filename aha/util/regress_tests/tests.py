@@ -633,13 +633,6 @@ class Tests:
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
-
-
-                # K-DIM HOST TILING CONV5_X
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
         elif testname == "resnet":
             width, height = 28, 16
