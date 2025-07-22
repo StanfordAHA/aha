@@ -138,8 +138,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -150,8 +150,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -163,8 +163,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
     "zircon_nop_post_conv5_x_kernel1":{
@@ -177,8 +177,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -189,8 +189,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -202,8 +202,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
     "zircon_psum_reduction_fp_post_conv4_x_kernel0":{
@@ -498,8 +498,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "0",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -510,8 +510,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "0",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -523,8 +523,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "0",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
     "zircon_residual_relu_fp_post_conv5_x_kernel1":{
@@ -537,8 +537,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -549,8 +549,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -562,8 +562,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
     "zircon_residual_relu_fp_post_conv5_x_kernel2":{
@@ -576,8 +576,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "2",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -588,8 +588,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "2",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -601,8 +601,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "2",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
     "zircon_residual_relu_fp_post_conv5_x_kernel3":{
@@ -615,8 +615,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "3",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -627,8 +627,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "3",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -640,8 +640,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "3",
-            "ZIRCON_INPUT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
     "apps/gaussian":{
