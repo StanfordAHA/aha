@@ -321,6 +321,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
 
 
 def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False, behavioral_MU=False, mu_test=""):
+    print(f"FOO6 okay here we are in tda")
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -345,6 +346,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     env_vars = {}
     if dense_ready_valid:
+        print(f"FOO7 uh oh dude we setting a bunch of env vars dude noooo")
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
@@ -359,7 +361,19 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     start = time.time()
-    buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
+    print(f"FOO7 okay well here's the map")
+
+    # aha map
+    print(' '.join(
+        # ["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test]
+        # ["aha", "map", test, "--chain", "--env-parameters", env_parameters]
+        ["aha", "map", test]
+        + layer_array), flush=True)
+
+    # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
+    # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
+    buildkite_call(["aha", "map", test] + layer_array, env=env_vars)
+
     time_compile = time.time() - start
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
@@ -372,14 +386,15 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         if ('--daemon' in extra_args) and ('auto' in extra_args):
             use_daemon = ["--daemon", "auto"]
 
+    # aha pnr
     buildkite_args = [
         "aha",
         "pnr",
         test,
         "--width", str(width),
         "--height", str(height),
-        "--env-parameters", env_parameters,
-        "--mu-test", mu_test,
+        # "--env-parameters", env_parameters,
+        # "--mu-test", mu_test,
     ] + use_daemon + layer_array
 
     if dense_only:
@@ -432,6 +447,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         if mu_test is not None and mu_test != "":
             env_vars["VOYAGER_GOLD"] = "1"
 
+    print(' '.join(buildkite_args), flush=True)
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
@@ -441,9 +457,13 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
     if mu_test == "" or mu_test is None:
         mu_test = "inactive"
     if use_fp:
-        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test] + layer_array, env=env_vars)
+        print(' '.join(["aha", "test", test, "--dense-fp"] + layer_array), flush=True)
+        # buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test] + layer_array, env=env_vars)
+        buildkite_call(["aha", "test", test, "--dense-fp"] + layer_array, env=env_vars)
     else:
-        buildkite_call(["aha", "test", test, "--mu-test", mu_test] + layer_array, env=env_vars)
+        print(' '.join(["aha", "test", test] + layer_array), flush=True)
+        # buildkite_call(["aha", "test", test, "--mu-test", mu_test] + layer_array, env=env_vars)
+        buildkite_call(["aha", "test", test] + layer_array, env=env_vars)
     time_test = time.time() - start
 
     return time_compile, time_map, time_test
@@ -580,14 +600,16 @@ def dispatch(args, extra_args=None):
     from aha.util.regress_tests.tests import Tests
     imported_tests = None
 
-    # For sparse tests, we cherry pick some representative tests to run
-    no_zircon_sparse_tests = [
-        "vec_elemmul",
-        "mat_vecmul_ij",
-        "mat_elemadd_leakyrelu_exp",
-        "matmul_ikj",
-        "tensor3_mttkrp",
-    ]
+    # What? No!!! Where does this belong? Looks like should be in pr_aha3?
+    # # For sparse tests, we cherry pick some representative tests to run
+    # no_zircon_sparse_tests = [
+    #     "vec_elemmul",
+    #     "mat_vecmul_ij",
+    #     "mat_elemadd_leakyrelu_exp",
+    #     "matmul_ikj",
+    #     "tensor3_mttkrp",
+    # ]
+    no_zircon_sparse_tests = []
 
     # pr_aha1 starts with the pr_aha suite and remove some tests
     if args.config == "pr_aha1":
@@ -729,6 +751,16 @@ def dispatch(args, extra_args=None):
 
     # pr_aha3 contains all the remaining tests
     elif args.config == "pr_aha3":
+
+        # This is terrible
+        no_zircon_sparse_tests = [
+            "vec_elemmul",
+            "mat_vecmul_ij",
+            "mat_elemadd_leakyrelu_exp",
+            "matmul_ikj",
+            "tensor3_mttkrp",
+        ]
+
         imported_tests = Tests("BLANK")
         imported_tests.glb_tests_RV = [
             "tests/bit8_packing_test_RV",
@@ -773,6 +805,8 @@ def dispatch(args, extra_args=None):
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
     else:
         imported_tests = Tests(args.config)
+        print("FOO imported custom config maybe")
+        print(f"FOO i see imported_tests.glb_tests_fp={imported_tests.glb_tests_fp}")
 
     # Unpack imported_tests into convenient handles
     width, height = imported_tests.width, imported_tests.height
@@ -792,12 +826,16 @@ def dispatch(args, extra_args=None):
     E64_supported_tests = imported_tests.E64_supported_tests
     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
+    print(f"FOO i see glb_tests_fp={glb_tests_fp}")
+
+
     # No zircon flag (generate default layout)
     if args.no_zircon:
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         using_matrix_unit = False
         num_fabric_cols_removed = 0
         mu_oc_0 = 0
+        args.include_no_zircon_tests = True  # Duh?
 
     else:
         print(f"\033[92mINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.\033[0m")
@@ -868,7 +906,8 @@ def dispatch(args, extra_args=None):
                 for dataset, time_value in dataset_runtime_dict.items():
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
     else:
-        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+        if sparse_tests:
+            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
                                     opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
 
         for test in sparse_tests:
@@ -992,7 +1031,11 @@ def dispatch(args, extra_args=None):
                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on)
         info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
+    print(f"FOO2 i see glb_tests_fp={glb_tests_fp}")
+    print(f"FOO2 i see args.include_no_zircon_tests={args.include_no_zircon_tests}")
+
     if args.include_no_zircon_tests:
+        print(f"FOO3 i see glb_tests_fp={glb_tests_fp}")
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
@@ -1002,6 +1045,7 @@ def dispatch(args, extra_args=None):
         info.append(["garnet (NO Zircon) with sparse and dense", t])
 
         if no_zircon_sparse_tests:
+            assert False, 'dont be here'  ###############################################
             # See above for no_zircon_sparse_tests[]
             data_tile_pairs = []
             kernel_name = ""
@@ -1016,6 +1060,7 @@ def dispatch(args, extra_args=None):
 
         # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
         for test in glb_tests:
+            print(f"FOO5 doing a test on a glb test called '{test}'")
             t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0,
                         dense_ready_valid=False, E64_mode_on=False)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])

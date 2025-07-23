@@ -697,6 +697,7 @@ class Tests:
 #             self.__dict__.update(tmpmodule.__dict__)
             self.__dict__.update(tmpmodule)
             print(f'okay now width={width}')
+            print(f'okay now self.width={self.width}')
 
         elif use_custom:
             # Read a custom suite from external file <testname>.py
