@@ -321,7 +321,6 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, o
 
 
 def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, dense_only=False, use_fp=False, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32, dense_ready_valid=False, E64_mode_on=False, E64_multi_bank_mode_on=False, behavioral_MU=False, mu_test=""):
-    print(f"FOO6 okay here we are in tda")
     env_parameters = str(env_parameters)
     testname = layer if layer is not None else test
     print(f"--- {testname}")
@@ -346,7 +345,6 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     env_vars = {}
     if dense_ready_valid:
-        print(f"FOO7 uh oh dude we setting a bunch of env vars dude noooo")
         env_vars["DENSE_READY_VALID"] = "1"
         env_vars["PIPELINED"] = "0"
         env_vars["MATCH_BRANCH_DELAY"] = "0"
@@ -361,18 +359,24 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         env_vars["E64_MULTI_BANK_MODE_ON"] = "1"
 
     start = time.time()
-    print(f"FOO7 okay well here's the map")
 
-    # aha map
-    print(' '.join(
         # ["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test]
         # ["aha", "map", test, "--chain", "--env-parameters", env_parameters]
-        ["aha", "map", test]
-        + layer_array), flush=True)
+        # ["aha", "map", test]
+
+    # aha map
+    buildkite_args = [
+        "aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test
+    ] + layer_array
+        # "aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array
+        # "aha", "map", test] + layer_array  # THIS ONE WORKS
+
+    print(' '.join(buildkite_args), flush=True)
 
     # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
     # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
-    buildkite_call(["aha", "map", test] + layer_array, env=env_vars)
+    # buildkite_call(["aha", "map", test] + layer_array, env=env_vars)
+    buildkite_call(buildkite_args, env=env_vars)
 
     time_compile = time.time() - start
 
