@@ -30,6 +30,7 @@ HELP="
     --mu <n>       # Same as --mu_oc_0
 
   EXAMPLE(S):
+    $bn --run-suite fast  # Run the entire 'fast' suite of apps
     $bn 4x2 apps/pointwise --no-zircon
     $bn 8x8 tests/fp_pointwise
     $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
@@ -37,7 +38,6 @@ HELP="
     $bn --verilator 8x8 apps/pointwise
 
   QUICK REFERENCE:
-    $bn --run-suite fast
     $bn --show-suite fast --zircon
     $bn --show-suite fast --nozircon
     $bn --show-suite full
@@ -55,7 +55,7 @@ app_flags="$@"
 
 # Defaults
 DBG=
-SIM=vcs
+SIM=VCS
 LIST_SUITES=
 RUN_SUITE=
 ZIRCON=True
@@ -76,8 +76,8 @@ while [ $# -gt 0 ] ; do
         --list*)      LIST_SUITES=notnull ;;
         --no*zircon)  ZIRCON=False        ;;
         --zircon)     ZIRCON=True         ;;
-        --ver*)       SIM=verilator       ;;
-        --vcs)        SIM=vcs             ;;
+        --ver*)       SIM=VERILATOR       ;;
+        --vcs)        SIM=VCS             ;;
         --wave*)      export WAVEFORM=1   ;;
         --help)       echo "$HELP";  exit ;;
 
@@ -247,7 +247,7 @@ if ! [ "$IN_DOCKER" ]; then
     echo '-------------------------------------------------'
 
     # Must mount /cad if want to use VCS
-    [ "$SIM" == vcs ] && CAD='-v /cad:/cad' || CAD=
+    [ "$SIM" == VCS ] && CAD='-v /cad:/cad' || CAD=
 
     # Setup
     image=stanfordaha/garnet:latest
@@ -380,12 +380,11 @@ echo ""
 
 rm -f garnet/garnet.v  # Get rid of old verilog if it exists
 source /aha/bin/activate
-if [ "$SIM" == vcs ]; then
-    printf "PREPARING VCS b/c SIM=$SIM\n\n"
+printf "PREPARING $SIM b/c SIM=$SIM\n\n"
+if [ "$SIM" == VCS ]; then
     source /cad/modules/tcl/init/bash; module load base; module load vcs
     [ "$WAVEFORM" ] && module load verdi
 else
-    printf "PREPARING VERILATOR b/c SIM=$SIM\n\n"
     echo /aha/garnet/tests/install-verilator.sh
     /aha/garnet/tests/install-verilator.sh
 fi
@@ -402,13 +401,8 @@ fi
 ########################################################################
 # Finally: run it!!
 
-if [ "$ZIRCON" == True ]; then
-    echo aha regress $config
-    aha regress $config
-else
-    echo aha regress $config --no-zircon
-    aha regress $config --no-zircon
-fi
+[ "$ZIRCON" == True ] && zflag="" || zflag="--no-zircon"
+TOOL=$SIM aha regress $config $zflag --include-dense-only-tests
 
 if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"
