@@ -661,15 +661,15 @@ class Tests:
             pass
 
         else:
-            # But what if it's json hawwww
-            # regress.py does import json so maybe I don't have to (yeah right)
-            # import json
-            # Assume that curly-brace means json
+            # Curly-brace means testname is actually json string e.g.
+            # '{ "width" : 4, "height" : 2, "glb_tests_fp" : [ "tests/fp_pointwise" ] }'
+            # else look for a python file named "testname" (see below)
             if "{" in testname:
                 use_json = True
             else:                
                 use_custom = True
 
+        # Surely there is a simpler, more pythonic way to do this :(
         self.width, self.height = width, height
         self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
         self.sparse_tests = sparse_tests
@@ -687,17 +687,12 @@ class Tests:
         self.E64_MB_supported_tests = E64_MB_supported_tests
 
         if use_json:
-            import json
             # "testname" is the actual json structure, e.g. "{ foo : bar }" see?
-            print("hello i am use_json")
-            print(f"found testname/json '{testname}'")
+            import json
             tmpmodule = json.loads(testname)
-            print(f"GOT TMPMODULE:")
+            print(f"Found json config on command line:")
             print(json.dumps(tmpmodule, indent=4))
-#             self.__dict__.update(tmpmodule.__dict__)
             self.__dict__.update(tmpmodule)
-            print(f'okay now width={width}')
-            print(f'okay now self.width={self.width}')
 
         elif use_custom:
             # Read a custom suite from external file <testname>.py
