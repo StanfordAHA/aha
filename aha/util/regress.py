@@ -36,6 +36,7 @@ def buildkite_filter(s):
 
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
+    print("Command:",' '.join(command), flush=True)
     env = {**os.environ.copy(), **env}
     for retry in [1, 2, 3]:  # In case of SIGSEGV, retry up to three times
         try:
@@ -360,22 +361,10 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
 
     start = time.time()
 
-        # ["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test]
-        # ["aha", "map", test, "--chain", "--env-parameters", env_parameters]
-        # ["aha", "map", test]
-
     # aha map
     buildkite_args = [
         "aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test
     ] + layer_array
-        # "aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array
-        # "aha", "map", test] + layer_array  # THIS ONE WORKS
-
-    print(' '.join(buildkite_args), flush=True)
-
-    # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
-    # buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters] + layer_array, env=env_vars)
-    # buildkite_call(["aha", "map", test] + layer_array, env=env_vars)
     buildkite_call(buildkite_args, env=env_vars)
 
     time_compile = time.time() - start
@@ -397,8 +386,8 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         test,
         "--width", str(width),
         "--height", str(height),
-        # "--env-parameters", env_parameters,
-        # "--mu-test", mu_test,
+        "--env-parameters", env_parameters,
+        "--mu-test", mu_test,
     ] + use_daemon + layer_array
 
     if dense_only:
@@ -451,7 +440,7 @@ def test_dense_app(test, width, height, env_parameters, extra_args, layer=None, 
         if mu_test is not None and mu_test != "":
             env_vars["VOYAGER_GOLD"] = "1"
 
-    print(' '.join(buildkite_args), flush=True)
+    # aha pnr
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
