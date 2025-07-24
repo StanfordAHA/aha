@@ -37,7 +37,7 @@ def buildkite_filter(s):
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     env = {**os.environ.copy(), **env}
-    for retry in [1, 2, 3]:  # In case of SIGSEGV, retry up to three times
+    for retry in [1, 2, 3]:  # In case of SIGSEGV or SIGBUS, retry up to three times
         try:
             if return_output:
                 app = subprocess.run(
@@ -56,9 +56,13 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
                 )
             break
         except subprocess.CalledProcessError as e:
-            if 'SIGSEGV' in str(e):
+            retry_sigs = [ 'SIGSEGV', 'SIGBUS' ]; found_retry_sig = False
+            for rs in retry_sigs:
+                if rs in str(e): found_retry_sig = True
+
+            if found_retry_sig:
                 print(f'\n\n{e}\n')  # Print the error msg
-                print(f'*** ERROR subprocess died {retry} time(s) with SIGSEGV')
+                print(f'*** ERROR subprocess died {retry} time(s) with one of {retry_sigs}')
                 print('*** Will retry three times, then give up.\n\n')
 
                 # if retry == 3: raise
