@@ -206,16 +206,6 @@ steps:
         mount-checkout: false
   commands: /aha/aha/bin/app --run-suite fast
 
-- label: "Fail"
-  plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: exit 13
-
 ########################################################################
 # NOTES: onyx regressions
 
