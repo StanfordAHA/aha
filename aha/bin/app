@@ -406,8 +406,7 @@ fi
 
 [ "$ZIRCON" == True ] && zflag="" || zflag="--no-zircon"
 echo TOOL=$SIM aha regress $config $zflag
-TOOL=$SIM aha regress $config $zflag
-echo arfoooooo  # deleteme before final merge
+TOOL=$SIM aha regress $config $zflag || exit 13
 
 if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"

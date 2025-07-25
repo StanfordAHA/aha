@@ -206,7 +206,15 @@ steps:
         mount-checkout: false
   commands: /aha/aha/bin/app --run-suite fast
 
-- wait: ~
+- label: "Fail"
+  plugins:
+    - uber-workflow/run-without-clone:  # Don't need clone when using docker
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes: ["/cad/:/cad"]
+        shell:   ["/bin/bash", "-e", "-c"]
+        mount-checkout: false
+  commands: exit 13
 
 ########################################################################
 # NOTES: onyx regressions
@@ -221,6 +229,7 @@ steps:
 # STEP: onyx regression 1
 
 - label: "Regress 1"
+  skip: true
   key: "regress1"
   depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
@@ -238,6 +247,7 @@ steps:
 # STEP: onyx regression 2
 
 - label: "Regress 2"
+  skip: true
   key: "regress2"
   depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
@@ -254,6 +264,7 @@ steps:
 # STEP: onyx regression 3
 
 - label: "Regress 3"
+  skip: true
   key: "regress3"
   depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
