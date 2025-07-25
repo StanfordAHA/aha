@@ -187,8 +187,8 @@ steps:
 ########################################################################
 # STEP: fast suite
 
-# Not sure what's going on down there in the other steps with
-# the .TEST file and all...?  But this seems to work just fine.
+# Not sure what's going on down there in the other steps with the .TEST
+# file and the metahooks and all...?  But this seems to work just fine?
 
 - label: "Fast"
   plugins:
@@ -213,7 +213,6 @@ steps:
 # STEP: onyx regression 1
 
 - label: "Regress 1"
-  skip: true
   key: "regress1"
   depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
@@ -231,7 +230,6 @@ steps:
 # STEP: onyx regression 2
 
 - label: "Regress 2"
-  skip: true
   key: "regress2"
   depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
@@ -248,7 +246,6 @@ steps:
 # STEP: onyx regression 3
 
 - label: "Regress 3"
-  skip: true
   key: "regress3"
   depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
