@@ -17,9 +17,13 @@ def dispatch(args, extra_args=None):
             )
             break
         except subprocess.CalledProcessError as e:
-            if 'SIGSEGV' in str(e):
+            retry_sigs = [ 'SIGSEGV', 'SIGBUS' ]; found_retry_sig = False
+            for rs in retry_sigs:
+                if rs in str(e): found_retry_sig = True
+
+            if found_retry_sig:
                 print(f'\n\n{e}\n')  # Print the error msg
-                print(f'*** ERROR subprocess died {retry} time(s) with SIGSEGV')
+                print(f'*** ERROR subprocess died {retry} time(s) with one of {retry_sigs}')
                 print('*** Will retry three times, then give up.\n\n')
 
                 # if retry == 3: raise
