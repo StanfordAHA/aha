@@ -394,19 +394,22 @@ fi
 # (which no longer exists maybe) and/or maybe just plain old paranoia...
 (cd /aha/garnet; make clean)
 
-########################################################################
-# Haha if RUN_SUITE is set just ignore everything that happened up there haha
-[ "$RUN_SUITE" ] && config=$RUN_SUITE
+if [ "$RUN_SUITE" ]; then
 
-# "fast" suite breaks if include dense-only tests, dunno why exactly FIXME
-[ $config == fast ] || config="$config --include-dense-only-tests"
+    # Haha if RUN_SUITE is set just ignore everything that happened up there haha
+    config=$RUN_SUITE
+
+    # "fast" suite breaks if include dense-only tests, dunno why exactly FIXME
+    [ $config == fast ] || config="$config --include-dense-only-tests"
+fi
+
+[ "$ZIRCON" == True ] || config="$config --no-zircon"
 
 ########################################################################
 # Finally: run it!!
 
-[ "$ZIRCON" == True ] && zflag="" || zflag="--no-zircon"
-echo TOOL=$SIM aha regress $config $zflag
-TOOL=$SIM aha regress $config $zflag || exit 13
+echo TOOL=$SIM aha regress $config
+TOOL=$SIM aha regress $config || exit 13
 
 if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"
