@@ -117,7 +117,7 @@ elif [ "$1" == '--commands' ]; then
 
     # Prepare to run regression tests according to whether it's a submod PR
     if test -e /buildkite/DO_PR; then
-      echo "Trigger came from submod repo pull request; use pr config"; export CONFIG=pr;
+      echo "Trigger came from submod repo pull request; use pr config"; export CONFIG="pr --include-no-zircon-tests"
       if [ "$REGSTEP" == 2 -o "$REGSTEP" == 3 ]; then
         echo "oops no REGSTEP='$REGSTEP', not doing regressions"
         DO_AR=False
@@ -144,6 +144,7 @@ elif [ "$1" == '--commands' ]; then
         echo "oops no REGSTEP='$REGSTEP', not doing regressions"
         DO_AR=False
       fi
+      CONFIG="$CONFIG --include-no-zircon-tests"
     fi
 
     if [ "$DO_AR" == "True" ]; then
