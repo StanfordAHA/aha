@@ -294,16 +294,16 @@ if ! [ "$IN_DOCKER" ]; then
     # -rw-r--r-- 1 mcoduoza users  69M May 27 17:32 /nobackup/zircon/MatrixUnit_sim_sram.v
     # -rw-r--r-- 1 mcoduoza users 409K May 27 17:33 /nobackup/zircon/MatrixUnitWrapper_sim.v
 
-    for f in MatrixUnit_sim_sram.v MatrixUnitWrapper_sim.v; do
-        if ! test -e /nobackup/zircon/$f; then
-            for i in {1..100}; do echo ERROR; done
-            echo 'ERROR cannot find $f in dir /nobackup/zircon/'
-            echo 'ERROR test will probably FAIL!'
-            echo 'Continuing on anyway...'
-        else
-            docker cp /nobackup/zircon/$f $container:/aha/garnet/$f
-        fi
-    done
+#     for f in MatrixUnit_sim_sram.v MatrixUnitWrapper_sim.v; do
+#         if ! test -e /nobackup/zircon/$f; then
+#             for i in {1..100}; do echo ERROR; done
+#             echo 'ERROR cannot find $f in dir /nobackup/zircon/'
+#             echo 'ERROR test will probably FAIL!'
+#             echo 'Continuing on anyway...'
+#         else
+#             docker cp /nobackup/zircon/$f $container:/aha/garnet/$f
+#         fi
+#     done
 
     # For debugging; copy latest script in dev to container
     if [ "$COPY_SCRIPT" ]; then
