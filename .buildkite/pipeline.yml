@@ -185,18 +185,12 @@ steps:
     fi
 
 ########################################################################
-# NOTES: fast-suite regressions
-
-# Not sure what's going on down there with the .TEST file and all...?
-# I'm going to try just running the suite to see if it passes.
-# Then try again with an error injection.
-# If these both work then I think we're good...right...?
-
-########################################################################
 # STEP: fast suite
 
+# Not sure what's going on down there in the other steps with
+# the .TEST file and all...?  But this seems to work just fine.
+
 - label: "Fast"
-  key: "fast"
   plugins:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
     - docker#v3.2.0:
