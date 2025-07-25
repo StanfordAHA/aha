@@ -578,6 +578,21 @@ def dispatch(args, extra_args=None):
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
 
+
+
+
+
+
+
+    # Injecting a fault DELETEME BEFORE FINAL MERGE
+    assert False, "oh no it failed oh noooooooooo"
+
+
+
+
+
+
+
     # Preserve backward compatibility
     if args.config == "daily":
         args.config = "pr_aha"  # noqa
