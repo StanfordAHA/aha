@@ -126,9 +126,10 @@ elif [ "$1" == '--commands' ]; then
     elif [ "$CONFIG" == "pr_aha" ]; then
 
       # Normal
-      [ "$REGSTEP" == 1 ] && export CONFIG=pr_aha1
-      [ "$REGSTEP" == 2 ] && export CONFIG=pr_aha2
-      [ "$REGSTEP" == 3 ] && export CONFIG=pr_aha3
+      [ "$REGSTEP" == 0 ] && export CONFIG="fast"
+      [ "$REGSTEP" == 1 ] && export CONFIG="pr_aha1 --include-no-zircon-tests"
+      [ "$REGSTEP" == 2 ] && export CONFIG="pr_aha2 --include-no-zircon-tests"
+      [ "$REGSTEP" == 3 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
 
       # Prototype
       # [ "$REGSTEP" == 1 ] && export CONFIG=fast
@@ -153,7 +154,8 @@ elif [ "$1" == '--commands' ]; then
       # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
       set -x
       echo "aha regress $CONFIG"
-      aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
+      # aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
+      aha regress $CONFIG --daemon auto || exit 13
       set +x
     fi
 

@@ -190,15 +190,29 @@ steps:
 # Not sure what's going on down there in the other steps with the .TEST
 # file and the metahooks and all...?  But this seems to work just fine?
 
+# Oops I just remembered why we need the `regress-metahooks` indirection.
+# This updates the docker image with sobmodule information when the CI is
+# triggered from a submodule e.g. "garnet" or "lake" :(
+
 - label: "Fast"
+  env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
+
   plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: /aha/aha/bin/app --run-suite fast
+    - uber-workflow/run-without-clone:
+
+    - improbable-eng/metahook:
+        pre-command: $REGRESS_METAHOOKS --pre-command
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
+
+  command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
+
+#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes: ["/cad/:/cad"]
+#         shell:   ["/bin/bash", "-e", "-c"]
+#         mount-checkout: false
+#   commands: /aha/aha/bin/app --run-suite fast
 
 ########################################################################
 # NOTES: onyx regressions
