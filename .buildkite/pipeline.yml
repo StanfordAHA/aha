@@ -185,6 +185,30 @@ steps:
     fi
 
 ########################################################################
+# NOTES: fast-suite regressions
+
+# Not sure what's going on down there with the .TEST file and all...?
+# I'm going to try just running the suite to see if it passes.
+# Then try again with an error injection.
+# If these both work then I think we're good...right...?
+
+########################################################################
+# STEP: fast suite
+
+- label: "Fast"
+  key: "fast"
+  plugins:
+    - uber-workflow/run-without-clone:  # Don't need clone when using docker
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes: ["/cad/:/cad"]
+        shell:   ["/bin/bash", "-e", "-c"]
+        mount-checkout: false
+  commands: /aha/aha/bin/app --run-suite fast
+
+- wait: ~
+
+########################################################################
 # NOTES: onyx regressions
 
 # We report success to the aha-flow app by removing the .TEST file, which is

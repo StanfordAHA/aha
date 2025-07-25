@@ -39,7 +39,7 @@ HELP="
 
   QUICK REFERENCE:
     $bn --show-suite fast --zircon
-    $bn --show-suite fast --nozircon
+    $bn --show-suite fast --no-zircon
     $bn --show-suite full
     $bn --show-suite resnet
     $bn --show-suite all
@@ -407,6 +407,7 @@ fi
 [ "$ZIRCON" == True ] && zflag="" || zflag="--no-zircon"
 echo TOOL=$SIM aha regress $config $zflag
 TOOL=$SIM aha regress $config $zflag
+echo arfoooooo  # deleteme before final merge
 
 if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"
