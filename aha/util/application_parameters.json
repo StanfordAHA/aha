@@ -853,7 +853,8 @@
             "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
-            "PIPELINED":"0"
+            "PIPELINED":"0",
+            "PNR_PLACER_EXP":"1"
         }
     },
     "apps/layer_norm_pass2_fp":{
