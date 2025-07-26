@@ -206,14 +206,6 @@ steps:
 
   command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
 
-#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
-#     - docker#v3.2.0:
-#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-#         volumes: ["/cad/:/cad"]
-#         shell:   ["/bin/bash", "-e", "-c"]
-#         mount-checkout: false
-#   commands: /aha/aha/bin/app --run-suite fast
-
 ########################################################################
 # NOTES: onyx regressions
 
@@ -288,6 +280,7 @@ steps:
   command: |
 
     echo '- Show outcomes from each regression step'
+    echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
     echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
     echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
     echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
@@ -295,6 +288,7 @@ steps:
     echo '- Use FAIL to summarize overall result'
     FAIL=
     set -x
+    [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
