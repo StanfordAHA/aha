@@ -195,7 +195,7 @@ steps:
 # triggered from a submodule e.g. "garnet" or "lake" :(
 
 - label: "Fast"
-  env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
+  env: { CONTAINER: deleteme-regress0-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
     - uber-workflow/run-without-clone:
