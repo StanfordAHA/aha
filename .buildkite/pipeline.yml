@@ -187,12 +187,8 @@ steps:
 ########################################################################
 # STEP: fast suite
 
-# Not sure what's going on down there in the other steps with the .TEST
-# file and the metahooks and all...?  But this seems to work just fine?
-
-# Oops I just remembered why we need the `regress-metahooks` indirection.
-# This updates the docker image with sobmodule information when the CI is
-# triggered from a submodule e.g. "garnet" or "lake" :(
+# regress-metahooks takes care of updating the docker image's submod(s)
+# when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
 
 - label: "Fast"
   env: { CONTAINER: deleteme-regress0-$BUILDKITE_BUILD_NUMBER }
