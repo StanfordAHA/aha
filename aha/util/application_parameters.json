@@ -853,7 +853,8 @@
             "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
-            "PIPELINED":"0"
+            "PIPELINED":"0",
+            "PNR_PLACER_EXP":"1"
         }
     },
     "apps/layer_norm_pass2_fp":{
@@ -988,6 +989,14 @@
             "GLB_INPUT_HOST_STENCIL_PACKED":"1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1",
             "HW_OUTPUT_STENCIL_PACKED":"0,0",
             "HW_OUTPUT_STENCIL_BANK_TOGGLE_MODE":"1,1"
+        }
+    },
+    "apps/get_apply_e8m0_scale_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_height=784 vec_width_fake=32 vec_width=64 mu_i=32 glb_o=1 tree_stages=5",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0"
         }
     },
     "conv1":{

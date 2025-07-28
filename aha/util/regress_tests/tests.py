@@ -191,6 +191,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
+                "apps/get_apply_e8m0_scale_fp_RV",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
@@ -372,6 +373,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
+                "apps/get_apply_e8m0_scale_fp_RV",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
@@ -604,6 +606,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
+                "apps/get_apply_e8m0_scale_fp_RV",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
