@@ -117,7 +117,7 @@ elif [ "$1" == '--commands' ]; then
 
     # Prepare to run regression tests according to whether it's a submod PR
     if test -e /buildkite/DO_PR; then
-      echo "Trigger came from submod repo pull request; use pr config"; export CONFIG=pr;
+      echo "Trigger came from submod repo pull request; use pr config"; export CONFIG="pr --include-no-zircon-tests"
       if [ "$REGSTEP" == 2 -o "$REGSTEP" == 3 ]; then
         echo "oops no REGSTEP='$REGSTEP', not doing regressions"
         DO_AR=False
@@ -126,9 +126,10 @@ elif [ "$1" == '--commands' ]; then
     elif [ "$CONFIG" == "pr_aha" ]; then
 
       # Normal
-      [ "$REGSTEP" == 1 ] && export CONFIG=pr_aha1
-      [ "$REGSTEP" == 2 ] && export CONFIG=pr_aha2
-      [ "$REGSTEP" == 3 ] && export CONFIG=pr_aha3
+      [ "$REGSTEP" == 0 ] && export CONFIG="fast"
+      [ "$REGSTEP" == 1 ] && export CONFIG="pr_aha1 --include-no-zircon-tests"
+      [ "$REGSTEP" == 2 ] && export CONFIG="pr_aha2 --include-no-zircon-tests"
+      [ "$REGSTEP" == 3 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
 
       # Prototype
       # [ "$REGSTEP" == 1 ] && export CONFIG=fast
@@ -143,6 +144,7 @@ elif [ "$1" == '--commands' ]; then
         echo "oops no REGSTEP='$REGSTEP', not doing regressions"
         DO_AR=False
       fi
+      CONFIG="$CONFIG --include-no-zircon-tests"
     fi
 
     if [ "$DO_AR" == "True" ]; then
@@ -153,7 +155,8 @@ elif [ "$1" == '--commands' ]; then
       # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
       set -x
       echo "aha regress $CONFIG"
-      aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
+      # aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
+      aha regress $CONFIG --daemon auto || exit 13
       set +x
     fi
 
