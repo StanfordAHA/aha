@@ -935,6 +935,7 @@ def dispatch(args, extra_args=None):
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
         
+        layer = None
         if tgroup == 'external_mu_tests':
             test, layer = parse_layer_parametrized_test(test, "zircon_nop")
         elif tgroup == 'external_mu_tests_fp':
@@ -945,7 +946,6 @@ def dispatch(args, extra_args=None):
 
         use_fp = 'fp' in tgroup
         behavioral_MU = (tgroup == 'behavioral_mu_tests')
-        layer = None
 
         t0, t1, t2 = test_dense_app(
             test, width, height, args.env_parameters, extra_args,
