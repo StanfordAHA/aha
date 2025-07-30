@@ -637,12 +637,6 @@ def dispatch(args, extra_args=None):
     elif args.config == "pr_aha3":
         imported_tests = Tests("pr_aha3")
 
-#     elif args.config == "pr_aha":
-#         imported_tests = Tests("pr_aha")
-#         # print(imported_tests.resnet_tests, flush=True)
-#         # print(f'{imported_tests}', flush=True)
-#         # assert False, 'debuggin'
-
     # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
     else:
         imported_tests = Tests(args.config)
@@ -920,22 +914,19 @@ def dispatch(args, extra_args=None):
 # <         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
 # >         info.append([unparsed_name + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
 
-    tlist = []
-    for test in glb_tests_RV:        
-        tlist.append( {'name':test, 'group':'glb_tests_RV', 'suffix':'_RV_glb'} )
-    for test in glb_tests_fp_RV:     
-        tlist.append( {'name':test, 'group':'glb_tests_fp_RV', 'suffix':'_RV_glb'} )
-    for test in behavioral_mu_tests: 
-        tlist.append( {'name':test, 'group':'behavioral_mu_tests', 'suffix':'_MU_behavioral'} )
-    for test in external_mu_tests: 
-        tlist.append( {'name':test, 'group':'external_mu_tests', 'suffix':'_MU_ext'} )
-    for test in external_mu_tests_fp:
-        tlist.append( {'name':test, 'group':'external_mu_tests_fp', 'suffix':'_MU_ext'} )
+    for test in [
+            ('glb_tests_RV',        '_RV_glb'),        *glb_tests_RV,
+            ('glb_tests_fp_RV',     '_RV_glb'),        *glb_tests_fp_RV,
+            ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
+            ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
+            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:
 
-    for tdict in tlist:
-        test = tdict['name']
+        if type(test) is tuple:
+            tgroup,tsuffix = test
+            print(f"--- Processing app group {tgroup}", flush=True)
+            continue
 
-        if 'external_mu_tests' in tdict['group']:
+        if 'external_mu_tests' in tgroup:
             mu_test, test = parse_mu_cgra_test(test)
         else:
             mu_test = ""
@@ -944,16 +935,16 @@ def dispatch(args, extra_args=None):
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
         
-        if tdict['group'] == 'external_mu_tests':
+        if tgroup == 'external_mu_tests':
             test, layer = parse_layer_parametrized_test(test, "zircon_nop")
-        elif tdict['group'] == 'external_mu_tests_fp':
+        elif tgroup == 'external_mu_tests_fp':
             test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp")
             test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
 
         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
-        use_fp =        'fp' in tdict['group']
-        behavioral_MU = (tdict['group'] == 'behavioral_mu_tests')
+        use_fp = 'fp' in tgroup
+        behavioral_MU = (tgroup == 'behavioral_mu_tests')
         layer = None
 
         t0, t1, t2 = test_dense_app(
@@ -965,7 +956,7 @@ def dispatch(args, extra_args=None):
             E64_multi_bank_mode_on=E64_multi_bank_mode_on,
             behavioral_MU=behavioral_MU, mu_test=mu_test
         )
-        info.append([test + tdict['suffix'], t0 + t1 + t2, t0, t1, t2])
+        info.append([test + tsuffix, t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
         unparsed_name = test
