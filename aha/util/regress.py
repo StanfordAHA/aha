@@ -926,29 +926,29 @@ def dispatch(args, extra_args=None):
         tlist.append( {'name':test, 'group':'external_mu_tests_fp', 'suffix':'_MU_ext'} )
 
     for tdict in tlist:
-        test = tdict[name]
+        test = tdict['name']
 
         skip_cgra_map = test in skip_cgra_map_tests
         skip_cgra_pnr = test in skip_cgra_pnr_tests
         mu_test = ""
 
-        if 'external_mu_tests' in tdict[group]:
+        if 'external_mu_tests' in tdict['group']:
             mu_test, test = parse_mu_cgra_test(test)
         
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
         
-        if tdict[group] == 'external_mu_tests':
+        if tdict['group'] == 'external_mu_tests':
             test, layer = parse_layer_parametrized_test(test, "zircon_nop")
-        elif tdict[group] == 'external_mu_tests_fp':
+        elif tdict['group'] == 'external_mu_tests_fp':
             test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp")
             test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
 
         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
-        use_fp =        'fp' in tdict[group]
-        behavioral_MU = (tdict[group] == 'behavioral_mu_tests')
+        use_fp =        'fp' in tdict['group']
+        behavioral_MU = (tdict['group'] == 'behavioral_mu_tests')
         layer = None
 
         t0, t1, t2 = \
@@ -961,7 +961,7 @@ def dispatch(args, extra_args=None):
                            behavioral_MU=behavioral_MU, mu_test=mu_test,
                            skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
 
-        info.append([test + tdict[suffix], t0 + t1 + t2, t0, t1, t2])
+        info.append([test + tdict['suffix'], t0 + t1 + t2, t0, t1, t2])
 
 
 
