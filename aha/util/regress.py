@@ -804,67 +804,92 @@ def dispatch(args, extra_args=None):
 
 
     # For Zircon, we run all dense apps in RV mode, i.e. glb_tests_RV and glb_tests_fp_RV
-# cat << EOF > tmp1
-#     for test in glb_tests_RV:
-#         unparsed_name = test
-#         skip_cgra_map = test in skip_cgra_map_tests
-#         skip_cgra_pnr = test in skip_cgra_pnr_tests
-#         test, dense_ready_valid = parse_RV_mode(test)
-#         test, E64_mode_on = parse_E64_mode(test)
-#         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-#         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
-#         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
-#                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-#                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
-#         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
-# EOF
-# 
-# cat << EOF > tmp2
-#     for test in glb_tests_fp_RV:
-#         unparsed_name = test
-#         skip_cgra_map = test in skip_cgra_map_tests
-#         skip_cgra_pnr = test in skip_cgra_pnr_tests
-#         test, dense_ready_valid = parse_RV_mode(test)
-#         test, E64_mode_on = parse_E64_mode(test)
-#         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-#         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
-#         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True,
-#                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-#                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
-#         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
-# EOF
-# diff tmp1 tmp2
+    # cat << EOF > tmp1
+    #     for test in glb_tests_RV:
+    #         unparsed_name = test
+    #         skip_cgra_map = test in skip_cgra_map_tests
+    #         skip_cgra_pnr = test in skip_cgra_pnr_tests
+    #         test, dense_ready_valid = parse_RV_mode(test)
+    #         test, E64_mode_on = parse_E64_mode(test)
+    #         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+    #         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
+    #         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
+    #                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+    #                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    #         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
+    # EOF
+    # 
+    # cat << EOF > tmp2
+    #     for test in glb_tests_fp_RV:
+    #         unparsed_name = test
+    #         skip_cgra_map = test in skip_cgra_map_tests
+    #         skip_cgra_pnr = test in skip_cgra_pnr_tests
+    #         test, dense_ready_valid = parse_RV_mode(test)
+    #         test, E64_mode_on = parse_E64_mode(test)
+    #         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+    #         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
+    #         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=True,
+    #                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+    #                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    #         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
+    # EOF
+    # diff tmp1 tmp2
 
-# 11,12c11,12
-# <                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on,                     skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
-# >                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, behavioral_MU=True, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
-# 
-# 
-# <         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
-# >         info.append([unparsed_name + "_MU_behavioral", t0 + t1 + t2, t0, t1, t2])
-# 
-# 
-# 
-# 
-# 
-# cat << EOF > tmp3
-#     for test in behavioral_mu_tests:
-#         unparsed_name = test
-#         skip_cgra_map = test in skip_cgra_map_tests
-#         skip_cgra_pnr = test in skip_cgra_pnr_tests
-#         test, dense_ready_valid = parse_RV_mode(test)
-#         test, E64_mode_on = parse_E64_mode(test)
-#         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-#         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
-#         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
-#                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-#                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, behavioral_MU=True, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
-#         info.append([unparsed_name + "_MU_behavioral", t0 + t1 + t2, t0, t1, t2])
-# EOF
-# diff tmp2 tmp3
+    # 11,12c11,12
+    # <                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on,                     skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    # >                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, behavioral_MU=True, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    # 
+    # 
+    # <         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
+    # >         info.append([unparsed_name + "_MU_behavioral", t0 + t1 + t2, t0, t1, t2])
+    # 
+    # 
+    # 
+    # 
+    # 
+    # cat << EOF > tmp3
+    #     for test in behavioral_mu_tests:
+    #         unparsed_name = test
+    #         skip_cgra_map = test in skip_cgra_map_tests
+    #         skip_cgra_pnr = test in skip_cgra_pnr_tests
+    #         test, dense_ready_valid = parse_RV_mode(test)
+    #         test, E64_mode_on = parse_E64_mode(test)
+    #         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+    #         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
+    #         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args,
+    #                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+    #                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, behavioral_MU=True, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    #         info.append([unparsed_name + "_MU_behavioral", t0 + t1 + t2, t0, t1, t2])
+    # EOF
+    # diff tmp2 tmp3
 
-# cat << EOF > tmp4
-#     for test in external_mu_tests:
+    # cat << EOF > tmp4
+    #     for test in external_mu_tests:
+    #         unparsed_name = test
+    #         skip_cgra_map = test in skip_cgra_map_tests
+    #         skip_cgra_pnr = test in skip_cgra_pnr_tests
+    # 
+    #         mu_test, test = parse_mu_cgra_test(test)
+    #         test, dense_ready_valid = parse_RV_mode(test)
+    #         test, E64_mode_on = parse_E64_mode(test)
+    #         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+    #         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+    #         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
+    #         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, layer=layer,
+    #                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
+    #                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    #         info.append([unparsed_name + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
+    # EOF
+    # diff tmp2 tmp4
+    # < E64_multi_bank_mode_on=E64_multi_bank_mode_on,                  skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    # > E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+    # 
+    # <         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
+    # >         info.append([unparsed_name + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
+
+# cat << EOF > tmp5
+# 
+#     for test in external_mu_tests_fp:
 #         unparsed_name = test
 #         skip_cgra_map = test in skip_cgra_map_tests
 #         skip_cgra_pnr = test in skip_cgra_pnr_tests
@@ -873,16 +898,17 @@ def dispatch(args, extra_args=None):
 #         test, dense_ready_valid = parse_RV_mode(test)
 #         test, E64_mode_on = parse_E64_mode(test)
 #         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-#         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+#         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp")
+#         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
 #         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
-#         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, layer=layer,
+#         t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, layer=layer, use_fp=True,
 #                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
 #                         dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
 #         info.append([unparsed_name + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
 # EOF
-# diff tmp2 tmp4
-# < E64_multi_bank_mode_on=E64_multi_bank_mode_on,                  skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
-# > E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+# diff tmp2 tmp5
+# < bank_mode_on=E64_multi_bank_mode_on,                  skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+# > bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
 # 
 # <         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
 # >         info.append([unparsed_name + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
@@ -896,6 +922,8 @@ def dispatch(args, extra_args=None):
         tlist.append( {'name':test, 'group':'behavioral_mu_tests', 'suffix':'_MU_behavioral'} )
     for test in external_mu_tests: 
         tlist.append( {'name':test, 'group':'external_mu_tests', 'suffix':'_MU_ext'} )
+    for test in external_mu_tests_fp:
+        tlist.append( {'name':test, 'group':'external_mu_tests_fp', 'suffix':'_MU_ext'} )
 
     for tdict in tlist:
         test = tdict[name]
@@ -904,49 +932,38 @@ def dispatch(args, extra_args=None):
         skip_cgra_pnr = test in skip_cgra_pnr_tests
         mu_test = ""
 
-        if (tdict[group] == 'external_mu_tests':
+        if 'external_mu_tests' in tdict[group]:
             mu_test, test = parse_mu_cgra_test(test)
-
+        
         test, dense_ready_valid = parse_RV_mode(test)
         test, E64_mode_on = parse_E64_mode(test)
         test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
+        
+        if tdict[group] == 'external_mu_tests':
+            test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+        elif tdict[group] == 'external_mu_tests_fp':
+            test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp")
+            test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
+
         feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
-        use_fp =        (tdict[group] == 'glb_tests_fp_RV'    )
+        use_fp =        'fp' in tdict[group]
         behavioral_MU = (tdict[group] == 'behavioral_mu_tests')
+        layer = None
 
         t0, t1, t2 = \
-            test_dense_app(test, width, height, args.env_parameters, extra_args, use_fp=use_fp,
+            test_dense_app(test, width, height, args.env_parameters, extra_args,
+                           use_fp=use_fp, layer=layer,
                            using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, 
                            num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
                            dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, 
                            E64_multi_bank_mode_on=E64_multi_bank_mode_on,
                            behavioral_MU=behavioral_MU, mu_test=mu_test,
                            skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
+
         info.append([test + tdict[suffix], t0 + t1 + t2, t0, t1, t2])
 
-# cat << EOF > tmp4
-# EOF
-# diff tmp2 tmp4
 
-
-
-
-    for test in external_mu_tests_fp:
-        unparsed_name = test
-        skip_cgra_map = test in skip_cgra_map_tests
-        skip_cgra_pnr = test in skip_cgra_pnr_tests
-        mu_test, cgra_test = parse_mu_cgra_test(test)
-        cgra_test, dense_ready_valid = parse_RV_mode(cgra_test)
-        cgra_test, E64_mode_on = parse_E64_mode(cgra_test)
-        cgra_test, E64_multi_bank_mode_on = parse_E64_MB_mode(cgra_test)
-        cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_residual_relu_fp")
-        cgra_test, layer = parse_layer_parametrized_test(cgra_test, "zircon_psum_reduction_fp", layer_in=layer)
-        feature_support_check(cgra_test, E64_mode_on, E64_multi_bank_mode_on)
-        t0, t1, t2 = test_dense_app(cgra_test, width, height, args.env_parameters, extra_args, layer=layer, use_fp=True,
-                        using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0,
-                        dense_ready_valid=dense_ready_valid, E64_mode_on=E64_mode_on, E64_multi_bank_mode_on=E64_multi_bank_mode_on, mu_test=mu_test, skip_cgra_map=skip_cgra_map, skip_cgra_pnr=skip_cgra_pnr)
-        info.append([unparsed_name + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
         unparsed_name = test
