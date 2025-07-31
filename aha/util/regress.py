@@ -915,8 +915,8 @@ def dispatch(args, extra_args=None):
 # >         info.append([unparsed_name + "_MU_ext", t0 + t1 + t2, t0, t1, t2])
 
     for test in [
-            ('glb_tests_RV',        '_RV_glb'),        *glb_tests_RV,
-            ('glb_tests_fp_RV',     '_RV_glb'),        *glb_tests_fp_RV,
+            ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
+            ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
             ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:
@@ -926,6 +926,7 @@ def dispatch(args, extra_args=None):
             print(f"--- Processing app group {tgroup}", flush=True)
             continue
 
+        unparsed_name = test
         if 'external_mu_tests' in tgroup:
             mu_test, test = parse_mu_cgra_test(test)
         else:
@@ -956,7 +957,7 @@ def dispatch(args, extra_args=None):
             E64_multi_bank_mode_on=E64_multi_bank_mode_on,
             behavioral_MU=behavioral_MU, mu_test=mu_test
         )
-        info.append([test + tsuffix, t0 + t1 + t2, t0, t1, t2])
+        info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
         unparsed_name = test
