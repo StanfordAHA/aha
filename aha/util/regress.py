@@ -902,29 +902,6 @@ def dispatch(args, extra_args=None):
             t0, t1, t2 = test_dense_app(tname, width, height, args.env_parameters, extra_args, layer=layer, use_fp=use_fp)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-        for test in [
-            ['glb_tests'],       *glb_tests,
-            ['glb_tests_fp'],    *glb_tests_fp,
-            ['resnet_tests'],    *resnet_tests,
-            ['resnet_tests_fp'], *resnet_tests_fp]:
-        
-            if type(test) is list:
-                tgroup = test[0]; print(f"--- Processing app group {tgroup}", flush=True); continue
-
-            layer = []
-            tname = test
-            if tgroup == ['resnet_tests']:
-                layer = test
-                tname = "apps/resnet_residual" if "residual" in test else "apps/resnet_output_stationary"
-            elif tgroup == ['resnet_tests_fp']:
-                layer = test
-                tname = "apps/conv2D_residual_fp" if "residual" in test else "apps/conv2D_fp"
-            use_fp = ('_fp' in tgroup)
-
-            t0, t1, t2 = test_dense_app(tname, width, height, args.env_parameters, extra_args, layer=layer, use_fp=use_fp)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
-
-
     if args.include_dense_only_tests:
         # DENSE ONLY TESTS
         # Remove sparse+dense garnet.v first
