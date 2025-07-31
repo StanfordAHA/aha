@@ -881,13 +881,13 @@ def dispatch(args, extra_args=None):
 
         # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
         for test in glb_tests:
-            layer=[]; use_fp=False
-            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, layer=layer, use_fp=use_fp)
+            layer=[]; use_fp=False; tname=test
+            t0, t1, t2 = test_dense_app(tname, width, height, args.env_parameters, extra_args, layer=layer, use_fp=use_fp)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         for test in glb_tests_fp:
-            layer=[]; use_fp=True
-            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, layer=layer, use_fp=use_fp)
+            layer=[]; use_fp=True; tname=test
+            t0, t1, t2 = test_dense_app(tname, width, height, args.env_parameters, extra_args, layer=layer, use_fp=use_fp)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         for test in resnet_tests:
