@@ -10,14 +10,14 @@ def add_subparser(subparser):
 
 
 def dispatch(args, extra_args=None):
-    for retry in [1, 2, 3]:  # In case of SIGSEGV, retry up to three times
+    for retry in [1, 2, 3]:  # In case of SIG error, retry up to three times
         try:
             subprocess.check_call(
                 [sys.executable, "garnet.py"] + extra_args, cwd=args.aha_dir / "garnet",
             )
             break
         except subprocess.CalledProcessError as e:
-            retry_sigs = [ 'SIGSEGV', 'SIGBUS' ]; found_retry_sig = False
+            retry_sigs = [ 'SIGSEGV','SIGBUS','SIGABRT']; found_retry_sig = False
             for rs in retry_sigs:
                 if rs in str(e): found_retry_sig = True
 
