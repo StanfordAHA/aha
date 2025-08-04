@@ -94,7 +94,6 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
                 new_env_vars.update(env_vars_fin[app_name]["default"])
             else:
                 new_env_vars.update(env_vars_fin[app_name][str(env_parameters)])
-
     print(f"--- Setting environment variables for {app}")
     for n, v in new_env_vars.items():
         print(f"--- {n} = {v}")
@@ -107,9 +106,9 @@ def dispatch(args, extra_args=None):
     if args.mu_test is not None and len(args.mu_test) > 0:
         assert len(args.app) == len(args.mu_test), "If using --mu_tests, number of apps and mu tests must match."
     env = os.environ.copy()
-    load_environmental_vars(env, args.app, layer=args.layer)
     app_args = []
     for idx, app in enumerate(args.app):
+        load_environmental_vars(env, app, layer=args.layer)
         # this is how many apps we 're running
         arg_name = f"APP{idx}"
         # get the full path of the app
@@ -244,7 +243,7 @@ def dispatch(args, extra_args=None):
                     assert numpy.allclose(gold_matrix, sim_matrix), f"Check Failed.\n"
 
     else:
-        
+
         if args.run:
             subprocess_call_log(
                 cmd=["make", "run"] + extra_args,
