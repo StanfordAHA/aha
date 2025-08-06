@@ -1,6 +1,6 @@
 class Tests:
 
-    def __init__(self, testname, zircon=True):
+    def __init__(self, testname="BLANK", zircon=True):
         use_custom = False
 
         # Defaults

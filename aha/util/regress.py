@@ -367,11 +367,23 @@ def parse_layer_parametrized_test(testname, keyword, layer_in=""):
     return testname, layer
 
 def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
-    if E64_mode_on:
-        assert testname in E64_supported_tests, f"ERROR: E64 mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64 unroll is multiple of 4. Once done, please add the test to E64_supported_tests in regress_tests/tests.py"
+    from aha.util.regress_tests.tests import Tests
 
+    err1 = f'''E64 mode not yet supported for app "{testname}".
+    Please make the necessary changes in Halide-to-Hardware and application_parameters.json.
+    See pointwise for example. Ensure that the E64 unroll is multiple of 4.
+    Once done, please add the test to E64_supported_tests in regress_tests/tests.py
+    '''
+    if E64_mode_on:
+        assert testname in Tests().E64_supported_tests, err1
+
+    err2 = '''f"ERROR: E64 multi-bank mode not yet supported for {testname}.
+    Please make the necessary changes in Halide-to-Hardware and application_parameters.json.
+    See pointwise for example. Ensure that the E64_MB unroll is multiple of 8.
+    Once done, please add the test to E64_MB_supported_tests in regress_tests
+    '''
     if E64_multi_bank_mode_on:
-        assert testname in E64_MB_supported_tests, f"ERROR: E64 multi-bank mode not yet supported for {testname}. Please make the necessary changes in Halide-to-Hardware and application_parameters.json. See pointwise for example. Ensure that the E64_MB unroll is multiple of 8. Once done, please add the test to E64_MB_supported_tests in regress_tests"
+        assert testname in Tests().E64_MB_supported_tests, err2
         assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
 
 ########################################################################
@@ -748,8 +760,8 @@ def dispatch(args, extra_args=None):
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
 
-    E64_supported_tests = imported_tests.E64_supported_tests
-    E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
+#     E64_supported_tests = imported_tests.E64_supported_tests
+#     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
     # No zircon flag (generate default layout)
     if args.no_zircon:
