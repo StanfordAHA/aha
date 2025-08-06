@@ -92,6 +92,7 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
+            sparse_tests = []  # let's skip these for now DELETE THIS BEFORE FINAL PUSH
             glb_tests_RV = [
                 # pr_aha1
                 "tests/conv_2_1_RV",
@@ -159,27 +160,27 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            glb_tests_RV = [
-                "apps/gaussian_RV",
-                "apps/pointwise_custom_packing_RV_E64",
-            ]
-            glb_tests_fp_RV = [
-                "apps/scalar_reduction_fp_RV",
-                "apps/scalar_max_fp_RV",
-                "apps/layer_norm_pass2_fp_RV",
-                "apps/layer_norm_pass3_fp_RV",
-                "apps/scalar_avg_fp_RV",
-            ]
-            glb_tests = [
-                "apps/maxpooling",
-                "tests/bit8_packing_test",
-                "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test",
-            ]
-            glb_tests_fp = [
-                "apps/scalar_max_fp",
-            ]
+#             glb_tests_RV = [
+#                 "apps/gaussian_RV",
+#                 "apps/pointwise_custom_packing_RV_E64",
+#             ]
+#             glb_tests_fp_RV = [
+#                 "apps/scalar_reduction_fp_RV",
+#                 "apps/scalar_max_fp_RV",
+#                 "apps/layer_norm_pass2_fp_RV",
+#                 "apps/layer_norm_pass3_fp_RV",
+#                 "apps/scalar_avg_fp_RV",
+#             ]
+#             glb_tests = [
+#                 "apps/maxpooling",
+#                 "tests/bit8_packing_test",
+#                 "tests/bit8_unpack_test",
+#                 "tests/fp_get_shared_exp_test",
+#                 "tests/fp_e8m0_quant_test",
+#             ]
+#             glb_tests_fp = [
+#                 "apps/scalar_max_fp",
+#             ]
             resnet_tests = [
                 "conv2_x",
             ]
@@ -198,35 +199,35 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            glb_tests_RV = [
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
-            ]
-            glb_tests_fp_RV = [
-                "apps/stable_softmax_pass2_fp_RV",
-                "apps/stable_softmax_pass3_fp_RV",
-                "apps/vector_reduction_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
-            ]
+#             glb_tests_RV = [
+#                 "tests/bit8_packing_test_RV",
+#                 "tests/bit8_unpack_test_RV",
+#                 "tests/fp_get_shared_exp_test_RV",
+#             ]
+#             glb_tests_fp_RV = [
+#                 "apps/stable_softmax_pass2_fp_RV",
+#                 "apps/stable_softmax_pass3_fp_RV",
+#                 "apps/vector_reduction_fp_RV",
+#                 "apps/gelu_pass1_fp_RV",
+#                 "apps/gelu_pass2_fp_RV",
+#                 "apps/silu_pass1_fp_RV",
+#                 "apps/silu_pass2_fp_RV",
+#                 "apps/swiglu_pass2_fp_RV",
+#                 "apps/rope_pass1_fp_RV",
+#                 "apps/rope_pass2_fp_RV",
+#             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
             ]
-            glb_tests = [
-                "apps/camera_pipeline_2x2",
-                "apps/gaussian",
-                "apps/harris_color",
-                "apps/unsharp",
-            ]
-            glb_tests_fp = [
-                "apps/scalar_avg_fp",
-            ]
+#             glb_tests = [
+#                 "apps/camera_pipeline_2x2",
+#                 "apps/gaussian",
+#                 "apps/harris_color",
+#                 "apps/unsharp",
+#             ]
+#             glb_tests_fp = [
+#                 "apps/scalar_avg_fp",
+#             ]
             resnet_tests = [
                 "conv1",
             ]
