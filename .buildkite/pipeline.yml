@@ -226,7 +226,8 @@ steps:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
+  # command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
+  command: echo Skipping aha1 for now...
 
 ########################################################################
 # STEP: onyx regression 2

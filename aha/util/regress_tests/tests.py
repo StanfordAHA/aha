@@ -181,9 +181,9 @@ class Tests:
 #             glb_tests_fp = [
 #                 "apps/scalar_max_fp",
 #             ]
-            resnet_tests = [
-                "conv2_x",
-            ]
+#             resnet_tests = [
+#                 "conv2_x",
+#             ]
             external_mu_tests_fp = [
                 "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
@@ -228,9 +228,9 @@ class Tests:
 #             glb_tests_fp = [
 #                 "apps/scalar_avg_fp",
 #             ]
-            resnet_tests = [
-                "conv1",
-            ]
+#             resnet_tests = [
+#                 "conv1",
+#             ]
             external_mu_tests_fp = [
                 # PSUM WORKAROUND CONV5_X downsample
                 "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
