@@ -176,7 +176,6 @@ steps:
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
   commands: |
-    echo "FIXME delete before final push"; exit
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
@@ -201,8 +200,7 @@ steps:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  # command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
-  command: echo Skipping fast for now...
+  command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # NOTES: onyx regressions
@@ -228,8 +226,7 @@ steps:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  # command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
-  command: echo Skipping aha1 for now...
+  command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: onyx regression 2
@@ -245,8 +242,7 @@ steps:
         pre-command: $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  # command: REGRESSION_STEP=2 $REGRESS_METAHOOKS --commands
-  command: echo Skipping aha2 for now...
+  command: REGRESSION_STEP=2 $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: onyx regression 3
