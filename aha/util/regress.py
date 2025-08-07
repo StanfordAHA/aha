@@ -393,7 +393,7 @@ def test_dense_app(
   test, tgroup, width, height, env_parameters, extra_args, dense_only=False,
   using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
 
-    print(f"--- BEGIN test_dense_app {testname}", flush=True)
+    print(f"--- BEGIN test_dense_app {test}", flush=True)
 
     # FIXME/TODO the skip_cgra* information below should probably be in tests.py instead of here...?
 
@@ -581,6 +581,7 @@ def test_hardcoded_dense_app(
         using_matrix_unit=False, mu_datawidth=16,
         num_fabric_cols_removed=0, mu_oc_0=32):
 
+    print(f"--- BEGIN test_dense_app {test}", flush=True)
     #------------------------------------------------------------------------
     test, dense_ready_valid = parse_RV_mode(test)
     test, E64_mode_on = parse_E64_mode(test)
@@ -878,6 +879,7 @@ def dispatch(args, extra_args=None):
         info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2])
 
     for test in hardcoded_dense_tests:
+        print(f"--- Processing app group hardcoded_dense_tests", flush=True)
         unparsed_name = test
         t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth,
