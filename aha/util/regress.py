@@ -587,16 +587,13 @@ def test_hardcoded_dense_app(
     #------------------------------------------------------------------------
 
     env_parameters = str(env_parameters)
-    testname = layer if layer is not None else test
+    testname = test
     print(f"--- {testname}")
     print(f"--- {testname} - skip compiling and mapping")
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
     print(app_path, flush=True)
 
-    if layer is not None:
-        layer_array = ["--layer", layer]
-    else:
-        layer_array = []
+    layer_array = []
 
     start = time.time()
     time_compile = time.time() - start
