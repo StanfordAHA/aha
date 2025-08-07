@@ -393,6 +393,8 @@ def test_dense_app(
   test, tgroup, width, height, env_parameters, extra_args, dense_only=False,
   using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
 
+    print(f"--- BEGIN test_dense_app {testname}", flush=True)
+
     # FIXME/TODO the skip_cgra* information below should probably be in tests.py instead of here...?
 
     # These tests skip CGRA mapping and pnr to save time.  We assume that the collateral
@@ -439,8 +441,8 @@ def test_dense_app(
     elif tgroup == 'resnet_tests_fp':
         testname = "apps/conv2D_residual_fp" if "residual" in test else "apps/conv2D_fp"
 
-    print(f"--- {testname}")
-    print(f"--- {testname} - compiling and mapping")
+    print(f"--- {testname}", flush=True)
+    print(f"--- {testname} - compiling and mapping", flush=True)
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
     voyager_collateral_path = "/aha/voyager/compiled_collateral"
     print(app_path, flush=True)
