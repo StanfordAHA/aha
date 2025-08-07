@@ -24,25 +24,43 @@ def subprocess_call_log(cmd, cwd, env=None, log=False, log_file_path="log.log",
     '''Can set e.g. do_cmd=Popen to run job in background'''
     # if do_cmd == subprocess.check_call: print('--- PNR/scl: check_call (run) garnet.py')
     # elif do_cmd == subprocess.Popen:    print('--- PNR/scl: Popen (background) garnet.py')
-    if log:
-        print("[log] Command  : {}".format(" ".join(cmd)))
-        print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
-        with open(log_file_path, "a") as flog:
+    try:
+        if log:
+            print("[log] Command  : {}".format(" ".join(cmd)))
+            print("[log] Log Path : {}".format(log_file_path), end="  ...", flush=True)
+            with open(log_file_path, "a") as flog:
+                do_cmd(
+                    cmd,
+                    cwd=cwd,
+                    env=env,
+                    stdout=flog,
+                    stderr=flog
+                )
+            print("done")
+        else:
             do_cmd(
                 cmd,
-                cwd=cwd,
                 env=env,
-                stdout=flog,
-                stderr=flog
+                cwd=cwd
             )
-        print("done")
-    else:
-        do_cmd(
-            cmd,
-            env=env,
-            cwd=cwd
-        )
+    except subprocess.CalledProcessError as e:
+        retry_sigs = [ 'SIGSEGV','SIGBUS','SIGABRT']; found_retry_sig = False
+        for rs in retry_sigs:
+            if rs in str(e): found_retry_sig = True
 
+        if found_retry_sig:
+            print(f'\n\n{e}\n')  # Print the error msg
+            print(f'*** ERROR subprocess died {retry} time(s) with one of {retry_sigs}')
+            print('*** Will retry three times, then give up.\n\n')
+
+            # if retry == 3: raise
+            # - No! Don't raise the error! Higher-level aha.py has similar
+            # - three-retry catchall, resulting in up to nine retries ! (Right?)
+            # - Do this instead:
+            if retry == 3:
+                assert False, 'ERROR: Three time loser'
+        else:
+            raise
 
 def load_environmental_vars(env, app, layer=None, env_parameters=None):
     filename = os.path.realpath(os.path.dirname(__file__)) + "/application_parameters.json"
