@@ -394,6 +394,7 @@ def test_dense_app(
   using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
 
     print(f"--- BEGIN test_dense_app {test}", flush=True)
+    test_orig = test
 
     # FIXME/TODO the skip_cgra* information below should probably be in tests.py instead of here...?
 
@@ -418,9 +419,13 @@ def test_dense_app(
     test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
 
     layer = None
-    if tgroup == 'resnet_tests' or tgroup == 'resnet_tests_fp':
-        layer = test
-    elif tgroup == 'external_mu_tests':
+    if tgroup == 'resnet_tests':
+        test = "apps/resnet_residual" if "residual" in test_orig else "apps/resnet_output_stationary"
+        layer = test_orig
+    elif tgroup == 'resnet_tests_fp':
+        test = "apps/conv2D_residual_fp" if "residual" in test_orig else "apps/conv2D_fp"
+        layer = test_orig
+    if tgroup == 'external_mu_tests':
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
     elif tgroup == 'external_mu_tests_fp':
         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp")
@@ -433,14 +438,9 @@ def test_dense_app(
     #------------------------------------------------------------------------
 
     env_parameters = str(env_parameters)
-    testname = layer if layer is not None else test
 
-    if tgroup == 'resnet_tests':
-        testname = "apps/resnet_residual" if "residual" in test else "apps/resnet_output_stationary"
-
-    elif tgroup == 'resnet_tests_fp':
-        testname = "apps/conv2D_residual_fp" if "residual" in test else "apps/conv2D_fp"
-
+    # Note testname is for logging/display purposes only...!
+    testname = f'{test_orig}/{layer}' if layer is not None else test_orig
     print(f"--- {testname}", flush=True)
     print(f"--- {testname} - compiling and mapping", flush=True)
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
@@ -640,8 +640,9 @@ def test_hardcoded_dense_app(
         "--env-parameters", env_parameters,
     ] + use_daemon + layer_array
 
-    if dense_only:
-        buildkite_args.append("--dense-only")
+    # hardcoded tests don't use dense_only
+    # if dense_only:
+    #     buildkite_args.append("--dense-only")
 
     env_vars = {}
     if dense_ready_valid:
@@ -878,8 +879,8 @@ def dispatch(args, extra_args=None):
         )
         info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2])
 
+    print(f"--- Processing app group hardcoded_dense_tests", flush=True)
     for test in hardcoded_dense_tests:
-        print(f"--- Processing app group hardcoded_dense_tests", flush=True)
         unparsed_name = test
         t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth,
@@ -909,20 +910,19 @@ def dispatch(args, extra_args=None):
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
         # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
-        for test in glb_tests:
-            t0, t1, t2 = test_dense_app(test, 'glb_tests', width, height, args.env_parameters, extra_args)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-        for test in glb_tests_fp:
-            t0, t1, t2 = test_dense_app(test, 'glb_tests_fp', width, height, args.env_parameters, extra_args)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+        for test in [
+            ('glb_tests',       '_glb'), *glb_tests,
+            ('glb_tests_fp',    '_glb'), *glb_tests_fp,
+            ('resnet_tests',    '_glb'), *resnet_tests,
+            ('resnet_tests_fp', '_glb'), *resnet_tests_fp]:
 
-        for test in resnet_tests:
-            t0, t1, t2 = test_dense_app(test, 'resnet_tests', width, height, args.env_parameters, extra_args)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+            if type(test) is tuple:
+                tgroup,tsuffix = test
+                print(f"--- Processing app group {tgroup}", flush=True)
+                continue
 
-        for test in resnet_tests_fp:
-            t0, t1, t2 = test_dense_app(test, 'resnet_tests_fp', width, height, args.env_parameters, extra_args)
+            t0, t1, t2 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     if args.include_dense_only_tests:
