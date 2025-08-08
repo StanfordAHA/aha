@@ -691,10 +691,7 @@ def test_hardcoded_dense_app(
 
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
-    if use_fp:
-        buildkite_call(["aha", "test", test, "--dense-fp"], env=env_vars)
-    else:
-        buildkite_call(["aha", "test", test], env=env_vars)
+    buildkite_call(["aha", "test", test], env=env_vars)
 
     time_test = time.time() - start
     return time_compile, time_map, time_test
