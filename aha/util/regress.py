@@ -718,23 +718,12 @@ def dispatch(args, extra_args=None):
     global info  # HA!
     info = []
 
-    # For sparse tests, we cherry pick some representative tests to run
-    no_zircon_sparse_tests = [
-        "vec_elemmul",
-        "mat_vecmul_ij",
-        "mat_elemadd_leakyrelu_exp",
-        "matmul_ikj",
-        "tensor3_mttkrp",
-    ]
-
     # pr_aha1 starts with the pr_aha suite and remove some tests
     if args.config == "pr_aha1":
-        no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("pr_aha1")
 
     # pr_aha2 contains part of the remaining tests
     elif args.config == "pr_aha2":
-        no_zircon_sparse_tests = []  # Only aha3 does the default sparse tests
         imported_tests = Tests("pr_aha2")
 
     # pr_aha3 contains all the remaining tests
@@ -759,6 +748,7 @@ def dispatch(args, extra_args=None):
     external_mu_tests = imported_tests.external_mu_tests
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
+    no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
 
 #     E64_supported_tests = imported_tests.E64_supported_tests
 #     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
@@ -866,6 +856,7 @@ def dispatch(args, extra_args=None):
         if type(test) is tuple:
             tgroup,tsuffix = test
             print(f"--- Processing app group {tgroup}", flush=True)
+            info.append([f"APP GROUP {tgroup}[]", 0])
             continue
 
         unparsed_name = test
@@ -877,6 +868,7 @@ def dispatch(args, extra_args=None):
         info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2])
 
     print(f"--- Processing app group hardcoded_dense_tests", flush=True)
+    info.append(["APP GROUP hardcoded_dense_tests[]", 0])
     for test in hardcoded_dense_tests:
         unparsed_name = test
         t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
@@ -917,6 +909,7 @@ def dispatch(args, extra_args=None):
             if type(test) is tuple:
                 tgroup,tsuffix = test
                 print(f"--- Processing app group {tgroup}", flush=True)
+                info.append([f"APP GROUP {tgroup}[]", 0])
                 continue
 
             t0, t1, t2 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)

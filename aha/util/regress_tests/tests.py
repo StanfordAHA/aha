@@ -16,6 +16,7 @@ class Tests:
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
+        no_zircon_sparse_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
@@ -194,7 +195,6 @@ class Tests:
 
         # PR_AHA test suite for aha-repo push/pull, part 3/3
         elif testname == "pr_aha3":
-
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
@@ -236,6 +236,14 @@ class Tests:
                 "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
                 "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+            ]
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
             ]
 
         # PR_AHA test suite for aha-repo push/pull;
@@ -408,7 +416,14 @@ class Tests:
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -641,6 +656,16 @@ class Tests:
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
+
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
+
         elif testname == "resnet":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -710,6 +735,7 @@ class Tests:
         else:
             use_custom = True
 
+        # Export everything
         self.width, self.height = width, height
         self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
         self.sparse_tests = sparse_tests
@@ -725,6 +751,7 @@ class Tests:
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.E64_supported_tests = E64_supported_tests
         self.E64_MB_supported_tests = E64_MB_supported_tests
+        self.no_zircon_sparse_tests = no_zircon_sparse_tests
 
         if use_custom:
             # Read a custom suite from external file <testname>.py
