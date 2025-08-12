@@ -100,12 +100,15 @@ RUN source bin/activate && \
   echo DONE
 
 # Pono
+WORKDIR /aha
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
-COPY ./aha/bin/pono-hack /aha/pono/contrib/
+RUN mkdir -p /aha/contrib/pono-hack
+ADD ./aha/bin/pono-hack /aha/pono/contrib/pono-hack
 WORKDIR /aha/pono
 # Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
 RUN \
+     ls -l /aha/pono/contrib/pono-hack/ && \
  : SETUP && \
      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
  : FLEX && \
