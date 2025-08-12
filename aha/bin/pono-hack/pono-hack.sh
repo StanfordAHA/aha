@@ -49,16 +49,14 @@ else
     echo ''
 
     # Dockerfile should have already copied config.{sub,guess} to /aha/pono/contrib/pono-hack/
+    src=/aha/pono/contrib/pono-hack
+    dst=/aha/pono/deps/smt-switch/deps/cvc5/build/deps/src
     if echo "xx$@xx" | grep guess-download-Production; then
         echo "$$ barrr copy 'config.guess' and exit"
-        src=/aha/pono/contrib/pono-hack
-        dst=/aha/pono/deps/smt-switch/deps/cvc5/build/deps/src
         cp $src/config.guess $dst
         ls -l $src/config.guess $dst/config.guess
     elif echo "xx$@xx" | grep sub-download-Production; then
         echo "$$ barrr copy 'config.sub' and exit"
-        src=/aha/aha/bin/pono-hack
-        dst=/aha/pono/deps/smt-switch/deps/cvc5/build/deps/src
         cp $src/config.sub $dst
         ls -l $src/config.sub $dst/config.sub
     else
