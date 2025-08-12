@@ -31,7 +31,7 @@ if [ "$1" == '--install' ]; then
         cp -p $cmdir/__init__.py $cmdir/__init__.py.bku
     fi
     sed -i "/_program.*'cmake'/s/cmake/cmake_orig/" $cmdir/__init__.py
-    diff $cmdir/__init__.py.bku $cmdir/__init__.py
+    diff $cmdir/__init__.py.bku $cmdir/__init__.py || echo okay
 
 else
     # Pass args to real cmake, now renamed cmake_orig
@@ -66,6 +66,7 @@ else
         exec $cmdir/data/bin/cmake_orig "$@"
     fi
 fi
+exit 0  # Success!
 
 #   <  _program_exit('cmake',      *sys.argv[1:])
 #   >  _program_exit('cmake_orig', *sys.argv[1:])
