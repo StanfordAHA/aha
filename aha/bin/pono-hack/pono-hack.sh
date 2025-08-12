@@ -40,11 +40,13 @@ elif [ "$1" == '--uninstall' ]; then
     set -x
 
     echo "pono-hack: pip uninstall hacked cmake"
+    yes | python3 -m pip uninstall cmake
     old_cmake=/aha/lib/python3.8/site-packages/cmake
     test -e ${cmdir} && mv ${cmdir} ${cmdir}-orig-deleteme
 
     echo "pono-hack: pip (re)install cmake==$cversion"
-    pip install cmake==$cversion
+    yes | python3 -m pip install cmake==$cversion
+    wait; sleep 10
 
 else
     # Pass args to real cmake, now renamed cmake_orig
