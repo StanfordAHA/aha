@@ -121,7 +121,7 @@ RUN \
  : SMT-SWITCH && \
      ./contrib/pono-hack/pono-hack.sh --install && \
      ./contrib/setup-smt-switch.sh --python && \
-     ./contrib/pono-hack/pono-hack.sh --uninstall && \
+     wait && sleep 10 &&./contrib/pono-hack/pono-hack.sh --uninstall && \
      :                                                 && \
      echo "# cleanup: 1.3GB smt-switch build tests"    && \
      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
