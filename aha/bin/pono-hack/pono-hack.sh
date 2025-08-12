@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 # Where is cmake? E.g. cmdir=/usr/local/lib/python3.8/dist-packages/cmake
 python3 -c 'import cmake; print(cmake.__file__)'
@@ -9,6 +8,7 @@ cversion=`cmake --version | awk '{print $NF; exit}'`  # Should be "3.28.1" maybe
 # Dockerfile copies this script to /aha/pono/contrib/pono-hack/pono-hack.sh
 if [ "$1" == '--install' ]; then
     # Replace "official" cmake with this script
+    set -x
 
     # Move old cmake to cmake_orig
     if test -e $cmdir/data/bin/cmake_orig; then
@@ -37,6 +37,7 @@ if [ "$1" == '--install' ]; then
 
 elif [ "$1" == '--uninstall' ]; then
     # Undo the hack and put cmake back the way it was I hope
+    set -x
 
     echo "pono-hack: pip uninstall hacked cmake"
     old_cmake=/aha/lib/python3.8/site-packages/cmake
