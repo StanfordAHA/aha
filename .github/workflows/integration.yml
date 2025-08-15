@@ -17,9 +17,13 @@ jobs:
         submodules: recursive
     - name: Build Docker Image
       run: |
-        echo "::group::Colon group"; echo "BASELINE again"; echo "::endgroup::"
-        echo "::group::Colon group"; echo "BUILD"; echo "::endgroup::"
-        docker build . -t testing
+        echo "::group::PRE-CACHE pull latest maybe"
+        docker pull stanfordaha/garnet:latest
+        echo "::endgroup::"
+        #
+        echo "::group::BUILD --cache-from latest"
+        docker build . --cache-from stanfordaha/garnet:latest -t testing
+        echo "::endgroup::"
 
 #     - name: Run Integration Tests
 #       run: |
