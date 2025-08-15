@@ -101,7 +101,7 @@ steps:
   - dotgit=.git/modules/clockwork;          du -shx $$dotgit; /bin/rm -rf $$dotgit
   - dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
 
-  - echo "--- Creating garnet Image"
+  - echo "--- Creating garnet Image BASELINE"
   - docker build --progress plain . -t "$$IMAGE"
 
   - echo "--- Pruning Docker Images"
@@ -111,191 +111,191 @@ steps:
 
 - wait: ~
 
-########################################################################
-# AMBER GOLD step
-
-# Can unskip this step when/if want to monitor when/whether RTL changes
-- label: "Amber Gold RTL"
-  # Comment-out the line below when/if want to guarantee RTL stability
-  skip: true
-  soft_fail: true  # So that failing gold check does not fail pipeline.
-  plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: |
-    echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
-    if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
-        msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context amber
-        exit 13
-    fi
-
-########################################################################
-# ONYX GOLD step
-
-# Can unskip this step when/if want to monitor when/whether RTL changes
-- label: "Onyx Gold"
-  # Comment-out the line below when/if want to guarantee RTL stability
-  skip: true
-  soft_fail: true  # So that failing gold check does not fail pipeline.
-  plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: |
-    echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
-    if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
-        msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
-        exit 13
-    fi
-
-########################################################################
-# ZIRCON GOLD step
-
-# Can unskip this step when/if want to monitor when/whether RTL changes
-- label: "Zircon Gold"
-  key: "zircon_gold"
-  # Change this to true if want to make changes to zircon RTL
-  skip: false
-  soft_fail: false  # Failing gold check will fail pipeline.
-  plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: |
-    echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
-    if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
-        exit 13
-    fi
-
-########################################################################
-# STEP: fast suite
-
-# regress-metahooks takes care of updating the docker image's submod(s)
-# when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
-
-- label: "Fast"
-  env: { CONTAINER: deleteme-regress0-$BUILDKITE_BUILD_NUMBER }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_METAHOOKS --pre-command
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
-
-########################################################################
-# NOTES: onyx regressions
-
-# We report success to the aha-flow app by removing the .TEST file, which is
-# created in the post-checkout hook and checked-for in the pre-exit hook.
-
-# Instead of multiple similar onyx-regression steps, could maybe do
-# some kind of $$bin/gen-steps | docker-agent upload
-
-########################################################################
-# STEP: onyx regression 1
-
-- label: "Regress 1"
-  key: "regress1"
-  depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_METAHOOKS --pre-command
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 2
-
-- label: "Regress 2"
-  key: "regress2"
-  depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_METAHOOKS --pre-command
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: REGRESSION_STEP=2 $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 3
-
-- label: "Regress 3"
-  key: "regress3"
-  depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_METAHOOKS --pre-command
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: REGRESSION_STEP=3 $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: Cleanup
-
-# Wait for all steps to complete before sending out final status
-# This step should run regardless of whether prev steps failed
-- wait: { continue_on_failure: true }
-
-- label: "Cleanup"
-
-  # Don't need time-wasting clone just for cleanup! Right?
-  plugins:
-    - uber-workflow/run-without-clone:
-
-  command: |
-
-    echo '- Show outcomes from each regression step'
-    echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
-    echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
-    echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
-    echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
-
-    echo '- Use FAIL to summarize overall result'
-    FAIL=
-    set -x
-    [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
-    echo '-- FAIL=$$FAIL'
-
-    echo '- Send summary outcome "success" or "failure" to github PR'
-    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
-    # Also see ~steveri/bin/status-update on kiwi
-    [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
-
-    echo '- Clean up your mess'
-    test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
-    test -d $COMMON && rmdir $COMMON || echo okay
-    /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
+# ########################################################################
+# # AMBER GOLD step
+# 
+# # Can unskip this step when/if want to monitor when/whether RTL changes
+# - label: "Amber Gold RTL"
+#   # Comment-out the line below when/if want to guarantee RTL stability
+#   skip: true
+#   soft_fail: true  # So that failing gold check does not fail pipeline.
+#   plugins:
+#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes: ["/cad/:/cad"]
+#         shell:   ["/bin/bash", "-e", "-c"]
+#         mount-checkout: false
+#   commands: |
+#     echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
+#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
+#         msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
+#         echo "++ $$msg"
+#         echo "$$msg" | buildkite-agent annotate --style "error" --context amber
+#         exit 13
+#     fi
+# 
+# ########################################################################
+# # ONYX GOLD step
+# 
+# # Can unskip this step when/if want to monitor when/whether RTL changes
+# - label: "Onyx Gold"
+#   # Comment-out the line below when/if want to guarantee RTL stability
+#   skip: true
+#   soft_fail: true  # So that failing gold check does not fail pipeline.
+#   plugins:
+#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes: ["/cad/:/cad"]
+#         shell:   ["/bin/bash", "-e", "-c"]
+#         mount-checkout: false
+#   commands: |
+#     echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
+#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
+#         msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
+#         echo "++ $$msg"
+#         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+#         exit 13
+#     fi
+# 
+# ########################################################################
+# # ZIRCON GOLD step
+# 
+# # Can unskip this step when/if want to monitor when/whether RTL changes
+# - label: "Zircon Gold"
+#   key: "zircon_gold"
+#   # Change this to true if want to make changes to zircon RTL
+#   skip: false
+#   soft_fail: false  # Failing gold check will fail pipeline.
+#   plugins:
+#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes: ["/cad/:/cad"]
+#         shell:   ["/bin/bash", "-e", "-c"]
+#         mount-checkout: false
+#   commands: |
+#     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
+#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
+#         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+#         echo "++ $$msg"
+#         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+#         exit 13
+#     fi
+# 
+# ########################################################################
+# # STEP: fast suite
+# 
+# # regress-metahooks takes care of updating the docker image's submod(s)
+# # when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
+# 
+# - label: "Fast"
+#   env: { CONTAINER: deleteme-regress0-$BUILDKITE_BUILD_NUMBER }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+# 
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_METAHOOKS --pre-command
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # NOTES: onyx regressions
+# 
+# # We report success to the aha-flow app by removing the .TEST file, which is
+# # created in the post-checkout hook and checked-for in the pre-exit hook.
+# 
+# # Instead of multiple similar onyx-regression steps, could maybe do
+# # some kind of $$bin/gen-steps | docker-agent upload
+# 
+# ########################################################################
+# # STEP: onyx regression 1
+# 
+# - label: "Regress 1"
+#   key: "regress1"
+#   depends_on: "zircon_gold"
+#   env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+# 
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_METAHOOKS --pre-command
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 2
+# 
+# - label: "Regress 2"
+#   key: "regress2"
+#   depends_on: "zircon_gold"
+#   env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_METAHOOKS --pre-command
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: REGRESSION_STEP=2 $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 3
+# 
+# - label: "Regress 3"
+#   key: "regress3"
+#   depends_on: "zircon_gold"
+#   env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_METAHOOKS --pre-command
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: REGRESSION_STEP=3 $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: Cleanup
+# 
+# # Wait for all steps to complete before sending out final status
+# # This step should run regardless of whether prev steps failed
+# - wait: { continue_on_failure: true }
+# 
+# - label: "Cleanup"
+# 
+#   # Don't need time-wasting clone just for cleanup! Right?
+#   plugins:
+#     - uber-workflow/run-without-clone:
+# 
+#   command: |
+# 
+#     echo '- Show outcomes from each regression step'
+#     echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
+#     echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
+#     echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
+#     echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
+# 
+#     echo '- Use FAIL to summarize overall result'
+#     FAIL=
+#     set -x
+#     [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
+#     [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
+#     [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
+#     [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
+#     echo '-- FAIL=$$FAIL'
+# 
+#     echo '- Send summary outcome "success" or "failure" to github PR'
+#     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+#     # Also see ~steveri/bin/status-update on kiwi
+#     [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
+# 
+#     echo '- Clean up your mess'
+#     test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
+#     test -d $COMMON && rmdir $COMMON || echo okay
+#     /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
