@@ -2,12 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-    branches-ignore: 
-      - dependabot/**
-      - '*-patch-*'
-      - dev/**
-  schedule:
-    - cron: '0 11 * * 0'
+    branches:
+      - master
 
 jobs:
   build:

@@ -2,23 +2,10 @@ name: Integration Tests
 
 on:
   push:
-    branches:
-      - master
-    paths-ignore:
-      - '**.md'
-      - '.buildkite/**'
-      - '.dependabot/**'
-      - 'docs/**'
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - '**.md'
-      - '.buildkite/**'
-      - '.dependabot/**'
-      - 'docs/**'
-  schedule:
-    - cron: '0 11 * * *'
+    branches-ignore: 
+      - dependabot/**
+      - '*-patch-*'
+      - dev/**
 
 jobs:
   build:
