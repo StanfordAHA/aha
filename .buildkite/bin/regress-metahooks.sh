@@ -130,6 +130,9 @@ elif [ "$1" == '--commands' ]; then
       [ "$REGSTEP" == 1 ] && export CONFIG="pr_aha1 --include-no-zircon-tests"
       [ "$REGSTEP" == 2 ] && export CONFIG="pr_aha2 --include-no-zircon-tests"
       [ "$REGSTEP" == 3 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
+      [ "$REGSTEP" == 4 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
+      [ "$REGSTEP" == 5 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
+      [ "$REGSTEP" == 6 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
 
       # Prototype
       # [ "$REGSTEP" == 1 ] && export CONFIG=fast

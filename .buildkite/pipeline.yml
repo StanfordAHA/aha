@@ -261,6 +261,54 @@ steps:
   command: REGRESSION_STEP=3 $REGRESS_METAHOOKS --commands
 
 ########################################################################
+# STEP: onyx regression 4
+
+- label: "Regress 4"
+  key: "regress4"
+  depends_on: "zircon_gold"
+  env: { CONTAINER: deleteme-regress4-$BUILDKITE_BUILD_NUMBER }
+
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $REGRESS_METAHOOKS --pre-command
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
+
+  command: REGRESSION_STEP=4 $REGRESS_METAHOOKS --commands
+
+########################################################################
+# STEP: onyx regression 5
+
+- label: "Regress 5"
+  key: "regress5"
+  depends_on: "zircon_gold"
+  env: { CONTAINER: deleteme-regress5-$BUILDKITE_BUILD_NUMBER }
+
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $REGRESS_METAHOOKS --pre-command
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
+
+  command: REGRESSION_STEP=5 $REGRESS_METAHOOKS --commands
+
+########################################################################
+# STEP: onyx regression 6
+
+- label: "Regress 6"
+  key: "regress6"
+  depends_on: "zircon_gold"
+  env: { CONTAINER: deleteme-regress6-$BUILDKITE_BUILD_NUMBER }
+
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $REGRESS_METAHOOKS --pre-command
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
+
+  command: REGRESSION_STEP=6 $REGRESS_METAHOOKS --commands
+
+########################################################################
 # STEP: Cleanup
 
 # Wait for all steps to complete before sending out final status
@@ -280,6 +328,9 @@ steps:
     echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
     echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
     echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
+    echo regress4 outcome: `buildkite-agent step get "outcome" --step "regress4"`
+    echo regress5 outcome: `buildkite-agent step get "outcome" --step "regress5"`
+    echo regress6 outcome: `buildkite-agent step get "outcome" --step "regress6"`
 
     echo '- Use FAIL to summarize overall result'
     FAIL=
@@ -288,6 +339,9 @@ steps:
     [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress4") == "passed" ] || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress5") == "passed" ] || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "regress6") == "passed" ] || FAIL=True
     echo '-- FAIL=$$FAIL'
 
     echo '- Send summary outcome "success" or "failure" to github PR'
