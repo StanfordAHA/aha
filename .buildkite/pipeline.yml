@@ -198,7 +198,12 @@ steps:
     - uber-workflow/run-without-clone:
 
     - improbable-eng/metahook:
-        pre-command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
+        pre-command: |
+            echo "+++ BUILDKITE_BUILD_CHECKOUT_PATH=$$BUILDKITE_BUILD_CHECKOUT_PATH"
+            echo "+++ BUILDKITE_BUILD_CHECKOUT_PATH=$BUILDKITE_BUILD_CHECKOUT_PATH"
+            set -x
+            test -f $REGRESS_METAHOOKS || cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
+            REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
