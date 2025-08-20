@@ -101,6 +101,11 @@ elif [ "$1" == '--commands' ]; then
     if ! [ `docker images -q $IMAGE` ]; then
         echo "+++ " IMAGE NO EXISTY OH NOOOOOOOO...
         echo I will attempr to rectify...dont blame me if something blows up...
+        # Gotta have submodules if gonna build docker image
+        if ! test -e .git/sam/modules/HEAD; then
+            echo "--- git submodule update --init --recursive --force"
+            git submodule update --init --recursive --force
+        fi
         echo "--- Creating garnet Image"
         pwd; docker build --progress plain . -t "$IMAGE"
     fi
