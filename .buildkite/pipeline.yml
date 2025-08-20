@@ -202,13 +202,8 @@ steps:
 
     - improbable-eng/metahook:
         pre-command: |
-            # echo "+++ BUILDKITE_BUILD_CHECKOUT_PATH=$$BUILDKITE_BUILD_CHECKOUT_PATH (me)"  # right for this step
-            # echo "+++ BUILDKITE_BUILD_CHECKOUT_PATH=$BUILDKITE_BUILD_CHECKOUT_PATH (docker step)"   # right for docker step(??)
-            echo "+++ RM_SRC1=$RM_SRC1 (me)"
-            echo I am in dir `pwd`
-            foo=bart
-            echo foo=$foo=$$foo  # /var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha/aha-flow
-            # echo "+++ RM_SRC2=$RM_SRC2 (docker step)"
+            echo "+++ precomm"
+            echo I am in dir `pwd`  # /var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha/aha-flow
             set -x
             # test -f $REGRESS_METAHOOKS || cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
             # Must restore in case of retries
@@ -216,15 +211,20 @@ steps:
             # test -f $REGRESS_METAHOOKS || cp $RM_SRC1 $REGRESS_METAHOOKS
             if ! test -f $REGRESS_METAHOOKS; then
                 cd ..  # "/var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha" maybe
-                aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-                /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
-                git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
-                git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
-                git clean -ffxdq
+                echo I am in dir `pwd`
+                echo curl https://raw.githubusercontent.com/StavfordAHA/aha/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                curl https://raw.githubusercontent.com/StavfordAHA/aha/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                source $$bin/custom-checkout.sh
+
+                # aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+                # /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
+                # git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
+                # git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
+                # git clean -ffxdq
                 set +x
-                bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
-                git checkout $$BUILDKITE_COMMIT
-                cp .buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
+                # bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+                # git checkout $$BUILDKITE_COMMIT
+                cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
                 # Now hear me out...
                 # source $$bin/custom-checkout.sh
             fi
