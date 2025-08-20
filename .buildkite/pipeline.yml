@@ -174,7 +174,7 @@ steps:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
     - docker#v3.2.0:
         # image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        image: garnet:latest
+        image: stanfordaha/garnet:latest
         volumes: ["/cad/:/cad"]
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
