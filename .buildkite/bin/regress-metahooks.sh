@@ -97,6 +97,17 @@ elif [ "$1" == '--commands' ]; then
 
     docker kill $CONTAINER || echo okay
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
+
+    if ! [ `docker images -q $IMAGE` ]; then
+        echo "+++ " IMAGE NO EXISTY OH NOOOOOOOO...
+        echo I will attempr to rectify...dont blame me if something blows up...
+        echo "--- Creating garnet Image"
+        pwd; docker build --progress plain . -t "$IMAGE"
+    fi
+    
+
+
+
     docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
     docker cp /nobackup/zircon/MatrixUnit_sim_sram.v $CONTAINER:/aha/garnet/MatrixUnit_sim_sram.v
     docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v $CONTAINER:/aha/garnet/MatrixUnitWrapper_sim.v
