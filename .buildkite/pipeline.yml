@@ -79,10 +79,6 @@ steps:
         fi
 
   commands:
-  - echo "+++ SKIP DOCKER BUILD, SEE WHAT HAPPENS"; exit
-
-
-
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
 
   # Remove docker images older than one day
@@ -98,6 +94,7 @@ steps:
   - mkdir -p $$COMMON
   - cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
 
+  - echo "--- SKIP REST OF DOCKER BUILD, SEE WHAT HAPPENS"; exit
   - echo "--- DEBUG DOCKER TRASH"
   - set -x; docker images; docker ps;
 
