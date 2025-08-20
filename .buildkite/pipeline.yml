@@ -219,12 +219,14 @@ steps:
                 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
                 /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
                 git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
-                # git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
-                # git clean -ffxdq
-                # set +x
-                # bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
-                # source $$bin/custom-checkout.sh
+                git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
+                git clean -ffxdq
+                set +x
+                bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+                git checkout $$BUILDKITE_COMMIT
                 cp .buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
+                # Now hear me out...
+                # source $$bin/custom-checkout.sh
             fi
             REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
