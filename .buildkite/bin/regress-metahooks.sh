@@ -5,6 +5,16 @@
 
 if [ "$1" == '--pre-command' ]; then
 
+
+
+
+    if [ "$REGRESSION_STEP" == "0" ]; then echo FAIL; exit 13;
+    else echo SUCCEED; exit 0; fi
+
+
+
+
+
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
 
