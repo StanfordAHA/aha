@@ -13,9 +13,6 @@ env:
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
   TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
-  RM_SRC1: $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh
-  # RM_SRC2: $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh
-
 steps:
 
 - label: "Build Docker Image"
@@ -175,7 +172,8 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
     - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        # image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        image: garnet:latest
         volumes: ["/cad/:/cad"]
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
@@ -202,31 +200,19 @@ steps:
 
     - improbable-eng/metahook:
         pre-command: |
-            echo "+++ precomm"
-            echo I am in dir `pwd`  # /var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha/aha-flow
-            set -x
-            # test -f $REGRESS_METAHOOKS || cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
             # Must restore in case of retries
-            # test -f $REGRESS_METAHOOKS || echo "--- OOPS missing metahooks: cp $RM_SRC1 $REGRESS_METAHOOKS"
-            # test -f $REGRESS_METAHOOKS || cp $RM_SRC1 $REGRESS_METAHOOKS
             if ! test -f $REGRESS_METAHOOKS; then
                 cd ..  # "/var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha" maybe
                 echo I am in dir `pwd`
-                echo curl https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
-                curl https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/
+                echo curl $remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                curl $remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
                 source custom-checkout.sh
-
-                # aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-                # /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
-                # git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
-                # git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
-                # git clean -ffxdq
-                set +x
-                # bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
-                # git checkout $$BUILDKITE_COMMIT
+                echo "--- FOO I am in dir `pwd`"
+                echo cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
                 cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
-                # Now hear me out...
-                # source $$bin/custom-checkout.sh
+                [ `docker images -q $IMAGE` ] || echo "--- (Re)creating garnet Image"
+                [ `docker images -q $IMAGE` ] || docker build --progress plain . -t "$IMAGE"
             fi
             REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit

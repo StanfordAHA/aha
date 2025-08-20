@@ -5,21 +5,17 @@
 
 if [ "$1" == '--pre-command' ]; then
 
-
-
-
     # Can use this to test whether retries work or not;
-    # first time through step 0 (fast) FAILs; succeeding retries should SUCCEED
+    if [ "True" ]; then  # Turn ON
+    # if [ "" ]; then    # Turn OFF
+    # first time through, step 0 ("Fast") FAILs; succeeding retries should SUCCEED
     echo "+++ HACKO REGRESSION_STEP=$REGRESSION_STEP..."
     set -x
     if [ "$REGRESSION_STEP" == "0" ]; then
         if [ "$BUILDKITE_RETRY_COUNT" == "0" ]; then echo FAIL; exit 13; fi
     else echo SUCCEED; exit 0; fi
     set +x
-
-
-
-
+    fi
 
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
@@ -100,20 +96,17 @@ elif [ "$1" == '--commands' ]; then
     docker kill $CONTAINER || echo okay
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
 
-    if ! [ `docker images -q $IMAGE` ]; then
-        echo "+++ " IMAGE NO EXISTY OH NOOOOOOOO...
-        echo I will attempr to rectify...dont blame me if something blows up...
-        # Gotta have submodules if gonna build docker image
-        if ! test -e .git/sam/modules/HEAD; then
-            echo "--- git submodule update --init --recursive --force"
-            git submodule update --init --recursive --force
-        fi
-        echo "--- Creating garnet Image"
-        pwd; docker build --progress plain . -t "$IMAGE"
-    fi
-    
-
-
+#     if ! [ `docker images -q $IMAGE` ]; then
+#         echo "+++ " IMAGE NO EXISTY OH NOOOOOOOO...
+#         echo I will attempr to rectify...dont blame me if something blows up...
+#         # Gotta have submodules if gonna build docker image
+#         if ! test -e .git/sam/modules/HEAD; then
+#             echo "--- git submodule update --init --recursive --force"
+#             git submodule update --init --recursive --force
+#         fi
+#         echo "--- Creating garnet Image"
+#         pwd; docker build --progress plain . -t "$IMAGE"
+#     fi
 
     docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
     docker cp /nobackup/zircon/MatrixUnit_sim_sram.v $CONTAINER:/aha/garnet/MatrixUnit_sim_sram.v
