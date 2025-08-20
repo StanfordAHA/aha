@@ -203,11 +203,12 @@ steps:
         pre-command: |
             # Must restore in case of retries
             if ! test -f $REGRESS_METAHOOKS; then
+                set -x
                 cd ..  # "/var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha" maybe
                 echo I am in dir `pwd`
                 remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/
-                echo curl $remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
-                curl $remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
                 source custom-checkout.sh
                 echo "--- FOO I am in dir `pwd`"
                 echo cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
