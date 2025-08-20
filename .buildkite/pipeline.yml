@@ -79,6 +79,10 @@ steps:
         fi
 
   commands:
+  - echo "+++ SKIP DOCKER BUILD, SEE WHAT HAPPENS"; exit
+
+
+
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
 
   # Remove docker images older than one day
@@ -197,7 +201,7 @@ steps:
     - uber-workflow/run-without-clone:
 
     - improbable-eng/metahook:
-        pre-command: $REGRESS_METAHOOKS --pre-command
+        pre-command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands

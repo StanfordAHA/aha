@@ -7,6 +7,7 @@ if [ "$1" == '--pre-command' ]; then
 
 
 
+    echo "--- HACKO REGRESSION_STEP=$REGRESSION_STEP..."
 
     if [ "$REGRESSION_STEP" == "0" ]; then echo FAIL; exit 13;
     else echo SUCCEED; exit 0; fi
