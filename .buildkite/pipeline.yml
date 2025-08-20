@@ -214,7 +214,7 @@ steps:
                 echo I am in dir `pwd`
                 echo curl https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
                 curl https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
-                source $$bin/custom-checkout.sh
+                source custom-checkout.sh
 
                 # aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
                 # /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
