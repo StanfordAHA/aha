@@ -206,7 +206,7 @@ steps:
                 set -x
                 cd ..  # "/var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha" maybe
                 echo I am in dir `pwd`
-                remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/
+                remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH
                 echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
                 curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
                 source custom-checkout.sh
