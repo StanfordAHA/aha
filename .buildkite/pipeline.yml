@@ -212,8 +212,8 @@ steps:
             if ! test -f $REGRESS_METAHOOKS; then
                 cd ..  # "/var/lib/buildkite-agent/builds/r8cad-docker-3/stanford-aha" maybe
                 echo I am in dir `pwd`
-                echo curl https://raw.githubusercontent.com/StavfordAHA/aha/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
-                curl https://raw.githubusercontent.com/StavfordAHA/aha/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                echo curl https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                curl https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
                 source $$bin/custom-checkout.sh
 
                 # aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
