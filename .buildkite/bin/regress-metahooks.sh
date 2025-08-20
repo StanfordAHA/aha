@@ -11,9 +11,11 @@ if [ "$1" == '--pre-command' ]; then
     # Can use this to test whether retries work or not;
     # first time through step 0 (fast) FAILs; succeeding retries should SUCCEED
     echo "+++ HACKO REGRESSION_STEP=$REGRESSION_STEP..."
+    set -x
     if [ "$REGRESSION_STEP" == "0" ]; then
         if [ "$BUILDKITE_RETRY_COUNT" == "0" ]; then echo FAIL; exit 13; fi
     else echo SUCCEED; exit 0; fi
+    set +x
 
 
 
