@@ -13,6 +13,10 @@ env:
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
   TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
+  FUNC1: |
+      echo foo
+      echo bar
+
 steps:
 
 - label: "Build Docker Image"
@@ -197,6 +201,12 @@ steps:
         exit 13
     fi
 
+- label: "FUNCy Test"
+  plugins:
+    - uber-workflow/run-without-clone:
+  command: $FUNC1
+
+
 ########################################################################
 # STEP: fast suite
 
@@ -204,6 +214,7 @@ steps:
 # when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
 
 - label: "Fast"
+  depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress0-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
