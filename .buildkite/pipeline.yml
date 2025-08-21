@@ -17,6 +17,62 @@ env:
       echo foo
       echo bar
 
+  PRE_COMMAND: |
+            # To test retry: FAIL first time through only
+            if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
+
+            # Must restore in case of retries
+            echo 1 I am in dir `pwd`
+            if ! test -f $REGRESS_METAHOOKS; then
+                set -x
+
+                # Download from remote
+                remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH
+                mkdir -p $COMMON
+                curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
+                chmod +x $REGRESS_METAHOOKS
+            fi
+            echo 2 I am in dir `pwd`
+
+            # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
+            (
+                set -x
+                # flock exclusionary zone ensures that only one guy builds the new image
+                lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
+                i=1; while ! flock -n 9; do
+                    echo "Someone appears to be currently (re)building docker image"
+                    echo "Waited $((i++)) minutes so far..."
+                done
+
+                echo "# We have the lock; look for $IMAGE"
+                if ! [ `docker images -q $IMAGE` ]; then
+                    echo "CANNOT FIND DOCKER IMAGE '$IMAGE'"
+                    echo "And I have the lock so...guess I am the one who will be (re)building it"
+
+                    # Download and source custom-checkout script
+                    remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH
+                    echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+                    curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+
+                    # Check out repo with latest Docker-build collateral...
+                    source custom-checkout.sh
+
+                    # echo "--- FOO I am in dir `pwd`"
+                    # echo cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
+                    # cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
+
+                    echo "--- (Re)creating garnet Image"
+                    docker build --progress plain . -t "$IMAGE"
+                else
+                    echo Docker image exists, hooray
+                fi
+            ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
+            echo 3 I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
+            pwd; cd .; # cd; pwd  # Get to a safe place maybe?
+            REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
+
+
+
 steps:
 
 - label: "Build Docker Image"
@@ -216,68 +272,14 @@ steps:
 # when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
 
 - label: "Fast"
-  depends_on: "zircon_gold"
+  # depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress0-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
     - uber-workflow/run-without-clone:
 
     - improbable-eng/metahook:
-        pre-command: |
-
-            # To test retry: FAIL first time through only
-            if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
-
-            # Must restore in case of retries
-            echo 1 I am in dir `pwd`
-            if ! test -f $REGRESS_METAHOOKS; then
-                set -x
-
-                # Download from remote
-                remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH
-                mkdir -p $COMMON
-                curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
-                chmod +x $REGRESS_METAHOOKS
-            fi
-            echo 2 I am in dir `pwd`
-
-            # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
-            (
-                set -x
-                # flock exclusionary zone ensures that only one guy builds the new image
-                lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
-                i=1; while ! flock -n 9; do
-                    echo "Someone appears to be currently (re)building docker image"
-                    echo "Waited $((i++)) minutes so far..."
-                done
-
-                echo "# We have the lock; look for $IMAGE"
-                if ! [ `docker images -q $IMAGE` ]; then
-                    echo "CANNOT FIND DOCKER IMAGE '$IMAGE'"
-                    echo "And I have the lock so...guess I am the one who will be (re)building it"
-
-                    # Download and source custom-checkout script
-                    remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH
-                    echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
-                    curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
-
-                    # Check out repo with latest Docker-build collateral...
-                    source custom-checkout.sh
-
-                    # echo "--- FOO I am in dir `pwd`"
-                    # echo cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
-                    # cp $BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $REGRESS_METAHOOKS
-
-                    echo "--- (Re)creating garnet Image"
-                    docker build --progress plain . -t "$IMAGE"
-                else
-                    echo Docker image exists, hooray
-                fi
-            ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
-            echo 3 I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
-            pwd; cd .; # cd; pwd  # Get to a safe place maybe?
-            REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
-
+        pre-command: $PRE_COMMAND
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
