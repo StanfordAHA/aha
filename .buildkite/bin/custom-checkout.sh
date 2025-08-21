@@ -29,7 +29,7 @@ fi
 
 echo "--- Must have a (empty!) working directory"
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
-/bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
+cd /tmp; /bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
 
 echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
@@ -167,8 +167,9 @@ fi
 # Restore original REQUEST_TYPE value, even though I think it's maybe never used again...
 [ "${save_reqtype}" ] && export REQUEST_TYPE=${save_reqtype}
 
+# For dev support can skip 30-minute submod init by doing 'custom-checkout.sh --aha-flow --early-out'
 if [ "$2" == "--early-out" ]; then
-    echo "Found early our switch, guess we are DONE"
+    echo "Found early out switch, guess we are DONE"
 
 elif [ "$1" == "--aha-flow" ]; then
     echo "+++ Notify github of pending status"
