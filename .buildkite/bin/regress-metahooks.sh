@@ -6,8 +6,8 @@
 if [ "$1" == '--pre-command' ]; then
 
     # Can use this to test whether retries work or not;
-    if [ "True" ]; then  # Turn ON
-    # if [ "" ]; then    # Turn OFF
+    # if [ "True" ]; then  # Turn ON
+    if [ "" ]; then    # Turn OFF
     # first time through, step 0 ("Fast") FAILs; succeeding retries should SUCCEED
     echo "+++ HACKO REGRESSION_STEP=$REGRESSION_STEP..."
     set -x
