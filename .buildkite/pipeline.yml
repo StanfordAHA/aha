@@ -204,8 +204,10 @@ steps:
 - label: "FUNCy Test"
   plugins:
     - uber-workflow/run-without-clone:
-  command: $FUNC1
-
+  # command: $FUNC1
+  commands: |
+      $FUNC1
+      echo baz
 
 ########################################################################
 # STEP: fast suite
