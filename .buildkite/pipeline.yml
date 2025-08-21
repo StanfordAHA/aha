@@ -219,6 +219,7 @@ steps:
                 remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH
                 mkdir -p $COMMON
                 curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
+                chmod +x $REGRESS_METAHOOKS
             fi
 
             # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
