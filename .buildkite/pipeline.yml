@@ -211,6 +211,11 @@ steps:
 
     - improbable-eng/metahook:
         pre-command: |
+
+            # To test retry: FAIL first time through only
+            if [ "$BUILDKITE_RETRY_COUNT" == "0" ]; then echo FAIL; exit 13; fi
+
+
             # Must restore in case of retries
             if ! test -f $REGRESS_METAHOOKS; then
                 set -x
@@ -252,7 +257,7 @@ steps:
                     echo "--- (Re)creating garnet Image"
                     docker build --progress plain . -t "$IMAGE"
                 else
-                    echo Okay looks like someone else successfully built the missing docker image hooray
+                    echo Docker image exists, hooray
                 fi
              ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
              REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command

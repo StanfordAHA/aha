@@ -5,15 +5,19 @@
 
 if [ "$1" == '--pre-command' ]; then
 
-    # Can use this to test whether retries work or not;
-    if [ "true" ]; then
-        # first time through, step 0 ("Fast") FAILs; succeeding retries should SUCCEED
-        echo "+++ HACKO REGRESSION_STEP=$REGRESSION_STEP..."
-        if [ "$REGRESSION_STEP" == "0" ]; then
-            if [ "$BUILDKITE_RETRY_COUNT" == "0" ]; then echo FAIL; exit 13; fi
-        else echo SUCCEED; exit 0; fi
-        set +x
-    fi
+    # Use this to bypass tests for dev purposes etc.
+    if ! [ "$REGRESSION_STEP" == "0" ]; then echo SUCCEED; exit 0; fi
+
+
+#     # Can use this to test whether retries work or not;
+#     if [ "true" ]; then
+#         # first time through, step 0 ("Fast") FAILs; succeeding retries should SUCCEED
+#         echo "+++ HACKO REGRESSION_STEP=$REGRESSION_STEP..."
+#         if [ "$REGRESSION_STEP" == "0" ]; then
+#             if [ "$BUILDKITE_RETRY_COUNT" == "0" ]; then echo FAIL; exit 13; fi
+#         else echo SUCCEED; exit 0; fi
+#         set +x
+#     fi
 
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
