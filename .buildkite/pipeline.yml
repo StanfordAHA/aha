@@ -261,8 +261,8 @@ steps:
                     echo Docker image exists, hooray
                 fi
             ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
-            echo 3 I am in dir `pwd`
-            pwd; cd  # Get to a safe place maybe?
+            echo 3 I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
+            pwd; cd .; # cd; pwd  # Get to a safe place maybe?
             REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
 
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
