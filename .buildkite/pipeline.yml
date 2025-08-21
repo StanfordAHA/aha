@@ -190,6 +190,7 @@ steps:
         mount-checkout: false
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
+    exit 13
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
         echo "++ $$msg"
@@ -224,14 +225,16 @@ steps:
 
             # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
             (
+                set -x
                 # flock exclusionary zone ensures that only one guy builds the new image
                 lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
-                i=1
-                while ! flock -n 9; do
+                i=1; while ! flock -n 9; do
                     echo "Someone appears to be currently (re)building docker image"
                     echo "Waited $((i++)) minutes so far..."
                 done
-                if ! `docker images -q $IMAGE`; then
+
+                echo "# We have the lock; look for $IMAGE"
+                if ! `[ docker images -q $IMAGE` ]; then
                     echo "CANNOT FIND DOCKER IMAGE '$IMAGE'"
                     echo "And I have the lock so...guess I am the one who will be (re)building it"
 
@@ -250,7 +253,7 @@ steps:
                     echo "--- (Re)creating garnet Image"
                     docker build --progress plain . -t "$IMAGE"
                 else
-                    echo Okay looks likw someone else successfully built the missing docker image hooray
+                    echo Okay looks like someone else successfully built the missing docker image hooray
                 fi
              ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
              REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
