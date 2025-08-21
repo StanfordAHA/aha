@@ -40,10 +40,10 @@ env:
           # "flock" exclusionary zone ensures that only one guy builds the new image
           lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
           i=0; while ! flock -n 9; do
-              [ "$i" -eq  0 ] && echo "Someone appears to be currently (re)building docker image"
-              echo "Waited $((i++)) minutes..."
+              [ "$$i" -eq  0 ] && echo "Someone appears to be currently (re)building docker image"
+              echo "Waited $$((i++)) minutes..."
               sleep 60
-              [ "$i" -gt 99 ] && echo "Giving up" && exit 13
+              [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
           done
 
           echo "# We have the lock; look for $IMAGE"
