@@ -183,14 +183,13 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:  # Don't need clone when using docker
     - docker#v3.2.0:
-        # image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        image: stanfordaha/garnet:latest
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        # image: stanfordaha/garnet:latest
         volumes: ["/cad/:/cad"]
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
-    exit 13
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
         echo "++ $$msg"
@@ -234,7 +233,7 @@ steps:
                 done
 
                 echo "# We have the lock; look for $IMAGE"
-                if ! `[ docker images -q $IMAGE` ]; then
+                if ! [ `docker images -q $IMAGE` ]; then
                     echo "CANNOT FIND DOCKER IMAGE '$IMAGE'"
                     echo "And I have the lock so...guess I am the one who will be (re)building it"
 
