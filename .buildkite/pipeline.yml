@@ -215,8 +215,8 @@ steps:
             # To test retry: FAIL first time through only
             if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
 
-
             # Must restore in case of retries
+            echo 1 I am in dir `pwd`
             if ! test -f $REGRESS_METAHOOKS; then
                 set -x
 
@@ -226,6 +226,7 @@ steps:
                 curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
                 chmod +x $REGRESS_METAHOOKS
             fi
+            echo 2 I am in dir `pwd`
 
             # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
             (
@@ -259,8 +260,10 @@ steps:
                 else
                     echo Docker image exists, hooray
                 fi
-             ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
-             REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
+            ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
+            echo 3 I am in dir `pwd`
+            pwd; cd  # Get to a safe place maybe?
+            REGRESSION_STEP=0 $REGRESS_METAHOOKS --pre-command
 
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
