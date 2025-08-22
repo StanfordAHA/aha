@@ -6,7 +6,7 @@
 if [ "$1" == '--pre-command' ]; then
 
     # Use this to bypass tests for dev purposes etc.
-    if ! [ "$REGRESSION_STEP" == "0" ]; then echo SUCCEED; exit 0; fi
+    # if ! [ "$REGRESSION_STEP" == "0" ]; then echo SUCCEED; exit 0; fi
 
 
 #     # Can use this to test whether retries work or not;
