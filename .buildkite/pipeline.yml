@@ -281,6 +281,10 @@ steps:
 
   command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
 
+
+- wait: { continue_on_failure: true }
+
+
 ########################################################################
 # NOTES: onyx regressions
 
@@ -295,7 +299,7 @@ steps:
 
 - label: "Regress 1"
   key: "regress1"
-  depends_on: "zircon_gold"
+  # depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -312,7 +316,7 @@ steps:
 
 - label: "Regress 2"
   key: "regress2"
-  depends_on: "zircon_gold"
+  # depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -328,7 +332,7 @@ steps:
 
 - label: "Regress 3"
   key: "regress3"
-  depends_on: "zircon_gold"
+  # depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -344,7 +348,7 @@ steps:
 
 - label: "Regress 4"
   key: "regress4"
-  depends_on: "zircon_gold"
+  # depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress4-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -360,7 +364,7 @@ steps:
 
 - label: "Regress 5"
   key: "regress5"
-  depends_on: "zircon_gold"
+  # depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress5-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
@@ -376,7 +380,7 @@ steps:
 
 - label: "Regress 6"
   key: "regress6"
-  depends_on: "zircon_gold"
+  # depends_on: "zircon_gold"
   env: { CONTAINER: deleteme-regress6-$BUILDKITE_BUILD_NUMBER }
 
   plugins:
