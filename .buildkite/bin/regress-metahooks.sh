@@ -8,17 +8,6 @@ if [ "$1" == '--pre-command' ]; then
     # Use this to bypass tests for dev purposes etc.
     # if ! [ "$REGRESSION_STEP" == "0" ]; then echo SUCCEED; exit 0; fi
 
-
-#     # Can use this to test whether retries work or not;
-#     if [ "true" ]; then
-#         # first time through, step 0 ("Fast") FAILs; succeeding retries should SUCCEED
-#         echo "+++ HACKO REGRESSION_STEP=$REGRESSION_STEP..."
-#         if [ "$REGRESSION_STEP" == "0" ]; then
-#             if [ "$BUILDKITE_RETRY_COUNT" == "0" ]; then echo FAIL; exit 13; fi
-#         else echo SUCCEED; exit 0; fi
-#         set +x
-#     fi
-
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
 
@@ -141,19 +130,9 @@ elif [ "$1" == '--commands' ]; then
 
       # Normal
       [ "$REGSTEP" == 0 ] && export CONFIG="fast"
-      [ "$REGSTEP" == 1 ] && export CONFIG="pr_aha1 --include-no-zircon-tests"
-      [ "$REGSTEP" == 2 ] && export CONFIG="pr_aha2 --include-no-zircon-tests"
-      [ "$REGSTEP" == 3 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
-      [ "$REGSTEP" == 4 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
-      [ "$REGSTEP" == 5 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
-      [ "$REGSTEP" == 6 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
+      [ "$REGSTEP" ] && export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests"
 
-      # Prototype
-      # [ "$REGSTEP" == 1 ] && export CONFIG=fast
-      # [ "$REGSTEP" == 2 ] && export CONFIG=fast
-      # [ "$REGSTEP" == 3 ] && export CONFIG=fast
-
-      echo "Trigger came from aha repo step '$REGSTEP'; use $CONFIG";
+      echo "Trigger came from aha-flow step '$REGSTEP', so now CONFIG=$CONFIG";
 
     else
       echo "Trigger came from OTHER, use default and/or config='$CONFIG'"

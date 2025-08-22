@@ -14,7 +14,7 @@ set +x    # debug OFF
 PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
 echo "+++ BEGIN custom-checkout.sh"
-echo I am in dir `pwd`
+cd /  # Start in a safe place!
 
 # should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
 if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
@@ -29,7 +29,7 @@ fi
 
 echo "--- Must have a (empty!) working directory"
 d=$BUILDKITE_BUILD_CHECKOUT_PATH;
-cd /tmp; /bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
+/bin/rm -rf $d; mkdir -p $d; ls -ld $d; cd $d
 
 echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
