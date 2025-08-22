@@ -16,7 +16,7 @@ env:
   # This script allows retries even after original collateral is gone...
   REGRESS_PRE_COMM: |
 
-      echo "--- REGRESS_PRE_COMMAND FOR STEP $$RPCSTEP"
+      echo "--- REGRESS_PRE_COMMAND FOR STEP $$REGRESSION_STEP"
 
       # To test retry: FAIL first time through only
       # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
@@ -60,7 +60,7 @@ env:
       ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
       echo I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
       cd .  # Got weird error without this...??
-      REGRESSION_STEP=$$RPCSTEP $REGRESS_METAHOOKS --pre-command
+      $REGRESS_METAHOOKS --pre-command
 
 steps:
 
@@ -113,19 +113,10 @@ steps:
 
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
 
-        # TEMPORARILY Checkout and update correct aha branch and submodules
+        source $$bin/custom-checkout.sh --aha-flow
+
+        # Checkout and update correct aha branch and *NOT* submodules (for dev maybe)
         # source $$bin/custom-checkout.sh --aha-flow --early-out
-
-
-
-
-
-        # Checkout and update correct aha branch and *NOT* submodules
-        source $$bin/custom-checkout.sh --aha-flow --early-out
-
-
-
-
 
       # Send regression test pass-fail info to github pull request page
       pre-exit: |
@@ -154,16 +145,8 @@ steps:
   - mkdir -p $$COMMON
   - cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
 
-  # DELETEME before final merge!!!
-  - echo "--- SKIP REST OF DOCKER BUILD for dev purposes only"; exit
-
-
-
-
-
-
-
-
+  # For dev purposes...can skip docker build e.g. to work on retry mechanism
+  # - echo "--- SKIP REST OF DOCKER BUILD for dev purposes only"; exit
 
   - echo "--- DEBUG DOCKER TRASH"
   - set -x; docker images; docker ps;
@@ -263,17 +246,23 @@ steps:
 # when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
 
 - label: "Fast"
-  # depends_on: "zircon_gold"  # Let fast test go first maybe
-  env: { CONTAINER: deleteme-regress0-$BUILDKITE_BUILD_NUMBER }
+  env:
+      REGRESSION_STEP: 1
+      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
     - uber-workflow/run-without-clone:
 
     - improbable-eng/metahook:
-        pre-command: RPCSTEP=0; $REGRESS_PRE_COMM
+        pre-command: $REGRESS_PRE_COMM
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
+  command: $REGRESS_METAHOOKS --commands
+
+
+
+
+
 
 # But why tho?
 # - wait: { continue_on_failure: true }
@@ -293,96 +282,103 @@ steps:
 - label: "Regress 1"
   key: "regress1"
   # depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress1-$BUILDKITE_BUILD_NUMBER }
+  env:
+      REGRESSION_STEP: 1
+      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
     - uber-workflow/run-without-clone:
 
     - improbable-eng/metahook:
-        pre-command: RPCSTEP=1; $REGRESS_PRE_COMM
+        pre-command: $REGRESS_PRE_COMM
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=1 $REGRESS_METAHOOKS --commands
+  command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: onyx regression 2
 
 - label: "Regress 2"
   key: "regress2"
-  # depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress2-$BUILDKITE_BUILD_NUMBER }
+  env:
+      REGRESSION_STEP: 2
+      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: RPCSTEP=2; $REGRESS_PRE_COMM
+        pre-command: $REGRESS_PRE_COMM
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=2 $REGRESS_METAHOOKS --commands
+  command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: onyx regression 3
 
 - label: "Regress 3"
   key: "regress3"
-  # depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress3-$BUILDKITE_BUILD_NUMBER }
+  env:
+      REGRESSION_STEP: 3
+      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: RPCSTEP=3; $REGRESS_PRE_COMM
+        pre-command: $REGRESS_PRE_COMM
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=3 $REGRESS_METAHOOKS --commands
+  command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: onyx regression 4
 
 - label: "Regress 4"
   key: "regress4"
-  # depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress4-$BUILDKITE_BUILD_NUMBER }
+  env:
+      REGRESSION_STEP: 4
+      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: RPCSTEP=4; $REGRESS_PRE_COMM
+        pre-command: $REGRESS_PRE_COMM
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=4 $REGRESS_METAHOOKS --commands
+  command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: onyx regression 5
 
 - label: "Regress 5"
   key: "regress5"
-  # depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress5-$BUILDKITE_BUILD_NUMBER }
+  env:
+      REGRESSION_STEP: 5
+      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: RPCSTEP=5; $REGRESS_PRE_COMM
+        pre-command: $REGRESS_PRE_COMM
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=5 $REGRESS_METAHOOKS --commands
+  command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: onyx regression 6
 
 - label: "Regress 6"
   key: "regress6"
-  # depends_on: "zircon_gold"
-  env: { CONTAINER: deleteme-regress6-$BUILDKITE_BUILD_NUMBER }
+  env:
+      REGRESSION_STEP: 6
+      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: RPCSTEP=6; $REGRESS_PRE_COMM
+        pre-command: $REGRESS_PRE_COMM
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
-  command: REGRESSION_STEP=6 $REGRESS_METAHOOKS --commands
+  command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: Cleanup
