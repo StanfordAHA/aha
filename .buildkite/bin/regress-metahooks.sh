@@ -128,14 +128,17 @@ elif [ "$1" == '--commands' ]; then
 
     elif [ "$CONFIG" == "pr_aha" ]; then
 
-      # Normal
-      [ "$REGSTEP" == 0 ] && export CONFIG="fast"
-      [ "$REGSTEP" ] && export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests"
+      # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
 
-      echo "Trigger came from aha-flow step '$REGSTEP', so now CONFIG=$CONFIG";
+      [  "$REGSTEP" ] && case "$REGSTEP" in
+          0) export CONFIG="fast" ;;
+          *) export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests" ;;
+
+      esac && echo "Trigger came from aha-flow step '$REGSTEP', so now CONFIG=$CONFIG";
 
     else
       echo "Trigger came from OTHER, use default and/or config='$CONFIG'"
+      # FIXME what is this and why is it here??? Pretty sure it's outdated :(
       if [ "$REGSTEP" == 2 -o "$REGSTEP" == 3 ]; then
         echo "oops no REGSTEP='$REGSTEP', not doing regressions"
         DO_AR=False

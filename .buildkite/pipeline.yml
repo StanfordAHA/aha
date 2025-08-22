@@ -44,7 +44,7 @@ env:
 
           echo "# We have the lock; look for $IMAGE"
           if ! [ `docker images -q $IMAGE` ]; then
-              echo "CANNOT FIND DOCKER IMAGE '$IMAGE'"
+              echo "+++ CANNOT FIND DOCKER IMAGE '$IMAGE'"
               echo "And I have the lock so...guess I am the one who will be (re)building it"
 
               echo "# Download and source custom-checkout script to get latest repo"
