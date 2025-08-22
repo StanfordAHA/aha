@@ -248,12 +248,6 @@ steps:
         shell:   ["/bin/bash", "-e", "-c"]
         mount-checkout: false
   commands: |
-
-    echo SUCCEED for now; exit
-
-
-
-
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
@@ -281,9 +275,8 @@ steps:
 
   command: REGRESSION_STEP=0 $REGRESS_METAHOOKS --commands
 
-
-- wait: { continue_on_failure: true }
-
+# But why tho?
+# - wait: { continue_on_failure: true }
 
 ########################################################################
 # NOTES: onyx regressions
