@@ -1,6 +1,6 @@
 class Tests:
 
-    def __init__(self, testname, zircon=True):
+    def __init__(self, testname="BLANK", zircon=True):
         use_custom = False
 
         # Defaults
@@ -16,6 +16,7 @@ class Tests:
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
+        no_zircon_sparse_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
@@ -69,24 +70,13 @@ class Tests:
             external_mu_tests_fp = []
             hardcoded_dense_tests = []
 
-        # PR_AHA test suite for aha-repo push/pull
-        elif testname == "pr_aha":
-
-            # aha pull requests used to invoke the much larger "daily"
-            # suite; which we deleted. Now, aha PRs invoke this pared-down
-            # test "pr_aha", (as recommended by Kalhan et al.).  Pr_aha is
-            # kind of an enhanced version of the old "pr" suite of tests,
-            # which was used by pull requests from AHA submodule repos.
-            # The old "pr" suite is now called "pr_submod". (Pr_submod
-            # only takes a couple of hours whereas pr_aha is in the 8-10
-            # hour range.)
-
-            # 2. THEN we broke the 8-10 hour "pr_aha" test into three 3-hour
-            # tests pr_aha1,2,3 that can all run in parallel.
+        # PR_AHA test suite for aha-repo push/pull, part 1/3
+        elif testname == "pr_aha1":
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
+                # pr_aha1
                 "vec_elemmul",
                 "mat_vecmul_ij",
                 "mat_elemadd_leakyrelu_exp",
@@ -110,13 +100,7 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                # pr_aha2
-                "apps/gaussian_RV",
                 "apps/pointwise_custom_packing_RV_E64",
-                # pr_aha3
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
             ]
             glb_tests_fp_RV = [
                 # pr_aha1
@@ -125,44 +109,12 @@ class Tests:
                 "apps/relu_layer_fp_RV",
                 "apps/avgpool_layer_fp_RV_E64",
                 "apps/mat_vec_mul_fp_RV",
-                # pr_aha2
-                "apps/scalar_reduction_fp_RV",
-                "apps/scalar_max_fp_RV",
-                "apps/layer_norm_pass2_fp_RV",
-                "apps/layer_norm_pass3_fp_RV",
-                "apps/scalar_avg_fp_RV",
-                # pr_aha3
-                "apps/stable_softmax_pass2_fp_RV",
-                "apps/stable_softmax_pass3_fp_RV",
-                "apps/vector_reduction_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
             ]
-            hardcoded_dense_tests = [
-                # pr_aha3
-                "apps/unsharp_RV",
-                # "apps/depthwise_conv" # down on Zircon
-            ]
+            hardcoded_dense_tests = []
+
             # Tests below are non-zircon and won't run by default
             glb_tests = [
-                # pr_aha1
                 "apps/pointwise",
-                # pr_aha2
-                "apps/maxpooling",
-                "tests/bit8_packing_test",
-                "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test",
-                # pr_aha3
-                "apps/camera_pipeline_2x2",
-                "apps/gaussian",
-                "apps/harris_color",
-                "apps/unsharp",
             ]
             glb_tests_fp = [
                 # pr_aha1
@@ -170,18 +122,9 @@ class Tests:
                 "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
                 "apps/relu_layer_fp",
-                # pr_aha2
-                "apps/scalar_max_fp",
-                # pr_aha3
-                "apps/scalar_avg_fp",
             ]
             resnet_tests = [
-                # pr_aha1
                 "conv5_x",
-                # pr_aha2
-                "conv2_x",
-                # pr_aha3
-                "conv1",
             ]
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
@@ -203,19 +146,6 @@ class Tests:
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
             ]
             external_mu_tests_fp = [
-                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-
-                # PSUM WORKAROUND CONV4_X downsample
-                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
-
-                # PSUM WORKAROUND CONV5_X downsample
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
-
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
@@ -223,34 +153,116 @@ class Tests:
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
-# Found the better way maybe
-#
-#         # PR_AHA tests broken into three sub-parts: aha_pr1
-#         elif testname == "pr_aha1":
-#             t = Tests('aha_pr')
-#
-#             # FIXME surely there is a better way of doing this part...!!
-#             width, height = (t.width, t.height)
-#             sparse_tests = t.sparse_tests
-#             glb_tests = t.glb_tests
-#             glb_tests_fp = t.glb_tests_fp
-#             resnet_tests = t.resnet_tests
-#             resnet_tests_fp = t.resnet_tests_fp
-#             hardcoded_dense_tests = t.hardcoded_dense_tests
-#
-#             # Remove conv2 benchmarks, which take about 1.5 hr each...
-#             resnet_tests.remove('conv2_x')  # This is actually *two* tests
-#             resnet_tests_fp.remove('conv2_x_fp')
-#
-#         # PR_AHA tests broken into three sub-parts: aha_pr2
-#         elif testname == 'pr_aha2':
-#             glb_tests = ["apps/gaussian"]  # conv2 breaks if don't do gaussian first :(
-#             resnet_tests = [ 'conv2_x' ]   # This is actually *two* tests
-#
-#         # PR_AHA tests broken into three sub-parts: aha_pr2
-#         elif testname == 'pr_aha3':
-#             glb_tests = ["apps/gaussian"]  # conv2 breaks if don't do gaussian first :(
-#             resnet_tests_fp = [ 'conv2_x_fp' ]
+        # PR_AHA test suite for aha-repo push/pull, part 2/3
+
+        elif testname == "pr_aha2":
+
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+
+            glb_tests_RV = [
+                "apps/gaussian_RV",
+                "apps/pointwise_custom_packing_RV_E64",
+            ]
+            glb_tests_fp_RV = [
+                "apps/scalar_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+                "apps/layer_norm_pass2_fp_RV",
+                "apps/layer_norm_pass3_fp_RV",
+                "apps/scalar_avg_fp_RV",
+            ]
+            glb_tests = [
+                "apps/maxpooling",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
+            ]
+            glb_tests_fp = [
+                "apps/scalar_max_fp",
+            ]
+            resnet_tests = [
+                "conv2_x",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+
+                # PSUM WORKAROUND CONV4_X downsample
+                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+            ]
+
+        # PR_AHA test suite for aha-repo push/pull, part 3/3
+        elif testname == "pr_aha3":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+
+            glb_tests_RV = [
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+            ]
+            glb_tests_fp_RV = [
+                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/vector_reduction_fp_RV",
+                "apps/gelu_pass1_fp_RV",
+                "apps/gelu_pass2_fp_RV",
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
+            ]
+            hardcoded_dense_tests = [
+                "apps/unsharp_RV",
+            ]
+            glb_tests = [
+                "apps/camera_pipeline_2x2",
+                "apps/gaussian",
+                "apps/harris_color",
+                "apps/unsharp",
+            ]
+            glb_tests_fp = [
+                "apps/scalar_avg_fp",
+            ]
+            resnet_tests = [
+                "conv1",
+            ]
+            external_mu_tests_fp = [
+                # PSUM WORKAROUND CONV5_X downsample
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+            ]
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
+
+        # PR_AHA test suite for aha-repo push/pull;
+        # build pr_aha1,2,3 and then merge them all together
+        elif testname == "pr_aha":
+            def merge_tests(s1, s2):
+                for key in s2:
+                    if type(s2[key]) is list:
+                        s1[key] = list(set(s1[key] + s2[key]))  # merge lists
+                    else:
+                        # Non-lists (e.g. width, height) should be same for both sets
+                        assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
+                    
+            pr_aha = Tests('pr_aha1').__dict__
+            merge_tests(pr_aha, Tests('pr_aha2').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha3').__dict__)
+            self.__dict__.update(pr_aha)
+            # print(f"{self.resnet_tests=}", flush=True)
+            return
 
         # PR_SUBMOD tests for push/pull from aha submod repos
         elif testname == "pr_submod":
@@ -404,7 +416,14 @@ class Tests:
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
@@ -637,6 +656,16 @@ class Tests:
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
+
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
+
         elif testname == "resnet":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -706,6 +735,7 @@ class Tests:
         else:
             use_custom = True
 
+        # Export everything
         self.width, self.height = width, height
         self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
         self.sparse_tests = sparse_tests
@@ -721,6 +751,7 @@ class Tests:
         self.hardcoded_dense_tests = hardcoded_dense_tests
         self.E64_supported_tests = E64_supported_tests
         self.E64_MB_supported_tests = E64_MB_supported_tests
+        self.no_zircon_sparse_tests = no_zircon_sparse_tests
 
         if use_custom:
             # Read a custom suite from external file <testname>.py
