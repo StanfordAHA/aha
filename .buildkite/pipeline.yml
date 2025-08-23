@@ -113,7 +113,8 @@ steps:
 
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
 
-        source $$bin/custom-checkout.sh --aha-flow
+        # Checkout and update correct aha branch and submodules
+        source $$bin/custom-checkout.sh
 
         # Checkout and update correct aha branch and *NOT* submodules (for dev maybe)
         # source $$bin/custom-checkout.sh --aha-flow --early-out
@@ -247,7 +248,7 @@ steps:
 
 - label: "Fast"
   env:
-      REGRESSION_STEP: 1
+      REGRESSION_STEP: 0
       CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
 
   plugins:
@@ -258,11 +259,6 @@ steps:
         pre-exit:    $REGRESS_METAHOOKS --pre-exit
 
   command: $REGRESS_METAHOOKS --commands
-
-
-
-
-
 
 # But why tho?
 # - wait: { continue_on_failure: true }
@@ -281,7 +277,6 @@ steps:
 
 - label: "Regress 1"
   key: "regress1"
-  # depends_on: "zircon_gold"
   env:
       REGRESSION_STEP: 1
       CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
