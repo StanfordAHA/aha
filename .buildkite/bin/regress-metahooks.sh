@@ -84,6 +84,9 @@ elif [ "$1" == '--commands' ]; then
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
 
+    # Note CONTAINER is an environment variable that must be set by caller :(
+    # Caller is usually .buildkite/pipeline.xml
+    # and currently CONTAINER="deleteme-regress$REGSTEP-$BUILDKITE_BUILD_NUMBER"
     docker kill $CONTAINER || echo okay
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
     docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash

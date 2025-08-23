@@ -60,6 +60,8 @@ env:
       ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
       echo I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
       cd .  # Got weird error without this...??
+      export CONTAINER=deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
+      echo "--- using CONTAINER='$CONTAINER'"
       $REGRESS_METAHOOKS --pre-command
 
 steps:
@@ -247,10 +249,7 @@ steps:
 # when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
 
 - label: "Fast"
-  env:
-      REGRESSION_STEP: 0
-      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-
+  env: REGRESSION_STEP: 0
   plugins:
     - uber-workflow/run-without-clone:
 
@@ -277,10 +276,7 @@ steps:
 
 - label: "Regress 1"
   key: "regress1"
-  env:
-      REGRESSION_STEP: 1
-      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-
+  env: REGRESSION_STEP: 1
   plugins:
     - uber-workflow/run-without-clone:
 
@@ -295,10 +291,7 @@ steps:
 
 - label: "Regress 2"
   key: "regress2"
-  env:
-      REGRESSION_STEP: 2
-      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-
+  env: REGRESSION_STEP: 2
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -312,10 +305,7 @@ steps:
 
 - label: "Regress 3"
   key: "regress3"
-  env:
-      REGRESSION_STEP: 3
-      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-
+  env: REGRESSION_STEP: 3
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -329,10 +319,7 @@ steps:
 
 - label: "Regress 4"
   key: "regress4"
-  env:
-      REGRESSION_STEP: 4
-      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-
+  env: REGRESSION_STEP: 4
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -346,10 +333,7 @@ steps:
 
 - label: "Regress 5"
   key: "regress5"
-  env:
-      REGRESSION_STEP: 5
-      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-
+  env: REGRESSION_STEP: 5
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -363,9 +347,7 @@ steps:
 
 - label: "Regress 6"
   key: "regress6"
-  env:
-      REGRESSION_STEP: 6
-      CONTAINER: deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
+  env: REGRESSION_STEP: 6
 
   plugins:
     - uber-workflow/run-without-clone:
