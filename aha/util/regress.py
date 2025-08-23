@@ -876,7 +876,15 @@ def dispatch(args, extra_args=None):
                         num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    if args.include_no_zircon_tests:
+    # Skip unnecessary garnet build is tests don't exist, duh.
+    no_zircon_tests = [
+        *no_zircon_sparse_tests,
+        *glb_tests,
+        *glb_tests_fp,
+        *resnet_tests,
+        *resnet_tests_fp,
+    ]
+    if args.include_no_zircon_tests and no_zircon_tests:
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
@@ -915,7 +923,13 @@ def dispatch(args, extra_args=None):
             t0, t1, t2 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    if args.include_dense_only_tests:
+    # Skip unnecessary garnet build is tests don't exist, duh.
+    dense_only_tests_exist = False
+    if glb_tests: dense_only_tests_exist = True
+    for test in resnet_tests:
+        if "residual" not in test: dense_only_tests_exist = True
+
+    if args.include_dense_only_tests and dense_only_tests_exist:
         # DENSE ONLY TESTS
         # Remove sparse+dense garnet.v first
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
