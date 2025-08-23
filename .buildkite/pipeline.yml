@@ -60,10 +60,7 @@ env:
       ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
       echo I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
       cd .  # Got weird error without this...??
-      set -x
-      export CONTAINER="deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER"
-      echo "--- using CONTAINER='$$CONTAINER'"
-      $REGRESS_METAHOOKS --pre-command
+      set -x; $REGRESS_METAHOOKS --pre-command
 
 steps:
 

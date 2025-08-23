@@ -3,6 +3,12 @@
 # This is where we offload meta-hook commands for pipeline.yml
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
+# pipeline.yml is responsible for providing necessary env vars including
+# IMAGE / TAG / CONFIG / REGRESSION_STEP / BUILDKITE_BUILD_NUMBER
+
+CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
+echo "--- using CONTAINER='${CONTAINER}'"
+
 if [ "$1" == '--pre-command' ]; then
 
     # Use this to bypass tests for dev purposes etc.
@@ -81,11 +87,6 @@ elif [ "$1" == '--commands' ]; then
 
     echo "--- BEGIN regress-metahooks.sh --commands"
 
-    # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
-
-    # Note CONTAINER is an environment variable that must be set by caller :(
-    # Caller is usually .buildkite/pipeline.xml
     # and currently CONTAINER="deleteme-regress$REGSTEP-$BUILDKITE_BUILD_NUMBER"
     docker kill $CONTAINER || echo okay
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
