@@ -17,10 +17,6 @@ env:
   REGRESS_PRE_COMM: |
 
       echo "--- REGRESS_PRE_COMMAND FOR STEP $$REGRESSION_STEP"
-#     # echo \\\"--- REGRESS_PRE_COMMAND FOR STEP $REGRESSION_STEP\\\"
-# 
-#       export CONTAINER=deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-#     # export CONTAINER=deleteme-regress$REGRESSION_STEP-11881
 
       # To test retry: FAIL first time through only
       # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
