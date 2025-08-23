@@ -374,6 +374,57 @@ steps:
   command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
+# STEP: onyx regression 7
+
+- label: "Regress 7"
+  key: "regress7"
+  concurrency: 3  # Limit long-running jobs to at most three at a time.
+  concurrency_group: "longrunning-job"
+  env: { REGRESSION_STEP: 7 }
+
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $REGRESS_PRE_COMM
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
+
+  command: $REGRESS_METAHOOKS --commands
+
+########################################################################
+# STEP: onyx regression 8
+
+- label: "Regress 8"
+  key: "regress8"
+  concurrency: 3  # Limit long-running jobs to at most three at a time.
+  concurrency_group: "longrunning-job"
+  env: { REGRESSION_STEP: 8 }
+
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $REGRESS_PRE_COMM
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
+
+  command: $REGRESS_METAHOOKS --commands
+
+########################################################################
+# STEP: onyx regression 9
+
+- label: "Regress 9"
+  key: "regress9"
+  concurrency: 3  # Limit long-running jobs to at most three at a time.
+  concurrency_group: "longrunning-job"
+  env: { REGRESSION_STEP: 9 }
+
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $REGRESS_PRE_COMM
+        pre-exit:    $REGRESS_METAHOOKS --pre-exit
+
+  command: $REGRESS_METAHOOKS --commands
+
+########################################################################
 # STEP: Cleanup
 
 # Wait for all steps to complete before sending out final status
