@@ -17,6 +17,10 @@ env:
   REGRESS_PRE_COMM: |
 
       echo "--- REGRESS_PRE_COMMAND FOR STEP $$REGRESSION_STEP"
+#     # echo \\\"--- REGRESS_PRE_COMMAND FOR STEP $REGRESSION_STEP\\\"
+# 
+#       export CONTAINER=deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
+#     # export CONTAINER=deleteme-regress$REGRESSION_STEP-11881
 
       # To test retry: FAIL first time through only
       # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
@@ -60,8 +64,9 @@ env:
       ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
       echo I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
       cd .  # Got weird error without this...??
-      export CONTAINER=deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER
-      echo "--- using CONTAINER='$CONTAINER'"
+      set -x
+      export CONTAINER="deleteme-regress$$REGRESSION_STEP-$BUILDKITE_BUILD_NUMBER"
+      echo "--- using CONTAINER='$$CONTAINER'"
       $REGRESS_METAHOOKS --pre-command
 
 steps:
@@ -373,23 +378,16 @@ steps:
 
     echo '- Show outcomes from each regression step'
     echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
-    echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
-    echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
-    echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
-    echo regress4 outcome: `buildkite-agent step get "outcome" --step "regress4"`
-    echo regress5 outcome: `buildkite-agent step get "outcome" --step "regress5"`
-    echo regress6 outcome: `buildkite-agent step get "outcome" --step "regress6"`
+    for i in {1..5}; do
+        echo regress$i outcome: `buildkite-agent step get "outcome" --step "regress$i"`
+    done
 
     echo '- Use FAIL to summarize overall result'
     FAIL=
     set -x
-    [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress4") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress5") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress6") == "passed" ] || FAIL=True
+    for i in {1..5}; do
+        [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
+    done
     echo '-- FAIL=$$FAIL'
 
     echo '- Send summary outcome "success" or "failure" to github PR'
