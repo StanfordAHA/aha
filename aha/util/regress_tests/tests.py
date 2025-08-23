@@ -70,20 +70,9 @@ class Tests:
             external_mu_tests_fp = []
             hardcoded_dense_tests = []
 
-        # PR_AHA test suite for aha-repo push/pull, part 1/3
         elif testname == "pr_aha1":
-
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            external_mu_tests = [
-                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
-
-                # K-DIM HOST TILING CONV5_X
-                "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
-            ]
             external_mu_tests_fp = [
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
@@ -91,28 +80,18 @@ class Tests:
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-
-        # PR_AHA test suite for aha-repo push/pull, part 2/3
-
         elif testname == "pr_aha2":
-
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             external_mu_tests_fp = [
-                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-
                 # PSUM WORKAROUND CONV4_X downsample
                 "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
             ]
-
-        # PR_AHA test suite for aha-repo push/pull, part 3/3
         elif testname == "pr_aha3":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
-                # pr_aha1
                 "vec_elemmul",
                 "mat_vecmul_ij",
                 "mat_elemadd_leakyrelu_exp",
@@ -153,28 +132,6 @@ class Tests:
                 "tests/fp_get_shared_exp_test_RV",
 
             ]
-            glb_tests_fp_RV = [
-                "tests/fp_arith_RV",
-                "tests/fp_comp_RV",
-                "apps/relu_layer_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64",
-                "apps/mat_vec_mul_fp_RV",
-                "apps/scalar_reduction_fp_RV",
-                "apps/scalar_max_fp_RV",
-                "apps/layer_norm_pass2_fp_RV",
-                "apps/layer_norm_pass3_fp_RV",
-                "apps/scalar_avg_fp_RV",
-                "apps/stable_softmax_pass2_fp_RV",
-                "apps/stable_softmax_pass3_fp_RV",
-                "apps/vector_reduction_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
-            ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
@@ -210,7 +167,6 @@ class Tests:
                 "apps/unsharp",
             ]
             glb_tests_fp = [
-                # pr_aha1
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
@@ -229,6 +185,52 @@ class Tests:
             resnet_tests_fp = [
                 # "conv2_x_fp" # not yet supported by zircon
             ]
+        elif testname == "pr_aha7":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
+                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+
+                # K-DIM HOST TILING CONV5_X
+                "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
+            ]
+        elif testname == "pr_aha8":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            glb_tests_fp_RV = [
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "apps/relu_layer_fp_RV",
+                "apps/avgpool_layer_fp_RV_E64",
+                "apps/mat_vec_mul_fp_RV",
+                "apps/scalar_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+                "apps/layer_norm_pass2_fp_RV",
+                "apps/layer_norm_pass3_fp_RV",
+                "apps/scalar_avg_fp_RV",
+                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/vector_reduction_fp_RV",
+                "apps/gelu_pass1_fp_RV",
+                "apps/gelu_pass2_fp_RV",
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
+            ]
+
+        elif testname == "pr_aha9":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            external_mu_tests_fp = [
+                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+            ]
+
         # PR_AHA test suite for aha-repo push/pull;
         # build pr_aha1,2,3 and then merge them all together
         elif testname == "pr_aha":
