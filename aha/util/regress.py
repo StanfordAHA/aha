@@ -783,9 +783,22 @@ def dispatch(args, extra_args=None):
         assert imported_tests.external_mu_tests == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests from the test list."
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
 
+
     print(f"--- Running regression: {args.config}", flush=True)
-    t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-    info.append(["garnet (Zircon) with sparse and dense", t])
+
+    # Skip 20 minutes of gen_garnet if no tests exist for it!!!
+    zircon_tests_exist = False
+    if [
+            *sparse_tests,
+            *glb_tests_RV,
+            *glb_tests_fp_RV,
+            *behavioral_mu_tests,
+            *external_mu_tests,
+            *external_mu_tests_fp
+            *hardcoded_dense_tests
+    ]:
+        t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+        info.append(["garnet (Zircon) with sparse and dense", t])
 
     data_tile_pairs = []
     kernel_name = ""
