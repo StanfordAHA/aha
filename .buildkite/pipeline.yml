@@ -247,7 +247,6 @@ steps:
 # when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
 
 - label: "Fast"
-  skip: true
   key: "regress0"
   env: { REGRESSION_STEP: 0 }
   plugins:
@@ -275,7 +274,6 @@ steps:
 # STEP: onyx regression 1
 
 - label: "Regress 1"
-  skip: true
   key: "regress1"
   env: { REGRESSION_STEP: 1 }
   plugins:
@@ -290,7 +288,6 @@ steps:
 # STEP: onyx regression 2
 
 - label: "Regress 2"
-  skip: true
   key: "regress2"
   env: { REGRESSION_STEP: 2 }
   plugins:
@@ -305,7 +302,6 @@ steps:
 # STEP: onyx regression 3
 
 - label: "Regress 3"
-  skip: true
   key: "regress3"
   env: { REGRESSION_STEP: 3 }
   plugins:
@@ -320,7 +316,6 @@ steps:
 # STEP: onyx regression 4
 
 - label: "Regress 4"
-  skip: true
   key: "regress4"
   env: { REGRESSION_STEP: 4 }
   plugins:
@@ -335,7 +330,6 @@ steps:
 # STEP: onyx regression 5
 
 - label: "Regress 5"
-  skip: true
   key: "regress5"
   env: { REGRESSION_STEP: 5 }
   plugins:
