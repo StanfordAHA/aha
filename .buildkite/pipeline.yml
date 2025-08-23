@@ -278,8 +278,6 @@ steps:
   skip: true
   key: "regress1"
   env: { REGRESSION_STEP: 1 }
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
-  concurrency_group: "longrunning-job"
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -295,8 +293,6 @@ steps:
   skip: true
   key: "regress2"
   env: { REGRESSION_STEP: 2 }
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
-  concurrency_group: "longrunning-job"
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -312,8 +308,6 @@ steps:
   skip: true
   key: "regress3"
   env: { REGRESSION_STEP: 3 }
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
-  concurrency_group: "longrunning-job"
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -329,8 +323,6 @@ steps:
   skip: true
   key: "regress4"
   env: { REGRESSION_STEP: 4 }
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
-  concurrency_group: "longrunning-job"
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -345,8 +337,6 @@ steps:
 - label: "Regress 5"
   skip: true
   key: "regress5"
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
-  concurrency_group: "longrunning-job"
   env: { REGRESSION_STEP: 5 }
   plugins:
     - uber-workflow/run-without-clone:
@@ -361,8 +351,6 @@ steps:
 
 - label: "Regress 6"
   key: "regress6"
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
-  concurrency_group: "longrunning-job"
   env: { REGRESSION_STEP: 6 }
 
   plugins:
