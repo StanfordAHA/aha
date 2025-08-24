@@ -794,7 +794,7 @@ def dispatch(args, extra_args=None):
             *glb_tests_fp_RV,
             *behavioral_mu_tests,
             *external_mu_tests,
-            *external_mu_tests_fp
+            *external_mu_tests_fp,
             *hardcoded_dense_tests
     ]:
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
