@@ -794,7 +794,7 @@ def dispatch(args, extra_args=None):
             *glb_tests_fp_RV,
             *behavioral_mu_tests,
             *external_mu_tests,
-            *external_mu_tests_fp
+            *external_mu_tests_fp,
             *hardcoded_dense_tests
     ]:
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
@@ -889,18 +889,21 @@ def dispatch(args, extra_args=None):
                         num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    # Skip unnecessary garnet build is tests don't exist, duh.
-    no_zircon_tests = [
+    # Skip unnecessary garnet build if tests don't exist, duh.
+    tests_exist = True if [
         *no_zircon_sparse_tests,
         *glb_tests,
         *glb_tests_fp,
         *resnet_tests,
         *resnet_tests_fp,
-    ]
-    if args.include_no_zircon_tests and no_zircon_tests:
+    ] else False
+    if args.include_no_zircon_tests and tests_exist:
         exit_status = os.system(f"rm /aha/garnet/garnet.v")
-        if os.WEXITSTATUS(exit_status) != 0:
-            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+
+        # Why would we want this? garnet.v is gone, that's all we care about?
+        # Also: no way to do *only* no-zircon tests, b/c it triggers this error :(
+        # if os.WEXITSTATUS(exit_status) != 0:
+        #     raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
