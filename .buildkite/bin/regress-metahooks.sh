@@ -119,6 +119,7 @@ elif [ "$1" == '--commands' ]; then
     if test -e /buildkite/DO_PR; then
       echo "Trigger came from submod repo pull request; use pr config"
       export CONFIG="pr --include-no-zircon-tests"
+
       # Must restrict to a single slice else they will ALL do the full regression(!)
       if [ "$REGSTEP" != 1 ]; then
         echo "Full regressions only run as 'Regress 1'"
@@ -141,10 +142,11 @@ elif [ "$1" == '--commands' ]; then
       echo "Trigger came from aha repo step '$REGSTEP'; use $CONFIG";
 
     else
-      echo "Trigger came from OTHER, use default and/or config='$CONFIG'"
-      if [ "$REGSTEP" == 2 -o "$REGSTEP" == 3 ]; then
-        echo "oops no REGSTEP='$REGSTEP', not doing regressions"
-        DO_AR=False
+      echo "Trigger came from OTHER and (CONFIG != pr_aha): use default and/or config='$CONFIG'"
+
+      # Must restrict to a single slice else they will ALL do the requested CONFIG
+      if [ "$REGSTEP" != 1 ]; then
+        DO_AR=False  # I.e. ? don't do aha regressions for this REGSTEP ? right ?
       fi
       CONFIG="$CONFIG --include-no-zircon-tests"
     fi
