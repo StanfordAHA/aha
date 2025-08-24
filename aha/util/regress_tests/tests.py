@@ -139,6 +139,9 @@ class Tests:
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV",
             ]
+            hardcoded_dense_tests = [
+                "apps/unsharp_RV",
+            ]
         elif testname == "pr_aha5":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -149,9 +152,6 @@ class Tests:
                 "mat_elemadd_leakyrelu_exp",
                 "matmul_ikj",
                 "tensor3_mttkrp",
-            ]
-            hardcoded_dense_tests = [
-                "apps/unsharp_RV",
             ]
             # Tests below are non-zircon and won't run by default
             glb_tests = [
