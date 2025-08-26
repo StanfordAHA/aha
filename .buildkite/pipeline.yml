@@ -77,7 +77,6 @@ steps:
       # Req from aha repo:    check out aha commit BUILDKITE_COMMIT
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
-        exit 0
         echo "+++ BDI PRE CHECKOUT HOOK"
         set +u     # nounset? not on my watch!
 
@@ -104,6 +103,7 @@ steps:
             echo 'Aha push/PR uses pushed branch'
             git checkout $$BUILDKITE_COMMIT
         fi
+        exit 0
 
 
         # If build was triggered by a pull request, annotate build with
