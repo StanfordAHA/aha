@@ -240,166 +240,170 @@ steps:
         exit 13
     fi
 
-########################################################################
-# STEP: fast suite
+- label: "Regressions"
+  command: |
+      NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
 
-# regress-metahooks takes care of updating the docker image's submod(s)
-# when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
-
-- label: "Fast"
-  skip: true
-  key: "regress0"
-  env: { REGRESSION_STEP: 0 }
-  plugins:
-    - uber-workflow/run-without-clone:
-
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-# But why tho?
-# - wait: { continue_on_failure: true }
-
-########################################################################
-# NOTES: onyx regressions
-
-# We report success to the aha-flow app by removing the .TEST file, which is
-# created in the post-checkout hook and checked-for in the pre-exit hook.
-
-# Instead of multiple similar onyx-regression steps, could maybe do
-# some kind of $$bin/gen-steps | docker-agent upload
-
-########################################################################
-# STEP: onyx regression 1
-
-- label: "Regress 1"
-  key: "regress1"
-  env: { REGRESSION_STEP: 1 }
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 2
-
-- label: "Regress 2"
-  key: "regress2"
-  env: { REGRESSION_STEP: 2 }
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 3
-
-- label: "Regress 3"
-  key: "regress3"
-  env: { REGRESSION_STEP: 3 }
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 4
-
-- label: "Regress 4"
-  key: "regress4"
-  env: { REGRESSION_STEP: 4 }
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 5
-
-- label: "Regress 5"
-  key: "regress5"
-  env: { REGRESSION_STEP: 5 }
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 6
-
-- label: "Regress 6"
-  key: "regress6"
-  env: { REGRESSION_STEP: 6 }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 7
-
-- label: "Regress 7"
-  key: "regress7"
-  env: { REGRESSION_STEP: 7 }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 8
-
-- label: "Regress 8"
-  key: "regress8"
-  env: { REGRESSION_STEP: 8 }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
-
-########################################################################
-# STEP: onyx regression 9
-
-- label: "Regress 9"
-  key: "regress9"
-  env: { REGRESSION_STEP: 9 }
-
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $REGRESS_PRE_COMM
-        pre-exit:    $REGRESS_METAHOOKS --pre-exit
-
-  command: $REGRESS_METAHOOKS --commands
+# ########################################################################
+# # STEP: fast suite
+# 
+# # regress-metahooks takes care of updating the docker image's submod(s)
+# # when the CI is triggered from a submodule e.g. "garnet" or "lake" :(
+# 
+# - label: "Fast"
+#   skip: true
+#   key: "regress0"
+#   env: { REGRESSION_STEP: 0 }
+#   plugins:
+#     - uber-workflow/run-without-clone:
+# 
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# # But why tho?
+# # - wait: { continue_on_failure: true }
+# 
+# ########################################################################
+# # NOTES: onyx regressions
+# 
+# # We report success to the aha-flow app by removing the .TEST file, which is
+# # created in the post-checkout hook and checked-for in the pre-exit hook.
+# 
+# # Instead of multiple similar onyx-regression steps, could maybe do
+# # some kind of $$bin/gen-steps | docker-agent upload
+# 
+# ########################################################################
+# # STEP: onyx regression 1
+# 
+# - label: "Regress 1"
+#   key: "regress1"
+#   env: { REGRESSION_STEP: 1 }
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 2
+# 
+# - label: "Regress 2"
+#   key: "regress2"
+#   env: { REGRESSION_STEP: 2 }
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 3
+# 
+# - label: "Regress 3"
+#   key: "regress3"
+#   env: { REGRESSION_STEP: 3 }
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 4
+# 
+# - label: "Regress 4"
+#   key: "regress4"
+#   env: { REGRESSION_STEP: 4 }
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 5
+# 
+# - label: "Regress 5"
+#   key: "regress5"
+#   env: { REGRESSION_STEP: 5 }
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 6
+# 
+# - label: "Regress 6"
+#   key: "regress6"
+#   env: { REGRESSION_STEP: 6 }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 7
+# 
+# - label: "Regress 7"
+#   key: "regress7"
+#   env: { REGRESSION_STEP: 7 }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 8
+# 
+# - label: "Regress 8"
+#   key: "regress8"
+#   env: { REGRESSION_STEP: 8 }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
+# 
+# ########################################################################
+# # STEP: onyx regression 9
+# 
+# - label: "Regress 9"
+#   key: "regress9"
+#   env: { REGRESSION_STEP: 9 }
+# 
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: $REGRESS_PRE_COMM
+#         pre-exit:    $REGRESS_METAHOOKS --pre-exit
+# 
+#   command: $REGRESS_METAHOOKS --commands
 
 ########################################################################
 # STEP: Cleanup
