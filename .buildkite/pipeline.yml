@@ -65,7 +65,7 @@ env:
 
 steps:
 
-- label: "Build Docker Image"
+- label: "Build Docker Image ?or? Regressions?"
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
@@ -103,8 +103,6 @@ steps:
             echo 'Aha push/PR uses pushed branch'
             git checkout $$BUILDKITE_COMMIT
         fi
-        exit 0
-
 
         # If build was triggered by a pull request, annotate build with
         #    links pointing to pull request on github.
@@ -115,8 +113,8 @@ steps:
 
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
 
-        # Checkout and update correct aha branch and submodules
-        source $$bin/custom-checkout.sh
+        # Checkout and update correct aha branch and *NOT* submodules
+        source $$bin/custom-checkout.sh --aha-flow --early-out
 
         # Checkout and update correct aha branch and *NOT* submodules (for dev maybe)
         # source $$bin/custom-checkout.sh --aha-flow --early-out
@@ -134,6 +132,7 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
+  - NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
   - exit 0
 
   # Remove docker images older than one day
@@ -243,9 +242,9 @@ steps:
 #         exit 13
 #     fi
 
-- label: "Regressions"
-  command: |
-      NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
+# - label: "Regressions"
+#   command: |
+#       NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
 
 # ########################################################################
 # # STEP: fast suite
