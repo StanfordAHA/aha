@@ -13,7 +13,7 @@
 #         - uber-workflow/run-without-clone:
 #     
 #         - improbable-eng/metahook:
-#             pre-command: $REGRESS_PRE_COMM
+#             pre-command: $BUILD_DOCKER
 #             pre-exit:    $REGRESS_METAHOOKS --pre-exit
 #     
 #       command: $REGRESS_METAHOOKS --commands
@@ -25,6 +25,26 @@ cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
 
 echo "steps:"
 
+- label: "Zircon Gold"
+  key: "zircon_gold"
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: \$BUILD_DOCKER
+    - docker#v3.2.0:
+        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+        volumes: ["/cad/:/cad"]
+        shell:   ["/bin/bash", "-e", "-c"]
+        mount-checkout: false
+  commands: |
+    echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
+    if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
+        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+        echo "++ $$msg"
+        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+        exit 13
+    fi
+
 for i in `seq 0 $NSTEPS`; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     cat <<EOF
@@ -35,7 +55,7 @@ for i in `seq 0 $NSTEPS`; do
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: \$REGRESS_PRE_COMM
+        pre-command: \$BUILD_DOCKER ; cd . ; $REGRESS_METAHOOKS --pre-command
         pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 
 EOF
@@ -45,8 +65,8 @@ done
 #BEGIN preamble
 # env:
 #   # This script allows retries even after original collateral is gone...
-#   REGRESS_PRE_COMM: |
-#     echo "--- REGRESS_PRE_COMMAND FOR STEP $$REGRESSION_STEP"
+#   BUILD_DOCKER: |
+#     echo "--- Build docker image $IMAGE if not exists yet"
 # 
 #     # To test retry: FAIL first time through only
 #     # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
@@ -88,9 +108,9 @@ done
 #             echo Docker image exists, hooray
 #         fi
 #     ) 9>/tmp/aha-flow-lock-$BUILDKITE_BUILD_NUMBER
-#     echo I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
-#     cd .  # Got weird error without this...??
-#     set -x; $REGRESS_METAHOOKS --pre-command
+#     # echo I am in dir `pwd`  # builds/<agent>/stanford-aha/aha-flow
+#     # cd .  # Got weird error without this...??
+#     # set -x; $REGRESS_METAHOOKS --pre-command
 # 
 # 
 #END preamble
