@@ -76,7 +76,7 @@ steps:
       # Req from aha repo:    check out aha commit BUILDKITE_COMMIT
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
-          exit 0
+        exit 0
         echo "+++ BDI PRE CHECKOUT HOOK"
         set +u     # nounset? not on my watch!
 
