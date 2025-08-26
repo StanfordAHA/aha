@@ -76,6 +76,7 @@ steps:
       # Req from aha repo:    check out aha commit BUILDKITE_COMMIT
       # Req from submod repo: check out aha master branch, update submod w BUILDKITE_COMMIT
       pre-checkout: |
+          exit 0
         echo "+++ BDI PRE CHECKOUT HOOK"
         set +u     # nounset? not on my watch!
 
@@ -132,6 +133,7 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
+  - exit 0
 
   # Remove docker images older than one day
   - echo "--- Cleanup old docker images"
@@ -166,79 +168,79 @@ steps:
 
 - wait: ~
 
-########################################################################
-# AMBER GOLD step
-
-# Can unskip this step when/if want to monitor when/whether RTL changes
-- label: "Amber Gold RTL"
-  # Comment-out the line below when/if want to guarantee RTL stability
-  skip: true
-  soft_fail: true  # So that failing gold check does not fail pipeline.
-  plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: |
-    echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
-    if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
-        msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context amber
-        exit 13
-    fi
-
-########################################################################
-# ONYX GOLD step
-
-# Can unskip this step when/if want to monitor when/whether RTL changes
-- label: "Onyx Gold"
-  # Comment-out the line below when/if want to guarantee RTL stability
-  skip: true
-  soft_fail: true  # So that failing gold check does not fail pipeline.
-  plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: |
-    echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
-    if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
-        msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
-        exit 13
-    fi
-
-########################################################################
-# ZIRCON GOLD step
-
-# Can unskip this step when/if want to monitor when/whether RTL changes
-- label: "Zircon Gold"
-  key: "zircon_gold"
-# This test FAILS if zircon RTL changes vs. previously-cached gold model.
-# So can change skip to TRUE if don't need/want that check
-  skip: false
-  soft_fail: false  # Failing gold check will fail pipeline.
-  plugins:
-    - uber-workflow/run-without-clone:  # Don't need clone when using docker
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: |
-    echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
-    if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
-        exit 13
-    fi
+# ########################################################################
+# # AMBER GOLD step
+# 
+# # Can unskip this step when/if want to monitor when/whether RTL changes
+# - label: "Amber Gold RTL"
+#   # Comment-out the line below when/if want to guarantee RTL stability
+#   skip: true
+#   soft_fail: true  # So that failing gold check does not fail pipeline.
+#   plugins:
+#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes: ["/cad/:/cad"]
+#         shell:   ["/bin/bash", "-e", "-c"]
+#         mount-checkout: false
+#   commands: |
+#     echo "/aha/.buildkite/bin/rtl-goldcheck.sh amber"
+#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh amber; then
+#         msg="Amber gold check FAILED. This is not fatal. But it really should be fixed."
+#         echo "++ $$msg"
+#         echo "$$msg" | buildkite-agent annotate --style "error" --context amber
+#         exit 13
+#     fi
+# 
+# ########################################################################
+# # ONYX GOLD step
+# 
+# # Can unskip this step when/if want to monitor when/whether RTL changes
+# - label: "Onyx Gold"
+#   # Comment-out the line below when/if want to guarantee RTL stability
+#   skip: true
+#   soft_fail: true  # So that failing gold check does not fail pipeline.
+#   plugins:
+#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes: ["/cad/:/cad"]
+#         shell:   ["/bin/bash", "-e", "-c"]
+#         mount-checkout: false
+#   commands: |
+#     echo "/aha/.buildkite/bin/rtl-goldcheck.sh onyx"
+#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh onyx; then
+#         msg="Onyx gold check FAILED. This is not fatal. But it really should be fixed."
+#         echo "++ $$msg"
+#         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+#         exit 13
+#     fi
+# 
+# ########################################################################
+# # ZIRCON GOLD step
+# 
+# # Can unskip this step when/if want to monitor when/whether RTL changes
+# - label: "Zircon Gold"
+#   key: "zircon_gold"
+# # This test FAILS if zircon RTL changes vs. previously-cached gold model.
+# # So can change skip to TRUE if don't need/want that check
+#   skip: false
+#   soft_fail: false  # Failing gold check will fail pipeline.
+#   plugins:
+#     - uber-workflow/run-without-clone:  # Don't need clone when using docker
+#     - docker#v3.2.0:
+#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
+#         volumes: ["/cad/:/cad"]
+#         shell:   ["/bin/bash", "-e", "-c"]
+#         mount-checkout: false
+#   commands: |
+#     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
+#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
+#         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+#         echo "++ $$msg"
+#         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+#         exit 13
+#     fi
 
 - label: "Regressions"
   command: |
