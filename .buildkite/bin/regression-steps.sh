@@ -25,6 +25,8 @@ cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
 
 echo "steps:"
 
+dont="don't"
+cat <<'EOF'
 - label: "Zircon Gold"
   key: "zircon_gold"
   plugins:
@@ -39,11 +41,12 @@ echo "steps:"
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+        msg="Zircon gold check FAILED. We '$dont' want to touch Zircon RTL for now."
         echo "++ $$msg"
         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
     fi
+EOF
 
 for i in `seq 0 $NSTEPS`; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
