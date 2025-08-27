@@ -39,6 +39,8 @@ cat <<'EOF'
     - improbable-eng/metahook:
         pre-command: $BUILD_DOCKER
 
+- wait: ~
+
 - label: "Zircon Gold"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   key: "zircon_gold"
