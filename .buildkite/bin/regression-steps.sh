@@ -91,7 +91,9 @@ done
 #     # To test retry: FAIL first time through only
 #     # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
 # 
-#     remote=https://raw.githubusercontent.com/StanfordAHA/aha/$BUILDKITE_BRANCH
+#     # Submod PRs use DEV branch (usually "master")
+#     [ "$$AHA_SUBMOD_FLOW_COMMIT" ] && tbranch=$DEV_BRANCH || tbranch=$BUILDKITE_BRANCH
+#     remote=https://raw.githubusercontent.com/StanfordAHA/aha/$$tbranch
 # 
 #     # In case of retry, may need to (re)download metahooks script
 #     if ! test -f $REGRESS_METAHOOKS; then
@@ -132,7 +134,7 @@ done
 #             cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
 #            
 #             echo "--- DEBUG DOCKER TRASH"
-#             set -x; docker images; docker ps;
+#             docker images; docker ps;
 # 
 #             # For dev purposes...can skip docker build e.g. to work on retry mechanism
 #             # - echo "--- SKIP REST OF DOCKER BUILD for dev purposes only"; exit
