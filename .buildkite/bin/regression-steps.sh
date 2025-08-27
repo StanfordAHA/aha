@@ -30,7 +30,7 @@ echo "steps:"
 # agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
 
 dont="don't"
-cat <<'EOF'
+cat <<'EOF' > /dev/null
 - label: "Docker for gold test"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   command: echo DONE
@@ -73,7 +73,7 @@ for i in `seq 0 $NSTEPS`; do
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: \$BUILD_DOCKER ; cd . ; \$REGRESS_METAHOOKS --pre-command
+        pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
         pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 
 EOF
