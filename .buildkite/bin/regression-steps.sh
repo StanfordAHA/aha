@@ -32,6 +32,7 @@ echo "steps:"
 dont="don't"
 cat <<'EOF'
 - label: "Docker for gold test"
+  key: "dockergold"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   command: echo DONE
   plugins:
@@ -39,9 +40,10 @@ cat <<'EOF'
     - improbable-eng/metahook:
         pre-command: $BUILD_DOCKER
 
-- wait: ~
+# - wait: ~
 
 - label: "Zircon Gold"
+  depends_on: "dockergold"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   key: "zircon_gold"
   plugins:
@@ -60,7 +62,7 @@ cat <<'EOF'
         exit 13
     fi
 
-- wait: ~
+# - wait: ~
 EOF
 
 for i in `seq 0 $NSTEPS`; do
