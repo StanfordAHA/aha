@@ -7,6 +7,8 @@
 # 3. Set PR_REPO_TAIL to submod associated with the PR, e.g. "canal"
 # 4. Add REQUEST_TYPE env temp file for use by later steps
 
+PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
+
 echo "+++ set-trigfrom-and-reqtype.sh BEGIN"
 cd $BUILDKITE_BUILD_CHECKOUT_PATH    # Just in case, I dunno, whatevs.
 
