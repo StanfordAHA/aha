@@ -30,7 +30,7 @@ echo "steps:"
 # agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
 
 dont="don't"
-cat <<'EOF' > /dev/null
+cat <<'EOF'
 - label: "Docker for gold test"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   command: echo DONE
