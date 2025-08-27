@@ -25,14 +25,25 @@ cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
 
 echo "steps:"
 
+# Use same agent as whoever called us I guess?
+# $BUILDKITE_AGENT_META_DATA_HOSTNAME
+# agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
+
 dont="don't"
 cat <<'EOF'
-- label: "Zircon Gold"
-  key: "zircon_gold"
+- label: "Docker for gold test"
+  agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
+  command: echo DONE
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
         pre-command: \$BUILD_DOCKER
+
+- label: "Zircon Gold"
+  agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
+  key: "zircon_gold"
+  plugins:
+    - uber-workflow/run-without-clone:
     - docker#v3.2.0:
         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
         volumes: ["/cad/:/cad"]
@@ -46,6 +57,8 @@ cat <<'EOF'
         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
     fi
+
+wait: ~
 EOF
 
 for i in `seq 0 $NSTEPS`; do
