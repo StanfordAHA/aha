@@ -96,7 +96,8 @@ done
 #     remote=https://raw.githubusercontent.com/StanfordAHA/aha/$$tbranch
 # 
 #     # In case of retry, may need to (re)download metahooks script
-#     if ! test -f $REGRESS_METAHOOKS; then
+#     # if ! test -f $REGRESS_METAHOOKS; then
+#     if [ 1 ]; then
 #         mkdir -p $COMMON  # Make sure there is a landing pad for the downloaded file
 #         echo curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
 #         curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
