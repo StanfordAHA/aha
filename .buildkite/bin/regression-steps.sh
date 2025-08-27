@@ -58,7 +58,7 @@ cat <<'EOF'
         exit 13
     fi
 
-wait: ~
+- wait: ~
 EOF
 
 for i in `seq 0 $NSTEPS`; do
