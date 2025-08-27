@@ -83,7 +83,8 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
-  - NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
+  # - NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
+  - NSTEPS=3 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
   - exit 0
 
   # Remove docker images older than one day

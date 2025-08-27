@@ -37,7 +37,7 @@ cat <<'EOF'
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: \$BUILD_DOCKER
+        pre-command: $BUILD_DOCKER
 
 - label: "Zircon Gold"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
@@ -71,7 +71,7 @@ for i in `seq 0 $NSTEPS`; do
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: \$BUILD_DOCKER ; cd . ; $REGRESS_METAHOOKS --pre-command
+        pre-command: \$BUILD_DOCKER ; cd . ; \$REGRESS_METAHOOKS --pre-command
         pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 
 EOF
