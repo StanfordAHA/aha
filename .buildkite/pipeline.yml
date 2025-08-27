@@ -66,10 +66,7 @@ steps:
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
 
         # Checkout and update correct aha branch and *NOT* submodules
-        # source $$bin/custom-checkout.sh --aha-flow --early-out
-
-        # Checkout and update correct aha branch and *NOT* submodules (for dev maybe)
-        # source $$bin/custom-checkout.sh --aha-flow --early-out
+        source $$bin/custom-checkout.sh --aha-flow --early-out
 
       # Send regression test pass-fail info to github pull request page
       pre-exit: |
