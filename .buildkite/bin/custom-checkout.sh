@@ -24,6 +24,7 @@ TRIGGER='
       BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
       BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
       AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+      DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
 echo "+++ BEGIN custom-checkout.sh"
