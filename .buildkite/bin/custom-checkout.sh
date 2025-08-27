@@ -173,15 +173,9 @@ else
     echo "Skip lengthy submodule initialization"
 fi
 
-# Update submod
-
-# Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
+# Update submod. Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-    echo "--- Update submodule '$PR_REPO_TAIL' w commit '$BUILDKITE_COMMIT'"
-
-    # Why did this ever work???
-    # (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $BUILDKITE_COMMIT)
-
+    echo "--- Update submodule '$PR_REPO_TAIL' w commit '$AHA_SUBMOD_FLOW_COMMIT'"
     (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $AHA_SUBMOD_FLOW_COMMIT)
 fi
 
