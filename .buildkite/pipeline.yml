@@ -8,6 +8,7 @@ env:
   CONFIG: ${CONFIG:-pr_aha}
 
   # "COMMON" is a dir where we can pass information from one step to another
+  # FIXME or could use 'set-metadata --build', right?
   COMMON: /var/lib/buildkite-agent/builds/DELETEME-$BUILDKITE_BUILD_NUMBER
 
   REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh

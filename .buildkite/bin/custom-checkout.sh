@@ -13,6 +13,19 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
+TRIGGER='
+- trigger: "aha-flow"
+  label: "PR check"
+  build:
+    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+    env:
+      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+'
+
 echo "+++ BEGIN custom-checkout.sh"
 cd /  # Start in a safe place!
 
@@ -33,6 +46,7 @@ d=$BUILDKITE_BUILD_CHECKOUT_PATH;
 
 echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
+# Huh we only JUST deleted $aha_clone, see above :(
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
@@ -106,8 +120,10 @@ EOF
     echo "Set metadata buildkite:git:commit to BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
     echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
 
-    # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
-    buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
+    # FIXME this is terrible, special yml file must exist on every agent machine :(
+    # INSTEAD should do something like 'echo $TRIGGER | upload', see?
+    # buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
+    echo "$TRIGGER" | buildkite-agent pipeline upload
     echo "--- CUSTOM CHECKOUT END";
     return
 fi
