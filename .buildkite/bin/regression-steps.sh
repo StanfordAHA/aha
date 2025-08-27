@@ -138,7 +138,7 @@ done
 #             # - echo "--- SKIP REST OF DOCKER BUILD for dev purposes only"; exit
 # 
 #             # What does this doohickey do?
-#             echo "# Set REQUEST_TYPE for custom checkout'
+#             echo "# Set REQUEST_TYPE for custom checkout"
 #             echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
 #             curl $$remote/.buildkite/bin/set-trigfrom-and-reqtype.sh -o set-trigfrom-and-reqtype.sh
 #             source set-trigfrom-and-reqtype.sh
