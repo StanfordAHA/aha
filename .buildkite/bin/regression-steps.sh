@@ -117,13 +117,40 @@ done
 #             echo "+++ CANNOT FIND DOCKER IMAGE '$IMAGE'"
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
 # 
+#             # Remove docker images older than one day
+#             echo "--- Cleanup old docker images"
+#             docker image ls | awk '/(days|weeks|months) ago/ {print}' || echo okay
+#             docker image ls | awk '/(days|weeks|months) ago/ {print $$3}' | xargs docker image rm || echo okay
+# 
+#             # Remove DELETEME* dirs older than one week
+#             # FIXME pretty sure this is BROKEN
+#             echo "--- Cleanup old common areas"
+#             find /var/lib/buildkite-agent/builds/DELETEME* -type d -mtime +7 -exec /bin/rm -rf {} \; || echo okay
+# 
+#             echo "--- Save repo things in common area"
+#             mkdir -p $$COMMON
+#             cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
+#            
+#             echo "--- DEBUG DOCKER TRASH"
+#             set -x; docker images; docker ps;
+# 
+#             # For dev purposes...can skip docker build e.g. to work on retry mechanism
+#             # - echo "--- SKIP REST OF DOCKER BUILD for dev purposes only"; exit
+# 
 #             echo "# Download and source custom-checkout script to get latest repo"
 #             echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
 #             curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
 #             source custom-checkout.sh
 # 
-#             echo "--- (Re)creating garnet Image"
+#             echo "--- Remove 700MB of clockwork, halide metadata"
+#             dotgit=.git/modules/clockwork;          du -shx $$dotgit; /bin/rm -rf $$dotgit
+#             dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
+# 
+#             echo "--- (Re)create garnet Image"
 #             docker build --progress plain . -t "$IMAGE"
+# 
+#             echo "--- Pruning Docker Images"
+#             yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
 #         else
 #             echo Docker image exists, hooray
 #         fi
