@@ -137,6 +137,12 @@ done
 #             # For dev purposes...can skip docker build e.g. to work on retry mechanism
 #             # - echo "--- SKIP REST OF DOCKER BUILD for dev purposes only"; exit
 # 
+#             # What does this doohickey do?
+#             echo "# Set REQUEST_TYPE for custom checkout'
+#             echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
+#             curl $$remote/.buildkite/bin/set-trigfrom-and-reqtype.sh -o set-trigfrom-and-reqtype.sh
+#             source set-trigfrom-and-reqtype.sh
+#             
 #             echo "# Download and source custom-checkout script to get latest repo"
 #             echo curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh
 #             curl $$remote/.buildkite/bin/custom-checkout.sh -o custom-checkout.sh

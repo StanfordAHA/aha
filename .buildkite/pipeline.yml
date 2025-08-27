@@ -66,7 +66,7 @@ steps:
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
 
         # Checkout and update correct aha branch and *NOT* submodules
-        source $$bin/custom-checkout.sh --aha-flow --early-out
+        # source $$bin/custom-checkout.sh --aha-flow --early-out
 
         # Checkout and update correct aha branch and *NOT* submodules (for dev maybe)
         # source $$bin/custom-checkout.sh --aha-flow --early-out
@@ -85,7 +85,7 @@ steps:
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
   # - NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
-  - NSTEPS=3 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
+  - NSTEPS=2 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
   - exit 0
 
   # Remove docker images older than one day
