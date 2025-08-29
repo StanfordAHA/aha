@@ -190,7 +190,7 @@ elif [ "$1" == '--pre-exit' ]; then
     # ~/bin/status-update --force pending
     # [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
     #This is supposed to do the right thing!
-    ~/bin/status-update
+    ~/bin/status-update failure
 
     /bin/rm -rf temp
 

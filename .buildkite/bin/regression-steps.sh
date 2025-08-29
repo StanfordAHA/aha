@@ -56,6 +56,7 @@ cat <<'EOF'
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
+        dont="don't"
         msg="Zircon gold check FAILED. We '$dont' want to touch Zircon RTL for now."
         echo "++ $$msg"
         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
