@@ -86,6 +86,7 @@ done
 # env:
 #   # This script allows retries even after original collateral is gone...
 #   BUILD_DOCKER: |
+#     set +u  # Cannot do [ "$VAR" ] if this is not set :(
 #     echo "--- Build docker image $IMAGE if not exists yet"
 # 
 #     # To test retry: FAIL first time through only
