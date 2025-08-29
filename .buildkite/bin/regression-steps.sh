@@ -29,7 +29,6 @@ echo "steps:"
 # $BUILDKITE_AGENT_META_DATA_HOSTNAME
 # agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
 
-dont="don't"
 cat <<'EOF'
 - label: "Docker for gold test"
   key: "docker_gold"
@@ -56,8 +55,7 @@ cat <<'EOF'
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-        dont="don't"
-        msg="Zircon gold check FAILED. We '$dont' want to touch Zircon RTL for now."
+        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
         echo "++ $$msg"
         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
@@ -90,7 +88,7 @@ done
 #     echo "--- Build docker image $IMAGE if not exists yet"
 # 
 #     # To test retry: FAIL first time through only
-#     if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
+#     # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
 # 
 #     # Submod PRs use DEV branch (usually "master")
 #     [ "$$AHA_SUBMOD_FLOW_COMMIT" ] && tbranch=$DEV_BRANCH || tbranch=$BUILDKITE_BRANCH
