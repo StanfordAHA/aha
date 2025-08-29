@@ -142,7 +142,11 @@ elif [ "$1" == '--commands' ]; then
       # [ "$REGSTEP" == 2 ] && export CONFIG=fast
       # [ "$REGSTEP" == 3 ] && export CONFIG=fast
 
-      echo "Trigger came from aha repo step '$REGSTEP'; use $CONFIG";
+      if [ "$REGSTEP" ] && [ "$CONFIG" == "pr_aha" ]; then
+          echo "ERROR Unassigned repo step '$REGSTEP'"; exit 13
+      else      
+          echo "Trigger came from aha repo step '$REGSTEP'; use $CONFIG";
+      fi
 
     else
       echo "Trigger came from OTHER and (CONFIG != pr_aha): use default and/or config='$CONFIG'"

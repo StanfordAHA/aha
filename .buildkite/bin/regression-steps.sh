@@ -65,7 +65,7 @@ cat <<'EOF'
 
 EOF
 
-for i in `seq 0 $NSTEPS`; do
+for i in `seq 0 $((NSTEPS-1))`; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     cat <<EOF
 - label: "$label"
