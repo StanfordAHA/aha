@@ -3,16 +3,10 @@
 # This is where we offload meta-hook commands for pipeline.yml
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
-# pipeline.yml is responsible for providing necessary env vars including
-# IMAGE / TAG / CONFIG / REGRESSION_STEP / BUILDKITE_BUILD_NUMBER
-
 CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
 echo "--- using CONTAINER='${CONTAINER}'"
 
 if [ "$1" == '--pre-command' ]; then
-
-    # Use this to bypass tests for dev purposes etc.
-    # if ! [ "$REGRESSION_STEP" == "0" ]; then echo SUCCEED; exit 0; fi
 
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
@@ -87,7 +81,9 @@ elif [ "$1" == '--commands' ]; then
 
     echo "--- BEGIN regress-metahooks.sh --commands"
 
-    # and currently CONTAINER="deleteme-regress$REGSTEP-$BUILDKITE_BUILD_NUMBER"
+    # This is designed to be invoked from pipeline.yml, which should provide
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+
     docker kill $CONTAINER || echo okay
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
     docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
@@ -124,28 +120,36 @@ elif [ "$1" == '--commands' ]; then
 
     # Prepare to run regression tests according to whether it's a submod PR
     if test -e /buildkite/DO_PR; then
-      echo "Trigger came from submod repo pull request; use pr config"; export CONFIG="pr --include-no-zircon-tests"
-      if [ "$REGSTEP" == 2 -o "$REGSTEP" == 3 ]; then
-        echo "oops no REGSTEP='$REGSTEP', not doing regressions"
+      echo "Trigger came from submod repo pull request; use pr config"
+      export CONFIG="pr --include-no-zircon-tests"
+
+      # Must restrict to a single slice else they will ALL do the full regression(!)
+      if [ "$REGSTEP" != 1 ]; then
+        echo "Full regressions only run as 'Regress 1'"
         DO_AR=False
       fi
 
     elif [ "$CONFIG" == "pr_aha" ]; then
 
-      # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
+      # Normal
+      [ "$REGSTEP" == 0 ] && export CONFIG="fast"
+      [ "$REGSTEP" == 1 ] && export CONFIG="pr_aha1 --include-no-zircon-tests"
+      [ "$REGSTEP" == 2 ] && export CONFIG="pr_aha2 --include-no-zircon-tests"
+      [ "$REGSTEP" == 3 ] && export CONFIG="pr_aha3 --include-no-zircon-tests"
 
-      [  "$REGSTEP" ] && case "$REGSTEP" in
-          0) export CONFIG="fast" ;;
-          *) export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests" ;;
+      # Prototype
+      # [ "$REGSTEP" == 1 ] && export CONFIG=fast
+      # [ "$REGSTEP" == 2 ] && export CONFIG=fast
+      # [ "$REGSTEP" == 3 ] && export CONFIG=fast
 
-      esac && echo "Trigger came from aha-flow step '$REGSTEP', so now CONFIG=$CONFIG";
+      echo "Trigger came from aha repo step '$REGSTEP'; use $CONFIG";
 
     else
-      echo "Trigger came from OTHER, use default and/or config='$CONFIG'"
-      # FIXME what is this and why is it here??? Pretty sure it's outdated :(
-      if [ "$REGSTEP" == 2 -o "$REGSTEP" == 3 ]; then
-        echo "oops no REGSTEP='$REGSTEP', not doing regressions"
-        DO_AR=False
+      echo "Trigger came from OTHER and (CONFIG != pr_aha): use default and/or config='$CONFIG'"
+
+      # Must restrict to a single slice else they will ALL do the requested CONFIG
+      if [ "$REGSTEP" != 1 ]; then
+        DO_AR=False  # I.e. ? don't do aha regressions for this REGSTEP ? right ?
       fi
       CONFIG="$CONFIG --include-no-zircon-tests"
     fi
@@ -182,16 +186,10 @@ elif [ "$1" == '--pre-exit' ]; then
     cd $BUILDKITE_BUILD_CHECKOUT_PATH
 
     # Docker will have removed temp/.TEST if all the tests passed
-    echo "+++ [pre-exit] BUILDKITE_COMMAND_EXIT_STATUS = '$BUILDKITE_COMMAND_EXIT_STATUS'"
+    echo "+++ [pre-exit] CHECKING EXIT STATUS"
     if [ "$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
         test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
     fi
-
-    # ~/bin/status-update --force pending
-    # [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
-    #This is supposed to do the right thing!
-    ~/bin/status-update failure
-
     /bin/rm -rf temp
 
 fi

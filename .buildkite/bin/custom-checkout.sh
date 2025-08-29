@@ -28,6 +28,7 @@ TRIGGER='
 '
 
 echo "+++ BEGIN custom-checkout.sh"
+echo I am in dir `pwd`
 cd /  # Start in a safe place!
 
 # should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
@@ -47,7 +48,6 @@ d=$BUILDKITE_BUILD_CHECKOUT_PATH;
 
 echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-# Huh we only JUST deleted $aha_clone, see above :(
 test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
@@ -121,9 +121,7 @@ EOF
     echo "Set metadata buildkite:git:commit to BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
     echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
 
-    # FIXME this is terrible, special yml file must exist on every agent machine :(
-    # INSTEAD should do something like 'echo $TRIGGER | upload', see?
-    # buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
+    # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
     echo "$TRIGGER" | buildkite-agent pipeline upload
     echo "--- CUSTOM CHECKOUT END";
     return
@@ -182,7 +180,7 @@ fi
 # Restore original REQUEST_TYPE value, even though I think it's maybe never used again...
 [ "${save_reqtype}" ] && export REQUEST_TYPE=${save_reqtype}
 
-# For dev support can skip 30-minute submod init by doing 'custom-checkout.sh --aha-flow --early-out'
+# Can do '--aha-flow --early-out' to skip pipeline upload etc.
 if [ "$2" == "--early-out" ]; then
     echo "Found early out switch, guess we are DONE"
 
