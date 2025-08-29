@@ -32,7 +32,7 @@ echo "steps:"
 dont="don't"
 cat <<'EOF'
 - label: "Docker for gold test"
-  key: "dockergold"
+  key: "docker_gold"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   command: echo DONE
   plugins:
@@ -43,7 +43,7 @@ cat <<'EOF'
 # - wait: ~
 
 - label: "Zircon Gold"
-  depends_on: "dockergold"
+  depends_on: "docker_gold"
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   key: "zircon_gold"
   plugins:
@@ -63,7 +63,6 @@ cat <<'EOF'
         exit 13
     fi
 
-# - wait: ~
 EOF
 
 for i in `seq 0 $NSTEPS`; do
