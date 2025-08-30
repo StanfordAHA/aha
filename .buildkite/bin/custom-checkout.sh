@@ -181,7 +181,11 @@ fi
 # Restore original REQUEST_TYPE value, even though I think it's maybe never used again...
 [ "${save_reqtype}" ] && export REQUEST_TYPE=${save_reqtype}
 
-if [ "$1" == "--aha-flow" ]; then
+# Can do '--aha-flow --early-out' to skip pipeline upload etc.
+if [ "$2" == "--early-out" ]; then
+    echo "Found early out switch, guess we are DONE"
+
+elif [ "$1" == "--aha-flow" ]; then
     echo "+++ Notify github of pending status"
 
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
