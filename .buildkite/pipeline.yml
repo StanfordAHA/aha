@@ -15,7 +15,7 @@ env:
 
 steps:
 
-- label: "Build Docker Image"
+- label: "Launch"
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
@@ -64,8 +64,8 @@ steps:
 
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
 
-        # Checkout and update correct aha branch and submodules
-        source $$bin/custom-checkout.sh
+        # Checkout and update correct aha branch and *NOT* submodules
+        source $$bin/custom-checkout.sh --aha-flow --early-out
 
       # Send regression test pass-fail info to github pull request page
       pre-exit: |
