@@ -83,6 +83,7 @@ steps:
   # Four steps: (fast, aha1, aha2, aha3)
   - NSTEPS=4 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
   - echo "--- BDI PIPELINE.XML COMMANDS END"
+  - exit 0
 
 ########################################################################
 # STEP: Cleanup
@@ -121,5 +122,9 @@ steps:
 
     echo '- Clean up your mess'
     test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
-    test -d $COMMON && rmdir $COMMON || echo okay
-    /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
+
+    # No don't do this. Excludes ability to rerun etc.
+    # Also, COMMON is generally not very big.
+    # ~Also, code above will eliminate DELETEME files older than one week.~ (I don't think so...?)
+    # test -d $COMMON && rmdir $COMMON || echo okay
+    # /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
