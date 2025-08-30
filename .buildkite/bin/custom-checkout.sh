@@ -13,6 +13,7 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
+# This replaces ~/bin/pr_trigger.yml, which can now be deleted from khaki and r8cad
 TRIGGER='
 - trigger: "aha-flow"
   label: "PR check"
