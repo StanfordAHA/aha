@@ -173,8 +173,9 @@ fi
 
 # Update submod. Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-    echo "--- Update submodule '$PR_REPO_TAIL' w commit '$AHA_SUBMOD_FLOW_COMMIT'"
-    (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $AHA_SUBMOD_FLOW_COMMIT)
+    c=$AHA_SUBMOD_FLOW_COMMIT
+    echo "--- Update submodule '$PR_REPO_TAIL' w commit '$c'"
+    (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $c)
 fi
 
 # Restore original REQUEST_TYPE value, even though I think it's maybe never used again...
