@@ -20,10 +20,6 @@
 
 echo "steps:"
 
-# Agents must have tag hostname=<hostname>
-# And then this will guarantee that all steps run on the same host, see?
-agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
-
 cat <<'EOF'
 - label: "Zircon Gold"
   key: "zircon_gold"
