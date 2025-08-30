@@ -100,6 +100,10 @@ steps:
 
   command: |
 
+    echo '- Show outcomes from gold step(s)'
+    echo docker_gold outcome: `buildkite-agent step get "outcome" --step "docker_gold"`
+    echo zircon_gold outcome: `buildkite-agent step get "outcome" --step "zircon_gold"`
+    
     echo '- Show outcomes from each regression step'
     echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
     echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
@@ -109,6 +113,9 @@ steps:
     echo '- Use FAIL to summarize overall result'
     FAIL=
     set -x
+    [ $(buildkite-agent step get "outcome" --step "docker_gold") == "passed" ] || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "zircon_gold") == "passed" ] || FAIL=True
+
     [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
