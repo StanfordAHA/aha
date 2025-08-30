@@ -24,11 +24,24 @@ cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
 echo "steps:"
 
 cat <<'EOF'
+- label: "Docker for gold test"
+  key: "docker_gold"
+  # Gold test must run on same agent that builds its docker image
+  agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
+  command: echo DONE
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $BUILD_DOCKER
+
+# - wait: ~
+
 - label: "Zircon Gold"
+  depends_on: "docker_gold"
+  # Gold test must run on same agent that builds its docker image
+  # FIXME but what if this step fails and we want to retry???
+  agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   key: "zircon_gold"
-  # Change this to true if want to make changes to zircon RTL
-  skip: false
-  soft_fail: false  # Failing gold check will fail pipeline.
   plugins:
     - uber-workflow/run-without-clone:
     - docker#v3.2.0:
