@@ -80,10 +80,9 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
-  # Four steps: (fast, aha1, aha2, aha3)
+  # Four steps: (fast, aha1, aha2, aha3) plus also zircon gold-rtl test
   - NSTEPS=4 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
   - echo "--- BDI PIPELINE.XML COMMANDS END"
-  - exit 0
 
 ########################################################################
 # STEP: Cleanup
