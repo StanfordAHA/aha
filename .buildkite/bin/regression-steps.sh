@@ -85,7 +85,7 @@ done
 #     echo "--- Build docker image $IMAGE if not exists yet"
 # 
 #     # To test retry: FAIL first time through only
-#     # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
+#     if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
 # 
 #     # Submod PRs use DEV branch (usually "master")
 #     [ "$$AHA_SUBMOD_FLOW_COMMIT" ] && tbranch=$DEV_BRANCH || tbranch=$BUILDKITE_BRANCH
