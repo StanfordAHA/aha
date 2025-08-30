@@ -172,9 +172,11 @@ else
     echo "Skip lengthy submodule initialization"
 fi
 
-# Update submod. Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
+# Update submod
+
+# Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-    c=$AHA_SUBMOD_FLOW_COMMIT
+    c=$AHA_SUBMOD_FLOW_COMMIT  # This is more stable/accurate vs. $BUILDKITE_COMMIT
     echo "--- Update submodule '$PR_REPO_TAIL' w commit '$c'"
     (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $c)
 fi
