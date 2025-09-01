@@ -89,12 +89,6 @@ done
 # 
 #     # Submod PRs use DEV branch (usually "master")
 #     [ "$$AHA_SUBMOD_FLOW_COMMIT" ] && tbranch=$DEV_BRANCH || tbranch=$BUILDKITE_BRANCH
-# 
-#     # PR will set BUILDKITE_BRANCH to master when we really still want to use DEV_BRANCH
-#     # at least in the case where the PR includes modifications to regress_metahooks etc.
-#     # We may decide later that this was a terrible idea.
-#     [ "$$tbranch" == "master" ] && tbranch=$DEV_BRANCH
-# 
 #     remote=https://raw.githubusercontent.com/StanfordAHA/aha/$$tbranch
 # 
 #     # In case of retry, may need to (re)download metahooks script
