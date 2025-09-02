@@ -51,6 +51,7 @@ echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
 # Huh we only JUST deleted $aha_clone, see above :(
 # test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
+git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
 # FIXME things break if DEV_BRANCH not set?
