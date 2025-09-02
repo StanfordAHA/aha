@@ -5,8 +5,10 @@ agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
 env:
   # Default config is "pr_aha"
   CONFIG: ${CONFIG:-pr_aha}
+  NSTEPS:  4  # "Fast" plus three regression steps
 
   # "COMMON" is a dir where we can pass information from one step to another
+  # FIXME or could use 'set-metadata --build', right?
   COMMON: /var/lib/buildkite-agent/builds/DELETEME-$BUILDKITE_BUILD_NUMBER
 
   REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
@@ -54,7 +56,6 @@ steps:
             git checkout $$BUILDKITE_COMMIT
         fi
 
-
         # If build was triggered by a pull request, annotate build with
         #    links pointing to pull request on github.
         # Set REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
@@ -80,8 +81,7 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
-  # Four steps: (fast, aha1, aha2, aha3) plus also zircon gold-rtl test
-  - NSTEPS=4 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
+  - .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
   - echo "--- BDI PIPELINE.XML COMMANDS END"
 
 ########################################################################
@@ -105,20 +105,17 @@ steps:
     
     echo '- Show outcomes from each regression step'
     echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
-    echo regress1 outcome: `buildkite-agent step get "outcome" --step "regress1"`
-    echo regress2 outcome: `buildkite-agent step get "outcome" --step "regress2"`
-    echo regress3 outcome: `buildkite-agent step get "outcome" --step "regress3"`
+    for i in `seq 1 $$((NSTEPS-1))`; do
+        echo regress$$i outcome: `buildkite-agent step get "outcome" --step "regress$$i"`
+    done
 
     echo '- Use FAIL to summarize overall result'
     FAIL=
-    set -x
     [ $(buildkite-agent step get "outcome" --step "docker_gold") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "zircon_gold") == "passed" ] || FAIL=True
-
-    [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress1") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress2") == "passed" ] || FAIL=True
-    [ $(buildkite-agent step get "outcome" --step "regress3") == "passed" ] || FAIL=True
+    for i in `seq 1 $$((NSTEPS-1))`; do
+        [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
+    done
     echo '-- FAIL=$$FAIL'
 
     echo '- Send summary outcome "success" or "failure" to github PR'
