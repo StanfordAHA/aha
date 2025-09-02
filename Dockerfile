@@ -100,11 +100,15 @@ RUN source bin/activate && \
   echo DONE
 
 # Pono
+WORKDIR /aha
 COPY ./pono /aha/pono
 COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
+RUN mkdir -p /aha/contrib/pono-hack
+ADD ./aha/bin/pono-hack /aha/pono/contrib/pono-hack
 WORKDIR /aha/pono
 # Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
 RUN \
+     ls -l /aha/pono/contrib/pono-hack/ && \
  : SETUP && \
      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
  : FLEX && \
@@ -115,7 +119,9 @@ RUN \
      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
  : SMT-SWITCH && \
+     ./contrib/pono-hack/pono-hack.sh --install && \
      ./contrib/setup-smt-switch.sh --python && \
+     ./contrib/pono-hack/pono-hack.sh --uninstall && \
      :                                                 && \
      echo "# cleanup: 1.3GB smt-switch build tests"    && \
      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
