@@ -166,29 +166,22 @@ elif [ "$1" == '--commands' ]; then
 
 EOF
     docker exec -e CONFIG=$CONFIG -e REGSTEP=$REGRESSION_STEP $CONTAINER /bin/bash -c "$(cat tmp$$)" || exit 13
-    docker kill $CONTAINER; rm tmp$$  # Cleanup on aisle FOO
+    docker kill $CONTAINER || echo okay; rm tmp$$  # Cleanup on aisle FOO
     echo "--- END regress-metahooks.sh --commands"
 
 elif [ "$1" == '--pre-exit' ]; then
 
     echo "+++ [pre-exit] KILL CONTAINER $CONTAINER"
-    set -x; docker kill $CONTAINER; set +x
+    set -x; docker kill $CONTAINER || echo okay; set +x
 
     # Make sure we are in the right place to reference "temp" subdir
     cd $BUILDKITE_BUILD_CHECKOUT_PATH
 
     # Docker will have removed temp/.TEST if all the tests passed
-    echo "+++ [pre-exit] BUILDKITE_COMMAND_EXIT_STATUS = '$BUILDKITE_COMMAND_EXIT_STATUS'"
+    echo "+++ [pre-exit] CHECKING EXIT STATUS"
     if [ "$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
         test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
     fi
-
-    # ~/bin/status-update --force pending
-    # [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
-    #This is supposed to do the right thing!
-    ~/bin/status-update failure
-
     /bin/rm -rf temp
-
 fi
 
