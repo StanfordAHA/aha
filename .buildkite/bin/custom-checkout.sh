@@ -13,8 +13,24 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
+# This replaces ~/bin/pr_trigger.yml, which can now be deleted from khaki and r8cad
+TRIGGER='
+- trigger: "aha-flow"
+  label: "PR check"
+  build:
+    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+    env:
+      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+      DEV_BRANCH:                  "${DEV_BRANCH}"
+'
+
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
+cd /  # Start in a safe place!
 
 # should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
 if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
@@ -107,7 +123,7 @@ EOF
     echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
 
     # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
-    buildkite-agent pipeline upload ~/bin/pr_trigger.yml;
+    echo "$TRIGGER" | buildkite-agent pipeline upload
     echo "--- CUSTOM CHECKOUT END";
     return
 fi
@@ -160,14 +176,19 @@ fi
 
 # Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-    echo "--- Update submodule '$PR_REPO_TAIL' w commit '$BUILDKITE_COMMIT'"
-    (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $BUILDKITE_COMMIT)
+    c=$AHA_SUBMOD_FLOW_COMMIT  # This is more stable/accurate vs. $BUILDKITE_COMMIT
+    echo "--- Update submodule '$PR_REPO_TAIL' w commit '$c'"
+    (set -x; cd $PR_REPO_TAIL; git fetch origin && git checkout $c)
 fi
 
 # Restore original REQUEST_TYPE value, even though I think it's maybe never used again...
 [ "${save_reqtype}" ] && export REQUEST_TYPE=${save_reqtype}
 
-if [ "$1" == "--aha-flow" ]; then
+# Can do '--aha-flow --early-out' to skip pipeline upload etc.
+if [ "$2" == "--early-out" ]; then
+    echo "Found early out switch, guess we are DONE"
+
+elif [ "$1" == "--aha-flow" ]; then
     echo "+++ Notify github of pending status"
 
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
