@@ -1,6 +1,4 @@
 # Agents must have tag hostname=<hostname>
-# And then this will guarantee that all steps run on the same host, see?
-# agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
 agents: { docker: true }
 
 env:
@@ -17,7 +15,7 @@ env:
 
 steps:
 
-- label: "Build Docker Image ?or? Regressions?"
+- label: "Launch"
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
@@ -81,9 +79,7 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
-  # - NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
-  - NSTEPS=2 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
-  - exit 0
+  - NSTEPS=9 .buildkite/bin/regression-steps.sh | buildkite-agent pipeline upload
 
   # Remove docker images older than one day
   - echo "--- Cleanup old docker images"
