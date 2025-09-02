@@ -1,6 +1,5 @@
-# Agents must have tag hostname=<hostname>
-# And then this will guarantee that all steps run on the same host, see?
-agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
+# Agents must have tag docker=true
+agents: { docker: true }
 
 env:
   # Default config is "pr_aha"
