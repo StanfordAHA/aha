@@ -190,16 +190,10 @@ elif [ "$1" == '--pre-exit' ]; then
     cd $BUILDKITE_BUILD_CHECKOUT_PATH
 
     # Docker will have removed temp/.TEST if all the tests passed
-    echo "+++ [pre-exit] BUILDKITE_COMMAND_EXIT_STATUS = '$BUILDKITE_COMMAND_EXIT_STATUS'"
+    echo "+++ [pre-exit] CHECKING EXIT STATUS"
     if [ "$BUILDKITE_COMMAND_EXIT_STATUS" == 0 ]; then
         test -f temp/.TEST && export BUILDKITE_COMMAND_EXIT_STATUS=13
     fi
-
-    # ~/bin/status-update --force pending
-    # [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
-    #This is supposed to do the right thing!
-    ~/bin/status-update failure
-
     /bin/rm -rf temp
 
 fi
