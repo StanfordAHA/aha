@@ -97,6 +97,7 @@ steps:
     - uber-workflow/run-without-clone:
 
   command: |
+    NSTEPS=9
 
     echo '- Show outcomes from gold step(s)'
     echo docker_gold outcome: `buildkite-agent step get "outcome" --step "docker_gold"`
@@ -104,18 +105,16 @@ steps:
     
     echo '- Show outcomes from each regression step'
     echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
-    for i in {1..5}; do
-        echo regress$i outcome: `buildkite-agent step get "outcome" --step "regress$i"`
+    for i in `seq 1 $$NSTEPS`; do
+        echo regress$$i outcome: `buildkite-agent step get "outcome" --step "regress$$i"`
     done
 
     echo '- Use FAIL to summarize overall result'
     FAIL=
-    set -x
     [ $(buildkite-agent step get "outcome" --step "docker_gold") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "zircon_gold") == "passed" ] || FAIL=True
-
-    for i in {1..5}; do
-        [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
+    for i in `seq 1 $$NSTEPS`; do
+        [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
     done
     echo '-- FAIL=$$FAIL'
 
