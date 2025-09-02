@@ -71,8 +71,6 @@ for i in `seq 0 $((NSTEPS-1))`; do
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
   command: \$REGRESS_METAHOOKS --commands
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
-  concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
