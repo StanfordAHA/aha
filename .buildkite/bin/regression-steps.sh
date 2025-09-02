@@ -60,6 +60,10 @@ cat <<'EOF'
 
 EOF
 
+CONCURRENCY="
+  concurrency: 3  # Limit long-running jobs to at most three at a time.
+  concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
+"
 for i in `seq 0 $((NSTEPS-1))`; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     cat <<EOF
@@ -74,8 +78,9 @@ for i in `seq 0 $((NSTEPS-1))`; do
     - improbable-eng/metahook:
         pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
         pre-exit:    \$REGRESS_METAHOOKS --pre-exit
-
 EOF
+    [ "$i" != 0 ] && echo "$CONCURRENCY"
+    echo ""
 done
 
 
