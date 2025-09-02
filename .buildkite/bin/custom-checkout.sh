@@ -49,7 +49,7 @@ d=$BUILDKITE_BUILD_CHECKOUT_PATH;
 
 echo "--- Clone the repo"
 aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
-test -e $aha_clone/.git || git clone https://github.com/StanfordAHA/aha $aha_clone
+git clone https://github.com/StanfordAHA/aha $aha_clone
 cd $aha_clone;
 
 # FIXME things break if DEV_BRANCH not set?
@@ -122,7 +122,6 @@ EOF
     echo "Set metadata buildkite:git:commit to BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
     echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
 
-    # buildkite-agent pipeline upload .buildkite/pr_trigger.yml;
     echo "$TRIGGER" | buildkite-agent pipeline upload
     echo "--- CUSTOM CHECKOUT END";
     return
@@ -172,9 +171,7 @@ else
     echo "Skip lengthy submodule initialization"
 fi
 
-# Update submod
-
-# Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
+# Update submod. Note PR_REPO_TAIL comes from set-trigfrom-and-reqtype.sh
 if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
     c=$AHA_SUBMOD_FLOW_COMMIT  # This is more stable/accurate vs. $BUILDKITE_COMMIT
     echo "--- Update submodule '$PR_REPO_TAIL' w commit '$c'"
