@@ -19,20 +19,14 @@
 #       command: $REGRESS_METAHOOKS --commands
 
 # Preamble from below
-# cat $0 | sed '/BEGIN preamble/,/END preamble/s/^# //'
 cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
-# exit
 
 echo "steps:"
 
-# Use same agent as whoever called us I guess?
-# $BUILDKITE_AGENT_META_DATA_HOSTNAME
-# agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
-
-dont="don't"
 cat <<'EOF'
 - label: "Docker for gold test"
-  key: "dockergold"
+  key: "docker_gold"
+  # Gold test must run on same agent that builds its docker image
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   command: echo DONE
   plugins:
@@ -43,7 +37,9 @@ cat <<'EOF'
 # - wait: ~
 
 - label: "Zircon Gold"
-  depends_on: "dockergold"
+  depends_on: "docker_gold"
+  # Gold test must run on same agent that builds its docker image
+  # FIXME but what if this step fails and we want to retry???
   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
   key: "zircon_gold"
   plugins:
@@ -56,17 +52,15 @@ cat <<'EOF'
   commands: |
     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-        dont="don't"
-        msg="Zircon gold check FAILED. We '$dont' want to touch Zircon RTL for now."
+        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
         echo "++ $$msg"
         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
     fi
 
-# - wait: ~
 EOF
 
-for i in `seq 0 $NSTEPS`; do
+for i in `seq 0 $((NSTEPS-1))`; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     cat <<EOF
 - label: "$label"
@@ -87,6 +81,7 @@ done
 # env:
 #   # This script allows retries even after original collateral is gone...
 #   BUILD_DOCKER: |
+#     set +u  # Cannot do [ "$VAR" ] if this is not set :(
 #     echo "--- Build docker image $IMAGE if not exists yet"
 # 
 #     # To test retry: FAIL first time through only
