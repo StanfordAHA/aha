@@ -798,12 +798,13 @@ def dispatch(args, extra_args=None):
             *hardcoded_dense_tests
     ]:
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-        info.append(["garnet (Zircon) with sparse and dense", t])
+        info.append(["garnet (Zircon) with sparse and dense", t, t,0,0])  # Count this as compile time
 
     data_tile_pairs = []
     kernel_name = ""
 
-    if not(seed_flow):
+    info.append([f"APP GROUP sparse_tests[]", 0])
+    if sparse_tests and not(seed_flow):
         if os.path.exists("/aha/garnet/perf_stats.txt"):
             os.system("rm /aha/garnet/perf_stats.txt")
         with open("/aha/garnet/perf_stats.txt", 'w') as perf_out_file:
@@ -824,8 +825,9 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+            t = generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
                                         opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+            info.append(["sparse bitstreams", t, 0, t, 0])  # Count this as "map" time
 
             for test in sparse_tests:
                 if use_pipeline:
@@ -849,10 +851,10 @@ def dispatch(args, extra_args=None):
             for testname, dataset_runtime_dict in test_dataset_runtime_dict.items():
                 for dataset, time_value in dataset_runtime_dict.items():
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
-    else:
-        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+    elif sparse_tests:
+        t = generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
                                     opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
-
+        info.append(["sparse bitstreams", t, 0, t, 0])  # Count this as "map" time
         for test in sparse_tests:
             assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
             t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround,
@@ -907,7 +909,7 @@ def dispatch(args, extra_args=None):
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
-        info.append(["garnet (NO Zircon) with sparse and dense", t])
+        info.append(["garnet (NO Zircon) with sparse and dense", t, t,0,0])  # Count this as compile time
 
         if no_zircon_sparse_tests:
             # See above for no_zircon_sparse_tests[]
