@@ -95,9 +95,10 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
     if os.getenv("DENSE_READY_VALID") == "1":
         new_env_vars["PIPELINED"] = "0"
 
-    print(f"--- Setting environment variables for {app}")
+    # No need for each var to have its own '---' group, just use '+++' instead of '---'
+    print(f"+++ Setting environment variables for {app}")
     for n, v in new_env_vars.items():
-        print(f"--- {n} = {v}")
+        print(f"... {n} = {v}")
         env[n] = v
     # Also add app variable to env
     print(f"--- HALIDE_APP_PATH = {app}")
