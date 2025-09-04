@@ -113,7 +113,6 @@ class Tests:
                 "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
                 "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
             ]
 
         elif testname == "pr_aha4":
@@ -138,6 +137,9 @@ class Tests:
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV",
+            ]
+            external_mu_tests_fp = [
+                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
