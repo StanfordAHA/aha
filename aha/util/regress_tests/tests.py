@@ -73,6 +73,23 @@ class Tests:
         elif testname == "pr_aha1":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "mat_elemdiv",
+                "mat_mattransmul",
+                "fp_relu_matmul_ikj",
+                "matmul_ikj",
+                "matmul_jik",
+                "fp_relu_spmm_ijk_crddrop",
+                "fp_spmm_ijk_crddrop_locator",
+                "spmv_relu",
+                "masked_broadcast",
+                "mat_sddmm",
+                "tensor3_mttkrp",
+                "tensor3_ttv",
+            ]
             external_mu_tests_fp = [
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
@@ -91,23 +108,6 @@ class Tests:
         elif testname == "pr_aha3":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            sparse_tests = [
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "mat_elemdiv",
-                "mat_mattransmul",
-                "fp_relu_matmul_ikj",
-                "matmul_ikj",
-                "matmul_jik",
-                "fp_relu_spmm_ijk_crddrop",
-                "fp_spmm_ijk_crddrop_locator",
-                "spmv_relu",
-                "masked_broadcast",
-                "mat_sddmm",
-                "tensor3_mttkrp",
-                "tensor3_ttv",
-            ]
             external_mu_tests_fp = [
                 # PSUM WORKAROUND CONV5_X downsample
                 "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
