@@ -32,7 +32,7 @@ jobs:
       run: docker build . -t testing
     - name: Run Integration Tests
       run: |
-        docker run --name test --rm -it -d testing bash
+        docker run --name test --rm -e HUGGINGFACE_HUB_TOKEN=${{ secrets.HF_SERVICE_TOKEN }} -it -d testing bash
         docker exec test pip freeze
         docker exec test bash -c "source /aha/bin/activate && aha garnet --width 4 --height 2 --verilog --use_sim_sram"
         docker exec test test -e /aha/garnet/garnet.v
