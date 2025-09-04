@@ -171,3 +171,23 @@ done
 # 
 # 
 #END preamble
+
+
+TRIGGER='
+steps:
+- label: "Docker Build: $BUILDKITE_AGENT_META_DATA_HOSTNAME"
+
+
+
+- trigger: "aha-flow"
+  label: "PR check"
+  build:
+    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+    env:
+      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+      DEV_BRANCH:                  "${DEV_BRANCH}"
+'

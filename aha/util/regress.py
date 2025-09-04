@@ -916,9 +916,10 @@ def dispatch(args, extra_args=None):
             data_tile_pairs = []
             kernel_name = ""
             seed_flow = True
-            generate_sparse_bitstreams(no_zircon_sparse_tests, width, height,
+            t = generate_sparse_bitstreams(no_zircon_sparse_tests, width, height,
                                        seed_flow, data_tile_pairs, kernel_name,
                                        opal_workaround=args.opal_workaround, unroll=unroll)
+            info.append(["sparse bitstreams (no zircon)", t, 0, t, 0])  # Count this as "map" time
 
             for test in no_zircon_sparse_tests:
                 t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
