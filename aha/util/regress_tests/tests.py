@@ -147,10 +147,10 @@ class Tests:
             ]
             external_mu_tests_fp = [
                 # K-DIM HOST TILING CONV5_X
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
         # PR_AHA test suite for aha-repo push/pull, part 2/3
@@ -185,12 +185,12 @@ class Tests:
                 "conv2_x",
             ]
             external_mu_tests_fp = [
-                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV4_X downsample
-                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
             ]
 
         # PR_AHA test suite for aha-repo push/pull, part 3/3
@@ -232,10 +232,10 @@ class Tests:
             ]
             external_mu_tests_fp = [
                 # PSUM WORKAROUND CONV5_X downsample
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
             ]
             # For sparse tests, we cherry pick some representative tests to run
             no_zircon_sparse_tests = [
@@ -256,7 +256,7 @@ class Tests:
                     else:
                         # Non-lists (e.g. width, height) should be same for both sets
                         assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
-                    
+
             pr_aha = Tests('pr_aha1').__dict__
             merge_tests(pr_aha, Tests('pr_aha2').__dict__)
             merge_tests(pr_aha, Tests('pr_aha3').__dict__)
@@ -397,24 +397,24 @@ class Tests:
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
             ]
             external_mu_tests_fp = [
-                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV4_X downsample
-                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV5_X downsample
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
             # For sparse tests, we cherry pick some representative tests to run
             no_zircon_sparse_tests = [
@@ -637,24 +637,24 @@ class Tests:
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
             ]
             external_mu_tests_fp = [
-                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV4_X downsample
-                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV5_X downsample
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
             # For sparse tests, we cherry pick some representative tests to run
@@ -707,24 +707,24 @@ class Tests:
 
             ]
             external_mu_tests_fp = [
-                "resnet18-submodule_2 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_6 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV4_X downsample
-                "resnet18-submodule_10 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_psum_reduction_fp_post_conv4_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_psum_workaround_RV_E64_MB",
 
                 # PSUM WORKAROUND CONV5_X downsample
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_psum_reduction_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_psum_workaround_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_16 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
 
