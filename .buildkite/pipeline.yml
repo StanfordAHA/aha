@@ -13,6 +13,7 @@ env:
   REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
   TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
+  HF_SERVICE_TOKEN: "${secrets.HF_SERVICE_TOKEN}"
 
 steps:
 
