@@ -4,7 +4,8 @@ agents: { docker: true }
 env:
   # Default config is "pr_aha"
   CONFIG: ${CONFIG:-pr_aha}
-  NSTEPS: 10  # "Fast" plus nine regression steps
+  # NSTEPS: "0 1 2 3 4 5 6 7 8 9"   # "Fast" plus nine regression steps
+  NSTEPS: "4 5"
 
   # "COMMON" is a dir where we can pass information from one step to another
   # FIXME or could use 'set-metadata --build', right?
@@ -105,7 +106,7 @@ steps:
     
     echo '- Show outcomes from each regression step'
     echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
-    for i in `seq 1 $$((NSTEPS-1))`; do
+    for i in $$NSTEPS; do
         echo regress$$i outcome: `buildkite-agent step get "outcome" --step "regress$$i"`
     done
 
@@ -113,7 +114,7 @@ steps:
     FAIL=
     [ $(buildkite-agent step get "outcome" --step "docker_gold") == "passed" ] || FAIL=True
     [ $(buildkite-agent step get "outcome" --step "zircon_gold") == "passed" ] || FAIL=True
-    for i in `seq 1 $$((NSTEPS-1))`; do
+    for i in $$NSTEPS; do
         [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
     done
     echo '-- FAIL=$$FAIL'

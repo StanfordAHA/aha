@@ -2,7 +2,7 @@
 # This is designed to be called from pipeline.yml
 
 # Run "fast" app suite as regression step 0.
-# Then run regression configs CONFIG=pr_aha1,2,3..nsteps
+# Then run regression configs CONFIG=pr_aha1,2,3
 
 # A typical step should look like this:
 # 
@@ -64,7 +64,8 @@ CONCURRENCY="
   concurrency: 3  # Limit long-running jobs to at most three at a time.
   concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
 "
-for i in `seq 0 $((NSTEPS-1))`; do
+# E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
+for i in $NSTEPS; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     cat <<EOF
 - label: "$label"
@@ -171,23 +172,3 @@ done
 # 
 # 
 #END preamble
-
-
-TRIGGER='
-steps:
-- label: "Docker Build: $BUILDKITE_AGENT_META_DATA_HOSTNAME"
-
-
-
-- trigger: "aha-flow"
-  label: "PR check"
-  build:
-    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
-    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
-    env:
-      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
-      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
-      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
-      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
-      DEV_BRANCH:                  "${DEV_BRANCH}"
-'
