@@ -827,7 +827,7 @@ def dispatch(args, extra_args=None):
 
             t = generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
                                         opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
-            info.append(["sparse bitstreams", t, 0, t, 0])  # Count this as "map" time
+            info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
             for test in sparse_tests:
                 if use_pipeline:
@@ -854,7 +854,7 @@ def dispatch(args, extra_args=None):
     elif sparse_tests:
         t = generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
                                     opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
-        info.append(["sparse bitstreams", t, 0, t, 0])  # Count this as "map" time
+        info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
         for test in sparse_tests:
             assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
             t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround,
@@ -912,14 +912,15 @@ def dispatch(args, extra_args=None):
         info.append(["garnet (NO Zircon) with sparse and dense", t, t,0,0])  # Count this as compile time
 
         if no_zircon_sparse_tests:
-            # See above for no_zircon_sparse_tests[]
+            info.append(["APP GROUP no_zircon_sparse_tests[]", 0])
+
             data_tile_pairs = []
             kernel_name = ""
             seed_flow = True
             t = generate_sparse_bitstreams(no_zircon_sparse_tests, width, height,
                                        seed_flow, data_tile_pairs, kernel_name,
                                        opal_workaround=args.opal_workaround, unroll=unroll)
-            info.append(["sparse bitstreams (no zircon)", t, 0, t, 0])  # Count this as "map" time
+            info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
 
             for test in no_zircon_sparse_tests:
                 t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
