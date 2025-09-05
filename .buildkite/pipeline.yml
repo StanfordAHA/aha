@@ -13,7 +13,6 @@ env:
   REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
   TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
-  HF_SERVICE_TOKEN: "${secrets.HF_SERVICE_TOKEN}"
 
 steps:
 
@@ -102,7 +101,7 @@ steps:
     echo '- Show outcomes from gold step(s)'
     echo docker_gold outcome: `buildkite-agent step get "outcome" --step "docker_gold"`
     echo zircon_gold outcome: `buildkite-agent step get "outcome" --step "zircon_gold"`
-    
+
     echo '- Show outcomes from each regression step'
     echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
     for i in `seq 1 $$((NSTEPS-1))`; do
