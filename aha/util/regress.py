@@ -700,7 +700,6 @@ def test_hardcoded_dense_app(
 def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
-    pipeline_num = args.pipeline_num
     using_matrix_unit = args.using_matrix_unit
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
@@ -811,21 +810,39 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
-                                        opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+            generate_sparse_bitstreams(
+                sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+                opal_workaround=args.opal_workaround, unroll=unroll,
+                using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
 
             for test in sparse_tests:
                 if use_pipeline:
+                    pipeline_num = args.pipeline_num
                     assert (not seed_flow), "Pipeline mode is not supported with seed flow"
-                    tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+                    tile_pairs, pipeline_num_l = format_concat_tiles(
+                        test, data_tile_pairs, kernel_name, pipeline_num, unroll)
+                    t0, t1, t2 = test_sparse_app(
+                        test, seed_flow, tile_pairs, pipeline_num_l,
+                        opal_workaround=args.opal_workaround,
+                        test_dataset_runtime_dict=test_dataset_runtime_dict,
+                        using_matrix_unit=using_matrix_unit,
+                        mu_datawidth=mu_datawidth,
+                        num_fabric_cols_removed=num_fabric_cols_removed,
+                        mu_oc_0=mu_oc_0)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
                 else:
-                    # calling this function to append the id to the input matrix, find a better way to do so in the future
+                    # calling this function to append the id to the input matrix,
+                    # find a better way to do so in the future
+                    pipeline_num = 1
                     tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, 1, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+                    t0, t1, t2 = test_sparse_app(
+                        test, seed_flow, tile_pairs,
+                        opal_workaround=args.opal_workaround,
+                        test_dataset_runtime_dict=test_dataset_runtime_dict,
+                        using_matrix_unit=using_matrix_unit,
+                        mu_datawidth=mu_datawidth,
+                        num_fabric_cols_removed=num_fabric_cols_removed,
+                        mu_oc_0=mu_oc_0)
                     info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
                 # remove the generated collateral for tiles that passed to avoid overrunning the disk
