@@ -805,7 +805,7 @@ def dispatch(args, extra_args=None):
             *hardcoded_dense_tests
     ]:
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-        info.append(["garnet (Zircon) with sparse and dense", t, t,0,0])  # Count this as compile time
+        info.append(["garnet (Zircon) with sparse and dense", t])
 
     data_tile_pairs = []
     kernel_name = ""
@@ -854,6 +854,7 @@ def dispatch(args, extra_args=None):
 
                 t0, t1, t2 = test_sparse_app(
                     test, seed_flow, tile_pairs,
+                    pipeline_num_l=pipeline_num_l,
                     opal_workaround=args.opal_workaround,
                     test_dataset_runtime_dict=test_dataset_runtime_dict,
                     using_matrix_unit=using_matrix_unit,
@@ -929,17 +930,18 @@ def dispatch(args, extra_args=None):
         *resnet_tests,
         *resnet_tests_fp,
     ] else False
-    if args.include_no_zircon_tests and tests_exist:
-        exit_status = os.system(f"rm /aha/garnet/garnet.v")
 
-        # Why would we want this? garnet.v is gone, that's all we care about?
-        # Also: no way to do *only* no-zircon tests, b/c it triggers this error :(
-        # if os.WEXITSTATUS(exit_status) != 0:
-        #     raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+    if args.include_no_zircon_tests and tests_exist:
+
+        # Want new garnet.v and gen_garnet() will NOT build it if one exists already (!)
+        # Use 'rm -f' b/c don't want error when/if garnet.v is already gone...
+        exit_status = os.system(f"rm -f /aha/garnet/garnet.v")
+        if os.WEXITSTATUS(exit_status) != 0:
+            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
-        info.append(["garnet (NO Zircon) with sparse and dense", t, t,0,0])  # Count this as compile time
+        info.append(["garnet (NO Zircon) with sparse and dense", t])
 
         if no_zircon_sparse_tests:
             # See above for no_zircon_sparse_tests[]
@@ -972,16 +974,15 @@ def dispatch(args, extra_args=None):
             t0, t1, t2 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    # Skip unnecessary garnet build is tests don't exist, duh.
-    dense_only_tests_exist = False
-    if glb_tests: dense_only_tests_exist = True
+    # Skip unnecessary garnet build if tests don't exist, duh.
+    dense_only_tests_exist = True if glb_tests else False
     for test in resnet_tests:
         if "residual" not in test: dense_only_tests_exist = True
 
     if args.include_dense_only_tests and dense_only_tests_exist:
         # DENSE ONLY TESTS
         # Remove sparse+dense garnet.v first
-        exit_status = os.system(f"rm /aha/garnet/garnet.v")
+        exit_status = os.system(f"rm -f /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
