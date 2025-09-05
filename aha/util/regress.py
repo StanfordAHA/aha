@@ -241,7 +241,16 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unr
     return all_tiles, num_list
 
 
-def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test="", test_dataset_runtime_dict=None, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
+def test_sparse_app(testname, seed_flow, data_tile_pairs,
+                    pipeline_num_l=None,
+                    opal_workaround=False,
+                    test="",
+                    test_dataset_runtime_dict=None,
+                    using_matrix_unit=False,
+                    mu_datawidth=16,
+                    num_fabric_cols_removed=0,
+                    mu_oc_0=32,
+                    ):
     if test == "":
         test = testname
 
@@ -700,7 +709,6 @@ def test_hardcoded_dense_app(
 def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
-    pipeline_num = args.pipeline_num
     using_matrix_unit = args.using_matrix_unit
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
@@ -784,13 +792,26 @@ def dispatch(args, extra_args=None):
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
 
     print(f"--- Running regression: {args.config}", flush=True)
-    t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-    info.append(["garnet (Zircon) with sparse and dense", t])
+
+    # Skip 20 minutes of gen_garnet if no tests exist for it!!!
+    zircon_tests_exist = False
+    if [
+            *sparse_tests,
+            *glb_tests_RV,
+            *glb_tests_fp_RV,
+            *behavioral_mu_tests,
+            *external_mu_tests,
+            *external_mu_tests_fp,
+            *hardcoded_dense_tests
+    ]:
+        t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+        info.append(["garnet (Zircon) with sparse and dense", t])
 
     data_tile_pairs = []
     kernel_name = ""
 
-    if not(seed_flow):
+    info.append([f"APP GROUP sparse_tests[]", 0])
+    if sparse_tests and not(seed_flow):
         if os.path.exists("/aha/garnet/perf_stats.txt"):
             os.system("rm /aha/garnet/perf_stats.txt")
         with open("/aha/garnet/perf_stats.txt", 'w') as perf_out_file:
@@ -811,22 +832,36 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
-                                        opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+            t = generate_sparse_bitstreams(
+                sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+                opal_workaround=args.opal_workaround,
+                unroll=unroll,
+                using_matrix_unit=using_matrix_unit,
+                num_fabric_cols_removed=num_fabric_cols_removed)
+            info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
             for test in sparse_tests:
                 if use_pipeline:
                     assert (not seed_flow), "Pipeline mode is not supported with seed flow"
-                    tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-                    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+                    tile_pairs, pipeline_num_l = format_concat_tiles(
+                        test, data_tile_pairs, kernel_name, args.pipeline_num, unroll)
                 else:
-                    # calling this function to append the id to the input matrix, find a better way to do so in the future
-                    tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, 1, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-                    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+                    # calling this function to append the id to the input matrix,
+                    # find a better way to do so in the future
+                    tile_pairs, pipeline_num_l = format_concat_tiles(
+                        test, data_tile_pairs, kernel_name, 1, unroll)
+                    pipeline_num_l = None
+
+                t0, t1, t2 = test_sparse_app(
+                    test, seed_flow, tile_pairs,
+                    pipeline_num_l=pipeline_num_l,
+                    opal_workaround=args.opal_workaround,
+                    test_dataset_runtime_dict=test_dataset_runtime_dict,
+                    using_matrix_unit=using_matrix_unit,
+                    mu_datawidth=mu_datawidth,
+                    num_fabric_cols_removed=num_fabric_cols_removed,
+                    mu_oc_0=mu_oc_0)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
                 # remove the generated collateral for tiles that passed to avoid overrunning the disk
                 os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/{test}*")
@@ -836,14 +871,25 @@ def dispatch(args, extra_args=None):
             for testname, dataset_runtime_dict in test_dataset_runtime_dict.items():
                 for dataset, time_value in dataset_runtime_dict.items():
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
-    else:
-        generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
-                                    opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+
+    elif sparse_tests:
+        t = generate_sparse_bitstreams(
+            sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+            opal_workaround=args.opal_workaround,
+            unroll=unroll,
+            using_matrix_unit=using_matrix_unit,
+            num_fabric_cols_removed=num_fabric_cols_removed)
+        info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
         for test in sparse_tests:
             assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
-            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround,
-                                            using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+            t0, t1, t2 = test_sparse_app(
+                test, seed_flow, data_tile_pairs,
+                opal_workaround=args.opal_workaround,
+                using_matrix_unit=using_matrix_unit,
+                mu_datawidth=mu_datawidth,
+                num_fabric_cols_removed=num_fabric_cols_removed,
+                mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in [
@@ -876,10 +922,22 @@ def dispatch(args, extra_args=None):
                         num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    if args.include_no_zircon_tests:
-        exit_status = os.system(f"rm /aha/garnet/garnet.v")
+    # Skip unnecessary garnet build if tests don't exist, duh.
+    tests_exist = True if [
+        *no_zircon_sparse_tests,
+        *glb_tests,
+        *glb_tests_fp,
+        *resnet_tests,
+        *resnet_tests_fp,
+    ] else False
+
+    if args.include_no_zircon_tests and tests_exist:
+
+        # Want new garnet.v and gen_garnet() will NOT build it if one exists already (!)
+        # Use 'rm -f' b/c don't want error when/if garnet.v is already gone...
+        exit_status = os.system(f"rm -f /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
-            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+            raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
@@ -890,9 +948,10 @@ def dispatch(args, extra_args=None):
             data_tile_pairs = []
             kernel_name = ""
             seed_flow = True
-            generate_sparse_bitstreams(no_zircon_sparse_tests, width, height,
+            t = generate_sparse_bitstreams(no_zircon_sparse_tests, width, height,
                                        seed_flow, data_tile_pairs, kernel_name,
                                        opal_workaround=args.opal_workaround, unroll=unroll)
+            info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
 
             for test in no_zircon_sparse_tests:
                 t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
@@ -915,12 +974,17 @@ def dispatch(args, extra_args=None):
             t0, t1, t2 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
-    if args.include_dense_only_tests:
+    # Skip unnecessary garnet build if tests don't exist, duh.
+    dense_only_tests_exist = True if glb_tests else False
+    for test in resnet_tests:
+        if "residual" not in test: dense_only_tests_exist = True
+
+    if args.include_dense_only_tests and dense_only_tests_exist:
         # DENSE ONLY TESTS
         # Remove sparse+dense garnet.v first
-        exit_status = os.system(f"rm /aha/garnet/garnet.v")
+        exit_status = os.system(f"rm -f /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
-            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+            raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         t = gen_garnet(width, height, dense_only=True)
         info.append(["garnet with dense only", t])
