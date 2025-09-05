@@ -241,7 +241,16 @@ def format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num=32, unr
     return all_tiles, num_list
 
 
-def test_sparse_app(testname, seed_flow, data_tile_pairs, pipeline_num_l=None, opal_workaround=False, test="", test_dataset_runtime_dict=None, using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
+def test_sparse_app(testname, seed_flow, data_tile_pairs,
+                    pipeline_num_l=None,
+                    opal_workaround=False,
+                    test="",
+                    test_dataset_runtime_dict=None,
+                    using_matrix_unit=False,
+                    mu_datawidth=16,
+                    num_fabric_cols_removed=0,
+                    mu_oc_0=32,
+                    ):
     if test == "":
         test = testname
 
@@ -700,7 +709,6 @@ def test_hardcoded_dense_app(
 def dispatch(args, extra_args=None):
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
-    pipeline_num = args.pipeline_num
     using_matrix_unit = args.using_matrix_unit
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
@@ -783,7 +791,6 @@ def dispatch(args, extra_args=None):
         assert imported_tests.external_mu_tests == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests from the test list."
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
 
-
     print(f"--- Running regression: {args.config}", flush=True)
 
     # Skip 20 minutes of gen_garnet if no tests exist for it!!!
@@ -825,23 +832,35 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            t = generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
-                                        opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+            t = generate_sparse_bitstreams(
+                sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+                opal_workaround=args.opal_workaround,
+                unroll=unroll,
+                using_matrix_unit=using_matrix_unit,
+                num_fabric_cols_removed=num_fabric_cols_removed)
             info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
             for test in sparse_tests:
                 if use_pipeline:
                     assert (not seed_flow), "Pipeline mode is not supported with seed flow"
-                    tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, pipeline_num, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, pipeline_num_l, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-                    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+                    tile_pairs, pipeline_num_l = format_concat_tiles(
+                        test, data_tile_pairs, kernel_name, args.pipeline_num, unroll)
                 else:
-                    # calling this function to append the id to the input matrix, find a better way to do so in the future
-                    tile_pairs, pipeline_num_l = format_concat_tiles(test, data_tile_pairs, kernel_name, 1, unroll)
-                    t0, t1, t2 = test_sparse_app(test, seed_flow, tile_pairs, opal_workaround=args.opal_workaround, test_dataset_runtime_dict=test_dataset_runtime_dict,
-                                                    using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-                    info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+                    # calling this function to append the id to the input matrix,
+                    # find a better way to do so in the future
+                    tile_pairs, pipeline_num_l = format_concat_tiles(
+                        test, data_tile_pairs, kernel_name, 1, unroll)
+                    pipeline_num_l = None
+
+                t0, t1, t2 = test_sparse_app(
+                    test, seed_flow, tile_pairs,
+                    opal_workaround=args.opal_workaround,
+                    test_dataset_runtime_dict=test_dataset_runtime_dict,
+                    using_matrix_unit=using_matrix_unit,
+                    mu_datawidth=mu_datawidth,
+                    num_fabric_cols_removed=num_fabric_cols_removed,
+                    mu_oc_0=mu_oc_0)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
                 # remove the generated collateral for tiles that passed to avoid overrunning the disk
                 os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/{test}*")
@@ -851,14 +870,25 @@ def dispatch(args, extra_args=None):
             for testname, dataset_runtime_dict in test_dataset_runtime_dict.items():
                 for dataset, time_value in dataset_runtime_dict.items():
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
+
     elif sparse_tests:
-        t = generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
-                                    opal_workaround=args.opal_workaround, unroll=unroll, using_matrix_unit=using_matrix_unit, num_fabric_cols_removed=num_fabric_cols_removed)
+        t = generate_sparse_bitstreams(
+            sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+            opal_workaround=args.opal_workaround,
+            unroll=unroll,
+            using_matrix_unit=using_matrix_unit,
+            num_fabric_cols_removed=num_fabric_cols_removed)
         info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
+
         for test in sparse_tests:
             assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
-            t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround,
-                                            using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+            t0, t1, t2 = test_sparse_app(
+                test, seed_flow, data_tile_pairs,
+                opal_workaround=args.opal_workaround,
+                using_matrix_unit=using_matrix_unit,
+                mu_datawidth=mu_datawidth,
+                num_fabric_cols_removed=num_fabric_cols_removed,
+                mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
 
     for test in [
@@ -912,8 +942,7 @@ def dispatch(args, extra_args=None):
         info.append(["garnet (NO Zircon) with sparse and dense", t, t,0,0])  # Count this as compile time
 
         if no_zircon_sparse_tests:
-            info.append(["APP GROUP no_zircon_sparse_tests[]", 0])
-
+            # See above for no_zircon_sparse_tests[]
             data_tile_pairs = []
             kernel_name = ""
             seed_flow = True
