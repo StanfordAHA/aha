@@ -932,10 +932,12 @@ def dispatch(args, extra_args=None):
     ] else False
 
     if args.include_no_zircon_tests and tests_exist:
-        # Use '-f' b/c don't want error when/if garnet.v is already gone...
+
+        # Want new garnet.v and gen_garnet() will NOT build it if one exists already (!)
+        # Use 'rm -f' b/c don't want error when/if garnet.v is already gone...
         exit_status = os.system(f"rm -f /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
-            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+            raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
@@ -980,9 +982,9 @@ def dispatch(args, extra_args=None):
     if args.include_dense_only_tests and dense_only_tests_exist:
         # DENSE ONLY TESTS
         # Remove sparse+dense garnet.v first
-        exit_status = os.system(f"rm /aha/garnet/garnet.v")
+        exit_status = os.system(f"rm -f /aha/garnet/garnet.v")
         if os.WEXITSTATUS(exit_status) != 0:
-            raise RuntimeError(f"Command 'rm /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
+            raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         t = gen_garnet(width, height, dense_only=True)
         info.append(["garnet with dense only", t])
