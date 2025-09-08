@@ -39,7 +39,6 @@ cat <<'EOF'
         pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
 ) | buildkite-agent pipeline upload
-exit
 
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
