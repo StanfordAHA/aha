@@ -19,11 +19,11 @@
 #       command: $REGRESS_METAHOOKS --commands
 
 # Preamble from below
-cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
+cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' | buildkite-agent pipeline upload
 
-echo "steps:"
+echo "steps:" | buildkite-agent pipeline upload
 
-cat <<'EOF'
+cat <<'EOF' | buildkite-agent pipeline upload
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
@@ -39,6 +39,7 @@ cat <<'EOF'
     - improbable-eng/metahook:
         pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
+exit
 
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
