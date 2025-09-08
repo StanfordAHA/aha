@@ -18,6 +18,7 @@
 #     
 #       command: $REGRESS_METAHOOKS --commands
 
+if [ "$1" == 1 ]; then
 # Preamble from below
 (
 cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
@@ -40,6 +41,9 @@ steps:
 EOF
 ) | buildkite-agent pipeline upload
 sleep 10
+
+else
+
 
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
@@ -65,6 +69,8 @@ EOF
      echo "") | buildkite-agent pipeline upload
     sleep 10
 done
+
+fi
 
 
 #BEGIN preamble

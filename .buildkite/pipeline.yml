@@ -83,7 +83,8 @@ steps:
 
   commands:
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
-  - .buildkite/bin/regression-steps.sh
+  - .buildkite/bin/regression-steps.sh 1
+  - .buildkite/bin/regression-steps.sh 2
 
   - echo "--- BDI PIPELINE.XML COMMANDS END"
 
