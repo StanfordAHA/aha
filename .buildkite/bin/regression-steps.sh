@@ -23,27 +23,27 @@ cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
 
 echo "steps:"
 
-cat <<EOF
+cat <<'EOF'
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
-    mkdir -p \$COMMON
+    set -x; mkdir -p \$COMMON
     remote=https://raw.githubusercontent.com/StanfordAHA/aha/regress9
-    curl \$\$remote/.buildkite/bin/regress-metahooks.sh -o \$REGRESS_METAHOOKS
-    chmod +x \$REGRESS_METAHOOKS
-    set -x; export IMAGE=stanfordaha/garnet:latest
-    if ! \$REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
+    curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
+    chmod +x $REGRESS_METAHOOKS
+    export IMAGE=stanfordaha/garnet:latest
+    if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "--- \$\$msg"
-        echo "\$\$msg" | buildkite-agent annotate --style "error" --context onyx
+        echo "--- $$msg"
+        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
-    else echo "--- \$\$msg Zircon gold check PASSED"
+    else echo "--- $$msg Zircon gold check PASSED"
     fi
   plugins:
     - uber-workflow/run-without-clone:
 #     - improbable-eng/metahook:
-#         pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
-#         # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
+#         pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
+#         # pre-exit:    $REGRESS_METAHOOKS --pre-exit
 EOF
 
 CONCURRENCY="
