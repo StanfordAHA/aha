@@ -72,6 +72,11 @@ done
 
 fi
 
+for i in $NSTEPS; do
+    key=regress$i
+    state=`buildkite-agent step get "state" --step $key`
+    buildkite-agent annotate --context foo --append "$i $state"
+done
 
 #BEGIN preamble
 # env:
