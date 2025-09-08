@@ -23,7 +23,7 @@ cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
 
 echo "steps:"
 
-cat <<'EOF'
+cat <<EOF
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
