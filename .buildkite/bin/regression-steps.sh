@@ -32,8 +32,8 @@ cat <<EOF
         echo "++ \$\$msg"
         echo "\$\$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
-#   plugins:
-#     - uber-workflow/run-without-clone:
+  plugins:
+    - uber-workflow/run-without-clone:
 #     - improbable-eng/metahook:
 #         pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
 #         # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
