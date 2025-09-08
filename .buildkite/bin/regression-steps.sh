@@ -72,10 +72,32 @@ done
 
 fi
 
+sleep 60
 for i in $NSTEPS; do
     key=regress$i
     state=`buildkite-agent step get "state" --step $key`
-    buildkite-agent annotate --context foo --append "$i $state"
+    buildkite-agent annotate --context foo --append "$i state='$state'\n"
+done
+
+sleep 60
+for i in $NSTEPS; do
+    key=regress$i
+    state=`buildkite-agent step get "state" --step $key`
+    buildkite-agent annotate --context foo --append "$i state='$state'\n"
+done
+
+sleep 60
+for i in $NSTEPS; do
+    key=regress$i
+    state=`buildkite-agent step get "state" --step $key`
+    buildkite-agent annotate --context foo --append "$i state='$state'\n"
+done
+
+sleep 60
+for i in $NSTEPS; do
+    key=regress$i
+    state=`buildkite-agent step get "state" --step $key`
+    buildkite-agent annotate --context foo --append "$i state='$state'\n"
 done
 
 #BEGIN preamble
