@@ -205,6 +205,17 @@ def dispatch(args, extra_args=None):
             else:
                 voyager_tiling_path = ""
 
+
+
+            if not os.path.exists("bin/design.place"):
+                print(f'--- NO DESIGN.PLACE (yet); wait a minute maybe?')
+                import time
+                time.sleep(60)
+                if not os.path.exists("bin/design.place"):
+                    print(f"--- STILL NO DESIGN.PLACE; I'm about to die aren't I")
+
+
+
             subprocess_call_log(
                 cmd=[sys.executable,
                      f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/hw_support/parse_design_meta.py",
