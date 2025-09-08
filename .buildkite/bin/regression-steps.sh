@@ -26,18 +26,37 @@ echo "steps:"
 cat <<EOF
 - label: "Zircon Gold"
   key: "zircon_gold"
-  command: |
-    if ! \$REGRESS_METAHOOKS --gold zircon; then
+  commands: |
+    if ! ls foogle; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "++ \$msg"
-        echo "\$msg" | buildkite-agent annotate --style "error" --context onyx
+        echo "++ \$\$msg"
+        echo "\$\$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
-        # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
+#         # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 EOF
+
+
+
+
+# cat <<EOF
+# - label: "Zircon Gold"
+#   key: "zircon_gold"
+#   command: |
+#     if ! \$REGRESS_METAHOOKS --gold zircon; then
+#         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+#         echo "++ \$msg"
+#         echo "\$msg" | buildkite-agent annotate --style "error" --context onyx
+#         exit 13
+#   plugins:
+#     - uber-workflow/run-without-clone:
+#     - improbable-eng/metahook:
+#         pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
+#         # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
+# EOF
 
 # cat <<'EOF'
 # - label: "Docker for gold test"
