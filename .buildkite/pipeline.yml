@@ -6,6 +6,7 @@ env:
   CONFIG: ${CONFIG:-pr_aha}
   NSTEPS: "0 1 2 3 4 5 6 7 8 9"   # "Fast" plus nine regression steps
   # NSTEPS: "4 5"
+  MAX_AGENTS: 4  # How many agents do we get to use for regression steps?
 
   # "COMMON" is a dir where we can pass information from one step to another
   # FIXME or could use 'set-metadata --build', right?

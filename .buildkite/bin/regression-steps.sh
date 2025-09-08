@@ -61,7 +61,7 @@ cat <<'EOF'
 EOF
 
 CONCURRENCY="
-  concurrency: 3  # Limit long-running jobs to at most three at a time.
+  concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
   concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
 "
 # E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
@@ -121,6 +121,9 @@ done
 #         if ! [ `docker images -q $IMAGE` ]; then
 #             echo "+++ CANNOT FIND DOCKER IMAGE '$IMAGE'"
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
+# 
+#             # Change step label to reflect docker build DB
+#             buildkite-agent step update "label" " +DB" --append
 # 
 #             # Remove docker images older than one day
 #             echo "--- Cleanup old docker images"
