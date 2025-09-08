@@ -139,9 +139,7 @@ class Tests:
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
                 "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-
-                # TEMPORARILY DOWN DUE TO LATEST VOYAGER COMPILER BUMP
-                # "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
@@ -163,35 +161,35 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
 
             glb_tests_RV = [
-                # "apps/gaussian_RV",
-                # "apps/pointwise_custom_packing_RV_E64",
+                "apps/gaussian_RV",
+                "apps/pointwise_custom_packing_RV_E64",
             ]
             glb_tests_fp_RV = [
-                # "apps/scalar_reduction_fp_RV",
-                # "apps/scalar_max_fp_RV",
-                # "apps/layer_norm_pass2_fp_RV",
-                # "apps/layer_norm_pass3_fp_RV",
-                # "apps/scalar_avg_fp_RV",
+                "apps/scalar_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+                "apps/layer_norm_pass2_fp_RV",
+                "apps/layer_norm_pass3_fp_RV",
+                "apps/scalar_avg_fp_RV",
             ]
             glb_tests = [
-                # "apps/maxpooling",
-                # "tests/bit8_packing_test",
-                # "tests/bit8_unpack_test",
-                # "tests/fp_get_shared_exp_test",
-                # "tests/fp_e8m0_quant_test",
+                "apps/maxpooling",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
             ]
             glb_tests_fp = [
-                # "apps/scalar_max_fp",
+                "apps/scalar_max_fp",
             ]
             resnet_tests = [
-                # "conv2_x",
+                "conv2_x",
             ]
             external_mu_tests_fp = [
                 "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                # "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
                 # # INNER REDUCTION WORKAROUND CONV4_X downsample
-                # "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround_RV_E64_MB",
             ]
 
         # PR_AHA test suite for aha-repo push/pull, part 3/3
@@ -388,9 +386,7 @@ class Tests:
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
                 "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-
-                # TEMPORARILY DOWN DUE TO LATEST VOYAGER COMPILER BUMP
-                # "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
@@ -626,9 +622,7 @@ class Tests:
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
                 "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-
-                # TEMPORARILY DOWN DUE TO LATEST VOYAGER COMPILER BUMP
-                # "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
@@ -693,9 +687,7 @@ class Tests:
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
                 "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-
-                # TEMPORARILY DOWN DUE TO LATEST VOYAGER COMPILER BUMP
-                # "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
