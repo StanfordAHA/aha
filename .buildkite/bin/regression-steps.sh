@@ -37,7 +37,7 @@ cat <<'EOF' | buildkite-agent pipeline upload
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
+        pre-command: $$BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
 exit
 
