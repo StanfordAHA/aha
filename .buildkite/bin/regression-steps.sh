@@ -48,7 +48,7 @@ CONCURRENCY="
 # E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
 for i in $NSTEPS; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-    cat <<EOF
+    (cat <<EOF
 - label: "$label"
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
@@ -60,7 +60,7 @@ for i in $NSTEPS; do
         pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 EOF
     [ "$i" != 0 ] && echo "$CONCURRENCY"
-    echo ""
+    echo "") | buildkite-agent pipeline upload
 done
 
 
