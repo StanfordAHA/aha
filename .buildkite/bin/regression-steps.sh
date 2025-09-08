@@ -29,8 +29,8 @@ cat <<EOF
   command: |
     if ! \$REGRESS_METAHOOKS --gold zircon; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+        echo "++ \$msg"
+        echo "\$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
   plugins:
     - uber-workflow/run-without-clone:
