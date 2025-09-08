@@ -27,11 +27,6 @@ cat <<'EOF'
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
-    set -x; mkdir -p \$COMMON
-    remote=https://raw.githubusercontent.com/StanfordAHA/aha/regress9
-    curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
-    chmod +x $REGRESS_METAHOOKS
-    export IMAGE=stanfordaha/garnet:latest
     if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
         echo "--- $$msg"
@@ -41,9 +36,8 @@ cat <<'EOF'
     fi
   plugins:
     - uber-workflow/run-without-clone:
-#     - improbable-eng/metahook:
-#         pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
-#         # pre-exit:    $REGRESS_METAHOOKS --pre-exit
+    - improbable-eng/metahook:
+        pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
 
 CONCURRENCY="
