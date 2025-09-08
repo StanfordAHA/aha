@@ -27,15 +27,15 @@ cat <<EOF
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
-   remote=https://raw.githubusercontent.com/StanfordAHA/aha/regress9
-   curl \$remote/.buildkite/bin/regress-metahooks.sh -o \$REGRESS_METAHOOKS
+    remote=https://raw.githubusercontent.com/StanfordAHA/aha/regress9
+    curl \$\$remote/.buildkite/bin/regress-metahooks.sh -o \$REGRESS_METAHOOKS
     set -x; export IMAGE=stanfordaha/garnet:latest
     if ! \$REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "--- \$msg"
-        echo "\$msg" | buildkite-agent annotate --style "error" --context onyx
+        echo "--- \$\$msg"
+        echo "\$\$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
-    else echo "--- \$msg Zircon gold check PASSED"
+    else echo "--- \$\$msg Zircon gold check PASSED"
     fi
   plugins:
     - uber-workflow/run-without-clone:
