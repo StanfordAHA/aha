@@ -19,11 +19,10 @@
 #       command: $REGRESS_METAHOOKS --commands
 
 # Preamble from below
-cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' | buildkite-agent pipeline upload
-
-echo "steps:" | buildkite-agent pipeline upload
-
-cat <<'EOF' | buildkite-agent pipeline upload
+(
+cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
+echo "steps:"
+cat <<'EOF'
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
@@ -37,8 +36,9 @@ cat <<'EOF' | buildkite-agent pipeline upload
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: $$BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
+        pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
+) | buildkite-agent pipeline upload
 exit
 
 CONCURRENCY="
