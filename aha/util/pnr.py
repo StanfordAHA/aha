@@ -206,10 +206,11 @@ def dispatch(args, extra_args=None):
                 voyager_tiling_path = ""
 
 
+
             # placement = os.path.join(dirname, "design.place")
             placement = os.path.join(arg_path, "design.place")
             print(f'+++ Looking for {placement}')
-            if not os.path.exists(placement)
+            if not os.path.exists(placement):
                 print(f".. {placement} not found; wait a minute maybe?")
                 import time
                 time.sleep(60)
