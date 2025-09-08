@@ -26,75 +26,19 @@ echo "steps:"
 cat <<EOF
 - label: "Zircon Gold"
   key: "zircon_gold"
-  commands: |
-    if ! ls foogle; then
+  command: |
+    if ! \$REGRESS_METAHOOKS --gold zircon; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "++ \$\$msg"
-        echo "\$\$msg" | buildkite-agent annotate --style "error" --context onyx
+        echo "++ \$msg"
+        echo "\$msg" | buildkite-agent annotate --style "error" --context onyx
         exit 13
     fi
   plugins:
     - uber-workflow/run-without-clone:
-#     - improbable-eng/metahook:
-#         pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
-#         # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
+    - improbable-eng/metahook:
+        pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
+        # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 EOF
-
-
-
-
-# cat <<EOF
-# - label: "Zircon Gold"
-#   key: "zircon_gold"
-#   command: |
-#     if ! \$REGRESS_METAHOOKS --gold zircon; then
-#         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-#         echo "++ \$msg"
-#         echo "\$msg" | buildkite-agent annotate --style "error" --context onyx
-#         exit 13
-#   plugins:
-#     - uber-workflow/run-without-clone:
-#     - improbable-eng/metahook:
-#         pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
-#         # pre-exit:    \$REGRESS_METAHOOKS --pre-exit
-# EOF
-
-# cat <<'EOF'
-# - label: "Docker for gold test"
-#   key: "docker_gold"
-#   # Gold test must run on same agent that builds its docker image
-#   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
-#   command: echo DONE
-#   plugins:
-#     - uber-workflow/run-without-clone:
-#     - improbable-eng/metahook:
-#         pre-command: $BUILD_DOCKER
-# 
-# # - wait: ~
-# 
-# - label: "Zircon Gold"
-#   depends_on: "docker_gold"
-#   # Gold test must run on same agent that builds its docker image
-#   # FIXME but what if this step fails and we want to retry???
-#   agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
-#   key: "zircon_gold"
-#   plugins:
-#     - uber-workflow/run-without-clone:
-#     - docker#v3.2.0:
-#         image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-#         volumes: ["/cad/:/cad"]
-#         shell:   ["/bin/bash", "-e", "-c"]
-#         mount-checkout: false
-#   commands: |
-#     echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
-#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-#         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-#         echo "++ $$msg"
-#         echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
-#         exit 13
-#     fi
-# 
-# EOF
 
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
