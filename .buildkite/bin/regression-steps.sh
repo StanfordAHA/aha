@@ -27,6 +27,7 @@ cat <<EOF
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
+    mkdir -p \$COMMON
     remote=https://raw.githubusercontent.com/StanfordAHA/aha/regress9
     curl \$\$remote/.buildkite/bin/regress-metahooks.sh -o \$REGRESS_METAHOOKS
     set -x; export IMAGE=stanfordaha/garnet:latest
