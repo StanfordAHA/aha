@@ -27,7 +27,9 @@ cat <<EOF
 - label: "Zircon Gold"
   key: "zircon_gold"
   command: |
-    export IMAGE=stanfordaha/garnet:latest
+   remote=https://raw.githubusercontent.com/StanfordAHA/aha/regress9
+   curl \$remote/.buildkite/bin/regress-metahooks.sh -o \$REGRESS_METAHOOKS
+    set -x; export IMAGE=stanfordaha/garnet:latest
     if ! \$REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
         echo "--- \$msg"
