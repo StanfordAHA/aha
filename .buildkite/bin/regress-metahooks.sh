@@ -77,6 +77,26 @@ if [ "$1" == '--pre-command' ]; then
 
     echo "--- OIT PRE COMMAND HOOK END"
 
+elif [ "$1" == '--gold' ]; then
+
+    echo "--- BEGIN regress-metahooks.sh --commands"
+
+    # This is designed to be invoked from pipeline.yml, which should provide
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+
+    docker kill $CONTAINER || echo okay
+    docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
+    docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
+    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v $CONTAINER:/aha/garnet/MatrixUnit_sim_sram.v
+    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v $CONTAINER:/aha/garnet/MatrixUnitWrapper_sim.v
+    cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
+    if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
+        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+        echo "++ $msg"
+        echo "$msg" | buildkite-agent annotate --style "error" --context onyx
+        exit 13
+EOF
+
 elif [ "$1" == '--commands' ]; then
 
     echo "--- BEGIN regress-metahooks.sh --commands"
