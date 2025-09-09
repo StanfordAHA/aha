@@ -18,44 +18,23 @@
 #     
 #       command: $REGRESS_METAHOOKS --commands
 
+########################################################################
+# HELPER FUNCTIONS
+########################################################################
+
 finalmsg=""
 function setstate { buildkite-agent meta-data set "$1" --job "$BUILDKITE_JOB_ID" "$2"; }
 function getstate { buildkite-agent meta-data get "$1" --job "$BUILDKITE_JOB_ID"; }
 function bkmsg { buildkite-agent annotate --context foo --append "$1<br />"; }
 function bkclr { finalmsg="$finalmsg$1<br />"; buildkite-agent annotate --context foo "$finalmsg"; }
 
-setstate image-exists FALSE
-(
-sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-cat <<'EOF'
-steps:
-- label: "khaki prep"
-  key: "kprep"
-  agents: { hostname: khaki }
-  command: echo done
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $BUILD_DOCKER
-
-- label: "r8cad prep"
-  key: "r8prep"
-  agents: { hostname: r8cad-docker }
-  command: echo done
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $BUILD_DOCKER
-EOF
-) | buildkite-agent pipeline upload
-
-# BUILD_DOCKER sets image-exists TRUE, launch-state LAUNCHED
-
+# Wait for increasingly-longer times with each new invocation of this function
+# To use:   "while !COND ; do gradwait; done"
 function gradwait {
     # Note it will be BIG TROUBLE if you try and execute this in a subshell :(
     # FIXME can we invent a version that works in a subshell?
     if [ "$1" == "--init" ]; then
-        gwtotal=0
+        gwtotal="0 sec"
         tot1=0;  inc1=10; max1=60   # Check every 10 sec for one minute
         tot2=1;  inc2=1;  max2=20   # Check once per minute for twenty minutes
         tot3=20; inc3=5;  max3=600  # Every 5 min thereafter, max 6 hours I guess
@@ -70,20 +49,61 @@ function gradwait {
     # printf "sleep %3d" $sleepytime
     sleep $sleepytime
 }
-# gradwait --init; echo ""
-# for i in {1..1000}; do gradwait; echo , waited $gwtotal; done
+
+# After loading a step, invoke this function to wait for it to start running
+# Example:
+#    buildkite-agent pipeline upload step1.yml
+#    wait-for-launch "step1"
+
+function wait-for-launch {
+    gradwait --init
+    while [ "$(getstate launch-state)" != LAUNCHED ]; do
+        gradwait; bkmsg "...$1 waited $gwtotal for launch..."
+    done
+    bkclr "Step '$1' be LAUNCHED after $gwtotal wait"
+}
+
+########################################################################
+# MAIN
+########################################################################
+buildsteps=$(
+  sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
+  cat <<'  EOF'
+    steps:
+    - label: "khaki prep"
+      key: "kprep"
+      agents: { hostname: khaki }
+      command: echo done
+      plugins:
+        - uber-workflow/run-without-clone:
+        - improbable-eng/metahook:
+            pre-command: $BUILD_DOCKER
+
+    - label: "r8cad prep"
+      key: "r8prep"
+      agents: { hostname: r8cad-docker }
+      command: echo done
+      plugins:
+        - uber-workflow/run-without-clone:
+        - improbable-eng/metahook:
+            pre-command: $BUILD_DOCKER
+  EOF
+)
+setstate image-exists FALSE
+echo "$buildsteps" | buildkite-agent pipeline upload
+
+# BUILD_DOCKER sets image-exists TRUE, launch-state LAUNCHED
 
 # Wait for buildkite to create at least one docker image on at least one agent
 gradwait --init; max1=0  # Skip the once-every-10-seconds phase
+bkmsg "Waiting for at least one image build..."
 while [ "$(getstate image-exists)" != TRUE ]; do
-    bkmsg "Waited $gwtotal for image build (image-exists=$(getstate image-exists))"
-    gradwait
+    gradwait; bkmsg "...waited $gwtotal for image build..."
 done
 bkclr "Docker image exists on at least one agent machine"
 bkclr "Took $gwtotal to build first image"
 
-setstate launch-state READY
-(
+goldstep=$(
 sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
 cat <<'EOF'
 steps:
@@ -102,17 +122,9 @@ steps:
     - improbable-eng/metahook:
         pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
-) | buildkite-agent pipeline upload
-sleep 10
-
-function wait-for-launch {
-    gradwait --init
-    while [ "$(getstate launch-state)" != LAUNCHED ]; do
-        bkmsg "$1 waited $gwtotal secs for launch (launch-state=$(getstate launch-state))"
-        gradwait
-    done
-    bkclr "Step '$1' be LAUNCHED after $gwtotal wait"
-}
+)
+setstate launch-state READY
+echo "$goldstep" | buildkite-agent pipeline upload
 wait-for-launch "Zircon Gold"
 
 CONCURRENCY="
