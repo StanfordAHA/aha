@@ -74,7 +74,7 @@ function gradwait {
 # for i in {1..1000}; do gradwait; echo , waited $gwtotal; done
 
 # Wait for buildkite to create at least one docker image on at least one agent
-gradwait --init; $max1=0  # Skip the once-every-10-seconds phase
+gradwait --init; max1=0  # Skip the once-every-10-seconds phase
 while [ "$(getstate image-exists)" != TRUE ]; do
     bkmsg "Waited $gwtotal for image build (image-exists=$(getstate image-exists))"
     gradwait
