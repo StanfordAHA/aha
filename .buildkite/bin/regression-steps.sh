@@ -18,9 +18,11 @@
 #     
 #       command: $REGRESS_METAHOOKS --commands
 
+finalmsg=""
 function setstate { buildkite-agent meta-data set "$1" --job "$BUILDKITE_JOB_ID" "$2"; }
 function getstate { buildkite-agent meta-data get "$1" --job "$BUILDKITE_JOB_ID"; }
 function bkmsg { buildkite-agent annotate --context foo --append "$1<br />"; }
+function bkclr { finalmsg="$finalmsg$1<br />"; buildkite-agent annotate --context foo "$finalmsg"; }
 
 setstate image-exists FALSE
 (
@@ -49,16 +51,36 @@ EOF
 
 # BUILD_DOCKER sets image-exists TRUE, launch-state LAUNCHED
 
-function wait-for-image {
-    totmin=0
-    while [ "$(getstate image-exists)" != TRUE ]; do
-        bkmsg "Waited $totmin mins for image build (image-exists=$(getstate image-exists))"
-        [ "$totmin" -ge 240 ] && exit 13  # Give up after four hours I dunno
-        ((totmin++)); sleep 60
-    done
-    bkmsg "Docker image exists on at least one agent machine"
+function gradwait {
+    # Note it will be BIG TROUBLE if you try and execute this in a subshell :(
+    # FIXME can we invent a version that works in a subshell?
+    if [ "$1" == "--init" ]; then
+        gwtotal=0
+        tot1=0;  inc1=10; max1=60   # Check every 10 sec for one minute
+        tot2=1;  inc2=1;  max2=20   # Check once per minute for twenty minutes
+        tot3=20; inc3=5;  max3=600  # Every 5 min thereafter, max 6 hours I guess
+
+    elif [ $tot1 -lt $max1 ]; then
+        ((tot1+=inc1)); gwtotal="$tot1 sec"; sleepytime=$inc1
+    elif [ $tot2 -lt $max2 ]; then
+        ((tot2+=inc2)); gwtotal="$tot2 min"; sleepytime=$((60*inc2))
+    elif [ $tot3 -lt $max3 ]; then
+        ((tot3+=inc3)); gwtotal="$tot3 min"; sleepytime=$((60*inc3))
+    fi
+    # printf "sleep %3d" $sleepytime
+    sleep $sleepytime
 }
-wait-for-image;
+# gradwait --init; echo ""
+# for i in {1..1000}; do gradwait; echo , waited $gwtotal; done
+
+# Wait for buildkite to create at least one docker image on at least one agent
+gradwait --init; $max1=0  # Skip the once-every-10-seconds phase
+while [ "$(getstate image-exists)" != TRUE ]; do
+    bkmsg "Waited $gwtotal for image build (image-exists=$(getstate image-exists))"
+    gradwait
+done
+bkclr "Docker image exists on at least one agent machine"
+bkclr "Took $gwtotal to build first image"
 
 setstate launch-state READY
 (
@@ -84,15 +106,12 @@ EOF
 sleep 10
 
 function wait-for-launch {
-    totsec=0; waitinc=10
+    gradwait --init
     while [ "$(getstate launch-state)" != LAUNCHED ]; do
-        bkmsg "$1 waited $totsec secs for launch (launch-state=$(getstate launch-state))"
-        [ "$totsec" -ge $((4*3600)) ] && exit 13  # Give up after four hours I dunno
-        # Wait quickly, then more slowly, with max wait = 1 minute
-        sleep $waitinc; ((totsec+=waitinc));
-        [ "$waitinc" -gt 60 ] && waitinc=60 || waitinc=$((waitinc*11/10))
+        bkmsg "$1 waited $gwtotal secs for launch (launch-state=$(getstate launch-state))"
+        gradwait
     done
-    bkmsg "Step '$label' be LAUNCHED"
+    bkclr "Step '$1' be LAUNCHED after $gwtotal wait"
 }
 wait-for-launch "Zircon Gold"
 
@@ -232,10 +251,10 @@ done
 #     # set -x; $REGRESS_METAHOOKS --pre-command
 # 
 #     function setstate { buildkite-agent meta-data set $$1 --job $BUILDKITE_JOB_ID $$2; }
-#     function bkmsg    { buildkite-agent annotate --context foo --append "$$1"; }
+#     function bkmsg    { buildkite-agent annotate --context foo --append "$$1<br />"; }
 # 
 #     setstate image-exists TRUE
 #     setstate launch-state LAUNCHED
-#     bkmsg "BD sets LAUNCHED ($BUILDKITE_LABEL)"
+#     bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED"
 # 
 #END preamble
