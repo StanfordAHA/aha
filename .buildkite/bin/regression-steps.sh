@@ -68,7 +68,7 @@ function wait-for-launch {
 ########################################################################
 buildsteps=$(
   sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-  cat <<'  EOF' | sed '/^    //'  # sed script to correct for indentation
+  cat << '    EOF' | sed '/^    //'  # sed script to correct for indentation
     steps:
     - label: "khaki prep"
       key: "kprep"
