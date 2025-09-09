@@ -63,7 +63,7 @@ steps:
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
+        pre-command: RSTEP=$i ; \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
         pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 EOF
      [ "$i" != 0 ] && echo "$CONCURRENCY"
@@ -129,7 +129,7 @@ done
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
 #         done
 # 
-#         mdkey=regress$$REGRESSION_STEP
+#         mdkey=regress$$RSTEP
 #         buildkite-agent annotate --context foo --append "BD buildkite-agent meta-data set '$$mdkey' running --job $BUILDKITE_JOB_ID<br />"
 #         buildkite-agent meta-data set $$mdkey running --job $BUILDKITE_JOB_ID
 # 
