@@ -142,11 +142,12 @@ done
 # 
 #     # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
 #     (
+#         mdkey=regress$$RSTEP
 #         # "flock" exclusionary zone ensures that only one guy builds the new image
 #         lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
 #         i=0; while ! flock -n 9; do
 #             [ "$$i" -eq  0 ] && echo "Someone appears to be currently (re)building docker image"
-#             buildkite-agent annotate --context foo --append "BD touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out"
+#             buildkite-agent annotate --context foo --append "BD touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out<br />"
 #             buildkite-agent annotate --context foo --append "BD buildkite-agent meta-data set '$$mdkey' locked-out --job $BUILDKITE_JOB_ID<br />"
 #             buildkite-agent meta-data set $$mdkey locked-out --job $BUILDKITE_JOB_ID
 #             touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out; exit 0
@@ -156,7 +157,6 @@ done
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
 #         done
 # 
-#         mdkey=regress$$RSTEP
 #         buildkite-agent annotate --context foo --append "BD buildkite-agent meta-data set '$$mdkey' running --job $BUILDKITE_JOB_ID<br />"
 #         buildkite-agent meta-data set $$mdkey running --job $BUILDKITE_JOB_ID
 # 
