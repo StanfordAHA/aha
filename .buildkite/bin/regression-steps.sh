@@ -129,8 +129,8 @@ done
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
 #         done
 # 
-#         mdkey=regress$REGRESSION_STEP
-#         buildkite-agent annotate --context foo --append "buildkite-agent meta-data set '$$mdkey' running --job $BUILDKITE_JOB_ID<br />"
+#         mdkey=regress$$REGRESSION_STEP
+#         buildkite-agent annotate --context foo --append "BD buildkite-agent meta-data set '$$mdkey' running --job $BUILDKITE_JOB_ID<br />"
 #         buildkite-agent meta-data set $$mdkey running --job $BUILDKITE_JOB_ID
 # 
 #         echo "# We have the lock; look for $IMAGE"
