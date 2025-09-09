@@ -59,26 +59,36 @@ steps:
 - label: "$label"
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
-  command: \$REGRESS_METAHOOKS --commands
+  command: |
+      test -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out && exit
+      \$REGRESS_METAHOOKS --commands
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
-        pre-command: RSTEP=$i ; \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
-        pre-exit:    \$REGRESS_METAHOOKS --pre-exit
+        pre-command: |
+            /bin/rm -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out
+            RSTEP=$i
+            \$BUILD_DOCKER
+            test -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out && exit
+            cd .
+            \$REGRESS_METAHOOKS --pre-command
+        pre-exit: |
+            \$REGRESS_METAHOOKS --pre-exit
+            /bin/rm -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out
 EOF
      [ "$i" != 0 ] && echo "$CONCURRENCY"
      echo "") | buildkite-agent pipeline upload
 
     buildkite-agent annotate --context foo --append "buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID<br />"
     state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-    buildkite-agent annotate --context foo --append "Okay now state$i='$state'<br />"
-    buildkite-agent annotate --context foo --append "Waiting for state$i=running<br />"
+    buildkite-agent annotate --context foo --append "Okay now regress$i='$state'<br />"
+    buildkite-agent annotate --context foo --append "Waiting for regress$i=running<br />"
     delay_so_far=0; while [ "$state" != "running" ]; do
         buildkite-agent annotate --context foo --append "$i in the loop<br />"
-        buildkite-agent annotate --context foo --append "Okay now2 state$i='$state'<br />"
+        buildkite-agent annotate --context foo --append "Okay now2 regress$i='$state'<br />"
         sleep 10; ((delay_so_far+=10))
         state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-        buildkite-agent annotate --context foo --append "...$delay_so_far secs: state$i='$state'<br />"
+        buildkite-agent annotate --context foo --append "...$delay_so_far secs: regress$i='$state'<br />"
         [ "$delay_so_far" -gt 600 ] && break
     done
     buildkite-agent annotate --context foo --append "loop be done<br />"
@@ -123,7 +133,8 @@ done
 #         lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
 #         i=0; while ! flock -n 9; do
 #             [ "$$i" -eq  0 ] && echo "Someone appears to be currently (re)building docker image"
-#             exit 0
+#             buildkite-agent annotate --context foo --append "BD touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out"
+#             touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out; exit 0
 #             echo "Waited $$((i++)) minutes..."
 #             sleep 60
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
