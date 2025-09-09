@@ -18,9 +18,51 @@
 #     
 #       command: $REGRESS_METAHOOKS --commands
 
-# Preamble from below
+function setstate { buildkite-agent meta-data set $1 --job $BUILDKITE_JOB_ID $2; }
+function getstate { buildkite-agent meta-data get $1 --job $BUILDKITE_JOB_ID; }
+function bkmsg { buildkite-agent annotate --context foo --append "$1<br />"; }
+
+setstate image-exists FALSE
 (
-cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
+cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'  # Preamble from below
+cat <<'EOF'
+steps:
+- label: "khaki prep"
+  key: "kprep"
+  agents: { hostname: khaki }
+  command: echo done
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $BUILD_DOCKER
+
+- label: "r8cad prep"
+  key: "r8prep"
+  agents: { hostname: r8cad-docker }
+  command: echo done
+  plugins:
+    - uber-workflow/run-without-clone:
+    - improbable-eng/metahook:
+        pre-command: $BUILD_DOCKER
+EOF
+) | buildkite-agent pipeline upload
+
+# BUILD_DOCKER sets image-exists TRUE, launch-state LAUNCHED
+
+function wait-for-image {
+    waitmin=0
+    while [ "`getstate image-exists`" != TRUE ]; do
+        bkmsg "Waited $waitmin mins for image build (image-exists=`getstate image-exists`)"
+        [ "$waitmin" -ge 240 ] && exit 13  # Give up after four hours I dunno
+        ((waitmin++)); sleep 60
+    done
+    bkmsg "Docker image exists on at least one agent machine"
+}
+wait-for-image;
+
+setstate launch-state READY
+(
+cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'  # Preamble from below
 cat <<'EOF'
 steps:
 - label: "Zircon Gold"
@@ -41,19 +83,33 @@ EOF
 ) | buildkite-agent pipeline upload
 sleep 10
 
+function wait-for-launch {
+    totsec=0; waitinc=10
+    while [ "`getstate launch-state`" != LAUNCHED ]; do
+        bkmsg "$1 waited $waitsec secs for launch (launch-state=`getstate launch-state`)"
+        [ "$waitsec" -ge $((4*3600)) ] && exit 13  # Give up after four hours I dunno
+        # Wait quickly, then more slowly, with max wait = 1 minute
+        sleep $waitinc; ((totsec+=$waitinc));
+        [ "$waitinc" -gt 60 ] && waitinc=60 || waitinc=$((waitinc*11/10)
+    done
+    bkmsg "Step '$label' be LAUNCHED"
+}
+wait-for-launch "Zircon Gold"
+
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
   concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
 "
 # E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
+NSTEPS="0 1 2 3"
 for i in $NSTEPS; do
-    buildkite-agent meta-data set regress$i init --job $BUILDKITE_JOB_ID
-    state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-    buildkite-agent annotate --context foo --append "Okay now regress$i='$state'<br />"
+    [ "$i" == 0 ] && label="Fast" || label="Regress $i"
+    setstate launch-state READY
+    bkmsg "$label READY TO LAUNCH"
     sleep 10
 
-    [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-    script=$(cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
+    # Launch next regression step
+    (cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
      cat <<EOF
 steps:
 - label: "$label"
@@ -80,42 +136,11 @@ EOF
     echo "")
     echo "$script" | buildkite-agent pipeline upload
 
-    buildkite-agent annotate --context foo --append "buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID<br />"
-    state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-    buildkite-agent annotate --context foo --append "Okay now regress$i='$state'<br />"
-    buildkite-agent annotate --context foo --append "Waiting for regress$i=running<br />"
-
-    delay_so_far=0; while [ "$state" == "init" ]; do
-        buildkite-agent annotate --context foo --append "$i in the loop<br />"
-        buildkite-agent annotate --context foo --append "Okay now2 regress$i='$state'<br />"
-        sleep 10; ((delay_so_far+=10))
-        state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-        buildkite-agent annotate --context foo --append "...waited $delay_so_far secs: regress$i='$state'<br />"
-        [ "$delay_so_far" -gt 600 ] && break
-    done
-
-    delay_so_far=0; while [ "$state" != "running" ]; do  # assert state==locked-out?
-        buildkite-agent annotate --context foo --append "$i in the loop<br />"
-        buildkite-agent annotate --context foo --append "Okay now2 regress$i='$state'<br />"
-        sleep 60; ((delay_so_far+=10))
-        echo "$script" | buildkite-agent pipeline upload
-        state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-        buildkite-agent annotate --context foo --append "...waited $delay_so_far mins: regress$i='$state'<br />"
-        [ "$delay_so_far" -gt 3600 ] && break
-    done
-
-    buildkite-agent annotate --context foo --append "loop be done<br />"
-    buildkite-agent annotate --context foo --append "BEGIN $i label=$label state='$state'<br />"
+    # Wait for step to launch
+    wait-for-launch "$label";
+    bkmsg "Step '$label' be LAUNCHED"
     sleep 10
 done
-
-# for i in $NSTEPS; do
-#     sleep 1
-#     key=regress$i
-#     label=`buildkite-agent step get "label" --step $key`
-#     state=`buildkite-agent step get "state" --step $key`
-#     buildkite-agent annotate --context foo --append "$i label=$label state='$state'<br />"
-# done
 
 #BEGIN preamble
 # env:
@@ -142,23 +167,14 @@ done
 # 
 #     # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
 #     (
-#         mdkey=regress$$RSTEP
 #         # "flock" exclusionary zone ensures that only one guy builds the new image
 #         lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
 #         i=0; while ! flock -n 9; do
 #             [ "$$i" -eq  0 ] && echo "Someone appears to be currently (re)building docker image"
-#             buildkite-agent annotate --context foo --append "BD touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out<br />"
-#             buildkite-agent annotate --context foo --append "BD buildkite-agent meta-data set '$$mdkey' locked-out --job $BUILDKITE_JOB_ID<br />"
-#             buildkite-agent meta-data set $$mdkey locked-out --job $BUILDKITE_JOB_ID
-#             touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out; exit 0
-#             # ------------------------------------------------------------------------
 #             echo "Waited $$((i++)) minutes..."
 #             sleep 60
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
 #         done
-# 
-#         buildkite-agent annotate --context foo --append "BD buildkite-agent meta-data set '$$mdkey' running --job $BUILDKITE_JOB_ID<br />"
-#         buildkite-agent meta-data set $$mdkey running --job $BUILDKITE_JOB_ID
 # 
 #         echo "# We have the lock; look for $IMAGE"
 #         if ! [ `docker images -q $IMAGE` ]; then
@@ -216,5 +232,11 @@ done
 #     # cd .  # Got weird error without this...??
 #     # set -x; $REGRESS_METAHOOKS --pre-command
 # 
+#     function setstate { buildkite-agent meta-data set $$1 --job $BUILDKITE_JOB_ID $$2; }
+#     function bkmsg    { buildkite-agent annotate --context foo --append "$$1"; }
+# 
+#     setstate image-exists TRUE
+#     setstate launch-state LAUNCHED
+#     bkmsg "BD sets LAUNCHED ($BUILDKITE_LABEL)"
 # 
 #END preamble
