@@ -64,10 +64,11 @@ EOF
      [ "$i" != 0 ] && echo "$CONCURRENCY"
      echo "") | buildkite-agent pipeline upload
     sleep 10
+    buildkite-agent annotate --context foo --append "BEGIN $i label=$label state='$state'<br />"
 done
 
 for i in $NSTEPS; do
-    sleep 10
+    sleep 1
     key=regress$i
     label=`buildkite-agent step get "label" --step $key`
     state=`buildkite-agent step get "state" --step $key`
@@ -103,6 +104,7 @@ done
 #         lockfile=aha-flow-lock-$BUILDKITE_BUILD_NUMBER
 #         i=0; while ! flock -n 9; do
 #             [ "$$i" -eq  0 ] && echo "Someone appears to be currently (re)building docker image"
+#             exit 0
 #             echo "Waited $$((i++)) minutes..."
 #             sleep 60
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
