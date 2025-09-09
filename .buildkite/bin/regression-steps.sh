@@ -18,13 +18,13 @@
 #     
 #       command: $REGRESS_METAHOOKS --commands
 
-function setstate { buildkite-agent meta-data set $1 --job $BUILDKITE_JOB_ID $2; }
-function getstate { buildkite-agent meta-data get $1 --job $BUILDKITE_JOB_ID; }
+function setstate { buildkite-agent meta-data set "$1" --job "$BUILDKITE_JOB_ID" "$2"; }
+function getstate { buildkite-agent meta-data get "$1" --job "$BUILDKITE_JOB_ID"; }
 function bkmsg { buildkite-agent annotate --context foo --append "$1<br />"; }
 
 setstate image-exists FALSE
 (
-cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'  # Preamble from below
+sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
 cat <<'EOF'
 steps:
 - label: "khaki prep"
@@ -50,11 +50,11 @@ EOF
 # BUILD_DOCKER sets image-exists TRUE, launch-state LAUNCHED
 
 function wait-for-image {
-    waitmin=0
-    while [ "`getstate image-exists`" != TRUE ]; do
-        bkmsg "Waited $waitmin mins for image build (image-exists=`getstate image-exists`)"
-        [ "$waitmin" -ge 240 ] && exit 13  # Give up after four hours I dunno
-        ((waitmin++)); sleep 60
+    totmin=0
+    while [ "$(getstate image-exists)" != TRUE ]; do
+        bkmsg "Waited $totmin mins for image build (image-exists=$(getstate image-exists))"
+        [ "$totmin" -ge 240 ] && exit 13  # Give up after four hours I dunno
+        ((totmin++)); sleep 60
     done
     bkmsg "Docker image exists on at least one agent machine"
 }
@@ -62,7 +62,7 @@ wait-for-image;
 
 setstate launch-state READY
 (
-cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'  # Preamble from below
+sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
 cat <<'EOF'
 steps:
 - label: "Zircon Gold"
@@ -85,12 +85,12 @@ sleep 10
 
 function wait-for-launch {
     totsec=0; waitinc=10
-    while [ "`getstate launch-state`" != LAUNCHED ]; do
-        bkmsg "$1 waited $waitsec secs for launch (launch-state=`getstate launch-state`)"
-        [ "$waitsec" -ge $((4*3600)) ] && exit 13  # Give up after four hours I dunno
+    while [ "$(getstate launch-state)" != LAUNCHED ]; do
+        bkmsg "$1 waited $totsec secs for launch (launch-state=$(getstate launch-state))"
+        [ "$totsec" -ge $((4*3600)) ] && exit 13  # Give up after four hours I dunno
         # Wait quickly, then more slowly, with max wait = 1 minute
-        sleep $waitinc; ((totsec+=$waitinc));
-        [ "$waitinc" -gt 60 ] && waitinc=60 || waitinc=$((waitinc*11/10)
+        sleep $waitinc; ((totsec+=waitinc));
+        [ "$waitinc" -gt 60 ] && waitinc=60 || waitinc=$((waitinc*11/10))
     done
     bkmsg "Step '$label' be LAUNCHED"
 }
@@ -109,7 +109,7 @@ for i in $NSTEPS; do
     sleep 10
 
     # Launch next regression step
-    (cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
+    (sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"
      cat <<EOF
 steps:
 - label: "$label"
@@ -133,8 +133,7 @@ steps:
             /bin/rm -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out
 EOF
     [ "$i" != 0 ] && echo "$CONCURRENCY"
-    echo "")
-    echo "$script" | buildkite-agent pipeline upload
+    echo "") | buildkite-agent pipeline upload
 
     # Wait for step to launch
     wait-for-launch "$label";
@@ -182,7 +181,7 @@ done
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
 # 
 #             # Change step label to reflect docker build DB
-#             buildkite-agent step update "label" " +DB" --append
+#             buildkite-agent step update "label" " DB" --append
 # 
 #             # Remove docker images older than one day
 #             echo "--- Cleanup old docker images"
