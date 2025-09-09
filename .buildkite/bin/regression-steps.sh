@@ -79,7 +79,8 @@ EOF
     buildkite-agent annotate --context foo --append "Okay now FOOZER='$foozer'<br />"
     buildkite-agent annotate --context foo --append "Waiting for $i to start running<br />"
     buildkite-agent annotate --context foo --append "Waiting for FOOZER=BOOZER<br />"
-    delay_so_far=0; while [ "$state" != "running" ]; do
+    # delay_so_far=0; while [ "$state" != "running" ]; do
+    delay_so_far=0; while [ "$foozer" != "BOOZER" ]; do
         sleep 10; ((delay_so_far+=10))
         buildkite-agent annotate --context foo --append "...$delay_so_far secs: state='$state'<br/>"
         foozer=`buildkite-agent meta-data get "FOOZER" --job $BUILDKITE_JOB_ID`
