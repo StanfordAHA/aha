@@ -137,7 +137,6 @@ class Tests:
                 "apps/get_apply_e8m0_scale_fp_RV",
             ]
             external_mu_tests = [
-                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
                 "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
                 "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
 
@@ -228,6 +227,9 @@ class Tests:
             ]
             resnet_tests = [
                 "conv1",
+            ]
+            external_mu_tests = [
+                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
             ]
             external_mu_tests_fp = [
                 # INNER REDUCTION WORKAROUND CONV5_X downsample
