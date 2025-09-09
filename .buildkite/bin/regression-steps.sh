@@ -66,10 +66,10 @@ EOF
     sleep 10
     state=`buildkite-agent step get "state" --step $regress$i`
     buildkite-agent annotate --context foo --append "Waiting for $i to start running"
-    delay_so_far=0 while [ "$state" != "running" ]; do
+    delay_so_far=0; while [ "$state" != "running" ]; do
+        sleep 10; ((delay_so_far+=10))
         buildkite-agent annotate --context foo --append "...$delay_so_far secs: state='$state'<br/>"
         [ "$delay_so_far" -gt 600 ] && break
-        sleep 10; ((delay_so_far++10))
         state=`buildkite-agent step get "state" --step $regress$i`
     done
     buildkite-agent annotate --context foo --append "BEGIN $i label=$label state='$state'<br />"
