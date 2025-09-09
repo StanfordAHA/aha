@@ -26,7 +26,10 @@ finalmsg=""
 function setstate { buildkite-agent meta-data set "$1" --job "$BUILDKITE_JOB_ID" "$2"; }
 function getstate { buildkite-agent meta-data get "$1" --job "$BUILDKITE_JOB_ID"; }
 function bkmsg { buildkite-agent annotate --context foo --append "$1<br />"; }
-function bkclr { finalmsg="$finalmsg$1<br />"; buildkite-agent annotate --context foo "$finalmsg"; }
+function bkclr {
+    finalmsg="$(date +%H:%M) $finalmsg$1<br />"
+    buildkite-agent annotate --context foo "$finalmsg"
+}
 
 # Wait for increasingly-longer times with each new invocation of this function
 # To use:   "while !COND ; do gradwait; done"
@@ -61,7 +64,7 @@ function wait-for-launch {
     while [ "$(getstate launch-state)" != LAUNCHED ]; do
         gradwait; bkmsg "...$1 waited $gwtotal for launch..."
     done
-    bkclr "Step '$1' be LAUNCHED after $gwtotal wait"
+    bkclr "step '$1' launches after $gwtotal wait"
 }
 
 ########################################################################
@@ -91,6 +94,7 @@ buildsteps=$(
     EOF
 )
 
+# Launch image build steps and wait for at least one to complete
 setstate image-exists FALSE
 echo "$buildsteps" | buildkite-agent pipeline upload
 
@@ -103,6 +107,7 @@ done
 bkclr "Docker image exists on at least one agent machine"
 bkclr "Took $gwtotal to build first image"
 
+# Upload gold step, wait for it to start running (i.e. "launch")
 goldstep=$(
 sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
 cat <<'EOF'
@@ -127,19 +132,19 @@ setstate launch-state READY
 echo "$goldstep" | buildkite-agent pipeline upload
 wait-for-launch "Zircon Gold"
 
+# Fairness algorithm (CONCURRENCY=4) means at most four regression steps can run at a time
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
   concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
 "
+# Launch regression steps
+# Each new step uploads only after previous step has started running.
 # E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
-NSTEPS="0 1 2 3"
+# NSTEPS="0 1 2 3"
 for i in $NSTEPS; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     setstate launch-state READY
     bkmsg "$label READY TO LAUNCH"
-    sleep 10
-
-    # Launch next regression step
     (sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"
      cat <<EOF
 steps:
@@ -165,11 +170,8 @@ steps:
 EOF
     [ "$i" != 0 ] && echo "$CONCURRENCY"
     echo "") | buildkite-agent pipeline upload
-
-    # Wait for step to launch
     wait-for-launch "$label";
     bkmsg "Step '$label' be LAUNCHED"
-    sleep 10
 done
 
 #BEGIN preamble
