@@ -49,11 +49,11 @@ CONCURRENCY="
 for i in $NSTEPS; do
     buildkite-agent meta-data set regress$i init --job $BUILDKITE_JOB_ID
     state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-    buildkite-agent annotate --context foo --append "Okay now state$i='$state'<br />"
+    buildkite-agent annotate --context foo --append "Okay now regress$i='$state'<br />"
     sleep 10
 
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-    (cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
+    script=$(cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
      cat <<EOF
 steps:
 - label: "$label"
@@ -76,21 +76,34 @@ steps:
             \$REGRESS_METAHOOKS --pre-exit
             /bin/rm -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out
 EOF
-     [ "$i" != 0 ] && echo "$CONCURRENCY"
-     echo "") | buildkite-agent pipeline upload
+    [ "$i" != 0 ] && echo "$CONCURRENCY"
+    echo "")
+    echo "$script" | buildkite-agent pipeline upload
 
     buildkite-agent annotate --context foo --append "buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID<br />"
     state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
     buildkite-agent annotate --context foo --append "Okay now regress$i='$state'<br />"
     buildkite-agent annotate --context foo --append "Waiting for regress$i=running<br />"
-    delay_so_far=0; while [ "$state" != "running" ]; do
+
+    delay_so_far=0; while [ "$state" == "init" ]; do
         buildkite-agent annotate --context foo --append "$i in the loop<br />"
         buildkite-agent annotate --context foo --append "Okay now2 regress$i='$state'<br />"
         sleep 10; ((delay_so_far+=10))
         state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
-        buildkite-agent annotate --context foo --append "...$delay_so_far secs: regress$i='$state'<br />"
+        buildkite-agent annotate --context foo --append "...waited $delay_so_far secs: regress$i='$state'<br />"
         [ "$delay_so_far" -gt 600 ] && break
     done
+
+    delay_so_far=0; while [ "$state" != "running" ]; do  # assert state==locked-out?
+        buildkite-agent annotate --context foo --append "$i in the loop<br />"
+        buildkite-agent annotate --context foo --append "Okay now2 regress$i='$state'<br />"
+        sleep 60; ((delay_so_far+=10))
+        echo "$script" | buildkite-agent pipeline upload
+        state=`buildkite-agent meta-data get regress$i --job $BUILDKITE_JOB_ID`
+        buildkite-agent annotate --context foo --append "...waited $delay_so_far mins: regress$i='$state'<br />"
+        [ "$delay_so_far" -gt 3600 ] && break
+    done
+
     buildkite-agent annotate --context foo --append "loop be done<br />"
     buildkite-agent annotate --context foo --append "BEGIN $i label=$label state='$state'<br />"
     sleep 10
@@ -134,7 +147,10 @@ done
 #         i=0; while ! flock -n 9; do
 #             [ "$$i" -eq  0 ] && echo "Someone appears to be currently (re)building docker image"
 #             buildkite-agent annotate --context foo --append "BD touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out"
+#             buildkite-agent annotate --context foo --append "BD buildkite-agent meta-data set '$$mdkey' locked-out --job $BUILDKITE_JOB_ID<br />"
+#             buildkite-agent meta-data set $$mdkey locked-out --job $BUILDKITE_JOB_ID
 #             touch /tmp/$BUILDKITE_BUILD_NUMBER-regress$$RSTEP-bugged-out; exit 0
+#             # ------------------------------------------------------------------------
 #             echo "Waited $$((i++)) minutes..."
 #             sleep 60
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
