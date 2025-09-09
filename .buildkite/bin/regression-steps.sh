@@ -47,8 +47,8 @@ CONCURRENCY="
 "
 # E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
 for i in $NSTEPS; do
-    buildkite-agent meta-data set "FOOZER" "NOOZER" --build
-    foozer=`buildkite-agent meta-data get "FOOZER" --build`
+    buildkite-agent meta-data set "FOOZER" "NOOZER" --job $BUILDKITE_JOB_ID
+    foozer=`buildkite-agent meta-data get "FOOZER" --job $BUILDKITE_JOB_ID`
     buildkite-agent annotate --context foo --append "Okay now FOOZER='$foozer'<br />"
 
 
@@ -75,13 +75,14 @@ EOF
 
 
     state=`buildkite-agent step get "state" --step $regress$i`
-    foozer=`buildkite-agent meta-data get "FOOZER" --build`
+    foozer=`buildkite-agent meta-data get "FOOZER" --job $BUILDKITE_JOB_ID`
     buildkite-agent annotate --context foo --append "Okay now FOOZER='$foozer'<br />"
     buildkite-agent annotate --context foo --append "Waiting for $i to start running<br />"
     buildkite-agent annotate --context foo --append "Waiting for FOOZER=BOOZER<br />"
     delay_so_far=0; while [ "$state" != "running" ]; do
         sleep 10; ((delay_so_far+=10))
         buildkite-agent annotate --context foo --append "...$delay_so_far secs: state='$state'<br/>"
+        foozer=`buildkite-agent meta-data get "FOOZER" --job $BUILDKITE_JOB_ID`
         buildkite-agent annotate --context foo --append "...$delay_so_far secs: FOOZER='$foozer'<br/>"
         [ "$delay_so_far" -gt 600 ] && break
         state=`buildkite-agent step get "state" --step $regress$i`
