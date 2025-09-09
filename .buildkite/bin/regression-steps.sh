@@ -68,7 +68,7 @@ function wait-for-launch {
 ########################################################################
 buildsteps=$(
   sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-  cat <<'  EOF'
+  cat <<'  EOF' | sed '/^    //'  # sed script to correct for indentation
     steps:
     - label: "khaki prep"
       key: "kprep"
@@ -87,7 +87,7 @@ buildsteps=$(
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
             pre-command: $BUILD_DOCKER
-  EOF
+    EOF
 )
 setstate image-exists FALSE
 echo "$buildsteps" | buildkite-agent pipeline upload
