@@ -33,6 +33,7 @@ function bkclr { finalmsg="$finalmsg$1<br />"; buildkite-agent annotate --contex
 function gradwait {
     # Note it will be BIG TROUBLE if you try and execute this in a subshell :(
     # FIXME can we invent a version that works in a subshell?
+    sleepytime=0
     if [ "$1" == "--init" ]; then
         gwtotal="0 sec"
         tot1=0;  inc1=10; max1=60   # Check every 10 sec for one minute
@@ -68,7 +69,7 @@ function wait-for-launch {
 ########################################################################
 buildsteps=$(
   sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-  cat << '    EOF' | sed '/^    //'  # sed script to correct for indentation
+  cat << '    EOF' | sed 's/^    //'  # sed script to correct for indentation
     steps:
     - label: "khaki prep"
       key: "kprep"
@@ -89,14 +90,13 @@ buildsteps=$(
             pre-command: $BUILD_DOCKER
     EOF
 )
+
 setstate image-exists FALSE
 echo "$buildsteps" | buildkite-agent pipeline upload
 
-# BUILD_DOCKER sets image-exists TRUE, launch-state LAUNCHED
-
-# Wait for buildkite to create at least one docker image on at least one agent
-gradwait --init; max1=0  # Skip the once-every-10-seconds phase
+# At completion of docker build, BUILD_DOCKER will set image-exists=TRUE
 bkmsg "Waiting for at least one image build..."
+gradwait --init; max1=0  # Skip the once-every-10-seconds phase
 while [ "$(getstate image-exists)" != TRUE ]; do
     gradwait; bkmsg "...waited $gwtotal for image build..."
 done
