@@ -51,7 +51,6 @@ for i in $NSTEPS; do
     foozer=`buildkite-agent meta-data get "FOOZER" --job $BUILDKITE_JOB_ID`
     buildkite-agent annotate --context foo --append "Okay now FOOZER='$foozer'<br />"
 
-
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     (cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
      cat <<EOF
@@ -69,36 +68,30 @@ EOF
      [ "$i" != 0 ] && echo "$CONCURRENCY"
      echo "") | buildkite-agent pipeline upload
 
-
-# buildkite-agent meta-data set "chosen-agent" "$AGENT_NAME" --build
-#     name: "$(buildkite-agent meta-data get "chosen-agent" --build)"
-
-
-    state=`buildkite-agent step get "state" --step $regress$i`
+    buildkite-agent annotate --context foo --append "buildkite-agent meta-data get 'FOOZER' --job $BUILDKITE_JOB_ID<br />"
     foozer=`buildkite-agent meta-data get "FOOZER" --job $BUILDKITE_JOB_ID`
-    buildkite-agent annotate --context foo --append "Okay now FOOZER='$foozer'<br />"
-    buildkite-agent annotate --context foo --append "Waiting for $i to start running<br />"
-    buildkite-agent annotate --context foo --append "Waiting for FOOZER=BOOZER<br />"
-    # delay_so_far=0; while [ "$state" != "running" ]; do
+    buildkite-agent annotate --context foo --append "Okay $i now FOOZER='$foozer'<br />"
+    buildkite-agent annotate --context foo --append "Waiting $i for FOOZER=BOOZER<br />"
     delay_so_far=0; while [ "$foozer" != "BOOZER" ]; do
+        buildkite-agent annotate --context foo --append "$i in the loop<br />"
+        buildkite-agent annotate --context foo --append "Okay now2 $i FOOZER='$foozer'<br />"
         sleep 10; ((delay_so_far+=10))
-        buildkite-agent annotate --context foo --append "...$delay_so_far secs: state='$state'<br/>"
         foozer=`buildkite-agent meta-data get "FOOZER" --job $BUILDKITE_JOB_ID`
         buildkite-agent annotate --context foo --append "...$delay_so_far secs: FOOZER='$foozer'<br/>"
         [ "$delay_so_far" -gt 600 ] && break
-        state=`buildkite-agent step get "state" --step $regress$i`
     done
+    buildkite-agent annotate --context foo --append "loop be done<br />"
     buildkite-agent annotate --context foo --append "BEGIN $i label=$label state='$state'<br />"
     sleep 10
 done
 
-for i in $NSTEPS; do
-    sleep 1
-    key=regress$i
-    label=`buildkite-agent step get "label" --step $key`
-    state=`buildkite-agent step get "state" --step $key`
-    buildkite-agent annotate --context foo --append "$i label=$label state='$state'<br />"
-done
+# for i in $NSTEPS; do
+#     sleep 1
+#     key=regress$i
+#     label=`buildkite-agent step get "label" --step $key`
+#     state=`buildkite-agent step get "state" --step $key`
+#     buildkite-agent annotate --context foo --append "$i label=$label state='$state'<br />"
+# done
 
 #BEGIN preamble
 # env:
@@ -135,7 +128,8 @@ done
 #             [ "$$i" -gt 99 ] && echo "Giving up" && exit 13
 #         done
 # 
-#         buildkite-agent meta-data set "FOOZER" "BOOZER" --build
+#         buildkite-agent annotate --context foo --append "buildkite-agent meta-data set 'FOOZER' 'BOOZER' --job $BUILDKITE_JOB_ID<br />"
+#         buildkite-agent meta-data set "FOOZER" "BOOZER" --job $BUILDKITE_JOB_ID
 # 
 #         echo "# We have the lock; look for $IMAGE"
 #         if ! [ `docker images -q $IMAGE` ]; then
