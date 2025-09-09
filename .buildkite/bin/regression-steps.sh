@@ -18,7 +18,6 @@
 #     
 #       command: $REGRESS_METAHOOKS --commands
 
-if [ "$1" == 1 ]; then
 # Preamble from below
 (
 cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
@@ -41,9 +40,6 @@ steps:
 EOF
 ) | buildkite-agent pipeline upload
 sleep 10
-
-else
-
 
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
@@ -70,34 +66,12 @@ EOF
     sleep 10
 done
 
-fi
-
-sleep 60
 for i in $NSTEPS; do
+    sleep 10
     key=regress$i
+    label=`buildkite-agent step get "label" --step $key`
     state=`buildkite-agent step get "state" --step $key`
-    buildkite-agent annotate --context foo --append "$i state='$state'\n"
-done
-
-sleep 60
-for i in $NSTEPS; do
-    key=regress$i
-    state=`buildkite-agent step get "state" --step $key`
-    buildkite-agent annotate --context foo --append "$i state='$state'\n"
-done
-
-sleep 60
-for i in $NSTEPS; do
-    key=regress$i
-    state=`buildkite-agent step get "state" --step $key`
-    buildkite-agent annotate --context foo --append "$i state='$state'\n"
-done
-
-sleep 60
-for i in $NSTEPS; do
-    key=regress$i
-    state=`buildkite-agent step get "state" --step $key`
-    buildkite-agent annotate --context foo --append "$i state='$state'\n"
+    buildkite-agent annotate --context foo --append "$i label=$label state='$state'<br />"
 done
 
 #BEGIN preamble
