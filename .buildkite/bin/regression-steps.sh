@@ -143,6 +143,7 @@ CONCURRENCY="
 # E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
 # NSTEPS="0 1 3 4 5"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
 NSTEPS="3 3 3 3 3 3"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
+for j in a b c d; do
 for i in $NSTEPS; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     setstate launch-state READY
@@ -150,31 +151,28 @@ for i in $NSTEPS; do
     (sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"
      cat <<EOF
 steps:
-- label: "$label"
+- label: "$label$j"
   agents: { hostname: khaki }  # FIXME delete this after debugging is through...
-  key: "regress$i"
+  key: "regress$i$j"
   env: { REGRESSION_STEP: $i }
   command: |
-      test -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out && exit
       \$REGRESS_METAHOOKS --commands
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
         pre-command: |
-            /bin/rm -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out
             RSTEP=$i
             \$BUILD_DOCKER
-            test -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out && exit
             cd .
             \$REGRESS_METAHOOKS --pre-command
         pre-exit: |
             \$REGRESS_METAHOOKS --pre-exit
-            /bin/rm -f /tmp/\$BUILDKITE_BUILD_NUMBER-regress$i-bugged-out
 EOF
     [ "$i" != 0 ] && echo "$CONCURRENCY"
     echo "") | buildkite-agent pipeline upload
     wait-for-launch "$label";
     bkmsg "Step '$label' be LAUNCHED"
+done
 done
 
 #BEGIN preamble

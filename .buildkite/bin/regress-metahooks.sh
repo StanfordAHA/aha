@@ -3,7 +3,8 @@
 # This is where we offload meta-hook commands for pipeline.yml
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
-CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
+# FIXME added a $$, get rid of it later!!!
+CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}-$$"
 echo "--- using CONTAINER='${CONTAINER}'"
 
 if [ "$1" == '--pre-command' ]; then
