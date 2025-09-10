@@ -61,10 +61,11 @@ function gradwait {
 
 function wait-for-launch {
     gradwait --init
+    bkmsg "WAITING..."
     while [ "$(getstate launch-state)" != LAUNCHED ]; do
-        gradwait; bkmsg "...$1 waited $gwtotal for launch..."
+        gradwait; bkmsg "...$gwtotal..."  # E.g. "...10 sec..."
     done
-    bkclr "step '$1' launches after $gwtotal wait"
+    bkclr "'$1' launches after $gwtotal wait"
 }
 
 ########################################################################
@@ -149,6 +150,7 @@ for i in $NSTEPS; do
      cat <<EOF
 steps:
 - label: "$label"
+  agents: { hostname: khaki }  # FIXME delete this after debugging is through...
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
   command: |
