@@ -240,10 +240,18 @@ def dispatch(args, extra_args=None):
             if not os.path.exists(placement):
                 print(f".. {placement} not found; wait a minute maybe?")
                 print(f".. haha waiting is not going to help you now....")
-                import time
-                time.sleep(60)
-                if not os.path.exists(placement):
-                    print(f".. {placement} STILL not found; I'm about to die aren't I")
+                print(f".. I'm about to die if I don't do something drastic!")
+
+                print(f".. FRY A HEN! omg")
+                # Are we supposed to check for daemon first tho?
+                subprocess_call_log(
+                    cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
+                    cwd=args.aha_dir / "garnet",
+                    log=args.log,
+                    log_file_path=log_file_path,
+                    env=env,
+                    do_cmd=do_cmd,
+                )
 
 
 
