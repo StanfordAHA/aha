@@ -208,9 +208,10 @@ def dispatch(args, extra_args=None):
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             if 'no daemon found' in p.stdout:
-                print(f'OH NOOOO where da daemon go?')
-                print(f'Daemon dead, maybe we soon be dead too?')
-                print(f'The next messag eyou see may be a lie....!')
+                print(f'.. STDOUT={p.stdout})
+                print(f'.. OH NOOOO where da daemon go?')
+                print(f'.. Daemon dead, maybe we soon be dead too?')
+                print(f'.. The next messag eyou see may be a lie....!')
             ########################################################################
             ########################################################################
 
