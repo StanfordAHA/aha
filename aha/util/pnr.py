@@ -191,6 +191,32 @@ def dispatch(args, extra_args=None):
 
         # Daemon runs in the background; need this to tell us when the PNR is done
         if need_daemon:
+
+
+
+            ########################################################################
+            ########################################################################
+            # I THINK lake is dying and killing the daemon sometimes?
+            # Because daemon dies in the background, our retry mechanism is no good?
+            # This block is an attempt to track down that intermittent error...
+            # Can remove/update this block if/when we confirm the problem maybe...
+
+            print(f'+++ DEBUGGING THE DAEMON (and lake?)')
+            # Do a '--daemon status' to see if daemon exists now?
+            cmd = [sys.executable, "garnet.py", "--daemon", "status"]
+            p = subprocess.run(cmd, text=True, cwd=args.aha_dir / "garnet",
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            if 'no daemon found' in p.stdout:
+                print(f'OH NOOOO where da daemon go?')
+                print(f'Daemon dead, maybe we soon be dead too?')
+                print(f'The next messag eyou see may be a lie....!')
+            ########################################################################
+            ########################################################################
+
+
+
+
             print(f'--- BEGIN LAUNCHED NEW DAEMON in pnr; waiting now...')
             subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
 
@@ -208,13 +234,14 @@ def dispatch(args, extra_args=None):
 
 
             # placement = os.path.join(dirname, "design.place")
-            placement = os.path.join(arg_path, "design.place")
+            placement = os.path.join(arg_path, "bin/design.place")
             print(f'+++ Looking for {placement}')
             if not os.path.exists(placement):
                 print(f".. {placement} not found; wait a minute maybe?")
+                print(f".. haha waiting is not going to help you now....")
                 import time
                 time.sleep(60)
-                if not os.path.exists("bin/design.place"):
+                if not os.path.exists(placement):
                     print(f".. {placement} STILL not found; I'm about to die aren't I")
 
 
