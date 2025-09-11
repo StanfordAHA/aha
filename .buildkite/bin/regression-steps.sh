@@ -1,6 +1,10 @@
 #!/bin/bash
 # This is designed to be called from pipeline.yml
 
+# Uncomment for debugging maybe
+# function buildkite-agent { [ "$2" == "upload" ] && cat; }
+# function bkmsg { echo "$1"; }
+
 # Run "fast" app suite as regression step 0.
 # Then run regression configs CONFIG=pr_aha1,2,3
 
@@ -72,13 +76,10 @@ function wait-for-launch {
 # MAIN
 ########################################################################
 
-# To get next step in list e.g. RSTEPS=(build gold 1 2 3 4 5 6 7 8 9)
-bkmsg "Found RSTEPS = (${RSTEPS[*]})"
-next=$RSTEPS; RSTEPS=("${RSTEPS[@]:1}")
-if ! [ "$next" ]; then echo DONE; exit; fi
-bkmsg "2 So next=$next"
-bkmsg "3 And now RSTEPS = (${RSTEPS[*]})"
-
+#------------------------------------------------------------------------------
+# Get next step in list e.g. args=(build gold 1 2 3 4 5 6 7 8 9)
+next="$1"; if ! [ "$next" ]; then echo DONE; exit; fi
+shift; bkmsg "User requested step '$next' maybe"
 
 #------------------------------------------------------------------------------
 if [ "$next" == "build" ]; then
@@ -97,7 +98,7 @@ bdkhaki=$(
       key: "kprep"
       agents: { hostname: khaki }
       # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh
+      command: .buildkite/bin/regression-steps.sh "$@"
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -111,7 +112,7 @@ bdcad=$(
       key: "r8prep"
       agents: { hostname: r8cad-docker }
       # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh
+      command: .buildkite/bin/regression-steps.sh "$@"
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -153,7 +154,7 @@ steps:
         exit 13
     else echo "--- $$msg Zircon gold check PASSED"
     fi
-    .buildkite/bin/regression-steps.sh  # Chain to next step
+    .buildkite/bin/regression-steps.sh "$@"  # Chain to next step
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -203,7 +204,7 @@ steps:
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
   command: |
-    .buildkite/bin/regression-steps.sh  # Chain to next step
+    .buildkite/bin/regression-steps.sh "$@"  # Chain to next step
     \$REGRESS_METAHOOKS --commands
   plugins:
     - uber-workflow/run-without-clone:
