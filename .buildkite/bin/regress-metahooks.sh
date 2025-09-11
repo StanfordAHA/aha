@@ -64,14 +64,14 @@ if [ "$1" == '--pre-command' ]; then
     echo "--- Pass DO_PR info to docker"
     echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
     if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-        echo "+++ SET DO_PR"; mkdir -p temp; touch temp/DO_PR
+        echo ".. SET DO_PR"; mkdir -p temp; touch temp/DO_PR
         if [ "$PR_REPO_TAIL" == "garnet" ]; then
             # Delete .TEST as a sign to skip tests
             echo "+++ Garnet PR detected, so skip redundant regressions"
             rm -rf temp/.TEST
         fi
     else
-        echo "+++ UNSET DO_PR"; /bin/rm -rf temp/DO_PR
+        echo ".. UNSET DO_PR"; /bin/rm -rf temp/DO_PR
     fi
     test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
