@@ -174,11 +174,12 @@ def dispatch(args, extra_args=None):
 
             # When running as daemon, must use non-blocking "Popen" and not "check_call"
             need_daemon = 'no daemon found' in p.stdout
+            print(f"--- Looking for garnet daemon")
             if need_daemon:
-                print(f"--- found no daemon, setting do_cmd to Popen", flush=True)
+                print(f".. found no daemon, setting do_cmd to Popen", flush=True)
                 do_cmd = subprocess.Popen
             else:
-                print(f"--- found the daemon, leaving do_cmd alone", flush=True)
+                print(f".. found the daemon, leaving do_cmd alone", flush=True)
 
         subprocess_call_log(
             cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
@@ -188,88 +189,47 @@ def dispatch(args, extra_args=None):
             env=env,
             do_cmd=do_cmd,
         )
-
-        # Daemon runs in the background; need this to tell us when the PNR is done
-        if need_daemon:
-
-
-
-            ########################################################################
-            ########################################################################
-            # I THINK lake is dying and killing the daemon sometimes?
-            # Because daemon dies in the background, our retry mechanism is no good?
-            # This block is an attempt to track down that intermittent error...
-            # Can remove/update this block if/when we confirm the problem maybe...
-
-            print(f'+++ DEBUGGING THE DAEMON (and lake?)')
-            # Do a '--daemon status' to see if daemon exists now?
-            cmd = [sys.executable, "garnet.py", "--daemon", "status"]
-            p = subprocess.run(cmd, text=True, cwd=args.aha_dir / "garnet",
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-            print(f'.. STDOUT=\n{p.stdout}\n\n')
-            if 'no daemon found' in p.stdout:
-                print(f'.. OH NOOOO where da daemon go?')
-                print(f'.. Daemon dead, maybe we soon be dead too?')
-                print(f'.. The next message you see may be a lie....!')
-
-
-            cmd = ['bash', '-c', 'grep . /tmp/garnet-daemon* | grep -v state0']
-            p = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            print(f'.. daemon-info=\n{p.stdout}\n\n')
-
-
-            ########################################################################
-            ########################################################################
-
-
-
-
+        if '--daemon' in extra_args:
+            # Daemon runs in the background; need this to tell us when the PNR is done
             print(f'--- BEGIN LAUNCHED NEW DAEMON in pnr; waiting now...')
             subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
 
     # generate meta_data.json file
     if not args.no_parse:
         if not str(args.app).startswith("handcrafted"):
+
             # get the full path of the app
             arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
+
+            ########################################################################
+            ########################################################################
+            # It looks like lake is dying and killing the daemon sometimes?
+            # We detect that by noticing that "design.place" never gets generated.
+            # FIXME somebody needs to debug lake and find out why it dies :(
+            ########################################################################
+            ########################################################################
+
+            dplace = os.path.join(arg_path, "bin/design.place")
+            print(f'+++ Looking for {dplace}')
+            if os.path.exists(dplace):
+                print(f".. {dplace} FOUND, hooray!")
+            else:
+                print(f".. {dplace} not found; RETRY failed garnet call")
+                subprocess_call_log(
+                    cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
+                    cwd=args.aha_dir / "garnet",
+                    log=args.log, log_file_path=log_file_path,
+                    env=env, do_cmd=do_cmd,
+                )
+                if '--daemon' in extra_args:
+                    # Daemon runs in the background; need this to tell us when the PNR is done
+                    print(f'--- (RE)LAUNCHED RETRY-DAEMON in pnr, now gotta wait for it to finish...')
+                    subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
 
             if args.mu_test is not None and args.mu_test != "":
                 voyager_tiling_path = f"/aha/voyager/compiled_collateral/{args.mu_test}/output_tiling.txt"
             else:
                 voyager_tiling_path = ""
-
-
-
-            # placement = os.path.join(dirname, "design.place")
-            placement = os.path.join(arg_path, "bin/design.place")
-            print(f'+++ Looking for {placement}')
-            if not os.path.exists(placement):
-                print(f".. {placement} not found; wait a minute maybe?")
-                print(f".. haha waiting is not going to help you now....")
-                print(f".. I'm about to die if I don't do something drastic!")
-
-                print(f".. FRY A HEN! omg")
-                # Are we supposed to check for daemon first tho?
-                subprocess_call_log(
-                    cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
-                    cwd=args.aha_dir / "garnet",
-                    log=args.log,
-                    log_file_path=log_file_path,
-                    env=env,
-                    do_cmd=do_cmd,
-                )
-                # Daemon runs in the background; need this to tell us when the PNR is done
-                if need_daemon:
-                    print(f'--- BEGIN LAUNCHED NEW DAEMON in pnr; waiting now...')
-                    subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
-
-            else:
-                print(f".. {placement} FOUND")
-
-
-
-
 
             subprocess_call_log(
                 cmd=[sys.executable,
