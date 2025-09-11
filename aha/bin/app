@@ -66,7 +66,7 @@ CONTAINER=
 function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
 while [ $# -gt 0 ] ; do
     case "$1" in
-        --show*)      
+        --show*)
           if not_suite "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
 
         --run*)        RUN_SUITE=$2; shift ;;
@@ -95,7 +95,7 @@ while [ $# -gt 0 ] ; do
 
         # E.g. "8x8 apps/pointwise"
         *x*) size=$1; appname=$2; shift; ;;
-        *) 
+        *)
             printf "\n***ERROR*** Unknown command-line arg '$1'\n"
             echo "$HELP"
             printf "\n***ERROR*** Unknown command-line arg '$1'\n"
@@ -147,11 +147,11 @@ function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 
 ########################################################################
 # Build a COMPACT data structure containing all apps and suites e.g.
-# 
+#
 # fast   sparse_tests   vec_identity       8x8 --removed 4 --mu 8
 # fast   glb_tests      apps/pointwise     8x8 --removed 4 --mu 8
 # fast   glb_tests_fp   tests/fp_pointwise 8x8 --removed 4 --mu 8
-# 
+#
 # pr_aha sparse_tests   vec_elemmul        28x16
 # pr_aha sparse_tests   mat_vecmul_ij      28x16
 
@@ -187,7 +187,7 @@ function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 
 ########################################################################
 # Print contents of indicated suite "$SUITE" e.g.
-# 
+#
 #     % app --show-suite fast
 #     app 8x8 vec_identity       --removed 4 --mu 8
 #     app 8x8 apps/pointwise     --removed 4 --mu 8
@@ -208,7 +208,7 @@ if [ "$SUITE" ]; then
         if [ "$SUITE" == all ]; then
             echo -n "# "; hline 60
             echo "# REGRESSION SUITE: $s"
-        else 
+        else
             echo ""
         fi
         [ "$DBG" ] && echo "$suites" | egrep ^"$s"
@@ -253,7 +253,7 @@ if ! [ "$IN_DOCKER" ]; then
     image=stanfordaha/garnet:latest
     docker pull $image
     container=deleteme-$USER-run-one-app-$$
-    docker run -id --name $container --rm $CAD $image bash
+    docker run -id --name $container --rm -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" $CAD $image bash
 
     # Trap and kill docker container on exit ('--rm' no workee, but why?)
     function cleanup { printf '\n\n'; set -x; docker kill $container || echo okay; }

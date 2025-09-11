@@ -86,7 +86,7 @@ elif [ "$1" == '--commands' ]; then
 
     docker kill $CONTAINER || echo okay
     docker images; echo IMAGE=$IMAGE; echo TAG=$TAG
-    docker run -id --name $CONTAINER --rm -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
+    docker run -id --name $CONTAINER --rm -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" -v /cad:/cad -v ./temp:/buildkite:rw $IMAGE bash
     docker cp /nobackup/zircon/MatrixUnit_sim_sram.v $CONTAINER:/aha/garnet/MatrixUnit_sim_sram.v
     docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v $CONTAINER:/aha/garnet/MatrixUnitWrapper_sim.v
     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
@@ -144,7 +144,7 @@ elif [ "$1" == '--commands' ]; then
 
       if [ "$REGSTEP" ] && [ "$CONFIG" == "pr_aha" ]; then
           echo "ERROR Unassigned repo step '$REGSTEP'"; exit 13
-      else      
+      else
           echo "Trigger came from aha repo step '$REGSTEP'; use $CONFIG";
       fi
 
