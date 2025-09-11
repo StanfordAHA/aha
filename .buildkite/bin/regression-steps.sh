@@ -73,7 +73,7 @@ function wait-for-launch {
 ########################################################################
 
 # To get next step in list e.g. RSTEPS=(build gold 1 2 3 4 5 6 7 8 9)
-next=$RSTEPS; RSTEPS=(${RSTEPS[@]:1})
+next=$RSTEPS; RSTEPS=("${RSTEPS[@]:1}")
 
 #------------------------------------------------------------------------------
 if [ "$next" == "build" ]; then
@@ -122,14 +122,14 @@ echo "$buildsteps" | buildkite-agent pipeline upload
 
 
 #------------------------------------------------------------------------------
-elif [ "$next" == "gold" ]
+elif [ "$next" == "gold" ]; then
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
-# Skip gold for now FIXME restore before final check-in
-exec $0
-exit
+# FIXME Skip gold for now FIXME restore before final check-in
+exec "$0" # FIXME Skip gold for now FIXME restore before final check-in
+
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
@@ -156,7 +156,7 @@ steps:
 EOF
 )
 setstate launch-state READY
-echo "goldstep" | buildkite-agent pipeline upload
+echo "$goldstep" | buildkite-agent pipeline upload
 # wait-for-launch "Zircon Gold"
 
 
@@ -213,14 +213,12 @@ steps:
 EOF
     [ "$i" != 0 ] && echo "$CONCURRENCY"
     echo "") | buildkite-agent pipeline upload
+fi
 
 #------------------------------------------------------------------------------
 exit
 
-    # wait-for-launch "$label";
-    # bkmsg "Step '$label' be LAUNCHED"
-
-
+#------------------------------------------------------------------------------
 #BEGIN preamble
 # env:
 #   # This script allows retries even after original collateral is gone...
