@@ -71,8 +71,8 @@ function wait-for-launch {
 ########################################################################
 # MAIN
 ########################################################################
-buildsteps=$(
-  sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
+
+bdkhaki=$(
   cat << '    EOF' | sed 's/^    //'  # sed script to correct for indentation
     steps:
     - label: "khaki prep"
@@ -83,7 +83,11 @@ buildsteps=$(
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
             pre-command: $BUILD_DOCKER
-
+    EOF
+)
+bdcad=$(
+  cat << '    EOF' | sed 's/^    //'  # sed script to correct for indentation
+    steps:
     - label: "r8cad prep"
       key: "r8prep"
       agents: { hostname: r8cad-docker }
@@ -94,8 +98,13 @@ buildsteps=$(
             pre-command: $BUILD_DOCKER
     EOF
 )
+buildsteps=$(
+  sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
+  echo "$bdkhaki"
+  # echo "$bdcad"  # FIXME restore before final check-in
+)
 
-# Launch image build steps and wait for at least one to complete
+# Launch image build step(s) and wait for at least one to complete
 setstate image-exists FALSE
 echo "$buildsteps" | buildkite-agent pipeline upload
 
@@ -277,4 +286,3 @@ done
 #     bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED"
 # 
 #END preamble
-
