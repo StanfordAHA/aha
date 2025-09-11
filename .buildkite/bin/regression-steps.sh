@@ -129,9 +129,11 @@ steps:
         pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
 )
-setstate launch-state READY
-echo "$goldstep" | buildkite-agent pipeline upload
-wait-for-launch "Zircon Gold"
+
+# FIXME restore this before final check-in
+# setstate launch-state READY
+# echo "$goldstep" | buildkite-agent pipeline upload
+# wait-for-launch "Zircon Gold"
 
 # Fairness algorithm (CONCURRENCY=4) means at most four regression steps can run at a time
 CONCURRENCY="
