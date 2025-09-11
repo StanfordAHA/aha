@@ -72,13 +72,27 @@ function wait-for-launch {
 # MAIN
 ########################################################################
 
+# To get next step in list e.g. RSTEPS=(build gold 1 2 3 4 5 6 7 8 9)
+next=$RSTEPS; RSTEPS=(${RSTEPS[@]:1})
+
+#------------------------------------------------------------------------------
+if [ "$next" == "build" ]; then
+
+    # FIXME both of these laucnh at the same time;
+    # possibility exists that both call regression-steps.sh at same time
+    # that would be trouble for our new chaining approach
+    # flock? something simpler/smarter?
+
+
+# setstate image-exists FALSE
 bdkhaki=$(
   cat << '    EOF' | sed 's/^    //'  # sed script to correct for indentation
     steps:
     - label: "khaki prep"
       key: "kprep"
       agents: { hostname: khaki }
-      command: echo done
+      # Launch next step if/when build is complete
+      command: .buildkite/bin/regression-steps.sh
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -91,7 +105,8 @@ bdcad=$(
     - label: "r8cad prep"
       key: "r8prep"
       agents: { hostname: r8cad-docker }
-      command: echo done
+      # Launch next step if/when build is complete
+      command: .buildkite/bin/regression-steps.sh
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -103,20 +118,21 @@ buildsteps=$(
   echo "$bdkhaki"
   # echo "$bdcad"  # FIXME restore before final check-in
 )
-
-# Launch image build step(s) and wait for at least one to complete
-setstate image-exists FALSE
 echo "$buildsteps" | buildkite-agent pipeline upload
 
-# At completion of docker build, BUILD_DOCKER will set image-exists=TRUE
-bkmsg "Waiting for at least one image build..."
-gradwait --init; max1=0  # Skip the once-every-10-seconds phase
-while [ "$(getstate image-exists)" != TRUE ]; do
-    gradwait; bkmsg "...waited $gwtotal for image build..."
-done
-bkclr "Docker image exists on at least one agent machine"
-bkclr "Took $gwtotal to build first image"
 
+#------------------------------------------------------------------------------
+elif [ "$next" == "gold" ]
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# Skip gold for now FIXME restore before final check-in
+exec $0
+exit
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Upload gold step, wait for it to start running (i.e. "launch")
 goldstep=$(
 sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
@@ -132,44 +148,58 @@ steps:
         exit 13
     else echo "--- $$msg Zircon gold check PASSED"
     fi
+    .buildkite/bin/regression-steps.sh  # Chain to next step
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
         pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
 EOF
 )
-
-# FIXME restore this before final check-in
-# setstate launch-state READY
-# echo "$goldstep" | buildkite-agent pipeline upload
+setstate launch-state READY
+echo "goldstep" | buildkite-agent pipeline upload
 # wait-for-launch "Zircon Gold"
 
-# Fairness algorithm (CONCURRENCY=4) means at most four regression steps can run at a time
+
+#------------------------------------------------------------------------------
+else
+    # Wait for prev step launch
+    # NOTE prev step must have some mechanism to set launch-state=LAUNCHED!
+    # ...or maybe does BUILD_DOCKER do that maybe? Shure and begorrah it does...
+    # But what if this is the first step to be called hey? what about that then? hey?
+
+    # How about this:
+    # pipeline.yml calls regression-steps.sh --newbuild
+    # pipeline.yml sets launch-state READY
+    # on READY, wait-for-launch drops straight through to test
+    # test runs BUILD_DOCKER which sets launch-state LAUNCHED (eventually)
+    # then we set launch-state to READY and launch next step
+    # that will work right???
+
+    # After "build" and "gold", only remaining options for $next are numbers 0-9
+    i=$next
+
+    # Fairness algorithm (CONCURRENCY=4) means at most four regression steps can run at a time
 CONCURRENCY="
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
   concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
 "
-# Launch regression steps
-# Each new step uploads only after previous step has started running.
-# E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
-# NSTEPS="0 1 3 4 5"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
-NSTEPS="3 3 3 3 3 3"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
-NSTEPS=3  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
-NSTEPS="0 1 3 4 5"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
-for i in $NSTEPS; do
-for j in ""; do
+    # Launch next step
+    # Each new step uploads only after previous step has started running.
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-    setstate launch-state READY
-    bkmsg "$label READY TO LAUNCH"
+
+    # setstate launch-state READY
+    # bkmsg "$label READY TO LAUNCH"
+
     (sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"
      cat <<EOF
 steps:
-- label: "$label$j"
+- label: "$label"
   agents: { hostname: khaki }  # FIXME delete this after debugging is through...
-  key: "regress$i$j"
+  key: "regress$i"
   env: { REGRESSION_STEP: $i }
   command: |
-      \$REGRESS_METAHOOKS --commands
+    .buildkite/bin/regression-steps.sh  # Chain to next step
+    \$REGRESS_METAHOOKS --commands
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -183,10 +213,13 @@ steps:
 EOF
     [ "$i" != 0 ] && echo "$CONCURRENCY"
     echo "") | buildkite-agent pipeline upload
-    wait-for-launch "$label";
-    bkmsg "Step '$label' be LAUNCHED"
-done
-done
+
+#------------------------------------------------------------------------------
+exit
+
+    # wait-for-launch "$label";
+    # bkmsg "Step '$label' be LAUNCHED"
+
 
 #BEGIN preamble
 # env:
