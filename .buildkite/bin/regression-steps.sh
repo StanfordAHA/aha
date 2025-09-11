@@ -145,8 +145,10 @@ CONCURRENCY="
 # E.g. NSTEPS="0 1 2 3 4 5 6 7 8 9"
 # NSTEPS="0 1 3 4 5"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
 NSTEPS="3 3 3 3 3 3"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
-for j in a b c d; do
+NSTEPS=3  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
+NSTEPS="0 1 3 4 5"  # Trying to reproduce intermittent 'missing design.place' error e.g. Regress 3 on build 12067
 for i in $NSTEPS; do
+for j in ""; do
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     setstate launch-state READY
     bkmsg "$label READY TO LAUNCH"

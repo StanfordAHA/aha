@@ -96,7 +96,7 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
                 new_env_vars.update(env_vars_fin[app_name][str(env_parameters)])
 
     # No need for each var to have its own '---' group, just use '+++' instead of '---'
-    print(f"+++ Setting environment variables for {app}")
+    print(f"--- Setting environment variables for {app}")
     for n, v in new_env_vars.items():
         print(f"... {n} = {v}")
         env[n] = v
