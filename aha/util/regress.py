@@ -437,7 +437,8 @@ def test_dense_app(
     if tgroup == 'external_mu_tests':
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
     elif tgroup == 'external_mu_tests_fp':
-        test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp")
+        test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+        test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
 
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)

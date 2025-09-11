@@ -232,6 +232,12 @@ class Tests:
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
             ]
             external_mu_tests_fp = [
+                # X-DIM HOST TILING CONV1 (im2col-based)
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel1_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel2_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel3_RV_E64_MB",
+
                 # INNER REDUCTION WORKAROUND CONV5_X downsample
                 "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_inner_reduction_workaround_RV_E64_MB",
             ]
@@ -395,6 +401,12 @@ class Tests:
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
             ]
             external_mu_tests_fp = [
+                # X-DIM HOST TILING CONV1 (im2col-based)
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel1_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel2_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel3_RV_E64_MB",
+
                 "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
@@ -631,6 +643,12 @@ class Tests:
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
             ]
             external_mu_tests_fp = [
+                # X-DIM HOST TILING CONV1 (im2col-based)
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel1_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel2_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel3_RV_E64_MB",
+
                 "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 
@@ -697,6 +715,12 @@ class Tests:
 
             ]
             external_mu_tests_fp = [
+                # X-DIM HOST TILING CONV1 (im2col-based)
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel1_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel2_RV_E64_MB",
+                "resnet18-submodule -> zircon_nop_post_conv1_kernel3_RV_E64_MB",
+
                 "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
 

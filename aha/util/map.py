@@ -200,7 +200,7 @@ def dispatch(args, extra_args=None):
 
         subprocess_call_log(
             cmd=[sys.executable,
-                    f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_gold_for_k_tiling.py",
+                    f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
                     "--input", f"/aha/voyager/gold_data.txt",
                     "--output", f"/aha/voyager/gold_data.txt"
                     ],
