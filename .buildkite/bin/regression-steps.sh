@@ -73,12 +73,17 @@ function wait-for-launch {
 ########################################################################
 
 # To get next step in list e.g. RSTEPS=(build gold 1 2 3 4 5 6 7 8 9)
+bkmsg "Found RSTEPS = (${RSTEPS[*]})"
 next=$RSTEPS; RSTEPS=("${RSTEPS[@]:1}")
+if ! [ "$next" ]; then echo DONE; exit; fi
+bkmsg "2 So next=$next"
+bkmsg "3 And now RSTEPS = (${RSTEPS[*]})"
+
 
 #------------------------------------------------------------------------------
 if [ "$next" == "build" ]; then
 
-    # FIXME both of these laucnh at the same time;
+    # FIXME both of these launch at the same time;
     # possibility exists that both call regression-steps.sh at same time
     # that would be trouble for our new chaining approach
     # flock? something simpler/smarter?
@@ -128,7 +133,7 @@ elif [ "$next" == "gold" ]; then
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # FIXME Skip gold for now FIXME restore before final check-in
-exec "$0" # FIXME Skip gold for now FIXME restore before final check-in
+exec "$0"  # FIXME Skip gold for now FIXME restore before final check-in
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------

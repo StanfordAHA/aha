@@ -81,12 +81,12 @@ steps:
             (set -x; docker image rm "$$IMAGE" --no-prune) || echo okay
         fi
 
-  commands:
-  - export RSTEPS=(build gold 0 1 2 3 4 5 6 7 8 9)
-  - export RSTEPS=(build gold 0 1 3 4 5)
-  - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
-  - .buildkite/bin/regression-steps.sh
-  - echo "--- BDI PIPELINE.XML COMMANDS END"
+  commands: |
+    export RSTEPS=(build gold 0 1 2 3 4 5 6 7 8 9)
+    export RSTEPS=(build gold 0 1 3 4 5)
+    echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
+    .buildkite/bin/regression-steps.sh
+    echo "--- BDI PIPELINE.XML COMMANDS END"
 
 ########################################################################
 # STEP: Cleanup
