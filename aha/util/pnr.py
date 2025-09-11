@@ -211,11 +211,14 @@ def dispatch(args, extra_args=None):
             if 'no daemon found' in p.stdout:
                 print(f'.. OH NOOOO where da daemon go?')
                 print(f'.. Daemon dead, maybe we soon be dead too?')
+                print(f'.. The next message you see may be a lie....!')
 
-            # Print daemon info stored in /tmp
+
             cmd = ['bash', '-c', 'grep . /tmp/garnet-daemon* | grep -v state0']
             p = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             print(f'.. daemon-info=\n{p.stdout}\n\n')
+
+
             ########################################################################
             ########################################################################
 
@@ -256,6 +259,11 @@ def dispatch(args, extra_args=None):
                     env=env,
                     do_cmd=do_cmd,
                 )
+                # Daemon runs in the background; need this to tell us when the PNR is done
+                if need_daemon:
+                    print(f'--- BEGIN LAUNCHED NEW DAEMON in pnr; waiting now...')
+                    subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
+
             else:
                 print(f".. {placement} FOUND")
 
