@@ -207,11 +207,15 @@ def dispatch(args, extra_args=None):
             p = subprocess.run(cmd, text=True, cwd=args.aha_dir / "garnet",
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+            print(f'.. STDOUT=\n{p.stdout}\n\n')
             if 'no daemon found' in p.stdout:
-                print(f'.. STDOUT={p.stdout}')
                 print(f'.. OH NOOOO where da daemon go?')
                 print(f'.. Daemon dead, maybe we soon be dead too?')
-                print(f'.. The next messag eyou see may be a lie....!')
+
+            # Print daemon info stored in /tmp
+            cmd = ['bash', '-c', 'grep . /tmp/garnet-daemon* | grep -v state0']
+            p = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print(f'.. daemon-info=\n{p.stdout}\n\n')
             ########################################################################
             ########################################################################
 
@@ -252,6 +256,10 @@ def dispatch(args, extra_args=None):
                     env=env,
                     do_cmd=do_cmd,
                 )
+            else:
+                print(f".. {placement} FOUND")
+
+
 
 
 
