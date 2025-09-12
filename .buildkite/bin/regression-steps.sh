@@ -90,14 +90,17 @@ if [ "$next" == "build" ]; then
     # flock? something simpler/smarter?
 
 
-# setstate image-exists FALSE
+# It's okay for regression-steps.sh to FAIL in the commands below
+# b/c whichever one finishes FIRST will launch the next step successfully
+# whereas whoever finishes last will attempt the same launch and fail
+# (and that's okay, that's what's supposed to happen)
 bdkhaki=$(
   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
     - label: "khaki prep"
       key: "kprep"
       agents: { hostname: khaki }
       # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
+      command: .buildkite/bin/regression-steps.sh ARGS || echo okay
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -110,7 +113,7 @@ bdcad=$(
       key: "r8prep"
       agents: { hostname: r8cad-docker }
       # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
+      command: .buildkite/bin/regression-steps.sh ARGS || echo okay
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
