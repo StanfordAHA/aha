@@ -106,13 +106,13 @@ bdkhaki=$(
     EOF
 )
 bdcad=$(
-  cat << '    EOF' | sed 's/^    //'  # sed script to correct for indentation
+  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
     steps:
     - label: "r8cad prep"
       key: "r8prep"
       agents: { hostname: r8cad-docker }
       # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh "$@"
+      command: .buildkite/bin/regression-steps.sh ARGS
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -142,7 +142,7 @@ exec "$0"  # FIXME Skip gold for now FIXME restore before final check-in
 # Upload gold step, wait for it to start running (i.e. "launch")
 goldstep=$(
 sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-cat <<'EOF'
+cat <<'EOF' | sed "s/ARGS/$*/"
 steps:
 - label: "Zircon Gold"
   key: "zircon_gold"
@@ -154,7 +154,7 @@ steps:
         exit 13
     else echo "--- $$msg Zircon gold check PASSED"
     fi
-    .buildkite/bin/regression-steps.sh "$@"  # Chain to next step
+    .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
   plugins:
     - uber-workflow/run-without-clone:
     - improbable-eng/metahook:
@@ -197,14 +197,14 @@ CONCURRENCY="
     # bkmsg "$label READY TO LAUNCH"
 
     (sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"
-     cat <<EOF
+     cat <<EOF | sed "s/ARGS/$*/"
 steps:
 - label: "$label"
   agents: { hostname: khaki }  # FIXME delete this after debugging is through...
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
   command: |
-    .buildkite/bin/regression-steps.sh "$@"  # Chain to next step
+    .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
     \$REGRESS_METAHOOKS --commands
   plugins:
     - uber-workflow/run-without-clone:
