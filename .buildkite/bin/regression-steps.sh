@@ -1,6 +1,6 @@
 #!/bin/bash
 # This is designed to be called from pipeline.yml
-
+set -x
 # Uncomment for debugging maybe
 # function buildkite-agent { [ "$2" == "upload" ] && cat; }
 # function bkmsg { echo "$1"; }
@@ -134,7 +134,7 @@ elif [ "$next" == "gold" ]; then
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # FIXME Skip gold for now FIXME restore before final check-in
-exec "$0"  # FIXME Skip gold for now FIXME restore before final check-in
+exec "$0" $*  # FIXME Skip gold for now FIXME restore before final check-in
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
