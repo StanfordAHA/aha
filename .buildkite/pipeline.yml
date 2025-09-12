@@ -124,3 +124,17 @@ steps:
         [ $(buildkite-agent step get "outcome" --step "zircon_gold") == "passed" ] || FAIL=True
     fi
 
+    # 0..9 creates steps "regress0".."regress9" see?
+    echo '- Show outcomes from each regression step'
+    for i in $$RSTEPS; do
+        if [ "$$i" == 0 ]; then
+           echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0")`
+           [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
+           continue
+        fi
+        if (echo "$$i" | grep -E '^[1-9]$' > /dev/null); then
+            echo "regress$$i" outcome: `buildkite-agent step get "outcome" --step "regress$$i")`
+            [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
+        fi
+    done
+
