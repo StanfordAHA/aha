@@ -438,6 +438,7 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
     elif tgroup == 'external_mu_tests_fp':
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+        test, layer = parse_layer_parametrized_test(test, "zircon_dequantize_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
 
@@ -486,6 +487,12 @@ def test_dense_app(
 
     global info  # HA!
     start = time.time()
+
+    # For conv1, we want the gold-check to be done using submodule_1's gold
+    # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module
+    if mu_test == "resnet18-submodule":
+        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", "", "--mu-test", "resnet18-submodule_1", "--skip-cgra-map", "--voyager-gold-model-only" ,"--skip-env-vars"] + layer_array)
+
     if skip_cgra_map:
         print(f"--- {testname} - SKIP CGRA MAP", flush=True)
         info.append([f"--- {testname} - SKIP CGRA MAP", 0])
