@@ -198,7 +198,10 @@ elif [ "$1" == "--aha-flow" ]; then
     ~/bin/status-update --force pending;
 
     echo "--- Upload pipeline.yml"
-    buildkite-agent pipeline upload .buildkite/pipeline.yml;
+    cat .buildkite/pipeline.yml
+    echo "------------------------------------------------------------------------"
+
+    buildkite-agent pipeline upload --debug .buildkite/pipeline.yml
 fi
 
 echo "--- END custom-checkout.sh"
