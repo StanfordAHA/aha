@@ -123,3 +123,30 @@ steps:
         [ "$(buildkite-agent step get 'outcome' --step 'zircon_gold')" == 'passed' ] || FAIL=True
     fi
 
+    # 0..9 creates steps "regress0".."regress9" see?
+    echo '- Show outcomes from each regression step'
+    for i in $$RSTEPS; do
+        if [ "$$i" == 0 ]; then
+           echo fast outcome:     "$(buildkite-agent step get 'outcome' --step 'regress0')"
+           [ "$(buildkite-agent step get 'outcome' --step 'regress0')" == 'passed' ] || FAIL=True
+           continue
+        fi
+        if (echo "$$i" | grep -E '^[1-9]$' > /dev/null); then
+            echo "regress$$i" outcome: "$(buildkite-agent step get 'outcome' --step "regress$$i")"
+            [ "$(buildkite-agent step get 'outcome' --step "regress$$i")" == 'passed' ] || FAIL=True
+        fi
+    done
+
+    echo "-- FAIL=$$FAIL"
+
+    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine(s)
+    # Also see ~steveri/bin/status-update on kiwi
+    echo '- Send summary outcome "success" or "failure" to github PR'
+    if [ "$$FAIL" ]; then
+        ~/bin/status-update --force failure
+    else
+        ~/bin/status-update --force success
+    fi
+
+    echo '- Clean up your mess'
+    test -e "$$REGRESS_METAHOOKS" && rm "$$REGRESS_METAHOOKS" || echo okay
