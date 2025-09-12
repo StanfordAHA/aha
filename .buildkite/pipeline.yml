@@ -149,4 +149,4 @@ steps:
     fi
 
     echo '- Clean up your mess'
-    test -e "$REGRESS_METAHOOKS" && rm "$REGRESS_METAHOOKS" || echo okay
+    test -e "$$REGRESS_METAHOOKS" && rm "$$REGRESS_METAHOOKS" || echo okay
