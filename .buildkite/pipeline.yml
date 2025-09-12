@@ -143,9 +143,6 @@ steps:
     # Also see ~steveri/bin/status-update on kiwi
     echo "- Send summary outcome 'success' or 'failure' to github PR"
     # good to HERE maybe
-    if [ "$$FAIL" ]; then
-        ~/bin/status-update --force failure
-    else
-        ~/bin/status-update --force success
-    fi
 
+    echo '- Clean up your mess'
+    test -e "$$REGRESS_METAHOOKS" && rm "$$REGRESS_METAHOOKS" || echo okay
