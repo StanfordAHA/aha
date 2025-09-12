@@ -122,7 +122,7 @@ bdcad=$(
 buildsteps=$(
   sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
   echo "$bdkhaki"
-  # echo "$bdcad"  # FIXME restore before final check-in
+  echo "$bdcad"
 )
 echo "$buildsteps" | buildkite-agent pipeline upload
 
@@ -194,7 +194,7 @@ CONCURRENCY="
      cat <<EOF | sed "s/ARGS/$*/"
 steps:
 - label: "$label"
-  agents: { hostname: khaki }  # FIXME delete this after debugging is through...
+  # agents: { hostname: khaki }  # Can optionally limit this way for debugging etc.
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
   command: |
