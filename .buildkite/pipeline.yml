@@ -138,9 +138,11 @@ steps:
         fi
     done
 
-    echo "-- FAIL=$$FAIL"
+    if [ "$$FAIL" ]; then
+        ~/bin/status-update --force failure
+    else
+        ~/bin/status-update --force success
+    fi
 
-    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine(s)
-    # Also see ~steveri/bin/status-update on kiwi
-    echo "- Send summary outcome 'success' or 'failure' to github PR"
-
+    echo '- Clean up your mess'
+    test -e "$REGRESS_METAHOOKS" && rm "$REGRESS_METAHOOKS" || echo okay
