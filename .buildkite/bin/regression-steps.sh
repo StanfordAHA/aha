@@ -246,6 +246,8 @@ exit
 #         echo curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
 #         curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
 #         chmod +x $REGRESS_METAHOOKS
+#         curl $$remote/.buildkite/bin/regression-steps.sh -o .buildkite/bin/regression-steps.sh
+#         chmod +x .buildkite/bin/regression-steps.sh
 #     fi
 # 
 #     # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
