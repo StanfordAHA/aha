@@ -130,11 +130,6 @@ echo "$buildsteps" | buildkite-agent pipeline upload
 #------------------------------------------------------------------------------
 elif [ "$next" == "gold" ]; then
 
-# This is one way to skip a test for dev purposes
-# Better way maybe: don't include in list at pipeline.yml level!
-# bkmsg "SKIPPING GOLD TEST for now<br />"
-# exec "$0" $*  # FIXME Skip gold for now FIXME restore before final check-in
-
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
