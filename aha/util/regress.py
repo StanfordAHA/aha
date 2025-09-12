@@ -331,7 +331,8 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs,
                     test_dataset_runtime_dict[testname][result.split(f"{testname}_")[1].split("-")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
         time_test = time.time() - start
-    return 0, 0, time_test
+        active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
+    return 0, 0, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
 
 ###########################################################################
 # "parse" utilities used by test_dense_app() and test_hardcoded_dense_app()
@@ -394,6 +395,20 @@ def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
     if E64_multi_bank_mode_on:
         assert testname in Tests().E64_MB_supported_tests, err2
         assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
+
+
+def track_performance():
+    performance_summary_path = "/aha/garnet/tests/test_app/performance_summary.txt"
+    if not os.path.exists(performance_summary_path):
+        raise FileNotFoundError(f"Performance summary file not found: {performance_summary_path}")
+    with open(performance_summary_path) as f:
+        lines = [line.strip() for line in f]
+        clock_period = int(float(lines[1].split(": ")[1].split(' ns')[0]))
+        active_app_cycles = int(float(lines[2].split(": ")[1].split(' ns')[0]) / clock_period)
+        total_config_cycles = int(float(lines[3].split(": ")[1].split(' ns')[0]) / clock_period)
+        total_write_data_cycles = int(float(lines[4].split(": ")[1].split(' ns')[0]) / clock_period)
+
+    return active_app_cycles, total_config_cycles, total_write_data_cycles
 
 ########################################################################
 # app tests
@@ -590,7 +605,8 @@ def test_dense_app(
         buildkite_call(["aha", "test", test, "--mu-test", mu_test] + layer_array, env=env_vars)
     time_test = time.time() - start
 
-    return time_compile, time_map, time_test
+    active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
+    return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
 
 
 def test_hardcoded_dense_app(
@@ -711,7 +727,8 @@ def test_hardcoded_dense_app(
     buildkite_call(["aha", "test", test], env=env_vars)
 
     time_test = time.time() - start
-    return time_compile, time_map, time_test
+    active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
+    return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
 
 
 def dispatch(args, extra_args=None):
@@ -860,7 +877,7 @@ def dispatch(args, extra_args=None):
                         test, data_tile_pairs, kernel_name, 1, unroll)
                     pipeline_num_l = None
 
-                t0, t1, t2 = test_sparse_app(
+                t0, t1, t2, t3, t4, t5 = test_sparse_app(
                     test, seed_flow, tile_pairs,
                     pipeline_num_l=pipeline_num_l,
                     opal_workaround=args.opal_workaround,
@@ -869,7 +886,7 @@ def dispatch(args, extra_args=None):
                     mu_datawidth=mu_datawidth,
                     num_fabric_cols_removed=num_fabric_cols_removed,
                     mu_oc_0=mu_oc_0)
-                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
                 # remove the generated collateral for tiles that passed to avoid overrunning the disk
                 os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/{test}*")
@@ -891,14 +908,14 @@ def dispatch(args, extra_args=None):
 
         for test in sparse_tests:
             assert(not use_pipeline), "Pipeline mode is not supported with seed flow"
-            t0, t1, t2 = test_sparse_app(
+            t0, t1, t2, t3, t4, t5 = test_sparse_app(
                 test, seed_flow, data_tile_pairs,
                 opal_workaround=args.opal_workaround,
                 using_matrix_unit=using_matrix_unit,
                 mu_datawidth=mu_datawidth,
                 num_fabric_cols_removed=num_fabric_cols_removed,
                 mu_oc_0=mu_oc_0)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
     for test in [
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
@@ -914,12 +931,12 @@ def dispatch(args, extra_args=None):
             continue
 
         unparsed_name = test
-        t0, t1, t2 = test_dense_app(
+        t0, t1, t2, t3, t4, t5 = test_dense_app(
             test, tgroup, width, height, args.env_parameters, extra_args,
             using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth,
             num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0
         )
-        info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2])
+        info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2, t3, t4, t5])
 
     print(f"--- Processing app group hardcoded_dense_tests", flush=True)
     info.append(["APP GROUP hardcoded_dense_tests[]", 0])
@@ -962,8 +979,8 @@ def dispatch(args, extra_args=None):
             info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
 
             for test in no_zircon_sparse_tests:
-                t0, t1, t2 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
-                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+                t0, t1, t2, t3, t4, t5 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+                info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
         # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
 
@@ -979,8 +996,8 @@ def dispatch(args, extra_args=None):
                 info.append([f"APP GROUP {tgroup}[]", 0])
                 continue
 
-            t0, t1, t2 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)
-            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2])
+            t0, t1, t2, t3, t4, t5 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)
+            info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
     # Skip unnecessary garnet build if tests don't exist, duh.
     dense_only_tests_exist = True if glb_tests else False
@@ -1001,18 +1018,18 @@ def dispatch(args, extra_args=None):
         for test_index, test in enumerate(glb_tests):
             if test_index == num_dense_only_glb_tests:
                 break
-            t0, t1, t2 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=True)
-            info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
+            t0, t1, t2, t3, t4, t5 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=True)
+            info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
         for test in resnet_tests:
             # residual resnet test is not working with dense only mode
             if "residual" not in test:
-                t0, t1, t2 = test_dense_app("apps/resnet_output_stationary",
+                t0, t1, t2, t3, t4, t5 = test_dense_app("apps/resnet_output_stationary",
                                             width, height, args.env_parameters, extra_args, layer=test)
-                info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2])
+                info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
     print(f"+++ TIMING INFO", flush=True)
-    print(tabulate(info, headers=["step", "total", "compile", "map", "test"], floatfmt=".0f"), flush=True)
+    print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
 
 
 def gather_tests(tags):
