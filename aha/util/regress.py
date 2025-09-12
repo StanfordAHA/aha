@@ -331,7 +331,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs,
                     test_dataset_runtime_dict[testname][result.split(f"{testname}_")[1].split("-")[0]] += float(result.split("\n")[0].split(" ns")[0].split(" ")[-1])
 
         time_test = time.time() - start
-        active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
+    active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
     return 0, 0, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
 
 ###########################################################################
