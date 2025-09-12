@@ -93,7 +93,6 @@ if [ "$next" == "build" ]; then
 # setstate image-exists FALSE
 bdkhaki=$(
   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    steps:
     - label: "khaki prep"
       key: "kprep"
       agents: { hostname: khaki }
@@ -107,7 +106,6 @@ bdkhaki=$(
 )
 bdcad=$(
   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    steps:
     - label: "r8cad prep"
       key: "r8prep"
       agents: { hostname: r8cad-docker }
@@ -121,6 +119,7 @@ bdcad=$(
 )
 buildsteps=$(
   sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
+  echo "steps:"
   echo "$bdkhaki"
   echo "$bdcad"
 )
