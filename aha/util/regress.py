@@ -429,6 +429,9 @@ def test_dense_app(
         "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
         "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
         "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
+        "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+        "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
+        "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
     ]
     skip_cgra_pnr = skip_cgra_map
 
@@ -942,10 +945,10 @@ def dispatch(args, extra_args=None):
     info.append(["APP GROUP hardcoded_dense_tests[]", 0])
     for test in hardcoded_dense_tests:
         unparsed_name = test
-        t0, t1, t2 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
+        t0, t1, t2, t3, t4, t5 = test_hardcoded_dense_app(test, width, height, args.env_parameters, extra_args,
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth,
                         num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
-        info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2])
+        info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
     # Skip unnecessary garnet build if tests don't exist, duh.
     tests_exist = True if [
