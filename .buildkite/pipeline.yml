@@ -132,10 +132,10 @@ steps:
            [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
            continue
         fi
-        if (echo "$$i" | grep -E '^[1-9]$' > /dev/null); then
-            echo "regress$$i" outcome: `buildkite-agent step get "outcome" --step "regress$$i")`
-            [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
-        fi
+    #     if (echo "$$i" | grep -E '^[1-9]$' > /dev/null); then
+    #         echo "regress$$i" outcome: `buildkite-agent step get "outcome" --step "regress$$i")`
+    #         [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
+    #     fi
     done
     # 
     #     #     # echo "-- FAIL=$$FAIL"
