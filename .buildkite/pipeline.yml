@@ -127,7 +127,7 @@ steps:
     # 0..9 creates steps "regress0".."regress9" see?
     echo '- Show outcomes from each regression step'
     i=0
-    # for i in $$RSTEPS; do
+    for i in $$RSTEPS; do
         echo foo
         if [ "$$i" == 0 ]; then
            echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0")`
@@ -138,7 +138,7 @@ steps:
             echo "regress$$i" outcome: `buildkite-agent step get "outcome" --step "regress$$i")`
             [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
         fi
-    # done
+    done
     # 
     #     #     # echo "-- FAIL=$$FAIL"
     #     #     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine(s)
