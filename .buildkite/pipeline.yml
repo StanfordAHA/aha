@@ -17,7 +17,7 @@ env:
   # FIXME or could use 'set-metadata --build', right?
   COMMON: /var/lib/buildkite-agent/builds/DELETEME-$BUILDKITE_BUILD_NUMBER
 
-  REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
+  REGRESS_METAHOOKS: $COMMON/regress-metahooks.sh
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
   TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
