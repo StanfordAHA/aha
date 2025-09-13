@@ -95,9 +95,10 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
     if os.getenv("DENSE_READY_VALID") == "1":
         new_env_vars["PIPELINED"] = "0"
 
-    print(f"--- Setting environment variables for {app}")
+    # No need for each var to have its own '---' group, just use '+++' instead of '---'
+    print(f"+++ Setting environment variables for {app}")
     for n, v in new_env_vars.items():
-        print(f"--- {n} = {v}")
+        print(f"... {n} = {v}")
         env[n] = v
     # Also add app variable to env
     print(f"--- HALIDE_APP_PATH = {app}")
@@ -173,11 +174,12 @@ def dispatch(args, extra_args=None):
 
             # When running as daemon, must use non-blocking "Popen" and not "check_call"
             need_daemon = 'no daemon found' in p.stdout
+            print(f"--- Looking for garnet daemon")
             if need_daemon:
-                print(f"--- found no daemon, setting do_cmd to Popen", flush=True)
+                print(f".. found no daemon, setting do_cmd to Popen", flush=True)
                 do_cmd = subprocess.Popen
             else:
-                print(f"--- found the daemon, leaving do_cmd alone", flush=True)
+                print(f".. found the daemon, leaving do_cmd alone", flush=True)
 
         subprocess_call_log(
             cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
@@ -187,17 +189,42 @@ def dispatch(args, extra_args=None):
             env=env,
             do_cmd=do_cmd,
         )
-
-        # Daemon runs in the background; need this to tell us when the PNR is done
-        if need_daemon:
+        if '--daemon' in extra_args:
+            # Daemon runs in the background; need this to tell us when the PNR is done
             print(f'--- BEGIN LAUNCHED NEW DAEMON in pnr; waiting now...')
             subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
 
     # generate meta_data.json file
     if not args.no_parse:
         if not str(args.app).startswith("handcrafted"):
+
             # get the full path of the app
             arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app}"
+
+            ########################################################################
+            ########################################################################
+            # It looks like lake is dying and killing the daemon sometimes?
+            # We detect that by noticing that "design.place" never gets generated.
+            # FIXME somebody needs to debug lake and find out why it dies :(
+            ########################################################################
+            ########################################################################
+
+            dplace = os.path.join(arg_path, "bin/design.place")
+            print(f'+++ Looking for {dplace}')
+            if os.path.exists(dplace):
+                print(f".. {dplace} FOUND, hooray!")
+            else:
+                print(f".. {dplace} not found; RETRY failed garnet call")
+                subprocess_call_log(
+                    cmd=[sys.executable, "garnet.py"] + map_args + extra_args,
+                    cwd=args.aha_dir / "garnet",
+                    log=args.log, log_file_path=log_file_path,
+                    env=env, do_cmd=do_cmd,
+                )
+                if '--daemon' in extra_args:
+                    # Daemon runs in the background; need this to tell us when the PNR is done
+                    print(f'--- (RE)LAUNCHED RETRY-DAEMON in pnr, now gotta wait for it to finish...')
+                    subprocess.run([sys.executable, 'garnet.py', '--daemon', 'wait'], cwd='/aha/garnet')
 
             if args.mu_test is not None and args.mu_test != "":
                 voyager_tiling_path = f"/aha/voyager/compiled_collateral/{args.mu_test}/output_tiling.txt"
