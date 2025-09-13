@@ -201,7 +201,7 @@ elif [ "$1" == "--aha-flow" ]; then
     cat .buildkite/pipeline.yml
     echo "------------------------------------------------------------------------"
 
-    buildkite-agent pipeline upload .buildkite/pipeline.yml
+    buildkite-agent pipeline upload --no-interpolation .buildkite/pipeline.yml
 fi
 
 echo "--- END custom-checkout.sh"
