@@ -90,17 +90,15 @@ if [ "$next" == "build" ]; then
     # flock? something simpler/smarter?
 
 
-# It's okay for regression-steps.sh to FAIL in the commands below
-# b/c whichever one finishes FIRST will launch the next step successfully
-# whereas whoever finishes last will attempt the same launch and fail
-# (and that's okay, that's what's supposed to happen)
+# setstate image-exists FALSE
 bdkhaki=$(
   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
+    steps:
     - label: "khaki prep"
       key: "kprep"
       agents: { hostname: khaki }
       # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS || echo okay
+      command: .buildkite/bin/regression-steps.sh ARGS
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -109,11 +107,12 @@ bdkhaki=$(
 )
 bdcad=$(
   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
+    steps:
     - label: "r8cad prep"
       key: "r8prep"
       agents: { hostname: r8cad-docker }
       # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS || echo okay
+      command: .buildkite/bin/regression-steps.sh ARGS
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -122,15 +121,20 @@ bdcad=$(
 )
 buildsteps=$(
   sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-  echo "steps:"
   echo "$bdkhaki"
-  echo "$bdcad"
+  # echo "$bdcad"  # FIXME restore before final check-in
 )
 echo "$buildsteps" | buildkite-agent pipeline upload
 
 
 #------------------------------------------------------------------------------
 elif [ "$next" == "gold" ]; then
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# FIXME Skip gold for now FIXME restore before final check-in
+exec "$0" $*  # FIXME Skip gold for now FIXME restore before final check-in
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
@@ -196,7 +200,7 @@ CONCURRENCY="
      cat <<EOF | sed "s/ARGS/$*/"
 steps:
 - label: "$label"
-  # agents: { hostname: khaki }  # Can optionally limit this way for debugging etc.
+  agents: { hostname: khaki }  # FIXME delete this after debugging is through...
   key: "regress$i"
   env: { REGRESSION_STEP: $i }
   command: |
@@ -318,6 +322,6 @@ exit
 # 
 #     setstate image-exists TRUE
 #     setstate launch-state LAUNCHED
-#     bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED<br />"
+#     bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED"
 # 
 #END preamble

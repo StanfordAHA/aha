@@ -5,11 +5,14 @@ env:
   # Default config is "pr_aha"
   CONFIG: ${CONFIG:-pr_aha}
 
-  RSTEPS: build gold 0 1 2 3 4 5 6 7 8 9
-  #   "build" creates two steps 'kprep' and 'r8prep', see regression-steps.sh
-  #   "gold" creates step "zircon_gold"
-  #   "0..9" creates steps "regress0".."regress9" see?
-  # RSTEPS: "build gold 0 1 3"
+  # NSTEPS: "0 1 2 3 4 5 6 7 8 9"   # "Fast" plus nine regression steps
+  # NSTEPS: "4 5"
+  # NSTEPS: ""  # Gold check only (maybe?)
+  NSTEPS: "0 1 3 4 5"  # Numerical steps
+
+  # Fixme does not need to be env var. and also maybe nsteps as well
+  # RSTEPS: (build gold 0 1 2 3 4 5 6 7 8 9)
+  RSTEPS: "build gold $$NSTEPS"  # Named steps (ish)
 
   MAX_AGENTS: 4  # How many agents do we get to use for regression steps?
 
@@ -17,7 +20,7 @@ env:
   # FIXME or could use 'set-metadata --build', right?
   COMMON: /var/lib/buildkite-agent/builds/DELETEME-$BUILDKITE_BUILD_NUMBER
 
-  REGRESS_METAHOOKS: $COMMON/regress-metahooks.sh
+  REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
   IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
   TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
@@ -42,24 +45,24 @@ steps:
         echo I am in dir `pwd`
         aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH;
         set -x
-        /bin/rm -rf $aha_clone; mkdir -p $aha_clone
-        git clone https://github.com/StanfordAHA/aha $aha_clone; cd $aha_clone;
+        /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
+        git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
         git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
         git clean -ffxdq
         set +x
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
-        if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
+        if [ "$$AHA_SUBMOD_FLOW_COMMIT" ]; then
             echo 'Submod pull requests use master branch (sometimes overridden by DEV_BRANCH)'
             # (aha-flow steps is responsible for setting DEV_BRANCH)
             # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
-            git checkout $DEV_BRANCH || echo no dev branch found, continuing with master
+            git checkout $$DEV_BRANCH || echo no dev branch found, continuing with master
 
             # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
-            source $bin/update-pr-repo.sh
+            source $$bin/update-pr-repo.sh
         else
             echo 'Aha push/PR uses pushed branch'
-            git checkout $BUILDKITE_COMMIT
+            git checkout $$BUILDKITE_COMMIT
         fi
 
         # If build was triggered by a pull request, annotate build with
@@ -67,12 +70,12 @@ steps:
         # Set REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
         # Set PR_REPO_TAIL to submod associated with the PR, e.g. "canal"
         # Add REQUEST_TYPE env temp file for use by later steps
-        source $bin/set-trigfrom-and-reqtype.sh
+        source $$bin/set-trigfrom-and-reqtype.sh
 
         ~/bin/status-update --force pending   # Send "pending" status to github PR page
 
         # Checkout and update correct aha branch and *NOT* submodules
-        source $bin/custom-checkout.sh --aha-flow --early-out
+        source $$bin/custom-checkout.sh --aha-flow --early-out
 
       # Send regression test pass-fail info to github pull request page
       pre-exit: |
@@ -82,14 +85,13 @@ steps:
         # status-update exit status will tell us if this step has failed
         if ! ~/bin/status-update pending; then
             # Build failed already, remove the docker image and begone
-            (set -x; docker image rm "$IMAGE" --no-prune) || echo okay
+            (set -x; docker image rm "$$IMAGE" --no-prune) || echo okay
         fi
 
   commands: |
     echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
     .buildkite/bin/regression-steps.sh $RSTEPS
     echo "--- BDI PIPELINE.XML COMMANDS END"
-
 
 ########################################################################
 # STEP: Cleanup
@@ -105,51 +107,36 @@ steps:
     - uber-workflow/run-without-clone:
 
   command: |
+
+    echo '- Show outcomes from gold step(s)'
+    echo docker_gold outcome: `buildkite-agent step get "outcome" --step "docker_gold"`
+    echo zircon_gold outcome: `buildkite-agent step get "outcome" --step "zircon_gold"`
+    
+    echo '- Show outcomes from each regression step'
+    echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0"`
+    for i in $$NSTEPS; do
+        echo regress$$i outcome: `buildkite-agent step get "outcome" --step "regress$$i"`
+    done
+
     echo '- Use FAIL to summarize overall result'
     FAIL=
-
-    # "build" creates two steps 'kprep' and 'r8prep', see regression-steps.sh
-    if (echo "$RSTEPS" | grep build > /dev/null); then
-        echo '- Show outcomes from build steps'
-        echo khaki-build outcome: `buildkite-agent step get "outcome" --step "kprep")`
-        echo r8cad-build outcome: `buildkite-agent step get "outcome" --step "r8prep")`
-        [ $(buildkite-agent step get "outcome" --step "kprep")  == "passed" ] || FAIL=True
-        [ $(buildkite-agent step get "outcome" --step "r8prep") == "passed" ] || FAIL=True
-    fi
-    
-    #"gold" creates step "zircon_gold"
-    if (echo "$RSTEPS" | grep gold > /dev/null); then
-        echo '- Show outcomes from gold step(s)'
-        echo zircon_gold outcome: `buildkite-agent step get "outcome" --step "zircon_gold")`
-        [ $(buildkite-agent step get "outcome" --step "zircon_gold") == "passed" ] || FAIL=True
-    fi
-    
-    # 0..9 creates steps "regress0".."regress9" see?
-    echo '- Show outcomes from each regression step'
-    i=0
-    for i in $RSTEPS; do
-        echo foo
-        if [ "$i" == 0 ]; then
-           echo fast outcome:     `buildkite-agent step get "outcome" --step "regress0")`
-           [ $(buildkite-agent step get "outcome" --step "regress0") == "passed" ] || FAIL=True
-           continue
-        fi
-        if (echo "$i" | grep -E '^[1-9]$' > /dev/null); then
-            echo "regress$i" outcome: `buildkite-agent step get "outcome" --step "regress$i")`
-            [ $(buildkite-agent step get "outcome" --step "regress$i") == "passed" ] || FAIL=True
-        fi
+    [ $(buildkite-agent step get "outcome" --step "docker_gold") == "passed" ] || FAIL=True
+    [ $(buildkite-agent step get "outcome" --step "zircon_gold") == "passed" ] || FAIL=True
+    for i in $$NSTEPS; do
+        [ $(buildkite-agent step get "outcome" --step "regress$$i") == "passed" ] || FAIL=True
     done
-    # 
-    #     #     # echo "-- FAIL=$$FAIL"
-    #     #     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine(s)
-    #     #     # Also see ~steveri/bin/status-update on kiwi
-    #     #     # echo "- Send summary outcome 'success' or 'failure' to github PR"
-    #     # 
-    #     #     if [ "$$FAIL" ]; then
-    #     #         ~/bin/status-update --force failure
-    #     #     else
-    #     #         ~/bin/status-update --force success
-    #     #     fi
-    #     # 
-    #     #     echo "- Clean up your mess"
-    #     #     test -e "$REGRESS_METAHOOKS" && rm "$REGRESS_METAHOOKS" || echo okay
+    echo '-- FAIL=$$FAIL'
+
+    echo '- Send summary outcome "success" or "failure" to github PR'
+    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+    # Also see ~steveri/bin/status-update on kiwi
+    [ "$$FAIL" ] && ~/bin/status-update --force failure || ~/bin/status-update --force success
+
+    echo '- Clean up your mess'
+    test -e $REGRESS_METAHOOKS && rm $REGRESS_METAHOOKS || echo okay
+
+    # No don't do this. Excludes ability to rerun etc.
+    # Also, COMMON is generally not very big.
+    # ~Also, code above will eliminate DELETEME files older than one week.~ (I don't think so...?)
+    # test -d $COMMON && rmdir $COMMON || echo okay
+    # /bin/rm -f /var/lib/buildkite-agent/builds/DELETEME/env-$BUILDKITE_BUILD_NUMBER
