@@ -107,7 +107,6 @@ bdkhaki=$(
 )
 bdcad=$(
   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    steps:
     - label: "r8cad prep"
       key: "r8prep"
       agents: { hostname: r8cad-docker }
