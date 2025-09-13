@@ -149,5 +149,5 @@ steps:
         ~/bin/status-update --force success
     fi
 
-    echo '- Clean up your mess'
+    echo "- Clean up your mess"
     test -e "$REGRESS_METAHOOKS" && rm "$REGRESS_METAHOOKS" || echo okay
