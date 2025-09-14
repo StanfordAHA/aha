@@ -109,6 +109,7 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
+                "apps/relu_layer_multiout_fp_RV",
                 "apps/avgpool_layer_fp_RV_E64",
                 "apps/mat_vec_mul_fp_RV",
             ]
@@ -323,6 +324,7 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
+                "apps/relu_layer_multiout_fp_RV",
                 "apps/scalar_reduction_fp_RV",
                 "apps/vector_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
@@ -522,6 +524,7 @@ class Tests:
             ]
             glb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
+                "apps/relu_layer_multiout_fp_RV",
                 "apps/scalar_reduction_fp_RV",
                 "apps/vector_reduction_fp_RV",
                 "tests/fp_pointwise_RV",
