@@ -260,7 +260,12 @@ RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 
 # Voyager 1 - clone voyager
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN cd /aha && git clone https://github.com/StanfordAHA/voyager.git voyager && \
+
+# BAD
+# RUN cd /aha && git clone https://github.com/StanfordAHA/voyager.git voyager
+
+# GOOD
+RUN cd /aha && git clone ssh://git@github.com/StanfordAHA/voyager.git voyager && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
