@@ -37,6 +37,7 @@ jobs:
         echo "${{ github.token }}" > my_secret.txt
         docker buildx build \
           --secret id=gtoken,src=my_secret.txt \
+          --tag stanfordaha/garnet:latest \
           --push \
           .
 
