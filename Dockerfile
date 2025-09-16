@@ -117,11 +117,12 @@ COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
 # also bad
 RUN cd /aha && \
+  printenv && \
   echo GT=$GITHUB_TOKEN | cut -b 1-20 && \
   echo FOO=$FOO && \
   echo BAR=$BAR && \
   echo BAZ=$BAZ && \
-  if [ "$FOO" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
+  if [ "$BUILDKITE" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
   else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
