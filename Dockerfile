@@ -110,10 +110,13 @@ RUN source bin/activate && \
 # Voyager 1 - clone voyager
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
+#   if [ "$USE_HTTPS" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
+#   else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
+
+
 RUN cd /aha && \
-  if [ "$USE_HTTPS" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
-  else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
   cd /aha/voyager && \
+  git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
