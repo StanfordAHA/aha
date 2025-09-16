@@ -99,6 +99,26 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
+# Put the problem child here up front so that it can fail quickly :(
+
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+
+# BAD
+# RUN cd /aha && git clone ssh://git@github.com/StanfordAHA/voyager.git voyager && 
+
+# also bad
+RUN cd /aha && \
+  echo GT=$GITHUB_TOKEN | cut -b 1-20 && \
+  git clone https://github.com/StanfordAHA/voyager.git voyager && \
+  cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
+
+
 # Pono
 WORKDIR /aha
 COPY ./pono /aha/pono
@@ -257,20 +277,6 @@ RUN apt-get install -y libc6-dev-amd64
 RUN apt-get update && apt-get install -y linux-headers-generic
 
 RUN ln -s /usr/include/asm-generic/ /usr/include/asm
-
-# Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-
-# BAD
-# RUN cd /aha && git clone https://github.com/StanfordAHA/voyager.git voyager
-
-# GOOD
-RUN cd /aha && git clone ssh://git@github.com/StanfordAHA/voyager.git voyager && \
-  cd /aha/voyager && \
-  mkdir -p /aha/.git/modules && \
-  mv .git/ /aha/.git/modules/voyager/ && \
-  ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
 # Voyager 2 - setup voyager
 COPY ./voyager /aha/voyager
