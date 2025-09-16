@@ -32,10 +32,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         FOO: BARBAZ
-      run: docker build . -t testing --build-arg BAR=BRAMBLE
-    - name: Run Integration Tests
       run: |
         printenv
+        docker build . -t testing \
+          --build-arg GITHUB_TOKEN=${{ github.token }} \
+          --build-arg FOO=BARBAZ \
+          --build-arg BAR=BRAMBLE
+    - name: Run Integration Tests
+      run: |
         docker run --name test --rm \
             -e HUGGINGFACE_HUB_TOKEN=${{ secrets.HF_SERVICE_TOKEN }} \
             -it -d testing bash

@@ -34,4 +34,5 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         buildargs: GITHUB_TOKEN,FOO,BAR
+        buildoptions: "--build-args BAZ=GOOF"
         cache: false

@@ -21,7 +21,10 @@ LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG FOO
 ARG BAR
+ARG BAZ
+ARG GITHUB_TOKEN
 
 RUN apt-get update && \
     apt-get install -y \
@@ -108,14 +111,17 @@ COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
 # BAD
 # RUN cd /aha && git clone ssh://git@github.com/StanfordAHA/voyager.git voyager && 
+# git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git
+# git clone https://github.com/StanfordAHA/voyager.git voyager && \
+#
 
 # also bad
 RUN cd /aha && \
   echo GT=$GITHUB_TOKEN | cut -b 1-20 && \
-  echo HHT=$HUGGINGFACE_HUB_TOKEN | cut -b 1-20 && \
   echo FOO=$FOO && \
   echo BAR=$BAR && \
-  git clone https://github.com/StanfordAHA/voyager.git voyager && \
+  echo BAZ=$BAZ && \
+  git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
