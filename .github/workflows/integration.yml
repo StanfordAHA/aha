@@ -30,7 +30,7 @@ jobs:
         submodules: recursive
 
     - name: Build Docker Image
-      run: docker build . -t testing --secret id GIT_AUTH_TOKEN=${{ github.token }}
+      run: GTOKEN=${{ github.token }} docker build . -t testing --secret id=gtoken,env=GTOKEN
 
     - name: Run Integration Tests
       run: |

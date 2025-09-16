@@ -25,12 +25,12 @@ jobs:
 
     - name: Publish Docker image
       uses: elgohr/Publish-Docker-Github-Action@2.12
-      # env:
-      #   GITHUB_TOKEN: ${{ github.token }}
+      env:
+        GTOKEN: ${{ github.token }}
       with:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         # buildargs: GITHUB_TOKEN
-        buildoptions: "--secret id GIT_AUTH_TOKEN=${{ github.token }}"
+        buildoptions: "--secret id=gtoken,env=GTOKEN"
         cache: false
