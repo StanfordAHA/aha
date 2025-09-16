@@ -112,10 +112,12 @@ COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
 #   if [ "$USE_HTTPS" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
 #   else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
+#  git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager && \
 
 
+# GIT_AUTH_TOKENS maybe
 RUN cd /aha && \
-  git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager && \
+  git clone https://github.com:/StanfordAHA/voyager.git voyager && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
