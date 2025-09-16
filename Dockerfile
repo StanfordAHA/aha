@@ -21,6 +21,8 @@ LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG BAR
+
 RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
@@ -112,6 +114,7 @@ RUN cd /aha && \
   echo GT=$GITHUB_TOKEN | cut -b 1-20 && \
   echo HHT=$HUGGINGFACE_HUB_TOKEN | cut -b 1-20 && \
   echo FOO=$FOO && \
+  echo BAR=$BAR && \
   git clone https://github.com/StanfordAHA/voyager.git voyager && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
