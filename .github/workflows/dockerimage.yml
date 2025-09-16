@@ -25,14 +25,11 @@ jobs:
 
     - name: Publish Docker image
       uses: elgohr/Publish-Docker-Github-Action@2.12
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-        FOO: BARBAZZY
-        BAR: BRAMZLE
+      # env:  GITHUB_TOKEN: ${{ github.token }}
+      env:  GITHUB_TOKEN: XYZ
       with:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        buildargs: GITHUB_TOKEN,FOO,BAR
-        buildoptions: "--build-arg BAZ=GOOF"
+        buildargs: GITHUB_TOKEN
         cache: false
