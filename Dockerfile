@@ -121,7 +121,8 @@ RUN cd /aha && \
   echo FOO=$FOO && \
   echo BAR=$BAR && \
   echo BAZ=$BAZ && \
-  git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git && \
+  if [ "$FOO" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
+  else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
