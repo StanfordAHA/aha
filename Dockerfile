@@ -22,6 +22,9 @@ LABEL description="garnet"
 ENV DEBIAN_FRONTEND=noninteractive
 ARG GITHUB_TOKEN
 
+ENV BUILDKITE
+ARG BUILDKITE
+
 RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
