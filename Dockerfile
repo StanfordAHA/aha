@@ -115,8 +115,8 @@ COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
 
 RUN cd /aha && \
-  cd /aha/voyager && \
   git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager && \
+  cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
