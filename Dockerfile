@@ -22,8 +22,10 @@ LABEL description="garnet"
 ENV DEBIAN_FRONTEND=noninteractive
 ARG GITHUB_TOKEN
 
-ENV BUILDKITE
-ARG BUILDKITE
+# USE_HTTPS set by regress-metahooks.sh "docker build --build-arg USE_HTTPS=True"
+# It tells us to use http protocol for git clone voyager
+# FIXME I'm sure there are ten better ways to do this :(
+ARG USE_HTTPS
 
 RUN apt-get update && \
     apt-get install -y \
@@ -109,7 +111,7 @@ RUN source bin/activate && \
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
 RUN cd /aha && \
-  if [ "$BUILDKITE" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
+  if [ "$USE_HTTPS" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
   else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \

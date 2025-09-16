@@ -43,7 +43,7 @@ if [ "$1" == '--pre-command' ]; then
         test -e .git/modules/sam/HEAD || echo OH NO HEAD not found
 
         echo "--- (Re)creating garnet Image"
-        docker build --progress plain . -t "$IMAGE"
+        docker build --progress plain . -t "$IMAGE" --build-arg USE_HTTPS=True
     fi
 
     echo "--- OIT PRE COMMAND HOOK CONTINUES..."
