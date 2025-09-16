@@ -124,7 +124,7 @@ elif [ "$next" == "build" ]; then
     buildsteps=$(
       sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
       echo "steps:"
-      # key-exists 'kprep'  || echo "$bdkhaki"
+      key-exists 'kprep'  || echo "$bdkhaki"
       key-exists 'r8prep' || echo "$bdcad"  # FIXME restore before final check-in
     )
     echo "$buildsteps" | buildkite-agent pipeline upload
