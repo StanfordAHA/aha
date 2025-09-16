@@ -20,10 +20,6 @@ FROM docker.io/ubuntu:20.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-ARG FOO
-ARG BAR
-ARG BAZ
 ARG GITHUB_TOKEN
 
 RUN apt-get update && \
@@ -109,16 +105,7 @@ RUN source bin/activate && \
 # Voyager 1 - clone voyager
 COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
-# BAD
-# RUN cd /aha && git clone ssh://git@github.com/StanfordAHA/voyager.git voyager && 
-# git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git
-# git clone https://github.com/StanfordAHA/voyager.git voyager && \
-#
-
-# also bad
 RUN cd /aha && \
-  printenv && \
-  echo GT=$GITHUB_TOKEN && \
   if [ "$BUILDKITE" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
   else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
   cd /aha/voyager && \
@@ -126,8 +113,6 @@ RUN cd /aha && \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
-
-
 
 # Pono
 WORKDIR /aha
@@ -287,6 +272,10 @@ RUN apt-get install -y libc6-dev-amd64
 RUN apt-get update && apt-get install -y linux-headers-generic
 
 RUN ln -s /usr/include/asm-generic/ /usr/include/asm
+
+# FIXME
+# Voyager 1 temporarily moved to beginning of file for debugging, see above
+# If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
 
 # Voyager 2 - setup voyager
 COPY ./voyager /aha/voyager

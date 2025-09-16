@@ -26,8 +26,7 @@ jobs:
     - name: Publish Docker image
       uses: elgohr/Publish-Docker-Github-Action@2.12
       env:
-        # GITHUB_TOKEN: ${{ github.token }}
-        GITHUB_TOKEN: xyz
+        GITHUB_TOKEN: ${{ github.token }}
       with:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
