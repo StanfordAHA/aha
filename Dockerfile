@@ -110,6 +110,8 @@ COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 # also bad
 RUN cd /aha && \
   echo GT=$GITHUB_TOKEN | cut -b 1-20 && \
+  echo HHT=$HUGGINGFACE_HUB_TOKEN | cut -b 1-20 && \
+  echo FOO=$FOO && \
   git clone https://github.com/StanfordAHA/voyager.git voyager && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \

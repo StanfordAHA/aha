@@ -31,10 +31,14 @@ jobs:
     - name: Build Docker Image
       run: docker build . -t testing
     - name: Run Integration Tests
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        FOO: BARBAZ
       run: |
         docker run --name test --rm \
             -e HUGGINGFACE_HUB_TOKEN=${{ secrets.HF_SERVICE_TOKEN }} \
             -e GITHUB_TOKEN=${{ github.token }} \
+            -e FOO=BARBAZ \
             -it -d testing bash
         docker exec test pip freeze
         docker exec test bash -c "source /aha/bin/activate && aha garnet --width 4 --height 2 --verilog --use_sim_sram"
