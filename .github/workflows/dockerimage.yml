@@ -38,25 +38,4 @@ jobs:
         docker buildx build \
           --secret id=gtoken,src=my_secret.txt \
           --tag stanfordaha/garnet:latest \
-          --push \
-          .
-
-
-#           --push \
-#           --tag your-dockerhub-user/your-image:latest \
-#           .
-
-
-
-
-#     - name: Publish Docker image
-#       uses: elgohr/Publish-Docker-Github-Action@2.12
-#       env:
-#         GTOKEN: ${{ github.token }}
-#       with:
-#         name: stanfordaha/garnet
-#         username: ${{ secrets.DOCKER_USERNAME }}
-#         password: ${{ secrets.DOCKER_PASSWORD }}
-#         # buildargs: GITHUB_TOKEN
-#         buildoptions: "--secret id=gtoken,env=GTOKEN"
-#         cache: false
+          --push .
