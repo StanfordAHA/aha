@@ -20,7 +20,7 @@ FROM docker.io/ubuntu:20.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ARG GITHUB_TOKEN
+# ARG GITHUB_TOKEN
 
 # USE_HTTPS set by regress-metahooks.sh "docker build --build-arg USE_HTTPS=True"
 # It tells us to use http protocol for git clone voyager
@@ -113,11 +113,12 @@ COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 #   if [ "$USE_HTTPS" ]; then git clone https://github.com/StanfordAHA/voyager.git voyager; \
 #   else git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager; fi && \
 #  git clone https://x-access-token:${GITHUB_TOKEN}@github.com:/StanfordAHA/voyager.git voyager && \
-
+# git clone ssh://git@github.com/StanfordAHA/voyager.git voyager
 
 # GIT_AUTH_TOKENS maybe
-RUN cd /aha && \
-  git clone https://github.com:/StanfordAHA/voyager.git voyager && \
+RUN --mount=type=secret,id=gtoken \
+  cd /aha && \
+  git clone https://$(cat /run/secrets/gtoken)@github.com:/StanfordAHA/voyager.git voyager && \
   cd /aha/voyager && \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
