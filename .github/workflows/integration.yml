@@ -35,6 +35,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
         FOO: BARBAZ
       run: |
+        printenv
         docker run --name test --rm \
             -e HUGGINGFACE_HUB_TOKEN=${{ secrets.HF_SERVICE_TOKEN }} \
             -e GITHUB_TOKEN=${{ github.token }} \

@@ -32,7 +32,5 @@ jobs:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        buildargs:
-          GITHUB_TOKEN=${{ github.token }}
-          FOO=BARBAZ
+        buildargs: GITHUB_TOKEN,FOO
         cache: false
