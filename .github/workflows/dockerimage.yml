@@ -24,7 +24,7 @@ jobs:
         /bin/rm -rf .git/modules/clockwork .git/modules/Halide-to-Hardware
 
     - name: Publish Docker image
-      uses: elgohr/Publish-Docker-Github-Action@2.12
+      uses: elgohr/Publish-Docker-Github-Action@v5
       with:
         name: stanfordaha/garnet
         username: ${{ secrets.DOCKER_USERNAME }}
