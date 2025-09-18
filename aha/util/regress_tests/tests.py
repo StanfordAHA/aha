@@ -77,7 +77,7 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
-                # pr_aha1
+                # 54 min (build 12226)
                 "vec_elemmul",
                 "mat_vecmul_ij",
                 "mat_elemadd_leakyrelu_exp",
@@ -94,30 +94,36 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
+
             external_mu_tests_fp = [
-                 # K-DIM HOST TILING CONV5_X
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
+                # 52 min (build 12226)
+                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
             ]
         elif testname == "pr_aha2":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            external_mu_tests = [
+                # 22 min (build 12226)
+                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
+            ]
             external_mu_tests_fp = [
-                # 4935 sec (build 12187)
+                # 80 min (build 12226)
                 "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
             ]
         elif testname == "pr_aha3":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             external_mu_tests_fp = [
-                # 2527 sec (build 12187)
-                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-
+                # 38 min (build 12226)
                 # INNER REDUCTION WORKAROUND CONV4_X downsample
-                # 2454 sec (build 12187)
                 "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround_RV_E64_MB",
+
+                # 94 min (build 12226)
+                # K-DIM HOST TILING CONV5_X
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
         elif testname == "pr_aha4":
@@ -195,7 +201,6 @@ class Tests:
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
                 "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
 
                 # K-DIM HOST TILING CONV5_X
                 "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
