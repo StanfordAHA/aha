@@ -20,6 +20,7 @@ FROM docker.io/ubuntu:20.04
 LABEL description="garnet"
 
 ENV DEBIAN_FRONTEND=noninteractive
+# ARG GITHUB_TOKEN
 
 RUN apt-get update && \
     apt-get install -y \
@@ -98,6 +99,21 @@ RUN source bin/activate && \
   pip install Pillow && \
   pip install matplotlib && \
   echo DONE
+
+# Put the problem child here up front so that it can fail quickly :(
+
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+
+# Use token provided by docker-build `--secrets` to clone voyager
+RUN --mount=type=secret,id=gtoken \
+  cd /aha && \
+  git clone https://$(cat /run/secrets/gtoken)@github.com:/StanfordAHA/voyager.git voyager && \
+  cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
 # Pono
 WORKDIR /aha
@@ -258,14 +274,9 @@ RUN apt-get update && apt-get install -y linux-headers-generic
 
 RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 
-# Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-RUN cd /aha && git clone https://github.com/StanfordAHA/voyager.git voyager && \
-  cd /aha/voyager && \
-  mkdir -p /aha/.git/modules && \
-  mv .git/ /aha/.git/modules/voyager/ && \
-  ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+# FIXME
+# Voyager 1 temporarily moved to beginning of file for debugging, see above
+# If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
 
 # Voyager 2 - setup voyager
 COPY ./voyager /aha/voyager

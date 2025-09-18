@@ -32,6 +32,13 @@ echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 cd /  # Start in a safe place!
 
+# Correct the buildkite message, which may be wrong depending on
+# whether we were triggered from a submodule.
+# Do this right up front b/c metadata gets corrupted sometimes
+# FIXME is this one of those times???
+echo "Set metadata buildkite:git:commit to BUILDKITE_MESSAGE=$BUILDKITE_MESSAGE"
+echo "$BUILDKITE_MESSAGE" | buildkite-agent meta-data set buildkite:git:commit
+
 # should DIE if $BUILDKITE_CLEAN_CHECKOUT==true
 if [ "$BUILDKITE_CLEAN_CHECKOUT" == "true" ]; then
     echo "

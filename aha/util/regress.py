@@ -254,7 +254,7 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs,
     if test == "":
         test = testname
 
-    print(f"--- {test}")
+    print(f"--- {test} - glb testing")
 
     env_vars = {"PYTHONPATH": "/aha/garnet/"}
     if using_matrix_unit:
@@ -273,7 +273,6 @@ def test_sparse_app(testname, seed_flow, data_tile_pairs,
     except:
         pass
 
-    print(f"--- {test} - glb testing")
     if(seed_flow):
         print("RUNNING SEED FLOW", flush=True)
         start = time.time()
@@ -470,7 +469,6 @@ def test_dense_app(
 
     # Note testname is for logging/display purposes only...!
     testname = f'{test_orig}/{layer}' if layer is not None else test_orig
-    print(f"--- {testname}", flush=True)
     print(f"--- {testname} - compiling and mapping", flush=True)
     app_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks/" + test
     voyager_collateral_path = "/aha/voyager/compiled_collateral"
