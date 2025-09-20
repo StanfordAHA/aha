@@ -5,8 +5,17 @@ env:
   # Default config is "pr_aha"
   CONFIG: ${CONFIG:-pr_aha}
 
+  # RSTEPS: "build gold 0 1 2 3 4 5 6 7 8 9"  # gold + fast + regress 1-9
   # RSTEPS: "gold 0 1 2 3"  # gold + fast + regress 1-3, skipping the build stage
-  RSTEPS: "build gold 0 1 2 3 4 5 6 7 8 9"  # gold + fast + regress 1-9
+  #
+  # Analaysis indicates that, given these times for the nine regressions
+  # { 165,98,113,124,155,147,159,135,142 }  (from build 12226)
+  # an optimal least-time least-distance ordering might be
+  #      1  ORDER='215637894' TIME: 335 DIST: 5 (final)
+  # See kiwi:~steveri/tmpdir/optimal9/opt.c
+  #   (cc opt.c; a.out 9) |& grep final | sort -nk3,3 -nk5,5
+  #
+  RSTEPS: "build gold 0 2 1 5 6 3 7 8 9 4"
 
   MAX_AGENTS: 4  # How many agents do we get to use for regression steps?
 
