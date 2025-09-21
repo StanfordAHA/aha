@@ -11,11 +11,11 @@ env:
   # Analaysis indicates that, given these times for the nine regressions
   # { 165,98,113,124,155,147,159,135,142 }  (from build 12226)
   # an optimal least-time least-distance ordering might be
-  #      1  ORDER='215637894' TIME: 335 DIST: 5 (final)
+  #      ORDER='125637894' TIME: 335 DIST: 4 (final)
   # See kiwi:~steveri/tmpdir/optimal9/opt.c
   #   (cc opt.c; a.out 9) |& grep final | sort -nk3,3 -nk5,5
   #
-  RSTEPS: "build gold 0 2 1 5 6 3 7 8 9 4"
+  RSTEPS: "build gold 0 1 2 5 6 3 7 8 9 4"
 
   MAX_AGENTS: 4  # How many agents do we get to use for regression steps?
 
