@@ -35,7 +35,8 @@ function key-exists {
 # Pop next step off arg list e.g. args=(build gold 1 2 3 4 5 6 7 8 9)
 # => next="build", args=(gold 1 2 3 4 5 6 7 8 9)
 next="$1"; if ! [ "$next" ]; then echo DONE; exit; fi
-shift; bkmsg "Processing arg next='$next'"
+shift
+# bkmsg "Processing arg next='$next'"
 
 #------------------------------------------------------------------------------
 if [ "$next" == "--cleanup" ]; then
@@ -316,6 +317,6 @@ exit
 # 
 #     setstate image-exists TRUE
 #     setstate launch-state LAUNCHED
-#     bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED"
+#     # bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED"
 # 
 #END preamble
