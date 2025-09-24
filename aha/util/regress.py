@@ -573,6 +573,7 @@ def test_dense_app(
 
         env_vars["INCLUDE_E64_HW"] = "1"
         env_vars["INCLUDE_MULTI_BANK_HW"] = "1"
+        env_vars["NUM_FABRIC_COLS_REMOVED"] = str(num_fabric_cols_removed)
 
         if num_fabric_cols_removed == 0:
             env_vars["WEST_IN_IO_SIDES"] = "1"
