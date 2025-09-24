@@ -1,82 +1,225 @@
 #!/bin/bash
 # This is designed to be called from pipeline.yml
+set -x
+# Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
+# function buildkite-agent { [ "$2" == "upload" ] && cat; }
+# function bkmsg { echo "$1"; }
 
-# Run "fast" app suite as regression step 0.
-# Then run regression configs CONFIG=pr_aha1,2,3..nsteps
+# Run first reg step on command line, then recurse on remaining args.
+# E.g. "$0 build gold 0 1 2" launches the build step(s) and then calls "$0 gold 0 1 2"
+# Regression step 0 = "fast"; steps 1,2,3... = "pr_aha1", "pr_aha2", "pr_aha3"...
 
-# A typical step should look like this:
-# 
-#     - label: "Regress 1"
-#       key: "regress"
-#       env: { REGRESSION_STEP: 0 }
-#       plugins:
-#         - uber-workflow/run-without-clone:
-#     
-#         - improbable-eng/metahook:
-#             pre-command: $BUILD_DOCKER
-#             pre-exit:    $REGRESS_METAHOOKS --pre-exit
-#     
-#       command: $REGRESS_METAHOOKS --commands
+########################################################################
+# HELPER FUNCTIONS
+########################################################################
 
-# Preamble from below
-cat $0 | sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d'
+# Commands for showing messages on buildkite run page.
+finalmsg=""
+function setstate { buildkite-agent meta-data set "$1" --job "$BUILDKITE_JOB_ID" "$2"; }
+function getstate { buildkite-agent meta-data get "$1" --job "$BUILDKITE_JOB_ID"; }
+function bkmsg { buildkite-agent annotate --context foo --append "$1<br />"; }
+function bkclr {
+    finalmsg="$(date +%H:%M) $finalmsg$1<br />"
+    buildkite-agent annotate --context foo "$finalmsg"
+}
 
-echo "steps:"
+# E.g. "key-exists regress1" fails if there is no step key "regress1" (yet)
+function key-exists {
+    buildkite-agent step get "label" --step "$1" --build "$BUILDKITE_BUILD_ID" >& /dev/null;
+}
 
-cat <<'EOF'
-- label: "Docker for gold test"
-  key: "docker_gold"
-  # Gold test must run on same agent that builds its docker image
-  agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
-  command: echo DONE
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: $BUILD_DOCKER
+########################################################################
+# MAIN
+########################################################################
 
-# - wait: ~
+# Pop next step off arg list e.g. args=(build gold 1 2 3 4 5 6 7 8 9)
+# => next="build", args=(gold 1 2 3 4 5 6 7 8 9)
+next="$1"; if ! [ "$next" ]; then echo DONE; exit; fi
+shift
+# bkmsg "Processing arg next='$next'"
 
-- label: "Zircon Gold"
-  depends_on: "docker_gold"
-  # Gold test must run on same agent that builds its docker image
-  # FIXME but what if this step fails and we want to retry???
-  agents: { hostname: $BUILDKITE_AGENT_META_DATA_HOSTNAME }
-  key: "zircon_gold"
-  plugins:
-    - uber-workflow/run-without-clone:
-    - docker#v3.2.0:
-        image: garnet:aha-flow-build-${BUILDKITE_BUILD_NUMBER}
-        volumes: ["/cad/:/cad"]
-        shell:   ["/bin/bash", "-e", "-c"]
-        mount-checkout: false
-  commands: |
-    echo "/aha/.buildkite/bin/rtl-goldcheck.sh zircon"
-    if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-        msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-        echo "++ $$msg"
-        echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
-        exit 13
+#------------------------------------------------------------------------------
+if [ "$next" == "--cleanup" ]; then
+    echo '+++ Step outcomes'
+
+    # Cleanup step summarizes outcomes of all previous steps
+    # and sends final status to any waiting PRs
+
+    # Set FAIL if indicated step failed
+    FAIL=; function cleanup {
+        echo "$1": "$(buildkite-agent step get outcome --step "$2")"
+        echo "$1": "$(buildkite-agent step get outcome --step "$2")"
+        [ "$(buildkite-agent step get outcome --step "$2")" == "passed" ] || FAIL=True
+    }
+
+    # For each step indicated in command line, check that step for failure
+    for step in "$@"; do
+        if [ "$step" == "build" ]; then
+            cleanup 'khaki prep' kprep
+            cleanup 'r8cad prep' r8prep
+
+        elif [ "$step" == "gold" ]; then
+            cleanup 'Zircon Gold' zircon_gold
+
+        else
+            # Only remaining choice is that step is a single digit 0-9
+            [ "$step" == 0 ] && label="Fast" || label="Regress $i"
+            cleanup "$label" regress"$step"
+        fi
+    done
+    echo "-- FAIL=$FAIL"
+
+    # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
+    # Also see ~steveri/bin/status-update on kiwi
+    echo '- Send summary outcome "success" or "failure" to github PR'
+    if [ "$FAIL" ]; then
+        ~/bin/status-update --force failure
+    else
+        ~/bin/status-update --force success
+    fi
+    echo '- Clean up your mess'
+
+#------------------------------------------------------------------------------
+elif [ "$next" == "build" ]; then
+
+    # FIXME this launches two build steps at the same time; the
+    # possibility exists that both call regression-steps.sh at same time.
+    # That would be trouble for our new chaining approach, yes?
+    # Need flock? something simpler/smarter?
+
+    # Early-out if these steps have already been launched!
+    if key-exists 'kprep'; then
+        if key-exists 'r8prep'; then
+            echo "Steps 'kprep' and 'r8prep' already exist in pipeline. So. Nothing to do!"; exit 0
+        fi
     fi
 
-EOF
+    # Build the two individual build steps, one for each agent :)
+    bdkhaki=$(
+  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
+    - label: "khaki prep"
+      key: "kprep"
+      agents: { hostname: khaki }
+      # Launch next step if/when build is complete
+      command: .buildkite/bin/regression-steps.sh ARGS
+      plugins:
+        - uber-workflow/run-without-clone:
+        - improbable-eng/metahook:
+            pre-command: $BUILD_DOCKER
+    EOF
+)
+    bdcad=$(
+  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
+    - label: "r8cad prep"
+      key: "r8prep"
+      agents: { hostname: r8cad-docker }
+      # Launch next step if/when build is complete
+      command: .buildkite/bin/regression-steps.sh ARGS
+      plugins:
+        - uber-workflow/run-without-clone:
+        - improbable-eng/metahook:
+            pre-command: $BUILD_DOCKER
+    EOF
+)
+    # Package the two steps into one bundle, then upload the bundle
+    buildsteps=$(
+      sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
+      echo "steps:"
+      key-exists 'kprep'  || echo "$bdkhaki"
+      key-exists 'r8prep' || echo "$bdcad"  # FIXME restore before final check-in
+    )
+    echo "$buildsteps" | buildkite-agent pipeline upload
 
-for i in `seq 0 $((NSTEPS-1))`; do
+#------------------------------------------------------------------------------
+elif [ "$next" == "gold" ]; then
+
+    # Upload gold step, wait for it to start running (i.e. "launch")
+
+    # This is one way how you can skip a step for e.g. debugging
+    # exec "$0" "$@"  # FIXME Skip gold for now FIXME restore before final check-in
+
+    # Early-out if step has already been launched!
+    key='zircon_gold'; if key-exists $key; then
+        echo "Step '$key' already exists in pipeline. So. Nothing to do!"; exit 0
+    fi
+    goldstep=$(
+  sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
+  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
+    steps:
+    - label: "Zircon Gold"
+      key: "zircon_gold"
+      command: |
+        if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
+            msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
+            echo "--- $$msg"
+            echo "$$msg" | buildkite-agent annotate --style "error" --context onyx
+            exit 13
+        else echo "--- $$msg Zircon gold check PASSED"
+        fi
+        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
+      plugins:
+        - uber-workflow/run-without-clone:
+        - improbable-eng/metahook:
+            pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
+    EOF
+)
+# setstate launch-state READY  # FIXME do we use this??
+echo "$goldstep" | buildkite-agent pipeline upload
+
+
+# BOOKMARK
+#------------------------------------------------------------------------------
+else
+    # "$next" must be "build", "gold" or a single digit 0-9
+    # Since we already processed "build and "gold" above, that leaves 0-9
+    i=$next  # Should be one of {0,1,2,3,4,5,6,7,8,9}
+
+    # Early-out if step has already been launched!
+    key="regress$i"; if key-exists "$key"; then
+        echo "Step '$key' already exists in pipeline. So. Nothing to do!"; exit 0
+    fi
+
+    # Fairness algorithm (CONCURRENCY=4) means at most four regression steps can run at a time
+CONCURRENCY="
+  concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
+  concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
+"
+    # Launch next step
+    # Each new step uploads only after previous step has started running.
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-    cat <<EOF
-- label: "$label"
-  key: "regress$i"
-  env: { REGRESSION_STEP: $i }
-  command: \$REGRESS_METAHOOKS --commands
-  plugins:
-    - uber-workflow/run-without-clone:
-    - improbable-eng/metahook:
-        pre-command: \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
-        pre-exit:    \$REGRESS_METAHOOKS --pre-exit
 
+    # setstate launch-state READY
+    # bkmsg "$label READY TO LAUNCH"
+
+    (sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"
+    cat <<EOF | sed 's/^    //' | sed "s/ARGS/$*/"
+    steps:
+    - label: "$label"
+      # agents: { hostname: khaki }  # Can uncomment for debugging etc.
+      key: "regress$i"
+      env: { REGRESSION_STEP: $i }
+      command: |
+        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
+        \$REGRESS_METAHOOKS --commands
+      plugins:
+        - uber-workflow/run-without-clone:
+        - improbable-eng/metahook:
+            pre-command: |
+                RSTEP=$i
+                \$BUILD_DOCKER
+                cd .
+                \$REGRESS_METAHOOKS --pre-command
+            pre-exit: |
+                \$REGRESS_METAHOOKS --pre-exit
 EOF
-done
+    [ "$i" != 0 ] && echo "$CONCURRENCY"
+    echo "") | buildkite-agent pipeline upload
+fi
 
+#------------------------------------------------------------------------------
+exit
 
+#------------------------------------------------------------------------------
 #BEGIN preamble
 # env:
 #   # This script allows retries even after original collateral is gone...
@@ -98,6 +241,8 @@ done
 #         echo curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
 #         curl $$remote/.buildkite/bin/regress-metahooks.sh -o $REGRESS_METAHOOKS
 #         chmod +x $REGRESS_METAHOOKS
+#         curl $$remote/.buildkite/bin/regression-steps.sh -o .buildkite/bin/regression-steps.sh
+#         chmod +x .buildkite/bin/regression-steps.sh
 #     fi
 # 
 #     # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
@@ -115,6 +260,9 @@ done
 #         if ! [ `docker images -q $IMAGE` ]; then
 #             echo "+++ CANNOT FIND DOCKER IMAGE '$IMAGE'"
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
+# 
+#             # Change step label to reflect docker build DB
+#             buildkite-agent step update "label" " + DB($(hostname))" --append
 # 
 #             # Remove docker images older than one day
 #             echo "--- Cleanup old docker images"
@@ -152,7 +300,7 @@ done
 #             dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
 # 
 #             echo "--- (Re)create garnet Image"
-#             docker build --progress plain . -t "$IMAGE"
+#             ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE"
 # 
 #             echo "--- Pruning Docker Images"
 #             yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
@@ -164,5 +312,11 @@ done
 #     # cd .  # Got weird error without this...??
 #     # set -x; $REGRESS_METAHOOKS --pre-command
 # 
+#     function setstate { buildkite-agent meta-data set $$1 --job $BUILDKITE_JOB_ID $$2; }
+#     function bkmsg    { buildkite-agent annotate --context foo --append "$$1<br />"; }
+# 
+#     setstate image-exists TRUE
+#     setstate launch-state LAUNCHED
+#     # bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED"
 # 
 #END preamble

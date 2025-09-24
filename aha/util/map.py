@@ -73,9 +73,10 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
     if os.getenv("DENSE_READY_VALID") == "1":
         new_env_vars["PIPELINED"] = "0"
 
+    # No need for each var to have its own '---' group, just use '+++' instead of '---'
     print(f"--- Setting environment variables for {app}")
     for n, v in new_env_vars.items():
-        print(f"--- {n} = {v}")
+        print(f"... {n} = {v}")
         env[n] = v
 
 
@@ -212,17 +213,17 @@ def dispatch(args, extra_args=None):
         # For conv1, we want the gold-check to be done using submodule_1's gold
         # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module
         if layer == "submodule_1":
-            subprocess.check_call(["mv", "/aha/voyager/gold_data.txt", "/aha/voyager/gold_data_submodule_1.txt"])
+            subprocess.check_call(["mv", "/aha/voyager/gold_activation.txt", "/aha/voyager/gold_activation_submodule_1.txt"])
 
         if layer == "submodule":
-            subprocess.check_call(["mv", "/aha/voyager/gold_data_submodule_1.txt", "/aha/voyager/gold_data.txt"])
+            subprocess.check_call(["mv", "/aha/voyager/gold_activation_submodule_1.txt", "/aha/voyager/gold_activation.txt"])
 
         if not args.voyager_gold_model_only:
             subprocess_call_log(
                 cmd=[sys.executable,
                         f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
-                        "--input", f"/aha/voyager/gold_data.txt",
-                        "--output", f"/aha/voyager/gold_data.txt"
+                        "--input", f"/aha/voyager/gold_activation.txt",
+                        "--output", f"/aha/voyager/gold_activation.txt"
                         ],
                 cwd=args.aha_dir / "voyager",
                 log=args.log,
@@ -234,7 +235,10 @@ def dispatch(args, extra_args=None):
             subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])
             systemC_comparison_files = glob.glob("/aha/voyager/*systemC.txt")
             subprocess.check_call(["mv"] + systemC_comparison_files + [compare_path])
-            subprocess.check_call(["mv", "/aha/voyager/gold_data.txt", compare_path])
+            subprocess.check_call(["mv", "/aha/voyager/gold_activation.txt", compare_path])
+            gold_scale_path = "/aha/voyager/gold_scale.txt"
+            if os.path.exists(gold_scale_path):
+                subprocess.check_call(["mv", gold_scale_path, compare_path])
             subprocess.check_call(["mv", "/aha/voyager/tensor_metadata.json", voyager_app_base_path])
             subprocess.check_call(["mv", "/aha/voyager/output_tiling.txt", voyager_app_base_path])
 
