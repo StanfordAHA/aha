@@ -595,6 +595,11 @@ def test_dense_app(
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
+    # Test visualization tool only for gaussian
+    print(f"--- {testname} - visualizing", flush=True)
+    if test == "apps/gaussian_RV":
+        buildkite_call(["aha", "sta", test, "-v"], env=env_vars)
+
     print(f"--- {testname} - glb testing", flush=True)
     start = time.time()
 
