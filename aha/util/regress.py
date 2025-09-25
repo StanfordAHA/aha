@@ -118,7 +118,7 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1, using_matrix_unit=False, num_fabric_cols_removed=0):
+def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1, using_matrix_unit=False, num_fabric_cols_removed=0, mu_oc_0=32):
     if len(sparse_tests) == 0:
         return 0
 
@@ -157,6 +157,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append(str(num_fabric_cols_removed))
             build_tb_cmd.append("--include-E64-hw")
             build_tb_cmd.append("--use-non-split-fifos")
+            build_tb_cmd.append("--mu_oc_0")
+            build_tb_cmd.append(str(mu_oc_0))
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -195,6 +197,8 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append(str(num_fabric_cols_removed))
             build_tb_cmd.append("--include-E64-hw")
             build_tb_cmd.append("--use-non-split-fifos")
+            build_tb_cmd.append("--mu_oc_0")
+            build_tb_cmd.append(str(mu_oc_0))
         buildkite_call(
             build_tb_cmd,
             env=env_vars,
@@ -864,7 +868,8 @@ def dispatch(args, extra_args=None):
                 opal_workaround=args.opal_workaround,
                 unroll=unroll,
                 using_matrix_unit=using_matrix_unit,
-                num_fabric_cols_removed=num_fabric_cols_removed)
+                num_fabric_cols_removed=num_fabric_cols_removed,
+                mu_oc_0=mu_oc_0)
             info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
             for test in sparse_tests:
@@ -905,7 +910,8 @@ def dispatch(args, extra_args=None):
             opal_workaround=args.opal_workaround,
             unroll=unroll,
             using_matrix_unit=using_matrix_unit,
-            num_fabric_cols_removed=num_fabric_cols_removed)
+            num_fabric_cols_removed=num_fabric_cols_removed,
+            mu_oc_0=mu_oc_0)
         info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
         for test in sparse_tests:
