@@ -1,5 +1,15 @@
 class Tests:
 
+    def merge_tests(s1, s2):
+        'FIXME help goes here'
+        for key in s2:
+            if type(s2[key]) is list:
+                s1[key] = list(set(s1[key] + s2[key]))  # merge lists
+            else:
+                # Non-lists (e.g. width, height) should be same for both sets
+                assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
+
+
     def __init__(self, testname="BLANK", zircon=True):
         use_custom = False
 
@@ -72,10 +82,11 @@ class Tests:
             external_mu_tests_fp = []
             hardcoded_dense_tests = []
 
-        elif testname == "pr_aha1":
-
+        elif testname == "aha_setup":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+
+        elif testname == "basic_sparse_tests":
             sparse_tests = [
                 # pr_aha1
                 "vec_elemmul",
@@ -94,6 +105,11 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
+
+        elif testname == "pr_aha1":
+
+            aha1 = Tests('aha_setup').__dict__
+            merge_tests(pr_aha, Tests('basic_sparse_tests').__dict__)
             external_mu_tests_fp = [
                  # K-DIM HOST TILING CONV5_X
                 "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
@@ -245,14 +261,6 @@ class Tests:
         # PR_AHA test suite for aha-repo push/pull;
         # build pr_aha1,2,3 and then merge them all together
         elif testname == "pr_aha":
-            def merge_tests(s1, s2):
-                for key in s2:
-                    if type(s2[key]) is list:
-                        s1[key] = list(set(s1[key] + s2[key]))  # merge lists
-                    else:
-                        # Non-lists (e.g. width, height) should be same for both sets
-                        assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
-
             pr_aha = Tests('pr_aha1').__dict__
             merge_tests(pr_aha, Tests('pr_aha2').__dict__)
             merge_tests(pr_aha, Tests('pr_aha3').__dict__)
