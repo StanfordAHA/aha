@@ -775,7 +775,7 @@ def dispatch(args, extra_args=None):
 
 
     # FIXME delete this before final check-in!!!
-    exit(0)
+    # exit(0)
 
 
     # Unpack imported_tests into convenient handles
