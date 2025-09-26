@@ -32,7 +32,7 @@ aha regress pr
 ```
 
 
-### Simple Demo – Gaussian Blur
+### Simple Demo - Gaussian Blur
 <i>Also see slide 3 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).</i>
 ```
 # Generate hardware for a 4x16 CGRA
@@ -50,7 +50,7 @@ aha pnr apps/gaussian --width 4 --height 16
 aha test apps/gaussian
 ```
 
-### Bigger Demo – Camera Pipeline Using Full 32x16 Array
+### Bigger Demo - Camera Pipeline Using Full 32x16 Array
 <i>Also see slide 6 of [tutorial](https://raw.githubusercontent.com/StanfordAHA/aha_tutorial/main/assets/images/13_EndtoEnd.pdf).</i>
 ```
 # Generate hardware for a 32x16 CGRA
