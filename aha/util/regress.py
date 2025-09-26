@@ -773,6 +773,11 @@ def dispatch(args, extra_args=None):
     else:
         imported_tests = Tests(args.config)
 
+
+    # FIXME delete this before final check-in!!!
+    exit(0)
+
+
     # Unpack imported_tests into convenient handles
     width, height = imported_tests.width, imported_tests.height
     num_fabric_cols_removed, mu_oc_0 = imported_tests.cols_removed, imported_tests.mu_oc_0

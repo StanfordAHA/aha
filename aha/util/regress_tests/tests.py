@@ -1,15 +1,5 @@
 class Tests:
 
-    def merge_tests(s1, s2):
-        'FIXME help goes here'
-        for key in s2:
-            if type(s2[key]) is list:
-                s1[key] = list(set(s1[key] + s2[key]))  # merge lists
-            else:
-                # Non-lists (e.g. width, height) should be same for both sets
-                assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
-
-
     def __init__(self, testname="BLANK", zircon=True):
         use_custom = False
 
@@ -54,6 +44,54 @@ class Tests:
             "apps/zircon_psum_reduction_fp",
             "apps/zircon_dequantize_relu_fp"
         ]
+
+        def assign_final_values(DBG=True):
+            # Export everything
+            print(width)
+            print("FOO2", external_mu_tests_fp)
+
+
+            self.width, self.height = width, height
+            self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
+            self.sparse_tests = sparse_tests
+            self.glb_tests = glb_tests
+            self.glb_tests_fp = glb_tests_fp
+            self.glb_tests_RV = glb_tests_RV
+            self.glb_tests_fp_RV = glb_tests_fp_RV
+            self.resnet_tests = resnet_tests
+            self.resnet_tests_fp = resnet_tests_fp
+            self.behavioral_mu_tests = behavioral_mu_tests
+            self.external_mu_tests = external_mu_tests
+            self.external_mu_tests_fp = external_mu_tests_fp
+            self.hardcoded_dense_tests = hardcoded_dense_tests
+            self.E64_supported_tests = E64_supported_tests
+            self.E64_MB_supported_tests = E64_MB_supported_tests
+            self.no_zircon_sparse_tests = no_zircon_sparse_tests
+
+            if DBG:
+                print(44, self.__dict__); print("-------------------------------------------------------------")
+
+
+        # Helper functions
+        def merge_tests(t1, t2):
+            '''
+            If test dicts t1 and t2 both have lists "foo", merge t2 info into t1 list
+            For non-list vars e.g. 'width', replace t1 info with t2 info
+            '''
+            for key in t2:
+                if type(t2[key]) is list:
+
+                    # t1[key] = list(set(t1[key] + t2[key]))  # does not preserve list order :(
+                    t1[key] = list(dict.fromkeys(t1[key] + t2[key]))  # Less readable but preserves order oh well
+
+                else:
+                    # Non-lists (e.g. width, height) should be same for both sets
+                    # assert t1[key] == t2[key], f'Found different values for "{key}" among pr_aha*'
+                    print(f'Warning: replacing local {key}={t1[key]} with foreign {key}={t2[key]}')
+                    t1[key] == t2[key] # Replace all others
+
+
+
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
@@ -106,10 +144,7 @@ class Tests:
                 "tensor3_ttv",
             ]
 
-        elif testname == "pr_aha1":
-
-            aha1 = Tests('aha_setup').__dict__
-            merge_tests(pr_aha, Tests('basic_sparse_tests').__dict__)
+        elif testname == "resnet18_submodule_17":
             external_mu_tests_fp = [
                  # K-DIM HOST TILING CONV5_X
                 "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
@@ -117,13 +152,41 @@ class Tests:
                 "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-        elif testname == "pr_aha2":
-            width, height = 28, 16
-            cols_removed, mu_oc_0 = 12, 32
+
+        elif testname == "pr_aha1":
+
+            # Initialize with tests from other configs
+            suite = Tests('aha_setup').__dict__
+            merge_tests(suite, Tests('basic_sparse_tests').__dict__)
+            merge_tests(suite, Tests('resnet18_submodule_17').__dict__)
+
+            # Can also add tests locally like so:
+            # suite['sparse_tests'] += [ 'newtest1', 'newtest2' ]
+
+            # Update self and return
+            self.__dict__.update(suite)
+            return
+
+        elif testname == "resnet18_submodule_3":
             external_mu_tests_fp = [
                 # 4935 sec (build 12187)
                 "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
             ]
+
+        elif testname == "pr_aha2":
+
+            # Initialize with tests from other configs
+            suite = Tests('aha_setup').__dict__
+            suite = Tests('resnet18_submodule_3').__dict__
+
+            # Can also add tests locally like so:
+            # suite['sparse_tests'] += [ 'newtest1', 'newtest2' ]
+
+            # Update self and return
+            self.__dict__.update(suite)
+            print(44, self.__dict__); print("-------------------------------------------------------------")
+            return
+
         elif testname == "pr_aha3":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -753,23 +816,13 @@ class Tests:
         else:
             use_custom = True
 
+# >>> [k for k in vars().keys() if not k[0]=="_"]
+# ['random', 'a', 'aregs', 'q', 'TESTS', 'foo']
+
+
+
         # Export everything
-        self.width, self.height = width, height
-        self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
-        self.sparse_tests = sparse_tests
-        self.glb_tests = glb_tests
-        self.glb_tests_fp = glb_tests_fp
-        self.glb_tests_RV = glb_tests_RV
-        self.glb_tests_fp_RV = glb_tests_fp_RV
-        self.resnet_tests = resnet_tests
-        self.resnet_tests_fp = resnet_tests_fp
-        self.behavioral_mu_tests = behavioral_mu_tests
-        self.external_mu_tests = external_mu_tests
-        self.external_mu_tests_fp = external_mu_tests_fp
-        self.hardcoded_dense_tests = hardcoded_dense_tests
-        self.E64_supported_tests = E64_supported_tests
-        self.E64_MB_supported_tests = E64_MB_supported_tests
-        self.no_zircon_sparse_tests = no_zircon_sparse_tests
+        assign_final_values()
 
         if use_custom:
             # Read a custom suite from external file <testname>.py
