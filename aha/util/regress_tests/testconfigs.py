@@ -54,9 +54,14 @@ def test_imported_tests(DBG=1):
 
     config = 'fast'
     imported_tests = Tests(config)
-#     print(imported_tests)
+    #     print(imported_tests)
 
-    if True:
+    parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
+    print(parms); exit()
+
+
+    OLD_STYLE = True
+    if OLD_STYLE:
         # Unpack imported_tests into convenient handles
         width, height = imported_tests.width, imported_tests.height
         num_fabric_cols_removed, mu_oc_0 = imported_tests.cols_removed, imported_tests.mu_oc_0
@@ -72,6 +77,10 @@ def test_imported_tests(DBG=1):
         external_mu_tests_fp = imported_tests.external_mu_tests_fp
         hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
         no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
+
+    else:
+        parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
+        groups = Tests.groupnames  # [ 'glb_tests','sparse_tests', ... ]
 
     print(' - width');   assert width   == imported_tests.width
     print(' - height');  assert height  == imported_tests.height

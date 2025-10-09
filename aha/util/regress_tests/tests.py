@@ -920,6 +920,20 @@ class Tests:
         ],
     }
 
+    # parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
+    # Comb through all config dicts; anything that is not a list is a parm
+    parmnames = set()
+    for c in configs:
+        # print(configs[c])
+        for key in configs[c]:
+            if type(configs[c][key]) is not list:
+                # print(key)
+                parmnames.add(key)
+    # print(66,parmnames)
+    parmnames = list(parmnames)
+    # groups = Tests.groupnames  # [ 'glb_tests','sparse_tests', ... ]
+
+
 # Every time someone tries to import this class, it triggers this
 # quick check to make sure that no configs have redundant apps
 
@@ -938,3 +952,8 @@ for config_name in Tests.configs:
                 errors += f"    ERROR: Config {config_name}[{group}] has {n_app} copies of '{app}'\n"
 
 assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
+
+#         parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
+#         groups = Tests.groupnames  # [ 'glb_tests','sparse_tests', ... ]
+
+
