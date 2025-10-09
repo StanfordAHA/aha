@@ -442,6 +442,8 @@ class Tests:
         for key in Tests.template:
             if key not in sdic: sdic[key] = Tests.template[key]
 
+
+
     def prefix_lines(lines, prefix):
         'Attach the indicated prefix to each line in "lines"'
         return prefix + lines.replace('\n', '\n'+prefix)
@@ -889,8 +891,3 @@ for config_name in Tests.configs:
                 errors += f"    ERROR: Config {config_name}[{group}] has {n_app} copies of '{app}'\n"
 
 assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
-
-#         parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
-#         groups = Tests.groupnames  # [ 'glb_tests','sparse_tests', ... ]
-
-
