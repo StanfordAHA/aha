@@ -20,7 +20,10 @@ def combine(dict1, *args):
        If dict entry is a list, the lists are concatenated.
        Otherwise, entry in rightmost dict takes precedence, and replaces all others.
     '''
-    # If no args, return a deep copy of dict1; merge will remove any duplicates.
+    # If dict1 is a string, iterpret as yaml
+    if type(dict1) is str: dict1 = yaml.safe_load(dict1)
+
+    # If no args, return a deep copy of dict1; merge([dict1]) will remove any duplicates.
     if not args:
         args = [dict1]; dict1 = {}
 
@@ -210,7 +213,6 @@ class Tests:
     # pr_aha1
     # ------------------------------------------------------------------------
     configs['pr_aha1'] = combine(
-        {},
         '''
           sparse_tests:        # 54m build 12226
             - vec_elemmul
@@ -248,7 +250,6 @@ class Tests:
     # pr_aha4
     # ------------------------------------------------------------------------
     configs['pr_aha4'] = combine(
-        {},
         '''glb_tests_RV:  # 56m build 12226
             - tests/conv_2_1_RV
             - tests/fp_e8m0_quant_test_RV
@@ -275,7 +276,6 @@ class Tests:
     # pr_aha5
     # ------------------------------------------------------------------------
     configs['pr_aha5'] = combine(
-        {},
         '''no_zircon_sparse_tests:  # 19m build 12226
               - vec_elemmul
               - mat_vecmul_ij
@@ -306,7 +306,7 @@ class Tests:
     # ------------------------------------------------------------------------
     # pr_aha6
     # ------------------------------------------------------------------------
-    configs['pr_aha6'] = combine({},
+    configs['pr_aha6'] = combine(
         '''resnet_tests:  # 126m build 12226
             - conv1
             - conv2_x
