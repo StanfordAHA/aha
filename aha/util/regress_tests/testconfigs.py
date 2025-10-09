@@ -43,6 +43,169 @@ pointwise = {
     "sparse_tests": [],
 }
 
+########################################################################
+# Tests begin here
+
+def test_imported_tests(DBG=1):
+    'Mimic regress.py imported_tests mechanism to ensure that it works'
+    print("Testing imported_tests mechanism\n")
+
+    imported_tests = None
+
+    config = 'fast'
+    imported_tests = Tests(config)
+#     print(imported_tests)
+
+    if True:
+        # Unpack imported_tests into convenient handles
+        width, height = imported_tests.width, imported_tests.height
+        num_fabric_cols_removed, mu_oc_0 = imported_tests.cols_removed, imported_tests.mu_oc_0
+        sparse_tests = imported_tests.sparse_tests
+        glb_tests = imported_tests.glb_tests
+        glb_tests_fp = imported_tests.glb_tests_fp
+        glb_tests_RV = imported_tests.glb_tests_RV
+        glb_tests_fp_RV = imported_tests.glb_tests_fp_RV
+        resnet_tests = imported_tests.resnet_tests
+        resnet_tests_fp = imported_tests.resnet_tests_fp
+        behavioral_mu_tests = imported_tests.behavioral_mu_tests
+        external_mu_tests = imported_tests.external_mu_tests
+        external_mu_tests_fp = imported_tests.external_mu_tests_fp
+        hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
+        no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
+
+    print(' - width');   assert width   == imported_tests.width
+    print(' - height');  assert height  == imported_tests.height
+    print(' - mu_oc_0'); assert mu_oc_0 == imported_tests.mu_oc_0
+    print(' - num_fabric_cols_removed'); assert num_fabric_cols_removed == imported_tests.cols_removed
+    print()
+    print(' - glb_tests');        assert glb_tests       == imported_tests.glb_tests
+    print(' - glb_tests_fp');     assert glb_tests_fp    == imported_tests.glb_tests_fp
+    print(' - glb_tests_RV');     assert glb_tests_RV    == imported_tests.glb_tests_RV
+    print(' - glb_tests_fp_RV');  assert glb_tests_fp_RV == imported_tests.glb_tests_fp_RV
+    print()
+    print(' - sparse_tests');     assert sparse_tests    == imported_tests.sparse_tests
+    print(' - resnet_tests');     assert resnet_tests    == imported_tests.resnet_tests
+    print(' - resnet_tests_fp');  assert resnet_tests_fp == imported_tests.resnet_tests_fp
+    print()
+    print(' - external_mu_tests');      assert external_mu_tests      == imported_tests.external_mu_tests
+    print(' - external_mu_tests_fp');   assert external_mu_tests_fp   == imported_tests.external_mu_tests_fp
+    print(' - behavioral_mu_tests');    assert behavioral_mu_tests    == imported_tests.behavioral_mu_tests
+    print(' - hardcoded_dense_tests');  assert hardcoded_dense_tests  == imported_tests.hardcoded_dense_tests
+    print(' - no_zircon_sparse_tests'); assert no_zircon_sparse_tests == imported_tests.no_zircon_sparse_tests
+
+# cat << eof | awk '{printf("    print(|%s|); %s\n", $2, $0)}' | sed "s/|/'/g"
+#     assert width == imported_tests.width
+#     assert height == imported_tests.height
+#     assert num_fabric_cols_removed == imported_tests.cols_removed
+#     assert mu_oc_0 == imported_tests.mu_oc_0
+#     assert sparse_tests == imported_tests.sparse_tests
+#     assert glb_tests == imported_tests.glb_tests
+#     assert glb_tests_fp == imported_tests.glb_tests_fp
+#     assert glb_tests_RV == imported_tests.glb_tests_RV
+#     assert glb_tests_fp_RV == imported_tests.glb_tests_fp_RV
+#     assert resnet_tests == imported_tests.resnet_tests
+#     assert resnet_tests_fp == imported_tests.resnet_tests_fp
+#     assert behavioral_mu_tests == imported_tests.behavioral_mu_tests
+#     assert external_mu_tests == imported_tests.external_mu_tests
+#     assert external_mu_tests_fp == imported_tests.external_mu_tests_fp
+#     assert hardcoded_dense_tests == imported_tests.hardcoded_dense_tests
+#     assert no_zircon_sparse_tests == imported_tests.no_zircon_sparse_tests
+# eof
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return
+
+
+    # Print imported tests in gold-standard format
+
+    # Copied from test_configs() below
+    'Cycle through all configs in test.py and compare to gold'
+    import os, json
+    all_configs = list(Tests.configs.keys())
+    for config_name in all_configs:
+
+        # Get dict that lists config contents
+        config = Tests(config_name).__dict__
+
+        # Dump contents of dict to a test file for comparison
+        test = f'tmp.tests-{config_name}.json'
+        with open(test, 'w') as f:
+            hline = 61 * '-'
+            with redirect_stdout(f):
+                print(f'{hline}\n44 {config_name}')
+                print(json.dumps(config, indent=4, sort_keys=True))
+                print(hline)
+            f.close()
+
+        # Print test contents to stdout before comparison
+        # FIXME maybe this should be optional e.g. 'if DBG'
+        with open(test, 'r') as f:
+            content = f.read()
+            print(content)
+            f.close()
+
+        # Using bash diff, compare to gold
+        gold = f'gold/tests-{config_name}.json'
+        cmd = f'diff {gold} {test}'; print(cmd)
+        sys.stdout.flush()  # Must flush *before* diff or no stdout (??)
+        a = subprocess.run(cmd, shell=True)
+
+        os.remove(test)  # Clean up
+
+        # Process comparison results
+        err = f'\nConfig "{config_name}" does not match gold model'
+        assert a.returncode == 0, err
+        print("PASS")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+test_imported_tests(); exit()
+
+
 def test_json(DBG=0):
     # Json string as config e.g. '{"glb_tests":["apps/pointwise"]}'
     print("Testing json string as config")
