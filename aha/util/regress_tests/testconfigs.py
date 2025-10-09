@@ -17,7 +17,7 @@ def compare_configs(wanted, got):
         if key not in wanted:
             print(f"*** ERROR: Returned config has extra {{ {key} : {got[key]} }}"); err = True
         elif key not in got:
-            print(f"*** ERROR: Returned config should have {key}= {wanted[key]}"); err = True
+            print(f"*** ERROR: Returned config should have:   {key}= {wanted[key]}"); err = True
         elif wanted[key] != got[key]:
             print(f'*** ERROR: Wanted "{key} : {wanted[key]}", got "{key} : {got[key]}"'); err = True
     if err:
@@ -50,14 +50,17 @@ def test_imported_tests(DBG=1):
     'Mimic regress.py imported_tests mechanism to ensure that it works'
     print("Testing imported_tests mechanism\n")
 
-    imported_tests = None
-
     config = 'fast'
     imported_tests = Tests(config)
-    #     print(imported_tests)
+    itd = imported_tests.__dict__
+    # print(58,itd)
 
-    parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
-    print(parms); exit()
+    '''
+    NEXT:
+    - one return to rule them all
+    - do the check before the return
+    - who is your uncle it is me it is uncle bob
+    '''
 
 
     OLD_STYLE = True
@@ -82,6 +85,20 @@ def test_imported_tests(DBG=1):
         parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
         groups = Tests.groupnames  # [ 'glb_tests','sparse_tests', ... ]
 
+    num_fabric_cols_removed = cols_removed  # But why tho
+
+   # Quick error check
+    for key in itd:
+        if key not in locals():
+            e1=f'***ERROR {key} not declared in regress.py'
+            e2=f'look in regress.py source for "Define local"'
+            print(f"\n{e1}; {e2}\n\n")
+            exit(13)
+
+
+
+
+
     print(' - width');   assert width   == imported_tests.width
     print(' - height');  assert height  == imported_tests.height
     print(' - mu_oc_0'); assert mu_oc_0 == imported_tests.mu_oc_0
@@ -102,24 +119,131 @@ def test_imported_tests(DBG=1):
     print(' - hardcoded_dense_tests');  assert hardcoded_dense_tests  == imported_tests.hardcoded_dense_tests
     print(' - no_zircon_sparse_tests'); assert no_zircon_sparse_tests == imported_tests.no_zircon_sparse_tests
 
-# cat << eof | awk '{printf("    print(|%s|); %s\n", $2, $0)}' | sed "s/|/'/g"
-#     assert width == imported_tests.width
-#     assert height == imported_tests.height
-#     assert num_fabric_cols_removed == imported_tests.cols_removed
-#     assert mu_oc_0 == imported_tests.mu_oc_0
-#     assert sparse_tests == imported_tests.sparse_tests
-#     assert glb_tests == imported_tests.glb_tests
-#     assert glb_tests_fp == imported_tests.glb_tests_fp
-#     assert glb_tests_RV == imported_tests.glb_tests_RV
-#     assert glb_tests_fp_RV == imported_tests.glb_tests_fp_RV
-#     assert resnet_tests == imported_tests.resnet_tests
-#     assert resnet_tests_fp == imported_tests.resnet_tests_fp
-#     assert behavioral_mu_tests == imported_tests.behavioral_mu_tests
-#     assert external_mu_tests == imported_tests.external_mu_tests
-#     assert external_mu_tests_fp == imported_tests.external_mu_tests_fp
-#     assert hardcoded_dense_tests == imported_tests.hardcoded_dense_tests
-#     assert no_zircon_sparse_tests == imported_tests.no_zircon_sparse_tests
-# eof
+    exit()
+
+    # cat << eof | awk '{printf("    print(|%s|); %s\n", $2, $0)}' | sed "s/|/'/g"
+    '''
+cat << eof | awk '{print $2 " = []"}'
+    assert width == imported_tests.width
+    assert height == imported_tests.height
+    assert num_fabric_cols_removed == imported_tests.cols_removed
+    assert mu_oc_0 == imported_tests.mu_oc_0
+    assert sparse_tests == imported_tests.sparse_tests
+    assert glb_tests == imported_tests.glb_tests
+    assert glb_tests_fp == imported_tests.glb_tests_fp
+    assert glb_tests_RV == imported_tests.glb_tests_RV
+    assert glb_tests_fp_RV == imported_tests.glb_tests_fp_RV
+    assert resnet_tests == imported_tests.resnet_tests
+    assert resnet_tests_fp == imported_tests.resnet_tests_fp
+    assert behavioral_mu_tests == imported_tests.behavioral_mu_tests
+    assert external_mu_tests == imported_tests.external_mu_tests
+    assert external_mu_tests_fp == imported_tests.external_mu_tests_fp
+    assert hardcoded_dense_tests == imported_tests.hardcoded_dense_tests
+    assert no_zircon_sparse_tests == imported_tests.no_zircon_sparse_tests
+eof
+    '''
+
+    # Define local variables
+    width = 17
+    height = 0
+    mu_oc_0 = 0
+    cols_removed = 0  # This is what tests.py calls it
+    num_fabric_cols_removed = 0  # This is what we use locally :(
+
+    sparse_tests = []
+    glb_tests = []
+    glb_tests_fp = []
+    glb_tests_RV = []
+    glb_tests_fp_RV = []
+    resnet_tests = []
+    resnet_tests_fp = []
+    behavioral_mu_tests = []
+    external_mu_tests = []
+    external_mu_tests_fp = []
+    hardcoded_dense_tests = []
+    no_zircon_sparse_tests = []
+
+    config = 'fast'
+    imported_tests = Tests(config)
+    itd = imported_tests.__dict__
+    print(58,itd)
+
+    # Quick error check
+    for key in itd:
+        if key not in locals():
+            e1=f'***ERROR {key} not declared in regress.py'
+            e2=f'look in regress.py source for "Define local"'
+            print(f"\n{e1}; {e2}\n\n")
+            exit(13)
+    locals().update(itd)
+    print(f'86,{width=}')
+
+
+    locals()['width'] = 668
+    print(f'668,{width=}')
+
+
+    exit()
+
+    num_fabric_cols_removed = cols_removed  # Not sure why we do this...?
+
+ 
+
+    locals()['foozy']=1
+    print(foozy); exit()
+
+    imported_tests = None
+    foo = 6
+
+    locals()['foo']=7
+    print(foo)
+    exit()
+
+
+    config = 'fast'
+    imported_tests = Tests(config)
+    itd = imported_tests.__dict__
+    print(58,itd)
+
+    locals().update( {'config':3}   )
+    print(666,config)
+
+    locals().update(itd)
+    print(64, width)
+
+
+    exit()
+
+
+
+#     for key in imported_tests.__dict__:
+
+
+    locals().update(itd)
+    print(64, width)
+    exit()
+
+
+
+    print(59,imported_tests.__dict__)
+
+    parms = Tests.parmnames    # [ 'width', 'height',' num_fabric_cols_removed', 'mu_oc_0']
+    print(60,parms)
+
+    vardic = vars().copy()
+    print(63, vardic)
+    vars().update(parms)
+    print(64, width)
+    exit()
+    
+    '''
+    alternatives:
+    - define all parms and groups as local vars defaulting to i dunno whatever
+    - this puts them in the locals() dict and now can be modified
+    - how does this help tests.py?
+    - no need for templates
+    - is this too easy? nawwww
+    '''
 
 
 
@@ -212,7 +336,7 @@ def test_imported_tests(DBG=1):
 
 
 
-test_imported_tests(); exit()
+# test_imported_tests(); exit()
 
 
 def test_json(DBG=0):
@@ -236,41 +360,6 @@ def test_yaml(DBG=0):
     if DBG: print("Found:", json.dumps(yconfig, indent=4, sort_keys=True))
     assert compare_configs(pointwise, yconfig)
     print("PASS yaml test\n")
-
-def test_customfile(DBG=0):
-    '''
-    Read a custom config from external python file <testname>
-    E.g. "tmp.py" where tmp.py has local vars with valid config components e.g.
-      % cat tmp.py
-      if True:
-          width,height = 8,8
-          glb_tests = [ 'tests/pointwise' ]
-    '''
-    import os, sys
-    from subprocess import run, PIPE
-    print("Testing custom python file as config")
-
-    # Prepare the custom file
-    tmpfile = 'tmp-aha-test-tests.py'
-    with open(tmpfile, 'w') as f:
-        print('''if True:
-          width,height = 8,8
-          glb_tests = [ 'apps/pointwise' ]
-        ''', file=f)
-        f.close()
-    print(f"File {tmpfile} contains:\n    ", flush=True, end='')
-    run(f'cat {tmpfile}', shell=True, stderr=sys.stderr, stdout=sys.stdout)
-    sys.stdout.flush()
-
-    # Try using custom file as config
-    fdict = Tests(tmpfile).__dict__
-
-    # Delete the custom file now that we are done
-    os.remove(tmpfile)
-    
-    # See if config results match what we wanted
-    assert compare_configs(pointwise, fdict)
-    print("PASS custom-config-file test\n")
 
 def test_supported_tests():
     err = 'E64_MB_supported_tests broken'
@@ -323,7 +412,6 @@ def main():
     hline = 9*'--------'
     test_json(); print(hline)
     test_yaml(); print(hline)
-    test_customfile(); print(hline)
     test_supported_tests()
     test_skip_cgra()
     test_configs()

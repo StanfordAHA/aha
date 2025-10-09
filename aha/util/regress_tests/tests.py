@@ -424,72 +424,23 @@ class Tests:
     # ------------------------------------------------------------------------------------
     def __init__(self, testname="BLANK", zircon=True):
 
-        self.__dict__.update(Tests.template.copy())
+        sdic = self.__dict__
         if testname in Tests.configs:
-            self.__dict__.update(Tests.configs[testname])
+            sdic.update(Tests.configs[testname])
 
         elif self.detect_and_process_json(testname):
-            return
+            pass
 
         elif self.detect_and_process_yaml(testname):
-            return
+            pass
 
         else:
-            ########################################################################
-            # FIXME This option exists solely to support the existing 'app' utility.
-            # Can delete when/if 'app' gets updated to use something better
-            # (e.g. command-line or file-indirect json / yaml)
-            self.process_file(testname)
-            return
-
-    def process_file(self, config):
-        '''
-        # Read a custom config from external file <config>.py
-        # E.g. if we find a config file '/aha/aha/util/regress_tests/custom4485.py' containing
-        #   "if True:
-        #       width, height = 4, 2
-        #       glb_tests = [ 'tests/pointwise' ]"
-        # then 'aha regress custom4485' would run a 4x2 pointwise test.
-        '''
-        import os, sys
-
-        # Canonicalize filename (must have .py extension)
-        # and module name (must *not* have .py extension)
-        filename = config if config[-3:] == '.py' else config+'.py'
-        module = filename[:-3]  # Module name is filename with .py extension stripped off
-
-        # Find the file
-        print(f"Is {config} a python file in our search path?")
-        for p in sys.path:
-            fullpath = p + '/' + filename
-            if os.path.exists(fullpath): break
-            else: fullpath = False
-
-        if not fullpath:
-            print(f"\nCould NOT find {filename} in {sys.path=}", flush=True)
+            print(f'\n***ERROR Cannot find config "{testname}"')
             exit(13)
 
-        # print(f"- Yes! Found {fullpath}\n")
-        print(f"- Yes! Found module '{module}' in dir '{p}'\n")
-
-        # Use python3 to see if file has correct syntax
-        from subprocess import run, PIPE
-        print("Is it a *parsable* python file? ", flush=True)
-        p = run(f'python3 {filename}', shell=True, stderr=sys.stderr)
-        sys.stdout.flush()
-        if p.returncode: exit(p.returncode)
-        else: print("Yes!\n")
-
-        import importlib
-        print("Load the module and use its local vars as config")
-        md = importlib.import_module(module).__dict__
-        config_dict = Tests.template.copy()
-        for key in config_dict:
-            if key in md: config_dict[key] = md[key]
-
-        # Update self parms and return
-        self.__dict__.update(config_dict)
-        return
+        # Populate missing return values with template defaults
+        for key in Tests.template:
+            if key not in sdic: sdic[key] = Tests.template[key]
 
     def prefix_lines(lines, prefix):
         'Attach the indicated prefix to each line in "lines"'
