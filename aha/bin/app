@@ -165,6 +165,8 @@ pyscript='if True:
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
 suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
+[ "$DBG" ] && printf "Found config database\n$suites\n\n"
+
 
 #########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
@@ -205,11 +207,11 @@ if [ "$SUITE" ]; then
         else
             echo ""
         fi
-        [ "$DBG" ] && echo "$suites" | egrep ^"$s"
+        [ "$DBG" ] && echo "$suites" | egrep ^"$s "
         [ "$DBG" ] && hline 72
 
         # Note $ZIRCON is either "" or " --no-zircon"
-        (echo "$suites" | egrep ^"$s" | awk '{
+        (echo "$suites" | egrep ^"$s " | awk '{
           suite=$1; group=$2; app=$3; size=$4; $1=$2=$3=$4="";
           gsub(/^ */, "", $0); parms = $0
           printf("'$bn' %s %s %s\n", size, app, parms ZIRCON)

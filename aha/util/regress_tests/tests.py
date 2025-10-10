@@ -512,8 +512,11 @@ class Tests:
                 print(fmt % (config_name, group, app, parms))
                 # rval += (fmt % (config_name, group, app, d["app_parms"]))
 
-    # PR_SUBMOD tests for push/pull from aha submod repos
-    # FIXME ask yuchen and michael if they use this? then DELETE IT maybe
+    # PR_SUBMOD tests for pull requests from aha submod repos
+    # *Except for* garnet, which does the usual pr_aha tests on every push.
+    # I think the idea is/was supposed to be / have been?
+    # That these tests are faster than the usual pr_aha*?
+    # But I'm pretty sure that there's no way, friends...
     configs['pr_submod'] = {
         "width": 28,
         "height": 16,
@@ -897,7 +900,7 @@ for config_name in Tests.configs:
     lists = [key for key in config if type(config[key]) is list]
     for group in lists:
         apps = config[group]
-        if DBG: print(f'    Config {config_name} has list {key}')
+        if DBG: print(f'    Config {config_name} has group {group}')
         for app in set(apps):  # Use set to prevent duplicate checks
             n_app = apps.count(app)
             if n_app > 1:
