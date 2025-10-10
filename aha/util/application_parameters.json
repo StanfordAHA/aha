@@ -92,7 +92,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -105,7 +106,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -119,7 +121,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "ZIRCON_HARDCODED_TILING":"1"
         }
     },
     "zircon_dequantize_relu_fp_post_conv1_kernel1":{
@@ -254,14 +257,16 @@
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -269,7 +274,8 @@
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         }
     },
     "zircon_nop_post_conv4_x":{
@@ -278,14 +284,16 @@
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
             "HL_TARGET":"host-x86-64",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -293,7 +301,8 @@
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         }
     },
     "zircon_nop_post_conv5_x_kernel0":{
@@ -511,20 +520,23 @@
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1"
         }
     },
     "zircon_residual_relu_fp_post_conv3_x":{
@@ -532,20 +544,23 @@
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "MANUAL_PATH_BALANCE_PLACER": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "MANUAL_PATH_BALANCE_PLACER": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
             "DISABLE_GP":"1",
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
-            "MU_GLB_BASE_ADDR": "0"
+            "MU_GLB_BASE_ADDR": "0",
+            "MANUAL_PATH_BALANCE_PLACER": "1"
         }
     },
     "zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround":{
@@ -554,14 +569,16 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "MU_GLB_BASE_ADDR": "0",
-            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1"
+            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
+            "MANUAL_PATH_BALANCE_PLACER": "1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "MU_GLB_BASE_ADDR": "0",
-            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1"
+            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
+            "MANUAL_PATH_BALANCE_PLACER": "1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -569,7 +586,8 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
             "MU_GLB_BASE_ADDR": "0",
-            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1"
+            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
+            "MANUAL_PATH_BALANCE_PLACER": "1"
         }
     },
     "zircon_residual_relu_fp_post_conv4_x_fx_fy_stride_workaround":{
@@ -635,7 +653,9 @@
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "MANUAL_PATH_BALANCE_PLACER": "1",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -645,7 +665,9 @@
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "MANUAL_PATH_BALANCE_PLACER": "1",
+            "ZIRCON_HARDCODED_TILING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -656,7 +678,9 @@
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "MANUAL_PATH_BALANCE_PLACER": "1",
+            "ZIRCON_HARDCODED_TILING":"1"
         }
     },
     "zircon_residual_relu_fp_post_conv5_x_psum_workaround":{
