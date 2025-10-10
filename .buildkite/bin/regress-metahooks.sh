@@ -145,19 +145,9 @@ elif [ "$1" == '--commands' ]; then
 
     DO_AR=True
 
-    # Prepare to run regression tests according to whether it's a submod PR
-    if test -e /buildkite/DO_PR; then
-      echo "Trigger came from submod repo pull request; use pr config"
-      export CONFIG="pr_submod --include-no-zircon-tests"
-
-      # Must restrict to a single slice else they will ALL do the full regression(!)
-      if [ "$REGSTEP" != 1 ]; then
-        echo "Full regressions only run as 'Regress 1'"
-        DO_AR=False
-      fi
-
-    elif [ "$CONFIG" == "pr_aha" ]; then
+    if [ "$CONFIG" == "pr_aha" ]; then
       # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
+      # Note it is *unusual* for REGSTEP to not exist; not sure if that ever even happens.)
       # Note REGSTEP 0 uses config "fast" instead of e.g. "regress0"
       if [ "$REGSTEP" ]; then
           export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests"
@@ -170,16 +160,13 @@ elif [ "$1" == '--commands' ]; then
       # FIXME what is this and why is it here??? Pretty sure it's outdated/unnecessary :(
       if [ "$REGSTEP" != 1 ]; then
         echo "Full regressions only run as 'Regress 1'"
-        DO_AR=False
+        DO_AR=False  # Use DO_AR to suppress regressions for certain REGSTEPs
       fi
+      # We always include no-zircon-tests
       CONFIG="$CONFIG --include-no-zircon-tests"
     fi
 
     if [ "$DO_AR" == "True" ]; then
-      # aha regress --BENCHMARK-- --include-dense-only-tests || exit 13  # Magic happens here...
-      # aha regress pr_aha1 --daemon auto --include-dense-only-tests || exit 13
-
-      # For fast prototyping: ECHO ONLY and/or try config 'fast'
       # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
       set -x
       echo "aha regress $CONFIG"
