@@ -422,23 +422,33 @@ class Tests:
     # ------------------------------------------------------------------------------------
     # Methods begin here
     # ------------------------------------------------------------------------------------
-    def __init__(self, testname="BLANK", zircon=True):
+    def __init__(self, config="BLANK", zircon=True):
 
-        sdic = self.__dict__
-        if testname in Tests.configs:
-            sdic.update(Tests.configs[testname])
+        # Preserve backward compatibility
+        if config == "daily":
+            print('WARNING "daily" config no longer exists, using "pr_aha" instead')
+            config = "pr_aha"
 
-        elif self.detect_and_process_json(testname):
+        elif config == "pr":
+            print('WARNING "pr" config no longer exists, using "pr_submod" instead')
+            config = "pr_submod"
+
+        # Create the requested config
+        if config in Tests.configs:
+            self.__dict__.update(Tests.configs[config])
+
+        elif self.detect_and_process_json(config):
             pass
 
-        elif self.detect_and_process_yaml(testname):
+        elif self.detect_and_process_yaml(config):
             pass
 
         else:
-            print(f'\n***ERROR Cannot find config "{testname}"')
+            print(f'\n***ERROR Cannot find config "{config}"')
             exit(13)
 
         # Populate missing return values with template defaults
+        sdic = self.__dict__
         for key in Tests.template:
             if key not in sdic: sdic[key] = Tests.template[key]
 
@@ -538,6 +548,7 @@ class Tests:
             "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
             "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB"
         ],
+        # submod
         "glb_tests": [
             "apps/pointwise",
             "tests/ushift",
@@ -573,6 +584,7 @@ class Tests:
             "apps/pointwise_custom_packing_RV_E64",
             "apps/gaussian_RV"
         ],
+        # submod
         "glb_tests_fp": [
             "tests/fp_pointwise",
             "tests/fp_arith",
@@ -617,6 +629,7 @@ class Tests:
             "apps/avgpool_layer_fp_RV_E64",
             "apps/mat_vec_mul_fp_RV"
         ],
+        # submod
         "hardcoded_dense_tests": [
             "apps/unsharp_RV"
         ],

@@ -754,12 +754,6 @@ def dispatch(args, extra_args=None):
         print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
         exit(p.returncode)
     
-    # Preserve backward compatibility
-    if args.config == "daily":
-        args.config = "pr_aha"  # noqa
-    if args.config == "pr":
-        args.config = "pr_submod"  # noqa
-
     imported_tests = None
 
     # For printing info at the end...
