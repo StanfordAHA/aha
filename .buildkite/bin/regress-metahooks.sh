@@ -138,43 +138,45 @@ elif [ "$1" == '--commands' ]; then
     apt install time
 
     echo    "--- PIP FREEZE"; pip freeze  # ??? okay? why? ???
-    echo    "+++ RUN REGRESSIONS"
-    echo -n "Garnet version "; (cd garnet && git rev-parse --verify HEAD)
 
-    # FIXME (below) this if-then-else jungle is awful; redo it!
+    # Use a one-shot while loop so we can break out early
+    while i=0; [ $((i++)) -eq 0 ]; do
 
-    DO_AR=True
+        #   CONFIG   REGSTEP  ACTION
+        #   ------   -------  --------------------------
+        #   <any>    (unset)  aha regress CONFIG
+        #   pr_aha      0     aha regress fast
+        #   pr_aha     1-9    aha regress pr_aha$REGSTEP
+        #   <other>     1     aha regress <other>
+        #   <other>   not-1   SKIP
 
-    if [ "$CONFIG" == "pr_aha" ]; then
-      # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
-      # Note it is *unusual* for REGSTEP to not exist; not sure if that ever even happens.)
-      # Note REGSTEP 0 uses config "fast" instead of e.g. "regress0"
-      if [ "$REGSTEP" ]; then
-          export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests"
-          [ "$REGSTEP" == 0 ] && export CONFIG="fast"
-          echo "Trigger came from aha-flow step '$REGSTEP', so now CONFIG=$CONFIG";
-      fi
+        if test -z $REGSTEP; then
+            CONFIG=$CONFIG  # No change
 
-    else
-      echo "Trigger came from OTHER, use default and/or config='$CONFIG'"
-      # FIXME what is this and why is it here??? Pretty sure it's outdated/unnecessary :(
-      if [ "$REGSTEP" != 1 ]; then
-        echo "Full regressions only run as 'Regress 1'"
-        DO_AR=False  # Use DO_AR to suppress regressions for certain REGSTEPs
-      fi
-      # We always include no-zircon-tests
-      CONFIG="$CONFIG --include-no-zircon-tests"
-    fi
+        elif [ "$CONFIG$REGSTEP" == "pr_aha0" ]; then
+            CONFIG='fast'
 
-    if [ "$DO_AR" == "True" ]; then
-      # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
-      set -x
-      echo "aha regress $CONFIG"
-      # aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
-      aha regress $CONFIG --daemon auto || exit 13
-      set +x
-    fi
+        elif [ "$CONFIG" == "pr_aha" ]; then
+            # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
+            # Note it is *unusual* for REGSTEP to not exist; not sure if that ever even happens.)
+            CONFIG="pr_aha${REGSTEP}"
 
+        # FIXME pipeline.yml should not set REGSTEP if it's not doing pr_aha!
+        # Non-pr_aha configs are only allowed to run as REGSTEP 1, because
+        # because pipeline.yml is stupid and will try to run e.g. nine full
+        # regressions with nine different regsteps
+        elif [ "$REGSTEP" !=  1 ]; then
+            echo "Full regressions only run as 'Regress 1' (same with anything that is not pr_aha)"
+            break  # Skip regressions
+        fi
+
+        echo    "+++ RUN REGRESSION $CONFIG"
+        echo -n "Garnet version "; (cd garnet && git rev-parse --verify HEAD)
+
+        # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
+        echo "aha regress $CONFIG --include-no-zircon-tests --daemon auto"
+        aha       regress $CONFIG --include-no-zircon-tests --daemon auto || exit 13
+    done
 
     # Remove .TEST to signal that benchmark completed successfully
     # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(
