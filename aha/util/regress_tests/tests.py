@@ -463,7 +463,8 @@ class Tests:
         '''if "config" is a parsable json string, add it to selfdict and return True'''
         try:    config_dict = json.loads(config)
         except: return False
-        assert type(config_dict) == dict
+        errmsg = f'\n***ERROR Unknown config or malformed json string "{config}"\n\n'
+        assert type(config_dict) == dict, errmsg
         print(f"Found json string:\n{Tests.prefix_lines(config, '    ')}\n")
         self.__dict__.update(config_dict)
         return True
