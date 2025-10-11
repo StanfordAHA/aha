@@ -199,10 +199,12 @@ CONCURRENCY="
 "
     # Launch next step
     # Each new step uploads only after previous step has started running.
-    [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-    [ "$CONFIG" == "full" ] && label="Full Regressions"
-    [ "$CONFIG" == 
 
+#     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
+#     [ "$CONFIG" == "full" ] && label="Full Regressions"
+
+
+    set -x
     if [ "$i" == 0 ]; then
         label="Fast"
         export CONFIG=fast
@@ -217,6 +219,8 @@ CONCURRENCY="
     else
         label="$CONFIG"
     fi
+    set +x
+    echo "--- FOO regression-steps has set CONFIG=$CONFIG"
     
     # setstate launch-state READY
     # bkmsg "$label READY TO LAUNCH"
