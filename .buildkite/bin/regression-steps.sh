@@ -1,13 +1,23 @@
 #!/bin/bash
 
 
-echo    "--- export CONFIG=full one"
+
+# FIXME delete before final check-in
 export CONFIG=full  # Trying a thing: BEFORE
 
 
 
 # This is designed to be called from pipeline.yml
 set -x
+
+# "full" is a special case why not
+if [ "$CONFIG" == "full" ]; then
+    if [ "$next" != "--cleanup" ]; then
+        next=1  # This runs full as regression step 1
+        set -- ""; shift  # This deletes all other steps so only full runs
+    fi
+fi
+
 # Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
 # function buildkite-agent { [ "$2" == "upload" ] && cat; }
 # function bkmsg { echo "$1"; }
@@ -71,6 +81,7 @@ if [ "$next" == "--cleanup" ]; then
         else
             # Only remaining choice is that step is a single digit 0-9
             [ "$step" == 0 ] && label="Fast" || label="Regress $i"
+            [ "$CONFIG" == "full" ] && label="Full Regressions"
             cleanup "$label" regress"$step"
         fi
     done
@@ -85,10 +96,6 @@ if [ "$next" == "--cleanup" ]; then
         ~/bin/status-update --force success
     fi
     echo '- Clean up your mess'
-
-#------------------------------------------------------------------------------
-# elif [ "$CONFIG" == "full" ]; then
-    
 
 #------------------------------------------------------------------------------
 elif [ "$next" == "build" ]; then
@@ -198,6 +205,7 @@ CONCURRENCY="
     # Launch next step
     # Each new step uploads only after previous step has started running.
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
+    [ "$CONFIG" == "full" ] && label="Full Regressions"
 
     # setstate launch-state READY
     # bkmsg "$label READY TO LAUNCH"
@@ -210,10 +218,8 @@ CONCURRENCY="
       key: "regress$i"
       env: { REGRESSION_STEP: $i }
       command: |
-        echo "--- export CONFIG=full too"
-        export CONFIG=full
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
-        \$REGRESS_METAHOOKS --commands
+        CONFIG=$CONFIG \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:

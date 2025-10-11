@@ -138,7 +138,6 @@ elif [ "$1" == '--commands' ]; then
     apt install time
 
     echo    "--- PIP FREEZE"; pip freeze  # ??? okay? why? ???
-    echo    "--- FOOFOO PIP FREEZE"
 
     # Use a one-shot while loop so we can break out early
     while i=0; [ $((i++)) -eq 0 ]; do
