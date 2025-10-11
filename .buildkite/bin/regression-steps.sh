@@ -13,8 +13,8 @@ set -x
 # "full" is a special case why not
 if [ "$CONFIG" == "full" ]; then
     if [ "$next" != "--cleanup" ]; then
-        next=1  # This runs full as regression step 1
-        set -- ""; shift  # This deletes all other steps so only full runs
+        # Delete ALL steps, run full config as step "1" i.e. set $1="1"
+        set -- "1"  # This deletes all other steps so only 'full' runs and only runs once
     fi
 fi
 
