@@ -211,7 +211,7 @@ CONCURRENCY="
 
     elif [ "$CONFIG" == "pr_aha" ]; then
         label="Regress $i"
-        export CONFIG=$pr_aha$i
+        export CONFIG="pr_aha${i}"
 
     elif [ "$CONFIG" == "full" ]; then
         label="Full Regressions"
