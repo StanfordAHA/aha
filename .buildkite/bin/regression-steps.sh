@@ -1,4 +1,11 @@
 #!/bin/bash
+
+
+
+export CONFIG=full  # Trying a thing: BEFORE
+
+
+
 # This is designed to be called from pipeline.yml
 set -x
 # Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
@@ -78,6 +85,10 @@ if [ "$next" == "--cleanup" ]; then
         ~/bin/status-update --force success
     fi
     echo '- Clean up your mess'
+
+#------------------------------------------------------------------------------
+# elif [ "$CONFIG" == "full" ]; then
+    
 
 #------------------------------------------------------------------------------
 elif [ "$next" == "build" ]; then
