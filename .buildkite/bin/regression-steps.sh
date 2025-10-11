@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-
+echo    "--- export CONFIG=full one"
 export CONFIG=full  # Trying a thing: BEFORE
 
 
@@ -210,6 +210,8 @@ CONCURRENCY="
       key: "regress$i"
       env: { REGRESSION_STEP: $i }
       command: |
+      echo "--- export CONFIG=full too"
+        export CONFIG=full
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         \$REGRESS_METAHOOKS --commands
       plugins:
