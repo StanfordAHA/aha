@@ -1,11 +1,6 @@
 #!/bin/bash
-
-
-
 # FIXME delete before final check-in
 export CONFIG=full  # Trying a thing: BEFORE
-
-
 
 # This is designed to be called from pipeline.yml
 set -x
@@ -206,7 +201,23 @@ CONCURRENCY="
     # Each new step uploads only after previous step has started running.
     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
     [ "$CONFIG" == "full" ] && label="Full Regressions"
+    [ "$CONFIG" == 
 
+    if [ "$i" == 0 ]; then
+        label="Fast"
+        export CONFIG=fast
+
+    elif [ "$CONFIG" == "pr_aha" ]; then
+        label="Regress $i"
+        export CONFIG=$pr_aha$i
+
+    elif [ "$CONFIG" == "full" ]; then
+        label="Full Regressions"
+
+    else
+        label="$CONFIG"
+    fi
+    
     # setstate launch-state READY
     # bkmsg "$label READY TO LAUNCH"
 
@@ -216,7 +227,7 @@ CONCURRENCY="
     - label: "$label"
       # agents: { hostname: khaki }  # Can uncomment for debugging etc.
       key: "regress$i"
-      env: { REGRESSION_STEP: $i }
+      # env: { REGRESSION_STEP: $i }
       command: |
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         CONFIG=$CONFIG \$REGRESS_METAHOOKS --commands
@@ -224,7 +235,7 @@ CONCURRENCY="
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
             pre-command: |
-                RSTEP=$i
+                RSTEP=$i  # Never used? Right???
                 \$BUILD_DOCKER
                 cd .
                 \$REGRESS_METAHOOKS --pre-command

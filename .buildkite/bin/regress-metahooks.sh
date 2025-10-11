@@ -3,13 +3,16 @@
 # This is where we offload meta-hook commands for pipeline.yml
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
-CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
+# FIXME PURGE REGRESSION_STEP, REGSTEP
+
+# CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
+CONTAINER="deleteme-regress-${CONFIG}-${BUILDKITE_BUILD_NUMBER}"
 echo "--- using CONTAINER='${CONTAINER}'"
 
 if [ "$1" == '--pre-command' ]; then
 
     # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG
 
     echo "--- OIT PRE COMMAND HOOK BEGIN"
     echo "Check for valid docker image"
@@ -83,7 +86,7 @@ elif [ "$1" == '--exec' ]; then
     echo "--- BEGIN regress-metahooks.sh --exec '$2'"
 
     # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG
 
     docker kill "$CONTAINER" || echo okay
     docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
@@ -107,7 +110,7 @@ elif [ "$1" == '--commands' ]; then
     echo "--- BEGIN regress-metahooks.sh --commands"
 
     # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG
 
     docker kill "$CONTAINER" || echo okay
     docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
@@ -142,33 +145,33 @@ elif [ "$1" == '--commands' ]; then
     # Use a one-shot while loop so we can break out early
     while i=0; [ $((i++)) -eq 0 ]; do
 
-        #   CONFIG   REGSTEP  ACTION
-        #   ------   -------  --------------------------
-        #   <any>    (unset)  aha regress CONFIG
-        #   pr_aha      0     aha regress fast
-        #   pr_aha     1-9    aha regress pr_aha$REGSTEP
-        #   <other>     1     aha regress <other>
-        #   <other>   not-1   SKIP
-
-        if test -z $REGSTEP; then
-            CONFIG=$CONFIG  # No change
-
-        elif [ "$CONFIG$REGSTEP" == "pr_aha0" ]; then
-            CONFIG='fast'
-
-        elif [ "$CONFIG" == "pr_aha" ]; then
-            # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
-            # Note it is *unusual* for REGSTEP to not exist; not sure if that ever even happens.)
-            CONFIG="pr_aha${REGSTEP}"
-
-        # FIXME pipeline.yml should not set REGSTEP if it's not doing pr_aha!
-        # Non-pr_aha configs are only allowed to run as REGSTEP 1, because
-        # because pipeline.yml is stupid and will try to run e.g. nine full
-        # regressions with nine different regsteps
-        elif [ "$REGSTEP" !=  1 ]; then
-            echo "Full regressions only run as 'Regress 1' (same with anything that is not pr_aha)"
-            break  # Skip regressions
-        fi
+#         #   CONFIG   REGSTEP  ACTION
+#         #   ------   -------  --------------------------
+#         #   <any>    (unset)  aha regress CONFIG
+#         #   pr_aha      0     aha regress fast
+#         #   pr_aha     1-9    aha regress pr_aha$REGSTEP
+#         #   <other>     1     aha regress <other>
+#         #   <other>   not-1   SKIP
+# 
+#         if test -z $REGSTEP; then
+#             CONFIG=$CONFIG  # No change
+# 
+#         elif [ "$CONFIG$REGSTEP" == "pr_aha0" ]; then
+#             CONFIG='fast'
+# 
+#         elif [ "$CONFIG" == "pr_aha" ]; then
+#             # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
+#             # Note it is *unusual* for REGSTEP to not exist; not sure if that ever even happens.)
+#             CONFIG="pr_aha${REGSTEP}"
+# 
+#         # FIXME pipeline.yml should not set REGSTEP if it's not doing pr_aha!
+#         # Non-pr_aha configs are only allowed to run as REGSTEP 1, because
+#         # because pipeline.yml is stupid and will try to run e.g. nine full
+#         # regressions with nine different regsteps
+#         elif [ "$REGSTEP" !=  1 ]; then
+#             echo "Full regressions only run as 'Regress 1' (same with anything that is not pr_aha)"
+#             break  # Skip regressions
+#         fi
 
         echo    "+++ RUN REGRESSION $CONFIG"
         echo -n "Garnet version "; (cd garnet && git rev-parse --verify HEAD)
@@ -187,7 +190,6 @@ EOF
     # '-e' means 'set environment variable'
     docker exec \
            -e CONFIG="$CONFIG" \
-           -e REGSTEP="$REGRESSION_STEP" \
            "$CONTAINER" /bin/bash -c "$(cat tmp$$)" \
         || exit 13
     docker kill "$CONTAINER" || echo okay; rm -f tmp$$  # Cleanup on aisle FOO
