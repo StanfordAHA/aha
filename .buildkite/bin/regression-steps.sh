@@ -1,6 +1,6 @@
 #!/bin/bash
 # FIXME delete before final check-in
-export CONFIG=full  # Trying a thing: BEFORE
+# export CONFIG=full  # Trying a thing: BEFORE
 
 # This is designed to be called from pipeline.yml
 set -x
