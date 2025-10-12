@@ -426,7 +426,7 @@ class Tests:
 
         # Preserve backward compatibility
         if config in ["daily", "pr", "pr_submod"]:
-            print(f'WARNING "{config]" config no longer exists, using "pr_aha" instead')
+            print(f'WARNING "{config}" config no longer exists, using "pr_aha" instead')
             config = "pr_aha"
 
         # Create the requested config
