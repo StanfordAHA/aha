@@ -1,6 +1,5 @@
 #!/bin/bash
-# FIXME delete before final check-in
-# export CONFIG=full  # Trying a thing: BEFORE
+# export CONFIG=full  # Uncomment to test full regressions maybe
 
 # This is designed to be called from pipeline.yml
 set -x
@@ -192,36 +191,27 @@ else
         echo "Step '$key' already exists in pipeline. So. Nothing to do!"; exit 0
     fi
 
-    # Fairness algorithm (CONCURRENCY=4) means at most four regression steps can run at a time
-CONCURRENCY="
-  concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
-  concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
-"
-    # Launch next step
-    # Each new step uploads only after previous step has started running.
+    # Decode args and CONFIG to set correct CONFIG for final regression call
 
-#     [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-#     [ "$CONFIG" == "full" ] && label="Full Regressions"
-
-
-    set -x
     if [ "$i" == 0 ]; then
-        label="Fast"
-        export CONFIG=fast
+        # Per existing code, does *not* include no-zircon tests
+        label="Fast"; export CONFIG=fast
 
     elif [ "$CONFIG" == "pr_aha" ]; then
-        label="Regress $i"
-        export CONFIG="pr_aha${i}"
+        label="Regress $i"; export CONFIG="pr_aha${i} --include-no-zircon-tests"
 
     elif [ "$CONFIG" == "full" ]; then
         label="Full Regressions"
-
+         export CONFIG="full --include-no-zircon-test" 
     else
         label="$CONFIG"
     fi
-    set +x
-    echo "--- FOO regression-steps has set CONFIG=$CONFIG"
+
+    echo "--- regression-steps has set CONFIG='$CONFIG'"
     
+    # Launch next step
+    # Each new step uploads only after previous step has started running.
+
     # setstate launch-state READY
     # bkmsg "$label READY TO LAUNCH"
 
@@ -234,7 +224,7 @@ CONCURRENCY="
       # env: { REGRESSION_STEP: $i }
       command: |
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
-        CONFIG=$CONFIG \$REGRESS_METAHOOKS --commands
+        CONFIG="$CONFIG" \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -246,7 +236,12 @@ CONCURRENCY="
             pre-exit: |
                 \$REGRESS_METAHOOKS --pre-exit
 EOF
-    [ "$i" != 0 ] && echo "$CONCURRENCY"
+
+    [ "$i" != 0 ] && echo "
+  concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
+  concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
+"
+
     echo "") | buildkite-agent pipeline upload
 fi
 
