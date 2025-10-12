@@ -1218,11 +1218,19 @@
     },
     "apps/get_apply_e8m0_scale_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"vec_height=784 vec_width_fake=32 vec_width=128 mu_i=32 glb_o=1 tree_stages=5",
+            "HALIDE_GEN_ARGS":"vec_height=256 vec_width_fake=32 vec_width=128 mu_i=32 glb_o=1 tree_stages=5",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"0",
-            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1"
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "MANUAL_PLACER":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "MU_INPUT_HOST_STENCIL_POS":"12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27",
+            "HW_SCALE_OUTPUT_STENCIL_POS":"12,14",
+            "QUANTIZED_OUTPUT_STENCIL_POS":"18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21",
+            "HW_SCALE_OUTPUT_STENCIL_PACKED":"0,0",
+            "QUANTIZED_OUTPUT_STENCIL_PACKED":"1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1",
+            "HW_SCALE_OUTPUT_STENCIL_BANK_TOGGLE_MODE":"1,1"
         }
     },
     "conv1":{
