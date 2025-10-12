@@ -425,13 +425,9 @@ class Tests:
     def __init__(self, config="BLANK", zircon=True):
 
         # Preserve backward compatibility
-        if config == "daily":
-            print('WARNING "daily" config no longer exists, using "pr_aha" instead')
+        if config in ["daily", "pr", "pr_submod"]:
+            print(f'WARNING "{config]" config no longer exists, using "pr_aha" instead')
             config = "pr_aha"
-
-        elif config == "pr":
-            print('WARNING "pr" config no longer exists, using "pr_submod" instead')
-            config = "pr_submod"
 
         # Create the requested config
         if config in Tests.configs:
@@ -513,157 +509,7 @@ class Tests:
                 print(fmt % (config_name, group, app, parms))
                 # rval += (fmt % (config_name, group, app, d["app_parms"]))
 
-    # PR_SUBMOD tests for pull requests from aha submod repos
-    # *Except for* garnet, which does the usual pr_aha tests on every push.
-    # I think the idea is/was supposed to be / have been?
-    # That these tests are faster than the usual pr_aha*?
-    # But I'm pretty sure that there's no way, friends...
-    configs['pr_submod'] = {
-        "width": 28,
-        "height": 16,
-        "mu_oc_0": 32,
-        "cols_removed": 12,
-
-        "behavioral_mu_tests": [
-            "apps/pointwise_mu_io_RV_E64",
-            "apps/pointwise_mu_io_RV_E64_MB",
-            "apps/abs_max_full_unroll_fp_RV",
-            "apps/get_e8m0_scale_test_fp_RV_E64_MB",
-            "apps/get_apply_e8m0_scale_fp_RV"
-        ],
-        "external_mu_tests": [
-            "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-            "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-            "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
-            "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
-            "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB"
-        ],
-        "external_mu_tests_fp": [
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
-            "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-            "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-            "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround_RV_E64_MB",
-            "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_inner_reduction_workaround_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB"
-        ],
-        # submod
-        "glb_tests": [
-            "apps/pointwise",
-            "tests/ushift",
-            "tests/arith",
-            "tests/absolute",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/uminmax",
-            "tests/rom",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-            "tests/bit8_packing_test",
-            "tests/bit8_unpack_test",
-            "tests/fp_get_shared_exp_test",
-            "tests/fp_e8m0_quant_test"
-        ],
-        "glb_tests_RV": [
-            "tests/ushift_RV",
-            "tests/arith_RV",
-            "tests/absolute_RV",
-            "tests/scomp_RV",
-            "tests/ucomp_RV",
-            "tests/uminmax_RV",
-            "tests/rom_RV",
-            "tests/conv_2_1_RV",
-            "tests/bit8_packing_test_RV",
-            "tests/bit8_unpack_test_RV",
-            "tests/fp_get_shared_exp_test_RV",
-            "tests/fp_e8m0_quant_test_RV",
-            "apps/pointwise_RV",
-            "apps/pointwise_RV_E64",
-            "apps/pointwise_RV_E64_MB",
-            "apps/pointwise_custom_packing_RV_E64",
-            "apps/gaussian_RV"
-        ],
-        # submod
-        "glb_tests_fp": [
-            "tests/fp_pointwise",
-            "tests/fp_arith",
-            "tests/fp_comp",
-            "tests/fp_conv_7_7",
-            "apps/relu_layer_fp",
-            "apps/scalar_max_fp",
-            "apps/stable_softmax_pass2_fp",
-            "apps/stable_softmax_pass3_fp",
-            "apps/scalar_avg_fp",
-            "apps/layer_norm_pass2_fp",
-            "apps/layer_norm_pass3_fp",
-            "apps/gelu_pass1_fp",
-            "apps/gelu_pass2_fp",
-            "apps/silu_pass1_fp",
-            "apps/silu_pass2_fp",
-            "apps/swiglu_pass2_fp",
-            "apps/rope_pass1_fp",
-            "apps/rope_pass2_fp"
-        ],
-        "glb_tests_fp_RV": [
-            "tests/fp_pointwise_RV",
-            "tests/fp_arith_RV",
-            "tests/fp_comp_RV",
-            "apps/relu_layer_fp_RV",
-            "apps/relu_layer_multiout_fp_RV",
-            "apps/scalar_reduction_fp_RV",
-            "apps/vector_reduction_fp_RV",
-            "apps/scalar_max_fp_RV",
-            "apps/stable_softmax_pass2_fp_RV",
-            "apps/stable_softmax_pass3_fp_RV",
-            "apps/scalar_avg_fp_RV",
-            "apps/layer_norm_pass2_fp_RV",
-            "apps/layer_norm_pass3_fp_RV",
-            "apps/gelu_pass1_fp_RV",
-            "apps/gelu_pass2_fp_RV",
-            "apps/silu_pass1_fp_RV",
-            "apps/silu_pass2_fp_RV",
-            "apps/swiglu_pass2_fp_RV",
-            "apps/rope_pass1_fp_RV",
-            "apps/rope_pass2_fp_RV",
-            "apps/avgpool_layer_fp_RV_E64",
-            "apps/mat_vec_mul_fp_RV"
-        ],
-        # submod
-        "hardcoded_dense_tests": [
-            "apps/unsharp_RV"
-        ],
-        "no_zircon_sparse_tests": [
-            "vec_elemmul",
-            "mat_vecmul_ij",
-            "mat_elemadd_leakyrelu_exp",
-            "matmul_ikj",
-            "tensor3_mttkrp"
-        ],
-        "resnet_tests": [],
-        "resnet_tests_fp": [],
-        "sparse_tests": [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "fp_relu_matmul_ijk_crddrop",
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_ttm",
-            "tensor3_ttv"
-        ],
-    }
-    # submod
+    # Removed PR_SUBMOD tests as redundant with existing pr_aha
 
     # FULL test is used by scheduled weekly aha regressions
     configs['full'] = {
