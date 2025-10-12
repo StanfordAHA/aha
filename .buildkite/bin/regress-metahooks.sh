@@ -3,7 +3,9 @@
 # This is where we offload meta-hook commands for pipeline.yml
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
-CONTAINER="deleteme-regress-${CONFIG}-${BUILDKITE_BUILD_NUMBER}"
+# Note CONFIG can be e.g. 'pr_aha1 --include-no-zircon-tests'
+CONFIG1=`echo "$CONFIG" | awk '{print $1}'`
+CONTAINER="deleteme-regress-${CONFIG1}-${BUILDKITE_BUILD_NUMBER}"
 echo "--- using CONTAINER='${CONTAINER}'"
 
 if [ "$1" == '--pre-command' ]; then
