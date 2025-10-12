@@ -115,11 +115,10 @@ TESTS_PY=/aha/aha/util/regress_tests/tests.py
 test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
 
 ########################################################################
-# Parse 'tests.py' to find suite names e.g.
+# Ask 'tests.py' to show all possible suite (group) names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
 
 TEST_SUITES=`python3 <(cat $TESTS_PY; echo "print(*Tests.configs.keys())") | tail -1` || exit 13
-
 [ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n'$TEST_SUITES'\n\n"
 
 ########################################################################
@@ -157,8 +156,11 @@ pyscript='if True:
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
 suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
+# Some test names now have embedded spaces in the form " -> " haha
+# E.g. "mu external_mu_tests_fp resnet18-submodule -> zircon_dequantize..."
+# So let's GET RID OF 'EM
+suites=`echo "$suites" | sed 's/ -> /->/'`
 [ "$DBG" ] && printf "Found config database\n$suites\n\n"
-
 
 #########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
