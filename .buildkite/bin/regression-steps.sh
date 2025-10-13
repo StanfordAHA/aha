@@ -45,8 +45,18 @@ function key-exists {
 
 # Pop next step off arg list e.g. args=(build gold 1 2 3 4 5 6 7 8 9)
 # => next="build", args=(gold 1 2 3 4 5 6 7 8 9)
-next="$1"; if ! [ "$next" ]; then echo DONE; exit; fi
-shift
+next="$1"; if ! [ "$next" ]; then echo DONE; exit
+else shift  # Continue with next step in the chain...
+fi
+# bkmsg "Processing arg next='$next'"
+
+#------------------------------------------------------------------------------
+# We put in sooo much time making a separate "build" step unnecessary...why not use that?
+if [ "$next" == "build" ]; then
+    next="$1"; if ! [ "$next" ]; then echo DONE; exit
+    else shift  # Continue with next step in the chain...
+    fi
+fi
 # bkmsg "Processing arg next='$next'"
 
 #------------------------------------------------------------------------------
@@ -92,55 +102,58 @@ if [ "$next" == "--cleanup" ]; then
     echo '- Clean up your mess'
 
 #------------------------------------------------------------------------------
-elif [ "$next" == "build" ]; then
-
-    # FIXME this launches two build steps at the same time; the
-    # possibility exists that both call regression-steps.sh at same time.
-    # That would be trouble for our new chaining approach, yes?
-    # Need flock? something simpler/smarter?
-
-    # Early-out if these steps have already been launched!
-    if key-exists 'kprep'; then
-        if key-exists 'r8prep'; then
-            echo "Steps 'kprep' and 'r8prep' already exist in pipeline. So. Nothing to do!"; exit 0
-        fi
-    fi
-
-    # Build the two individual build steps, one for each agent :)
-    bdkhaki=$(
-  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    - label: "khaki prep"
-      key: "kprep"
-      agents: { hostname: khaki }
-      # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
-      plugins:
-        - uber-workflow/run-without-clone:
-        - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER
-    EOF
-)
-    bdcad=$(
-  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    - label: "r8cad prep"
-      key: "r8prep"
-      agents: { hostname: r8cad-docker }
-      # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
-      plugins:
-        - uber-workflow/run-without-clone:
-        - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER
-    EOF
-)
-    # Package the two steps into one bundle, then upload the bundle
-    buildsteps=$(
-      sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-      echo "steps:"
-      key-exists 'kprep'  || echo "$bdkhaki"
-      key-exists 'r8prep' || echo "$bdcad"  # FIXME restore before final check-in
-    )
-    echo "$buildsteps" | buildkite-agent pipeline upload
+# elif [ "$next" == "build" ]; then
+# 
+#     # We put in sooo much time making this kind of step unnecessary...why not use that?
+# 
+# 
+#     # FIXME this launches two build steps at the same time; the
+#     # possibility exists that both call regression-steps.sh at same time.
+#     # That would be trouble for our new chaining approach, yes?
+#     # Need flock? something simpler/smarter?
+# 
+#     # Early-out if these steps have already been launched!
+#     if key-exists 'kprep'; then
+#         if key-exists 'r8prep'; then
+#             echo "Steps 'kprep' and 'r8prep' already exist in pipeline. So. Nothing to do!"; exit 0
+#         fi
+#     fi
+# 
+#     # Build the two individual build steps, one for each agent :)
+#     bdkhaki=$(
+#   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
+#     - label: "khaki prep"
+#       key: "kprep"
+#       agents: { hostname: khaki }
+#       # Launch next step if/when build is complete
+#       command: .buildkite/bin/regression-steps.sh ARGS
+#       plugins:
+#         - uber-workflow/run-without-clone:
+#         - improbable-eng/metahook:
+#             pre-command: $BUILD_DOCKER
+#     EOF
+# )
+#     bdcad=$(
+#   cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
+#     - label: "r8cad prep"
+#       key: "r8prep"
+#       agents: { hostname: r8cad-docker }
+#       # Launch next step if/when build is complete
+#       command: .buildkite/bin/regression-steps.sh ARGS
+#       plugins:
+#         - uber-workflow/run-without-clone:
+#         - improbable-eng/metahook:
+#             pre-command: $BUILD_DOCKER
+#     EOF
+# )
+#     # Package the two steps into one bundle, then upload the bundle
+#     buildsteps=$(
+#       sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
+#       echo "steps:"
+#       key-exists 'kprep'  || echo "$bdkhaki"
+#       key-exists 'r8prep' || echo "$bdcad"  # FIXME restore before final check-in
+#     )
+#     echo "$buildsteps" | buildkite-agent pipeline upload
 
 #------------------------------------------------------------------------------
 elif [ "$next" == "gold" ]; then
