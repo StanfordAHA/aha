@@ -248,7 +248,7 @@ exit
 # 
 #             # Change step label to reflect docker build DB
 #             h5=$(hostname | cut -b 1-5)  # "r8cad-docker" => "r8cad"
-#             buildkite-agent step update "label" " + DB($h5)" --append
+#             buildkite-agent step update "label" " + DB($$h5)" --append
 # 
 #             # Remove docker images older than one day
 #             echo "--- Cleanup old docker images"
