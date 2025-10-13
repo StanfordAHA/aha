@@ -256,7 +256,7 @@ exit
 #             docker image ls | awk '/(days|weeks|months) ago/ {print $$3}' | xargs docker image rm || echo okay
 # 
 #             # Remove DELETEME* dirs older than one week
-#             # FIXME pretty sure this is BROKEN
+#             # FIXME pretty sure this is BROKEN. On TODO list: do this as crontab(s) instead
 #             echo "--- Cleanup old common areas"
 #             find /var/lib/buildkite-agent/builds/DELETEME* -type d -mtime +7 -exec /bin/rm -rf {} \; || echo okay
 # 

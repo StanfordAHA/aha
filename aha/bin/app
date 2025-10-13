@@ -87,9 +87,6 @@ while [ $# -gt 0 ] ; do
         --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
         --container) CONTAINER=$2; shift ;;
 
-        # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
-        --fp) echo 'WARNING "--fp" deprecated/unnecessary, stop using it'; ;;
-
         # If first arg is e.g. 8x8, that means we want to actually run a test e.g.
         # aha-test.sh 8x8 --removed 4 --mu 8 apps/pointwise
         --*) echo "$HELP"; echo "ERROR: Unknown flag '$1'"; exit 13 ;;
@@ -301,6 +298,7 @@ printf "Ready to do: $bn $app_flags\n\n"
 if [ "$RUN_SUITE" ]; then
     config=$RUN_SUITE
 
+    # Include dense-only tests UNLESS CONFIG=FAST
     # "fast" suite breaks if include dense-only tests, dunno why exactly FIXME (it should just ignore/skip them, right?)
     [ $config == fast ] || config="$config --include-dense-only-tests"
 
@@ -308,50 +306,49 @@ if [ "$RUN_SUITE" ]; then
     printf "Ready to do: TOOL=$SIM aha regress $config\n\n"
 else
 
-########################################################################
-# Find which group 'appname' belongs to,
-# e.g. group('apps/pointwise') = 'glb_tests' maybe
+    ########################################################################
+    # Find which group 'appname' belongs to,
+    # e.g. group('apps/pointwise') = 'glb_tests' maybe
 
-group=`echo "$suites" | grep $appname | awk '{print $2}' | sort | uniq`
-n_groups_found=`echo "$group" | wc -l`
-if ! [ "$n_groups_found" -eq 1 ]; then
-    echo "WARNING: Found multiple possible groups for app '$appname': " $groups
-    group=`echo "$group" | head -1`
-    echo "Will use first group found '$group'"
-fi
-echo "Found group('$appname') = '$group'"
+    group=`echo "$suites" | grep $appname | awk '{print $2}' | sort | uniq`
+    n_groups_found=`echo "$group" | wc -l`
+    if ! [ "$n_groups_found" -eq 1 ]; then
+        echo "WARNING: Found multiple possible groups for app '$appname': " $groups
+        group=`echo "$group" | head -1`
+        echo "Will use first group found '$group'"
+    fi
+    echo "Found group('$appname') = '$group'"
 
-########################################################################
-# Extract width, height, groupname, regression flags
-# '8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8' =>
-#     colrow: 'self.width, self.height = 4, 2'
-#     rflags: '--num-fabric-cols-removed 4 --mu_oc_0 8'
+    ########################################################################
+    # Extract width, height, groupname, regression flags
+    # '8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8' =>
+    #     colrow: 'self.width, self.height = 4, 2'
+    #     rflags: '--num-fabric-cols-removed 4 --mu_oc_0 8'
 
-# colrow=$(echo $size | awk -F x '{printf("self.width, self.height = %s, %s", $1, $2)}')
-colrow=$(echo $size | awk -F x '{printf("width, height = %s, %s", $1, $2)}')
-rflags=$(echo $* | awk '{$1=""; $2=""; gsub(/^ */, "", $0); print $0}')
-if [ "$DBG" ]; then
-    hline 20
-    echo "group:  '$group'"
-    echo "colrow: '$colrow'"
-    echo "rflags: '$rflags'"
-    echo ""
-fi
+    # colrow=$(echo $size | awk -F x '{printf("self.width, self.height = %s, %s", $1, $2)}')
+    colrow=$(echo $size | awk -F x '{printf("width, height = %s, %s", $1, $2)}')
+    rflags=$(echo $* | awk '{$1=""; $2=""; gsub(/^ */, "", $0); print $0}')
+    if [ "$DBG" ]; then
+        hline 20
+        echo "group:  '$group'"
+        echo "colrow: '$colrow'"
+        echo "rflags: '$rflags'"
+        echo ""
+    fi
 
-########################################################################
-# Prepare a json string e.g. '{"width":8,"height":8,"glb_tests":["apps/pointwise"]}'
+    ########################################################################
+    # Prepare a json string e.g. '{"width":8,"height":8,"glb_tests":["apps/pointwise"]}'
 
-# awk input e.g. '"width"x"height"x8x8', output '"width":8",height":8
-wh=$(echo '"width":x,"height":x'$size | awk -F x '{print $1 $3 $2 $4}')
-cr='"cols_removed":'$FCR
-mu='"mu_oc_0":'$MU
-config="{$wh,$cr,$mu,\"$group\":[\"$appname\"]}"
+    # awk input e.g. '"width"x"height"x8x8', output '"width":8",height":8
+    wh=$(echo '"width":x,"height":x'$size | awk -F x '{print $1 $3 $2 $4}')
+    cr='"cols_removed":'$FCR
+    mu='"mu_oc_0":'$MU
+    config="{$wh,$cr,$mu,\"$group\":[\"$appname\"]}"
 
-echo '------------------------------------------------------------------------'
-printf "Prepared custom json string\n  $config\n\n"
+    echo '------------------------------------------------------------------------'
+    printf "Prepared custom json string\n  $config\n\n"
 
-# I dunno, just run it I guess?
-
+    # I dunno, just run it I guess?
 fi
 
 
@@ -424,37 +421,4 @@ function testing {
   }
   egrep '\+ app' alltests.log
   alltests-filter alltests.log
-
-
-  # (bash <(echo set -x; printf "$zi\$nz\n")) | shuf > alltests
-  # echo "$nz" | head
-  # echo "$z" | head
-  # printf "$nz\n$z\n" | less -N
-  # printf "$zi\n$nz\n" | sed 's/  */ /g' | less
-  # printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | less
-  # # app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
 }
-
-
-
-#     ########################################################################
-#     # Prepare a custom suite containing ONLY the desired app e.g.
-#     #     > if True:
-#     #     >     width, height = 8, 8
-#     #     >     cols_removed, mu_oc_0 = 8, 32
-#     #     >     glb_tests = [ 'apps/pointwise' ]
-# 
-#     config=config$$
-#     cat <<EOF > /aha/aha/util/regress_tests/$config.py
-# if True:
-#     $colrow
-#     cols_removed, mu_oc_0 = $FCR, $MU
-#     $group = [ '$appname' ]
-# EOF
-# 
-#     echo '------------------------------------------------------------------------'
-#     printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py\n\n"
-#     # ls -l /aha/aha/util/regress_tests/$config.py
-#     cat /aha/aha/util/regress_tests/$config.py | sed 's/^/> /'
-#     echo ""
-
