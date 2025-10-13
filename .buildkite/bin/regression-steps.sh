@@ -304,7 +304,8 @@ exit
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
 # 
 #             # Change step label to reflect docker build DB
-#             buildkite-agent step update "label" " + DB($(hostname))" --append
+#             h5=$(hostname | cut -b 1-5)  # "r8cad-docker" => "r8cad"
+#             buildkite-agent step update "label" " + DB($h5)" --append
 # 
 #             # Remove docker images older than one day
 #             echo "--- Cleanup old docker images"
