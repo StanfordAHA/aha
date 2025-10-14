@@ -29,6 +29,7 @@ class Tests:
             "apps/pointwise_custom_packing",
             "apps/pointwise_custom_place_multibank",
             "apps/get_e8m0_scale_test_fp",
+            "apps/get_apply_e8m0_scale_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
             "apps/zircon_psum_reduction_fp",
@@ -39,6 +40,7 @@ class Tests:
             "apps/pointwise_mu_io",
             "apps/pointwise_custom_place_multibank",
             "apps/get_e8m0_scale_test_fp",
+            "apps/get_apply_e8m0_scale_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
             "apps/zircon_psum_reduction_fp",
@@ -141,7 +143,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV",
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
@@ -237,7 +239,7 @@ class Tests:
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
- 
+
                 # INNER REDUCTION WORKAROUND CONV5_X downsample
                 "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_inner_reduction_workaround_RV_E64_MB",
             ]
@@ -631,7 +633,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV",
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
