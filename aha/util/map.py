@@ -250,16 +250,6 @@ def dispatch(args, extra_args=None):
         print(f"\033[93mINFO: Skipping CGRA mapping for {app_name} as per settings in regress.py. Assuming mapping collateral has previously been generated...\033[0m")
     else:
         print(f"\033[92mMapping {app_name} to CGRA...\033[0m")
-        # Copy path_balance.json if using POND_PATH_BALANCING
-        if 'POND_PATH_BALANCING' in env and env['POND_PATH_BALANCING'] == '1':
-            layer_path_balance_folder = f"{app_dir}/path_balancing_configs"
-            assert os.path.exists(layer_path_balance_folder), f"ERROR: path_balancing_configs folder does not exist in {app_dir}, cannot copy path_balance.json"
-            assert model is not None and layer is not None, f"ERROR: mu_test must be specified to use POND_PATH_BALANCING"
-
-            layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
-            assert os.path.exists(layer_path_balance_json), f"ERROR: {model}_{layer}_path_balancing.json not found in {layer_path_balance_folder}."
-            os.system(f"cp {layer_path_balance_json} {app_dir}/bin/path_balancing.json")
-
         if "handcrafted" in str(args.app):
             # Generate pgm Images
             subprocess_call_log(
@@ -290,6 +280,18 @@ def dispatch(args, extra_args=None):
             os.rename(
                 app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
             )
+
+
+        # Copy path_balance.json if using POND_PATH_BALANCING
+        if 'POND_PATH_BALANCING' in env and env['POND_PATH_BALANCING'] == '1':
+            layer_path_balance_folder = f"{app_dir}/path_balancing_configs"
+            assert os.path.exists(layer_path_balance_folder), f"ERROR: path_balancing_configs folder does not exist in {app_dir}, cannot copy path_balance.json"
+            assert model is not None and layer is not None, f"ERROR: mu_test must be specified to use POND_PATH_BALANCING"
+
+            layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
+            assert os.path.exists(layer_path_balance_json), f"ERROR: {model}_{layer}_path_balancing.json not found in {layer_path_balance_folder}."
+            breakpoint()
+            os.system(f"cp {layer_path_balance_json} {app_dir}/bin/path_balancing.json")
 
         if not chain:
             subprocess_call_log(
