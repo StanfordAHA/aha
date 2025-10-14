@@ -64,11 +64,13 @@ FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
 UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
 CONTAINER=
-function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
+
+# is_switch TRUE if arg is a switch e.g. '--zircon'
+function is_switch  { echo "$1" | egrep '^[-]' > /dev/null; }
 while [ $# -gt 0 ] ; do
     case "$1" in
         --show*)
-          if not_suite "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
+          if ! is_switch "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
 
         --run*)        RUN_SUITE=$2; shift ;;
         --*remove*)    FCR=$2;       shift ;;
@@ -101,7 +103,6 @@ while [ $# -gt 0 ] ; do
     esac
     shift
 done
-
 [ "$WAVEFORM" ] && printf "\nINFO env var WAVEFORM=='$WAVEFORM'\n"
 
 # echo "remaining args = '$@'"
