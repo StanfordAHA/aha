@@ -290,7 +290,6 @@ def dispatch(args, extra_args=None):
 
             layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
             assert os.path.exists(layer_path_balance_json), f"ERROR: {model}_{layer}_path_balancing.json not found in {layer_path_balance_folder}."
-            breakpoint()
             os.system(f"cp {layer_path_balance_json} {app_dir}/bin/path_balancing.json")
 
         if not chain:
