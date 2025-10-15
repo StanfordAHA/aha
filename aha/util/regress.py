@@ -509,7 +509,7 @@ def test_dense_app(
 
     if skip_cgra_map:
         print(f"--- {testname} - SKIP CGRA MAP", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA MAP", 0])
+        info.append([f"{testname} - SKIP CGRA MAP", 0])
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--skip-cgra-map"] + layer_array, env=env_vars)
     else:
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
@@ -588,7 +588,7 @@ def test_dense_app(
 
     if skip_cgra_pnr:
         print(f"--- {testname} - SKIP CGRA PNR", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA PNR", 0])
+        info.append([f"{testname} - SKIP CGRA PNR", 0])
         buildkite_args.append("--skip-cgra-pnr")
 
     buildkite_call(buildkite_args, env=env_vars)
