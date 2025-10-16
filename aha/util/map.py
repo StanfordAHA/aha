@@ -195,13 +195,22 @@ def dispatch(args, extra_args=None):
             # Parse the dnnLayer tensors and write them to tensor_files directory
             print(f"\nParsing tensors for layer {layer} of {model}...\n")
 
+            per_tensor_scaling = "PER_TENSOR_SCALING" in env and env["PER_TENSOR_SCALING"] == "1"
+
+            parse_tensor_args = [
+                "--model", model,
+                "--layer", layer,
+                "--datatype", "MXINT8",
+                "--h2h_dir", app_dir,
+            ]
+
+            if per_tensor_scaling:
+                parse_tensor_args.append("--per-tensor-scaling")
+
             subprocess_call_log(
                 cmd=[sys.executable,
                         f"{args.aha_dir}/voyager/scripts/aha_flow/parse_dnnLayer_tensors.py",
-                        "--model", model,
-                        "--layer", layer,
-                        "--datatype", "MXINT8",
-                        "--h2h_dir", app_dir
+                        *parse_tensor_args
                         ],
                 cwd=args.aha_dir / "voyager",
                 log=args.log,
@@ -209,6 +218,18 @@ def dispatch(args, extra_args=None):
                 env=env
             )
 
+            if per_tensor_scaling:
+                per_tensor_scales_file = f'/aha/voyager/compiled_collateral/{model}-{layer}/tensor_files/per_tensor_scales.txt'
+                assert os.path.exists(per_tensor_scales_file), f"ERROR: {per_tensor_scales_file} not found, something went wrong in parse_dnnLayer_tensors.py"
+                with open(per_tensor_scales_file, 'r') as f:
+                    for line in f:
+                        line_components = line.strip().split(': ')
+                        scale_name = line_components[0]
+                        scale_value = line_components[1]
+                        if 'dequantize_scale' in scale_name:
+                            env['DEQUANT_SCALE'] = scale_value
+                        elif 'quantize_scale' in scale_name and not('dequantize_scale' in scale_name):
+                            env['QUANT_SCALE'] = scale_value
 
         # For conv1, we want the gold-check to be done using submodule_1's gold
         # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module
