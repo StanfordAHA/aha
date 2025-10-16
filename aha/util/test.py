@@ -103,6 +103,22 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
         os.environ[n] = v
 
 
+def unpack_output(arr):
+    # Ensure array is uint16
+    arr = numpy.asarray(arr, dtype=numpy.uint16)
+
+    # Extract lower and upper 8 bits
+    lower = arr & 0xFF
+    upper = (arr >> 8) & 0xFF
+
+    # Interleave lower first, then upper
+    result = numpy.empty(arr.size * 2, dtype=numpy.uint16)
+    result[0::2] = lower
+    result[1::2] = upper
+
+    return result
+
+
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
     if args.mu_test is not None and len(args.mu_test) > 0:
@@ -283,6 +299,8 @@ def dispatch(args, extra_args=None):
 
             use_voyager_gold = "VOYAGER_GOLD" in os.environ and os.environ["VOYAGER_GOLD"] == "1"
             use_psum_workaround_gold = "USE_PSUM_WORKAROUND_GOLD" in os.environ and os.environ["USE_PSUM_WORKAROUND_GOLD"] == "1"
+            packed_outputs = "PACKED_OUTPUTS" in os.environ and os.environ["PACKED_OUTPUTS"] == "1"
+            soft_integer_comparison = "SOFT_INTEGER_COMPARISON" in os.environ and os.environ["SOFT_INTEGER_COMPARISON"] == "1"
 
             design_meta_path = f"{app_dir}/bin/design_meta.json"
             assert os.path.exists(design_meta_path), f"Missing meta file: {design_meta_path}"
@@ -317,7 +335,7 @@ def dispatch(args, extra_args=None):
                         gold_output_path = f"{voyager_app_dir}/compare/gold_scale.txt"
                     else:
                         raise ValueError(f"Unexpected voyager gold output file name: {output_file_name}")
-                    
+
                     assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
 
                     with open(gold_output_path, "r") as gold_file:
@@ -340,13 +358,19 @@ def dispatch(args, extra_args=None):
                     assert ext == ".raw", f"Unexpected datafile ext for output: {datafile}"
                     gold_output_path = f"{app_dir}/bin/{datafile}"
                     assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
-                    golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
+                    if packed_outputs:
+                        golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
+                    else:
+                        golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
 
             for out in outputs:
                 datafile = out["datafile"]
                 output_file_name, _ = os.path.splitext(datafile)
                 sim_txt_path = f"{args.aha_dir}/garnet/tests/test_app/{output_file_name}.txt"
-                sim_array = _load_hex_txt(sim_txt_path)
+                if packed_outputs:
+                    sim_array = unpack_output(_load_hex_txt(sim_txt_path))
+                else:
+                    sim_array = _load_hex_txt(sim_txt_path)
                 assert output_file_name in golds_by_name, f"Missing gold for output '{output_file_name}'."
                 gold_array = golds_by_name[output_file_name]
 
@@ -371,7 +395,53 @@ def dispatch(args, extra_args=None):
                 compare["gold"] = gold_array[:min_length]
                 compare["sim"] = sim_array[:min_length]
 
-        if args.dense_fp:
+        if soft_integer_comparison:
+            # Soft integer comparison per output (bit accurate within +/- 1)
+            for compare in comparisons:
+                app = compare["app"]
+                app_dir = compare["app_dir"]
+                name = compare["name"]
+                gold_array = compare["gold"]
+                sim_array = compare["sim"]
+
+                print(f"[{app}::{name}] Gold array len: {len(gold_array)}")
+                print(f"[{app}::{name}] Sim array len: {len(sim_array)}")
+
+                if gold_array.shape != sim_array.shape:
+                    print(f"\033[93mWarning:\033[0m {app}::{name} gold vs sim shapes differ after truncation guard.")
+
+                hard_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) > 1
+                hard_diff_indices = numpy.where(hard_integer_differences)[0]
+                if len(hard_diff_indices) > 0:
+                    print(f"[{app}::{name}] Integer values differing by more than 1:")
+                    for idx in hard_diff_indices[:20]:
+                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                    print(f"Total differing by more than 1: {len(hard_diff_indices)}")
+
+                soft_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) == 1
+                soft_diff_indices = numpy.where(soft_integer_differences)[0]
+                if len(soft_diff_indices) > 0:
+                    print(f"[{app}::{name}] Integer values differing by 1:")
+                    for idx in soft_diff_indices[:20]:
+                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                    print(f"Total differing by 1: {len(soft_diff_indices)}")
+
+                numpy.save(f"{app_dir}/bin/gold_{name}_array.npy", gold_array)
+                numpy.save(f"{app_dir}/bin/sim_{name}_array.npy", sim_array)
+
+                assert len(hard_diff_indices) == 0, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed.\033[0m"
+
+                if len(soft_diff_indices) > 0:
+                    mismatch_frac = len(soft_diff_indices) / len(gold_array) if len(gold_array) else 0.0
+                    frac_tolerance = 2e-1
+                    if mismatch_frac <= frac_tolerance:
+                        print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
+                    else:
+                        assert False, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+                else:
+                    print(f"\033[92m{app}::{name}: Integer (Bit-accurate +/-1) comparison passed. All pixels match exactly.\033[0m")
+
+        elif args.dense_fp:
 
             # Define custom absolute tolerance for floating point comparison
             custom_atol = 1.5e-04  # default 1e-08
