@@ -463,6 +463,8 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_dequant_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_deq_ResReLU_quant_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_deq_q_relu_fp", layer_in=layer)
 
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
