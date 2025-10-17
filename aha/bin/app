@@ -38,6 +38,7 @@ HELP="
     $bn --verilator 8x8 apps/pointwise
 
   QUICK REFERENCE:
+    $bn --list-suites
     $bn --show-suite fast --zircon
     $bn --show-suite fast --no-zircon
     $bn --show-suite full
@@ -58,7 +59,7 @@ DBG=
 SIM=VCS
 LIST_SUITES=
 RUN_SUITE=
-ZIRCON=True
+ZIRCON=
 FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
 UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
@@ -74,8 +75,8 @@ while [ $# -gt 0 ] ; do
         --mu*)         MU=$2;        shift ;;
 
         --list*)      LIST_SUITES=notnull ;;
-        --no*zircon)  ZIRCON=False        ;;
-        --zircon)     ZIRCON=True         ;;
+        --no*zircon)  ZIRCON=' --no-zircon' ;;
+        --zircon)     ZIRCON=               ;;
         --ver*)       SIM=VERILATOR       ;;
         --vcs)        SIM=VCS             ;;
         --wave*)      export WAVEFORM=1   ;;
@@ -117,16 +118,17 @@ test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
 # Parse 'tests.py' to find suite names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
 
-# This selects lines like 'elif testname == "pr_aha":'
-function filter1 { sed -n '/BLANK/d;/^[^#]*if testname/p'; }
+# # This selects lines like 'elif testname == "pr_aha":'
+# function filter1 { sed -n '/BLANK/d;/^[^#]*if testname/p'; }
+# 
+# # This selects the last word in the above line
+# function filter2 { awk -F '"' '{print $(NF-1)}'; }
+# 
+# TEST_SUITES=`cat $TESTS_PY | filter1 | filter2`
+# TEST_SUITES=`echo $TEST_SUITES`  # Remove newlines maybe
+TEST_SUITES=`python3 <(cat $TESTS_PY; echo "print(*Tests.configs.keys())") | tail -1` || exit 13
 
-# This selects the last word in the above line
-function filter2 { awk -F '"' '{print $(NF-1)}'; }
-
-TEST_SUITES=`cat $TESTS_PY | filter1 | filter2`
-TEST_SUITES=`echo $TEST_SUITES`  # Remove newlines maybe
-
-[ "$DBG" ] && printf "\nDBG Scrubbed tests.py, found test suites: '$TEST_SUITES'\n\n"
+[ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n'$TEST_SUITES'\n\n"
 
 ########################################################################
 # List suite names if requested, e.g.
@@ -143,8 +145,6 @@ if [ "$LIST_SUITES" ]; then
     exit
 fi
 
-function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
-
 ########################################################################
 # Build a COMPACT data structure containing all apps and suites e.g.
 #
@@ -155,27 +155,19 @@ function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 # pr_aha sparse_tests   vec_elemmul        28x16
 # pr_aha sparse_tests   mat_vecmul_ij      28x16
 
-# TODO sort by group name etc.
-# DBG=
-for s in $TEST_SUITES; do
-    sq="'$s'"
-    tests_py_stub='\nTests('$sq', zircon='$ZIRCON').show_suite('$sq', zircon='$ZIRCON')\n'
-    if [ "$DBG" ]; then
-        printf "$tests_py_stub"
-        echo '------------------------------------------------------------------------'
-        cat -n <(cat $TESTS_PY; printf "$tests_py_stub")
-        echo '------------------------------------------------------------------------'
-        python3 <(cat $TESTS_PY; printf "$tests_py_stub")
-        echo '------------------------------------------------------------------------'
-    fi
-    this_suite=`python3 <(cat $TESTS_PY; printf "$tests_py_stub")`
-    # Gather all the this_suite's together in a single 'suites'
-    suites="$(printf "%s\n%s" "$suites" "$this_suite")"
-done
-if [ "$DBG" ]; then hline 72; (echo "$suites" | head); fi
+pyscript='if True:
+    import sys, importlib
+    spec = importlib.util.spec_from_file_location("tests", sys.argv[1])
+    tests = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tests)
+    for config in sys.argv[2:]: tests.Tests.show_config(config)
+'
+# Need python 3.3 or better for importlib.util
+test -e /aha && source /aha/bin/activate
+suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
 
-########################################################################
-# FILTER function to tabulate output w/o changing arg spacing
+#########################################################################
+# FILTER function to tabulate output w/o changing arg spacing (also hline)
 #   BEFORE:
 #     app 8x8 vec_identity --num-fabric-cols-removed 4 --mu_oc_0 8
 #     app 8x8 tests/fp_pointwise --num-fabric-cols-removed 4 --mu_oc_0 8
@@ -184,8 +176,9 @@ if [ "$DBG" ]; then hline 72; (echo "$suites" | head); fi
 #     app 8x8 tests/fp_pointwise --num-fabric-cols-removed 4 --mu_oc_0 8
 
 function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
+function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 
-########################################################################
+#########################################################################
 # Print contents of indicated suite "$SUITE" e.g.
 #
 #     % app --show-suite fast
@@ -194,6 +187,7 @@ function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 #     app 8x8 tests/fp_pointwise --removed 4 --mu 8
 
 if [ "$SUITE" ]; then
+    # Install column command if not exist yet (for docker mainly)
     if ! type column >& /dev/null; then
         echo "WARNING attempting to install bsdmainutils for 'column' command"
         if ! (yes | apt-get install bsdmainutils >& /dev/null); then
@@ -214,11 +208,12 @@ if [ "$SUITE" ]; then
         [ "$DBG" ] && echo "$suites" | egrep ^"$s"
         [ "$DBG" ] && hline 72
 
+        # Note $ZIRCON is either "" or " --no-zircon"
         (echo "$suites" | egrep ^"$s" | awk '{
           suite=$1; group=$2; app=$3; size=$4; $1=$2=$3=$4="";
           gsub(/^ */, "", $0); parms = $0
-          printf("'$bn' %s %s %s\n", size, app, parms)
-        }') | filter
+          printf("'$bn' %s %s %s\n", size, app, parms ZIRCON)
+        }') | filter | sed "s/\$/$ZIRCON/"
     done
     exit
 fi
@@ -299,10 +294,23 @@ if ! [ "$IN_DOCKER" ]; then
     exit
 fi
 
+# NOTE we are (still) in a container now
+# TODO/FIXME this whole script needs a good cleaning
+
 #############################################################################
 # E.g. app_flags='8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8'
 echo '------------------------------------------------------------------------------'
 printf "Ready to do: $bn $app_flags\n\n"
+
+if [ "$RUN_SUITE" ]; then
+    config=$RUN_SUITE
+
+    # "fast" suite breaks if include dense-only tests, dunno why exactly FIXME (it should just ignore/skip them, right?)
+    [ $config == fast ] || config="$config --include-dense-only-tests"
+
+    echo '------------------------------------------------------------------------------'
+    printf "Ready to do: TOOL=$SIM aha regress $config\n\n"
+else
 
 ########################################################################
 # Find which group 'appname' belongs to,
@@ -335,33 +343,32 @@ if [ "$DBG" ]; then
 fi
 
 ########################################################################
-# Prepare a custom suite containing ONLY the desired app e.g.
-#     > if True:
-#     >     width, height = 8, 8
-#     >     cols_removed, mu_oc_0 = 8, 32
-#     >     glb_tests = [ 'apps/pointwise' ]
+# Prepare a json string e.g. '{"width":8,"height":8,"glb_tests":["apps/pointwise"]}'
 
-config=config$$
-cat <<EOF > /aha/aha/util/regress_tests/$config.py
-if True:
-    $colrow
-    cols_removed, mu_oc_0 = $FCR, $MU
-    $group = [ '$appname' ]
-EOF
+# awk input e.g. '"width"x"height"x8x8', output '"width":8",height":8
+wh=$(echo '"width":x,"height":x'$size | awk -F x '{print $1 $3 $2 $4}')
+cr='"cols_removed":'$FCR
+mu='"mu_oc_0":'$MU
+config="{$wh,$cr,$mu,\"$group\":[\"$appname\"]}"
 
 echo '------------------------------------------------------------------------'
-printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py\n\n"
-# ls -l /aha/aha/util/regress_tests/$config.py
-cat /aha/aha/util/regress_tests/$config.py | sed 's/^/> /'
-echo ""
+printf "Prepared custom json string\n  $config\n\n"
 
 # I dunno, just run it I guess?
 
+fi
+
+
 ########################################################################
-# Set up access to requested RTL simulator vcs or verilator
+# Prepare docker environment for testing
+
+echo "pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe"
+pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe
 
 rm -f garnet/garnet.v  # Get rid of old verilog if it exists
-source /aha/bin/activate
+# source /aha/bin/activate  # Note we already did this, for importlib way up above...
+
+echo "# Set up access to requested RTL simulator vcs or verilator"
 printf "PREPARING $SIM b/c SIM=$SIM\n\n"
 if [ "$SIM" == VCS ]; then
     source /cad/modules/tcl/init/bash; module load base; module load vcs
@@ -376,22 +383,11 @@ fi
 # (which no longer exists maybe) and/or maybe just plain old paranoia...
 (cd /aha/garnet; make clean)
 
-if [ "$RUN_SUITE" ]; then
-
-    # Haha if RUN_SUITE is set just ignore everything that happened up there haha
-    config=$RUN_SUITE
-
-    # "fast" suite breaks if include dense-only tests, dunno why exactly FIXME
-    [ $config == fast ] || config="$config --include-dense-only-tests"
-fi
-
-[ "$ZIRCON" == True ] || config="$config --no-zircon"
-
 ########################################################################
 # Finally: run it!!
 
-echo TOOL=$SIM aha regress $config
-TOOL=$SIM aha regress $config || exit 13
+echo TOOL=$SIM aha regress "$config"$ZIRCON --include-no-zircon-tests
+TOOL=$SIM aha regress "$config"$ZIRCON --include-no-zircon-tests || exit 13
 
 if [ "$WAVEFORM" ]; then
     echo "----------------------------------------------------------------"
@@ -442,3 +438,27 @@ function testing {
   # printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | less
   # # app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
 }
+
+
+
+#     ########################################################################
+#     # Prepare a custom suite containing ONLY the desired app e.g.
+#     #     > if True:
+#     #     >     width, height = 8, 8
+#     #     >     cols_removed, mu_oc_0 = 8, 32
+#     #     >     glb_tests = [ 'apps/pointwise' ]
+# 
+#     config=config$$
+#     cat <<EOF > /aha/aha/util/regress_tests/$config.py
+# if True:
+#     $colrow
+#     cols_removed, mu_oc_0 = $FCR, $MU
+#     $group = [ '$appname' ]
+# EOF
+# 
+#     echo '------------------------------------------------------------------------'
+#     printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py\n\n"
+#     # ls -l /aha/aha/util/regress_tests/$config.py
+#     cat /aha/aha/util/regress_tests/$config.py | sed 's/^/> /'
+#     echo ""
+
