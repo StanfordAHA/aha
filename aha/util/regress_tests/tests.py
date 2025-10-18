@@ -723,20 +723,29 @@ class Tests:
                 # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
                 # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
 
+                # Conv2_x
                 # "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 # "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
 
-                # Conv3_1 pointwise conv
-                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
-                # Conv3_1 strided conv
-                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
-                # Conv3_x
-                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
+                # # Conv3_1 pointwise conv
+                # "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
+                # # Conv3_1 strided conv
+                # "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
+                # # Conv3_x
+                # "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
+                # "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
+                # "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
 
-                # INNER REDUCTION WORKAROUND CONV4_X downsample
+                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
                 # "resnet18-submodule_11 -> zircon_dequant_fp_post_conv4_1_RV_E64_MB",
+
+                # Conv4_x
+                # "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                # "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                # "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+
             ]
 
 
