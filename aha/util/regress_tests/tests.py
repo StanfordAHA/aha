@@ -37,6 +37,7 @@ class Tests:
             "apps/zircon_deq_ResReLU_quant_fp",
             "apps/zircon_deq_q_relu_fp",
             "apps/zircon_deq_ResReLU_fp",
+            "apps/zircon_res_deq_ReLU_quant_fp",
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -51,6 +52,7 @@ class Tests:
             "apps/zircon_deq_ResReLU_quant_fp",
             "apps/zircon_deq_q_relu_fp",
             "apps/zircon_deq_ResReLU_fp",
+            "apps/zircon_res_deq_ReLU_quant_fp",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -740,6 +742,10 @@ class Tests:
 
                 # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
                 # "resnet18-submodule_11 -> zircon_dequant_fp_post_conv4_1_RV_E64_MB",
+
+                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
+                # "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
 
                 # Conv4_x
                 # "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
