@@ -558,7 +558,7 @@
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
             "PSUM_IDX":"0",
-            "INTERMEDIATE_GOLD_DIR":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_res_deq_ReLU_quant_fp"
+            "USE_PSUM_WORKAROUND_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -569,7 +569,7 @@
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
             "PSUM_IDX":"0",
-            "INTERMEDIATE_GOLD_DIR":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_res_deq_ReLU_quant_fp"
+            "USE_PSUM_WORKAROUND_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -581,7 +581,7 @@
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
             "PSUM_IDX":"0",
-            "INTERMEDIATE_GOLD_DIR":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_res_deq_ReLU_quant_fp"
+            "USE_PSUM_WORKAROUND_GOLD":"1"
         }
     },
     "zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1":{
@@ -595,8 +595,7 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
-            "PSUM_IDX":"1",
-            "INTERMEDIATE_GOLD_DIR":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_res_deq_ReLU_quant_fp"
+            "PSUM_IDX":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -608,8 +607,7 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
-            "PSUM_IDX":"1",
-            "INTERMEDIATE_GOLD_DIR":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_res_deq_ReLU_quant_fp"
+            "PSUM_IDX":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -622,8 +620,7 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
-            "PSUM_IDX":"1",
-            "INTERMEDIATE_GOLD_DIR":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_res_deq_ReLU_quant_fp"
+            "PSUM_IDX":"1"
         }
     },
      "zircon_deq_q_relu_fp_post_conv4_1":{

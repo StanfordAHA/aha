@@ -312,7 +312,11 @@ def dispatch(args, extra_args=None):
 
             if use_psum_workaround_gold:
                 psum_idx = int(os.environ.get("PSUM_IDX", 1))
-                gold_output_path = f"{app_dir}/{mu_test}_gold/kernel_{psum_idx}_output.txt"
+                per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
+                if per_tensor_scaling:
+                    gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{mu_test}_gold/kernel_{psum_idx}_output.txt"
+                else:
+                    gold_output_path = f"{app_dir}/{mu_test}_gold/kernel_{psum_idx}_output.txt"
                 assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                 gold_array = []
                 with open(gold_output_path, "r") as gold_output:
@@ -322,6 +326,8 @@ def dispatch(args, extra_args=None):
                             gold_array.extend(values)
                 gold_array = numpy.array(gold_array, dtype=numpy.uint16)
                 gold_array = gold_array.flatten()
+                output_file_name = "hw_output"  # Assuming single output named hw_output for psum workaround
+                golds_by_name[output_file_name] = gold_array
 
             # Use voyager gold pre-supplied by the user
             elif use_voyager_gold:

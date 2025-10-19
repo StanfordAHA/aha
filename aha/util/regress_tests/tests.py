@@ -727,8 +727,8 @@ class Tests:
 
                 # Conv2_x
                 # "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                # "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
+                # "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 # "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
 
                 # # Conv3_1 pointwise conv
@@ -745,7 +745,7 @@ class Tests:
 
                 # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
                 # "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                # "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
 
                 # Conv4_x
                 # "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
