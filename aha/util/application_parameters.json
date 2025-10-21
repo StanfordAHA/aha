@@ -335,6 +335,45 @@
             "PER_TENSOR_SCALING":"1"
         }
     },
+      "zircon_dequant_fp_post_conv5_1_inner_reduction_workaround":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "PER_TENSOR_SCALING":"1"
+        }
+    },
     "zircon_deq_ResReLU_fp_post_conv2_x":{
         "default":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -413,6 +452,174 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
+            "PER_TENSOR_SCALING":"1"
+        }
+    },
+    "zircon_deq_ResReLU_fp_post_conv5_x_kernel0":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        }
+    },
+    "zircon_deq_ResReLU_fp_post_conv5_x_kernel1":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        }
+    },
+    "zircon_deq_ResReLU_fp_post_conv5_x_kernel2":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "2",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "2",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "2",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        }
+    },
+    "zircon_deq_ResReLU_fp_post_conv5_x_kernel3":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "3",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "3",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "3",
+            "NUM_K_HOST_TILING_KERNELS": "4",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "PER_TENSOR_SCALING":"1"
         }
     },
@@ -544,6 +751,102 @@
             "MB_IO_OFFSET": "12",
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1"
+        }
+    },
+    "zircon_deq_q_relu_fp_post_conv5_x_kernel0":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "2",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "2",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "2",
+            "K_DIM_HOST_TILING_IDX": "0",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1"
+        }
+    },
+    "zircon_deq_q_relu_fp_post_conv5_x_kernel1":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "2",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "2",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "K_DIM_HOST_TILING": "1",
+            "NUM_K_HOST_TILING_KERNELS": "2",
+            "K_DIM_HOST_TILING_IDX": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
         }
