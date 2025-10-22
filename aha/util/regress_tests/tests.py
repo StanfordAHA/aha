@@ -1,5 +1,21 @@
 class Tests:
 
+    # Valid configs as of Oct 2025:
+    #   "fast"    quick and dirty ten-minute test of basic apps
+    #
+    #   "pr_aha1" thru "pr_aha9"
+    #             regression tests that run on every aha pull, takes about 6-8 hours
+    #
+    #   "pr_aha"  combines all tests pr_aha1-9 into a single group
+    #
+    #   "full"    extensive set of apps that run for 30 hours every sunday night
+    #
+    #   "resnet"  three resnet tests---does anyone still use this?
+    #
+    #   "mu"      bunch of "external_mu_tests", mostly resnet18
+    #
+    #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
+
     def __init__(self, testname="BLANK", zircon=True):
         use_custom = False
 
@@ -44,6 +60,13 @@ class Tests:
             "apps/zircon_psum_reduction_fp",
             "apps/zircon_dequantize_relu_fp"
         ]
+
+        # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
+        if testname in ["daily", "pr", "pr_submod"]:
+            print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead')
+            config = "pr_aha"
+
+
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
@@ -265,170 +288,6 @@ class Tests:
             self.__dict__.update(pr_aha)
             # print(f"{self.resnet_tests=}", flush=True)
             return
-
-        # PR_SUBMOD tests for push/pull from aha submod repos
-        elif testname == "pr_submod":
-
-            # This is the OLD / original two-hour submod pr, I think, from
-            # 611c8bb4, before I mucked things up...before that, this set
-            # of tests was called simply "pr"
-
-            width, height = 28, 16
-            cols_removed, mu_oc_0 = 12, 32
-            sparse_tests = [
-                "vec_elemadd",
-                "vec_elemmul",
-                "vec_identity",
-                "vec_scalar_mul",
-                "mat_vecmul_ij",
-                "mat_elemadd",
-                "mat_elemadd_relu",
-                "matmul_ijk",
-                "matmul_ijk_crddrop",
-                "fp_relu_matmul_ijk_crddrop",
-                # Turned off until SUB ordering fixed in mapping
-                # 'mat_residual',
-                "mat_vecmul_iter",
-                "tensor3_elemadd",
-                "tensor3_ttm",
-                "tensor3_ttv",
-            ]
-            glb_tests_RV = [
-                "tests/ushift_RV",
-                "tests/arith_RV",
-                "tests/absolute_RV",
-                "tests/scomp_RV",
-                "tests/ucomp_RV",
-                "tests/uminmax_RV",
-                "tests/rom_RV",
-                "tests/conv_2_1_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
-                "tests/fp_e8m0_quant_test_RV",
-                "apps/pointwise_RV",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_custom_packing_RV_E64",
-                "apps/gaussian_RV",
-                # TODO: Tests below are planned but not yet supported
-                # "tests/conv_1_2_RV",
-            ]
-            glb_tests_fp_RV = [
-                "tests/fp_pointwise_RV",
-                "tests/fp_arith_RV",
-                "tests/fp_comp_RV",
-                "apps/relu_layer_fp_RV",
-                "apps/relu_layer_multiout_fp_RV",
-                "apps/scalar_reduction_fp_RV",
-                "apps/vector_reduction_fp_RV",
-                "apps/scalar_max_fp_RV",
-                "apps/stable_softmax_pass2_fp_RV",
-                "apps/stable_softmax_pass3_fp_RV",
-                "apps/scalar_avg_fp_RV",
-                "apps/layer_norm_pass2_fp_RV",
-                "apps/layer_norm_pass3_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64",
-                "apps/mat_vec_mul_fp_RV",
-                # TODO: Tests below are planned but not yet supported
-                # "tests/fp_conv_7_7_RV",
-            ]
-            hardcoded_dense_tests = [
-                "apps/unsharp_RV",
-                # "apps/depthwise_conv" # down on Zircon
-            ]
-            # Tests below are non-zircon and won't run by default
-            glb_tests = [
-                "apps/pointwise",
-                "tests/ushift",
-                "tests/arith",
-                "tests/absolute",
-                "tests/scomp",
-                "tests/ucomp",
-                "tests/uminmax",
-                "tests/rom",
-                "tests/conv_1_2",
-                "tests/conv_2_1",
-                "tests/bit8_packing_test",
-                "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test",
-            ]
-            glb_tests_fp = [
-                "tests/fp_pointwise",
-                "tests/fp_arith",
-                "tests/fp_comp",
-                "tests/fp_conv_7_7",
-                "apps/relu_layer_fp",
-                "apps/scalar_max_fp",
-                "apps/stable_softmax_pass2_fp",
-                "apps/stable_softmax_pass3_fp",
-                "apps/scalar_avg_fp",
-                "apps/layer_norm_pass2_fp",
-                "apps/layer_norm_pass3_fp",
-                "apps/gelu_pass1_fp",
-                "apps/gelu_pass2_fp",
-                "apps/silu_pass1_fp",
-                "apps/silu_pass2_fp",
-                "apps/swiglu_pass2_fp",
-                "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp",
-            ]
-            resnet_tests = []
-            resnet_tests_fp = []
-            behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
-                "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV",
-            ]
-            external_mu_tests = [
-                "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-                "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-                "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
-
-                # K-DIM HOST TILING CONV5_X
-                "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB",
-            ]
-            external_mu_tests_fp = [
-                # X-DIM HOST TILING CONV1 (im2col-based)
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
-
-                "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-
-                # INNER REDUCTION WORKAROUND CONV4_X downsample
-                "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround_RV_E64_MB",
-
-                # INNER REDUCTION WORKAROUND CONV5_X downsample
-                "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_inner_reduction_workaround_RV_E64_MB",
-
-                # K-DIM HOST TILING CONV5_X
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB",
-            ]
-            # For sparse tests, we cherry pick some representative tests to run
-            no_zircon_sparse_tests = [
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "matmul_ikj",
-                "tensor3_mttkrp",
-            ]
 
         # FULL test is used by scheduled weekly aha regressions
         elif testname == "full":
