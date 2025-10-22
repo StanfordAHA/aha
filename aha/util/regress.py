@@ -11,6 +11,7 @@ import glob
 from collections import defaultdict
 import shutil
 import toml
+from aha.util.regress_tests.tests import Tests
 
 
 def add_subparser(subparser):
@@ -380,7 +381,6 @@ def parse_layer_parametrized_test(testname, keyword, layer_in=""):
     return testname, layer
 
 def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
-    from aha.util.regress_tests.tests import Tests
 
     err1 = f'''E64 mode not yet supported for app "{testname}".
     Please make the necessary changes in Halide-to-Hardware and application_parameters.json.
@@ -515,7 +515,7 @@ def test_dense_app(
 
     if skip_cgra_map:
         print(f"--- {testname} - SKIP CGRA MAP", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA MAP", 0])
+        info.append([f"{testname} - SKIP CGRA MAP", 0])
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--skip-cgra-map"] + layer_array, env=env_vars)
     else:
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
@@ -594,7 +594,7 @@ def test_dense_app(
 
     if skip_cgra_pnr:
         print(f"--- {testname} - SKIP CGRA PNR", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA PNR", 0])
+        info.append([f"{testname} - SKIP CGRA PNR", 0])
         buildkite_args.append("--skip-cgra-pnr")
 
     buildkite_call(buildkite_args, env=env_vars)
@@ -750,13 +750,6 @@ def dispatch(args, extra_args=None):
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
 
-    # Preserve backward compatibility
-    if args.config == "daily":
-        args.config = "pr_aha"  # noqa
-    if args.config == "pr":
-        args.config = "pr_submod"  # noqa
-
-    from aha.util.regress_tests.tests import Tests
     imported_tests = None
 
     # For printing info at the end...
