@@ -756,21 +756,8 @@ def dispatch(args, extra_args=None):
     global info  # HA!
     info = []
 
-    # pr_aha1 starts with the pr_aha suite and remove some tests
-    if args.config == "pr_aha1":
-        imported_tests = Tests("pr_aha1")
-
-    # pr_aha2 contains part of the remaining tests
-    elif args.config == "pr_aha2":
-        imported_tests = Tests("pr_aha2")
-
-    # pr_aha3 contains all the remaining tests
-    elif args.config == "pr_aha3":
-        imported_tests = Tests("pr_aha3")
-
-    # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
-    else:
-        imported_tests = Tests(args.config)
+    # For config definitions see regress_tests/tests.py
+    imported_tests = Tests(args.config)
 
     # Unpack imported_tests into convenient handles
     width, height = imported_tests.width, imported_tests.height
