@@ -80,7 +80,7 @@ fi
 
 # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
 if [ "$1" == "--aha-submod-flow" ]; then
-    echo "--- Found arg '$1'" foozy foo
+    echo "--- Found arg '$1'"
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
     export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
@@ -91,54 +91,17 @@ if [ "$1" == "--aha-submod-flow" ]; then
     # E.g. https://github.com/StanfordAHA/lake/pull/194
     # NOTE submod_commit must be full 40-char commit sha for status-update - DO NOT ABBREVIATE
     set -x;
+    temp=$(mktemp -u tmp-deleteme-XXX); echo $temp
+    curl $url/pull/$BUILDKITE_PULL_REQUEST > $temp;
 
-    echo foo
-    echo faw
+    # It sometimes throws an error without the OOPS at the end (but why?)
+    grep 'oid=' $temp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
 
-    curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
-
-
-    iii=101; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-    grep 'oid=' tmp
-
-    iii=104; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n'
-    
-    iii=107; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
-
-    iii=110; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
-
-
-
-
-
-    iii=104; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
-
-
-
-
-    iii=102; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
-
-    iii=104; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-
-    cat tmp \
-          | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
-          | sed 's/.*oid=\(.*\)/\1/'
-    iii=111; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
-
-    submod_commit=`cat tmp \
+    submod_commit=`cat $temp \
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
+    /bin/rm $temp
     echo "found submod commit $submod_commit";
-    sleep 2
-    echo boo
-    echo baw
-    sleep 2
-    iii=116; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
 
     # Debuggin
     cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
@@ -146,12 +109,11 @@ if [ "$1" == "--aha-submod-flow" ]; then
     BUILDKITE_COMMIT=${BUILDKITE_COMMIT}
     BUILDKITE_BUILD_CHECKOUT_PATH=${BUILDKITE_BUILD_CHECKOUT_PATH}
 EOF
-    iii=124; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
 
     # Temporarily replace BUILDKITE_COMMIT env var with submod commit
     save_commit=$BUILDKITE_COMMIT;
     export BUILDKITE_COMMIT=$submod_commit;
-    sleep 2
+
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
     # Also see ~steveri/bin/status-update on kiwi
 
