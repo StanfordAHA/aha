@@ -96,11 +96,31 @@ if [ "$1" == "--aha-submod-flow" ]; then
     echo faw
 
     curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
-    iii=99; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+
+
+    iii=101; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+    grep 'oid=' tmp
+
+    iii=104; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+    grep 'oid=' tmp | tr -cd '[:alnum:]=\n'
+    
+    iii=107; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
+
+    iii=110; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
 
-    iii=102; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
 
+
+
+
+    iii=104; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
+
+
+
+
+    iii=102; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
 
     iii=104; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
