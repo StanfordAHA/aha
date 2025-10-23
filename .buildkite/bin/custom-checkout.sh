@@ -91,21 +91,22 @@ if [ "$1" == "--aha-submod-flow" ]; then
     # E.g. https://github.com/StanfordAHA/lake/pull/194
     # NOTE submod_commit must be full 40-char commit sha for status-update - DO NOT ABBREVIATE
     set -x;
-    curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
 
     echo foo
     echo faw
 
+    curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
+    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
+    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
+    sleep 2
     submod_commit=`cat tmp \
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
     echo "found submod commit $submod_commit";
-
+    sleep 2
     echo boo
     echo baw
-
+    sleep 2
 
     # Debuggin
     cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
@@ -113,11 +114,11 @@ if [ "$1" == "--aha-submod-flow" ]; then
     BUILDKITE_COMMIT=${BUILDKITE_COMMIT}
     BUILDKITE_BUILD_CHECKOUT_PATH=${BUILDKITE_BUILD_CHECKOUT_PATH}
 EOF
-
+    sleep 2
     # Temporarily replace BUILDKITE_COMMIT env var with submod commit
     save_commit=$BUILDKITE_COMMIT;
     export BUILDKITE_COMMIT=$submod_commit;
-
+    sleep 2
     # Note, /home/buildkite-agent/bin/status-update must exist on agent machine
     # Also see ~steveri/bin/status-update on kiwi
 
