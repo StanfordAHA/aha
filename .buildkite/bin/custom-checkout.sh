@@ -80,7 +80,7 @@ fi
 
 # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
 if [ "$1" == "--aha-submod-flow" ]; then
-    echo "--- Found arg '$1'"
+    echo "--- Found arg '$1'" foozy foo
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
     export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
@@ -94,10 +94,18 @@ if [ "$1" == "--aha-submod-flow" ]; then
     curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
-    submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
+
+    echo foo
+    echo faw
+
+    submod_commit=`cat tmp \
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
     echo "found submod commit $submod_commit";
+
+    echo boo
+    echo baw
+
 
     # Debuggin
     cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
