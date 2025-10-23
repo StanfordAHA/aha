@@ -96,9 +96,20 @@ if [ "$1" == "--aha-submod-flow" ]; then
     echo faw
 
     curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
+    iii=99; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
+
+    iii=102; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+
     grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
-    sleep 2
+
+    iii=104; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+
+    cat tmp \
+          | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
+          | sed 's/.*oid=\(.*\)/\1/'
+    iii=111; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+
     submod_commit=`cat tmp \
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
@@ -107,6 +118,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
     echo boo
     echo baw
     sleep 2
+    iii=116; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
 
     # Debuggin
     cat <<EOF | buildkite-agent annotate --style "info" --context foofoo
@@ -114,7 +126,8 @@ if [ "$1" == "--aha-submod-flow" ]; then
     BUILDKITE_COMMIT=${BUILDKITE_COMMIT}
     BUILDKITE_BUILD_CHECKOUT_PATH=${BUILDKITE_BUILD_CHECKOUT_PATH}
 EOF
-    sleep 2
+    iii=124; sleep 2; echo -e "flush$iii\n"; printf "flush$iii\n"; sleep 2
+
     # Temporarily replace BUILDKITE_COMMIT env var with submod commit
     save_commit=$BUILDKITE_COMMIT;
     export BUILDKITE_COMMIT=$submod_commit;
