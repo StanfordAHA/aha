@@ -28,6 +28,12 @@ TRIGGER='
       DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
+TRIGGER_GARNET_PUSH='
+- trigger: "aha-flow"
+  label: "Garnet push"
+'
+
+
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 cd /  # Start in a safe place!
@@ -81,6 +87,30 @@ fi
 # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
 if [ "$1" == "--aha-submod-flow" ]; then
     echo "--- Found arg '$1'"
+    #BOOKMARK
+    # Submods only run regressions for pull requests
+    # Except for Garnet, runs regressions on every git push
+
+    if [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
+        echo not a pr. but is it garnet
+
+        webhook="$(buildkite-agent meta-data get buildkite:webhook)"
+        echo got webhook "$webhook"
+        repo="$(echo "$webhook" | jq -r '.repository.name')"
+        echo got repo "$repo"
+
+        if [ "$repo" == "garnet" ]; then
+            echo oh my goodness it is a garnet repo oh me oh moo
+            echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
+            echo "--- CUSTOM CHECKOUT END - garnet-push edition";
+            return
+        fi
+        
+
+
+    fi
+    
+
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
     export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
