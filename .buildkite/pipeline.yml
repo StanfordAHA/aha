@@ -93,7 +93,6 @@ steps:
         fi
 
   commands:
-  - exit  # FIXME DELETE BEFORE FINAL MERGE!!!
   - echo "+++ BDI PIPELINE.XML COMMANDS BEGIN"
   - .buildkite/bin/regression-steps.sh $RSTEPS
   - echo "--- BDI PIPELINE.XML COMMANDS END"

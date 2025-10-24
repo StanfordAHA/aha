@@ -28,7 +28,25 @@ TRIGGER='
       DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
+# BUILDKITE_PULL_REQUEST:      "232"
+# BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
+
 TRIGGER_GARNET_PUSH='
+- trigger: "aha-flow"
+  label: "Garnet push"
+  build:
+    message: "Push from Garnet \"${BUILDKITE_MESSAGE}\""
+    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+    env:
+      BUILDKITE_PULL_REQUEST:      "0"
+      BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
+      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+      DEV_BRANCH:                  "${DEV_BRANCH}"
+'
+
+
+TRIGGER_GARNET_PUSH0='
 - trigger: "aha-flow"
   label: "Garnet push"
 '
