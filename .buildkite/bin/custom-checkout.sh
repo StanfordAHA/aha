@@ -96,10 +96,11 @@ if [ "$1" == "--aha-submod-flow" ]; then
 
         webhook="$(buildkite-agent meta-data get buildkite:webhook)"
         echo got webhook "$webhook"
-        repo="$(echo "$webhook" | jq -r '.repository.name')"
-        echo got repo "$repo"
+#         repo="$(echo "$webhook" | jq -r '.repository.name')"
+#         echo got repo "$repo"
+#         if [ "$repo" == "garnet" ]; then
 
-        if [ "$repo" == "garnet" ]; then
+        if echo "$webhook" | grep '"name":"garnet"' > /dev/null; then
             echo oh my goodness it is a garnet repo oh me oh moo
             echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
             echo "--- CUSTOM CHECKOUT END - garnet-push edition";
@@ -109,7 +110,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
 
 
     fi
-    
+    "name":"garnet"
 
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
