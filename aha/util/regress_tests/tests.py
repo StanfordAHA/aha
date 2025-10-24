@@ -26,6 +26,9 @@ class Tests:
             "apps/pointwise_mu_io",
             "conv5_x",
             "apps/avgpool_layer_fp",
+            "apps/mat_vec_mul_fp",
+            "apps/maxpooling_dense_rv_fp",
+            "apps/fully_connected_layer_fp",
             "apps/pointwise_custom_packing",
             "apps/pointwise_custom_place_multibank",
             "apps/get_e8m0_scale_test_fp",
@@ -39,6 +42,10 @@ class Tests:
             "apps/pointwise_mu_io",
             "apps/pointwise_custom_place_multibank",
             "apps/get_e8m0_scale_test_fp",
+            "apps/avgpool_layer_fp",
+            "apps/mat_vec_mul_fp",
+            "apps/maxpooling_dense_rv_fp",
+            "apps/fully_connected_layer_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
             "apps/zircon_psum_reduction_fp",
@@ -134,7 +141,7 @@ class Tests:
                 "tests/bit8_packing_test_RV",
                 "tests/bit8_unpack_test_RV",
                 "tests/fp_get_shared_exp_test_RV",
-
+                "apps/maxpooling_dense_rv_fp_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
@@ -210,7 +217,8 @@ class Tests:
                 "apps/relu_layer_fp_RV",
                 "apps/relu_layer_multiout_fp_RV",
                 "apps/avgpool_layer_fp_RV_E64",
-                "apps/mat_vec_mul_fp_RV",
+                "apps/mat_vec_mul_fp_RV_E64_MB",
+                "apps/fully_connected_layer_fp_RV_E64_MB",
                 "apps/scalar_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
                 "apps/layer_norm_pass2_fp_RV",
@@ -237,7 +245,7 @@ class Tests:
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
- 
+
                 # INNER REDUCTION WORKAROUND CONV5_X downsample
                 "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_inner_reduction_workaround_RV_E64_MB",
             ]
@@ -512,10 +520,7 @@ class Tests:
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
                 "apps/pointwise_custom_packing_RV_E64",
-                # TODO: Tests below are planned but not yet supported
-                # "tests/conv_1_2_RV",
-                # "apps/maxpooling_RV",
-                # "apps/cascade_RV",
+                "apps/maxpooling_dense_rv_fp_RV_E64_MB",
             ]
             glb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
@@ -539,10 +544,8 @@ class Tests:
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
                 "apps/avgpool_layer_fp_RV_E64",
-                "apps/mat_vec_mul_fp_RV",
-                # TODO: Tests below are planned but not yet supported
-                # "apps/maxpooling_fp_RV",
-                # "tests/fp_conv_7_7_RV",
+                "apps/mat_vec_mul_fp_RV_E64_MB",
+                "apps/fully_connected_layer_fp_RV_E64_MB",
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
