@@ -425,6 +425,14 @@ def dispatch(args, extra_args=None):
                         print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
                     print(f"Total differing by more than 1: {len(hard_diff_indices)}")
 
+                # Create histogram of percentage differences for hard differences
+                hard_diff_percentages = 100.0 * numpy.abs(gold_array[hard_diff_indices].astype(int) - sim_array[hard_diff_indices].astype(int)) / 127
+                if len(hard_diff_percentages) > 0:
+                    hist, bin_edges = numpy.histogram(hard_diff_percentages, bins=[0, 1, 5, 10, 20, 50, 100, 200, 500, 1000])
+                    print(f"[{app}::{name}] Histogram of percentage differences for hard differences:")
+                    for i in range(len(hist)):
+                        print(f"  {bin_edges[i]:>7.1f}% - {bin_edges[i+1]:>7.1f}% : {hist[i]} occurrences")
+
                 soft_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) == 1
                 soft_diff_indices = numpy.where(soft_integer_differences)[0]
                 if len(soft_diff_indices) > 0:
