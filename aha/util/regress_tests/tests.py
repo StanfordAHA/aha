@@ -12,6 +12,7 @@ class Tests:
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
+        voyager_cgra_tests_fp = []
         behavioral_mu_tests = []
         external_mu_tests = []
         external_mu_tests_fp = []
@@ -38,6 +39,7 @@ class Tests:
             "apps/zircon_deq_q_relu_fp",
             "apps/zircon_deq_ResReLU_fp",
             "apps/zircon_res_deq_ReLU_quant_fp",
+            "apps/zircon_quant_fp",
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -53,6 +55,7 @@ class Tests:
             "apps/zircon_deq_q_relu_fp",
             "apps/zircon_deq_ResReLU_fp",
             "apps/zircon_res_deq_ReLU_quant_fp",
+            "apps/zircon_quant_fp",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -704,7 +707,9 @@ class Tests:
         elif testname == "mu":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            sparse_tests = []
+            sparse_tests = [
+                # "vec_elemmul",
+            ]
             glb_tests = []
             glb_tests_fp = []
             glb_tests_RV = []
@@ -712,6 +717,14 @@ class Tests:
                 # "apps/zircon_quant_fp_RV"
             ]
             resnet_tests = []
+            voyager_cgra_tests_fp = [
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB", # PASS
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+            ]
             behavioral_mu_tests = [
                 # "apps/pointwise_mu_io_RV_E64",
                 # "apps/pointwise_mu_io_RV_E64_MB",
@@ -743,8 +756,8 @@ class Tests:
                 "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
 
                 # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
-                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB", # PASS
+                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB", # PASS
 
                 # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
                 "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB"
@@ -793,6 +806,7 @@ class Tests:
         self.glb_tests_fp_RV = glb_tests_fp_RV
         self.resnet_tests = resnet_tests
         self.resnet_tests_fp = resnet_tests_fp
+        self.voyager_cgra_tests_fp = voyager_cgra_tests_fp
         self.behavioral_mu_tests = behavioral_mu_tests
         self.external_mu_tests = external_mu_tests
         self.external_mu_tests_fp = external_mu_tests_fp

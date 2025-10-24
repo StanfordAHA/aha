@@ -18,6 +18,7 @@ def add_subparser(subparser):
     parser.add_argument("--multiles", type=int, default=None)
     parser.add_argument("--dpr", action="store_true")
     parser.add_argument("--mu-test", nargs="+", type=str, help="Specifies the test to run on the external voyager matrix unit. If not specified, or specified as \"inactive\", the test is skipped.")
+    parser.add_argument("--voyager-cgra-test", type=str, help="Specifies a standalone vector unit test. If not specified, the test will not be run.")
     parser.add_argument("--layer", type=str, help="Specifies layer parameters if running 'aha halide apps/resnet_output_stationary', options for LAYER are in application_parameters.json")
     parser.set_defaults(dispatch=dispatch)
 
@@ -294,8 +295,13 @@ def dispatch(args, extra_args=None):
 
         for app in args.app:
             mu_test = args.mu_test[args.app.index(app)] if args.mu_test is not None else "inactive"
+            voyager_cgra_test = args.voyager_cgra_test
             app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
-            voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}")
+            if voyager_cgra_test is None or voyager_cgra_test == "":
+                voyager_test_fullname = mu_test
+            else:
+                voyager_test_fullname = voyager_cgra_test
+            voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{voyager_test_fullname}")
 
             use_voyager_gold = "VOYAGER_GOLD" in os.environ and os.environ["VOYAGER_GOLD"] == "1"
             use_psum_workaround_gold = "USE_PSUM_WORKAROUND_GOLD" in os.environ and os.environ["USE_PSUM_WORKAROUND_GOLD"] == "1"
@@ -314,9 +320,9 @@ def dispatch(args, extra_args=None):
                 psum_idx = int(os.environ.get("PSUM_IDX", 1))
                 per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
                 if per_tensor_scaling:
-                    gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{mu_test}_gold/kernel_{psum_idx}_output.txt"
+                    gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
                 else:
-                    gold_output_path = f"{app_dir}/{mu_test}_gold/kernel_{psum_idx}_output.txt"
+                    gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
                 assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                 gold_array = []
                 with open(gold_output_path, "r") as gold_output:
@@ -382,7 +388,6 @@ def dispatch(args, extra_args=None):
 
                 comparisons.append({
                     "app": app,
-                    "mu_test": mu_test,
                     "name": output_file_name,
                     "gold": gold_array,
                     "sim": sim_array,
