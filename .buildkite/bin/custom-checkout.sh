@@ -52,6 +52,10 @@ TRIGGER_GARNET_PUSH0='
   label: "Garnet push"
 '
 
+# E.g: `echo '{"repo":{"name":"garnet"}}' | get_json repo name`  => "garnet"
+function get_json { python3 -c 'import sys,json;j=json.load(sys.stdin)
+for f in sys.argv[1:]: j=j[f];
+print(j)' $*; }
 
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
@@ -110,6 +114,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
     # Submods only run regressions for pull requests
     # Except for Garnet, runs regressions on every git push
 
+    function garnet { false; } 
     if [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
         echo not a pr. but is it garnet
 
@@ -119,19 +124,28 @@ if [ "$1" == "--aha-submod-flow" ]; then
 #         echo got repo "$repo"
 #         if [ "$repo" == "garnet" ]; then
 
-        if echo "$webhook" | grep '"name":"garnet"' > /dev/null; then
+        # if echo "$webhook" | grep '"name":"garnet"' > /dev/null; then
+        repo=$(echo "$webhook" | get_json repository name)
+        if [ "$repo" == "garnet" ]; then
             echo oh my goodness it is a garnet repo oh me oh moo
+            function garnet { true; }
 
             echo export RSTEPS=0
             export RSTEPS=0
 
-            echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
-            echo "--- CUSTOM CHECKOUT END - garnet-push edition";
-            return
+#             echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
+#             echo "--- CUSTOM CHECKOUT END - garnet-push edition";
+#             return
         fi
     fi
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
+
+  if garnet; then
+      BPPR_TAIL=garnet
+      submod_commit=$(echo "$webhook" | get_json head_commit id)
+  else
+
     export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
     url=$BPPR_TAIL
     BPPR_TAIL=`echo "$BPPR_TAIL" | sed "s,http.*github.com/.*/,,"` || echo fail;
@@ -150,6 +164,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
     /bin/rm $temp
+  fi
     echo "found submod commit $submod_commit";
 
     # Debuggin
