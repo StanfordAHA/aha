@@ -38,6 +38,7 @@ TRIGGER_GARNET_PUSH='
     message: "Push from Garnet \"${BUILDKITE_MESSAGE}\""
     commit: "${AHA_SUBMOD_FLOW_COMMIT}"
     env:
+      RSTEPS:                      "0"
       BUILDKITE_PULL_REQUEST:      "0"
       BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
       BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
@@ -120,6 +121,10 @@ if [ "$1" == "--aha-submod-flow" ]; then
 
         if echo "$webhook" | grep '"name":"garnet"' > /dev/null; then
             echo oh my goodness it is a garnet repo oh me oh moo
+
+            echo export RSTEPS=0
+            export RSTEPS=0
+
             echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
             echo "--- CUSTOM CHECKOUT END - garnet-push edition";
             return
