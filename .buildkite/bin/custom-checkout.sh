@@ -124,12 +124,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
             echo "--- CUSTOM CHECKOUT END - garnet-push edition";
             return
         fi
-        
-
-
     fi
-    "name":"garnet"
-
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
     export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
