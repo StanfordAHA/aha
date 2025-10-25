@@ -26,12 +26,18 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     repo=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed 's/.git$//'`
     r=`echo "$repo" | sed 's/http.*github.com.//'`               # "StanfordAHA/lake"
     PR_REPO_TAIL=`echo "$repo" | sed "s,http.*github.com/.*/,,"` # "lake"
-    echo "Found PR from submod $PR_REPO_TAIL"
+    echo "Found PR from submod '$PR_REPO_TAIL'"
 
+    if [ "$BUILDKITE_COMMIT" == "HEAD" ]; then
+    cat <<EOF | buildkite-agent annotate --style "info" --context foo3
+### Triggered from garnet push, whaddaya want from me
+EOF
+
+    else
     # E.g. url_cm="https://github.com/StanfordAHA/lake/commit/7c5...0b1f"
     first7=`expr "$BUILDKITE_COMMIT" : '\(.......\)'`  # 7c5e880
-    url_cm=${repo}/commit/${BUILDKITE_COMMIT}
-    mdlink_cm="[${first7}](${url_cm})"
+    url_cm=${repo}/commit/${BUILDKITE_COMMIT}  # https://...lake/commit/7c5e88077998899...
+    mdlink_cm="[${first7}](${url_cm})"         # [7c5e880](https://...lake/commit/7c5e88077998899...)
 
     # E.g. url_pr="https://github.com/StanfordAHA/lake/pull/166"
     url_pr=${repo}/pull/${BUILDKITE_PULL_REQUEST}
@@ -41,6 +47,7 @@ if [ "$BUILDKITE_PULL_REQUEST_REPO" ]; then
     cat <<EOF | buildkite-agent annotate --style "info" --context foo3
 ### Triggered from ${r} ${mdlink_cm} (${mdlink_pr})
 EOF
+    fi
 fi
 echo "--- END TRIGGERED-FROM LINKS"
 
