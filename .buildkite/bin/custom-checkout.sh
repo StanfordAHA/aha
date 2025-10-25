@@ -130,8 +130,10 @@ if [ "$1" == "--aha-submod-flow" ]; then
             echo oh my goodness it is a garnet repo oh me oh moo
             function garnet { true; }
 
-            echo export RSTEPS=0
-            export RSTEPS=0
+#             echo export RSTEPS=0
+#             export RSTEPS=0
+
+            TRIGGER="$TRIGGER      RSTEPS: 0"
 
 #             echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
 #             echo "--- CUSTOM CHECKOUT END - garnet-push edition";
@@ -142,7 +144,8 @@ if [ "$1" == "--aha-submod-flow" ]; then
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
 
   if garnet; then
-      BPPR_TAIL=garnet
+      set -x; echo 'foo faw here i am garnetty'
+      export BPPR_TAIL=garnet
       submod_commit=$(echo "$webhook" | get_json head_commit id)
   else
 
@@ -199,6 +202,7 @@ EOF
 
     echo "$TRIGGER" | buildkite-agent pipeline upload
     echo "--- CUSTOM CHECKOUT END";
+      set +x
     return
 fi
 
