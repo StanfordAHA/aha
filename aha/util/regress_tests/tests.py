@@ -104,7 +104,7 @@ class Tests:
                 "tensor3_ttv",
             ]
             external_mu_tests_fp = [
-                 # K-DIM HOST TILING CONV5_X
+                # K-DIM HOST TILING CONV5_X
                 "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
                 "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
@@ -218,7 +218,7 @@ class Tests:
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
                 "apps/relu_layer_multiout_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64",
+                "apps/avgpool_layer_fp_RV_E64_MB",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
                 "apps/fully_connected_layer_fp_RV_E64_MB",
                 "apps/scalar_reduction_fp_RV",
@@ -345,7 +345,7 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64",
+                "apps/avgpool_layer_fp_RV_E64_MB",
                 "apps/mat_vec_mul_fp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "tests/fp_conv_7_7_RV",
@@ -545,7 +545,7 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64",
+                "apps/avgpool_layer_fp_RV_E64_MB",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
                 "apps/fully_connected_layer_fp_RV_E64_MB",
             ]
