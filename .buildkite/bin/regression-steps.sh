@@ -80,57 +80,6 @@ if [ "$next" == "--cleanup" ]; then
     echo '- Clean up your mess'
 
 #------------------------------------------------------------------------------
-elif [ "$next" == "build" ]; then
-
-    # FIXME this launches two build steps at the same time; the
-    # possibility exists that both call regression-steps.sh at same time.
-    # That would be trouble for our new chaining approach, yes?
-    # Need flock? something simpler/smarter?
-
-    # Early-out if these steps have already been launched!
-    if key-exists 'kprep'; then
-        if key-exists 'r8prep'; then
-            echo "Steps 'kprep' and 'r8prep' already exist in pipeline. So. Nothing to do!"; exit 0
-        fi
-    fi
-
-    # Build the two individual build steps, one for each agent :)
-    bdkhaki=$(
-  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    - label: "khaki prep"
-      key: "kprep"
-      agents: { hostname: khaki }
-      # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
-      plugins:
-        - uber-workflow/run-without-clone:
-        - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER
-    EOF
-)
-    bdcad=$(
-  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    - label: "r8cad prep"
-      key: "r8prep"
-      agents: { hostname: r8cad-docker }
-      # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
-      plugins:
-        - uber-workflow/run-without-clone:
-        - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER
-    EOF
-)
-    # Package the two steps into one bundle, then upload the bundle
-    buildsteps=$(
-      sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-      echo "steps:"
-      key-exists 'kprep'  || echo "$bdkhaki"
-      key-exists 'r8prep' || echo "$bdcad"  # FIXME restore before final check-in
-    )
-    echo "$buildsteps" | buildkite-agent pipeline upload
-
-#------------------------------------------------------------------------------
 elif [ "$next" == "gold" ]; then
 
     # Upload gold step, wait for it to start running (i.e. "launch")
@@ -150,7 +99,7 @@ elif [ "$next" == "gold" ]; then
       key: "zircon_gold"
       soft_fail: true  # So that failing gold check does not fail pipeline.
       command: |
-        export REGRESSION_STEP=ZGOLD
+        export REGRESSION_STEP=-zgold
         if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
             msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
             echo "--- $$msg"
