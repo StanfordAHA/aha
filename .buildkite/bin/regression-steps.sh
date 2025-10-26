@@ -150,6 +150,7 @@ elif [ "$next" == "gold" ]; then
       key: "zircon_gold"
       soft_fail: true  # So that failing gold check does not fail pipeline.
       command: |
+        export REGRESSION_STEP=ZGOLD
         if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
             msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
             echo "--- $$msg"
