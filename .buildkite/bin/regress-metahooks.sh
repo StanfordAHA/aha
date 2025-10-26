@@ -90,7 +90,7 @@ elif [ "$1" == '--exec' ]; then
     docker run -id --name "$CONTAINER" --rm -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
     docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
     docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
-    docker "exec $CONTAINER" /bin/bash -c "$2"
+    docker "exec $CONTAINER" /bin/bash -c "$2" || exit 13
     docker "kill $CONTAINER" || echo okay  # Cleanup on aisle FOO
     echo "--- END regress-metahooks.sh --exec '$2'"
 
