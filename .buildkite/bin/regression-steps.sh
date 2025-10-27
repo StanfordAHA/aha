@@ -161,7 +161,7 @@ elif [ "$next" == "gold" ]; then
         - improbable-eng/metahook:
             pre-command: |
               .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
-              \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
+              $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
     EOF
 )
 # setstate launch-state READY  # FIXME do we use this??
