@@ -617,6 +617,7 @@
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "fastest":{
@@ -630,6 +631,7 @@
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "sweep":{
@@ -644,6 +646,7 @@
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         }
     },
@@ -659,6 +662,7 @@
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "fastest":{
@@ -672,6 +676,7 @@
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "sweep":{
@@ -686,6 +691,7 @@
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         }
     },
@@ -701,6 +707,7 @@
             "K_DIM_HOST_TILING_IDX": "2",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "fastest":{
@@ -714,6 +721,7 @@
             "K_DIM_HOST_TILING_IDX": "2",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "sweep":{
@@ -728,6 +736,7 @@
             "K_DIM_HOST_TILING_IDX": "2",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         }
     },
@@ -743,6 +752,7 @@
             "K_DIM_HOST_TILING_IDX": "3",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "fastest":{
@@ -756,6 +766,7 @@
             "K_DIM_HOST_TILING_IDX": "3",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         },
         "sweep":{
@@ -770,6 +781,7 @@
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1"
         }
     },
@@ -917,6 +929,7 @@
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -932,6 +945,7 @@
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -948,6 +962,7 @@
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -965,6 +980,7 @@
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -980,6 +996,7 @@
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -996,6 +1013,7 @@
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -1116,7 +1134,8 @@
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1127,7 +1146,8 @@
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1139,7 +1159,8 @@
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
         }
     },
     "zircon_deq_ResReLU_quant_fp_post_conv2_x":{
@@ -1312,7 +1333,9 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
+
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1324,6 +1347,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
@@ -1337,6 +1361,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
@@ -1351,6 +1376,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
@@ -1363,6 +1389,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
@@ -1376,6 +1403,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
@@ -1750,6 +1778,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
@@ -1762,6 +1791,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
@@ -1775,6 +1805,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "0",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
@@ -1789,6 +1820,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
@@ -1801,6 +1833,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
@@ -1814,6 +1847,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
@@ -1828,6 +1862,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "2",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
@@ -1840,6 +1875,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "2",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
@@ -1853,6 +1889,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "2",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
@@ -1867,6 +1904,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "3",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "fastest":{
@@ -1879,6 +1917,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "3",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         },
         "sweep":{
@@ -1892,6 +1931,7 @@
             "NUM_K_HOST_TILING_KERNELS": "4",
             "K_DIM_HOST_TILING_IDX": "3",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1"
         }
     },
