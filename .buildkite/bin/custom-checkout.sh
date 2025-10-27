@@ -29,9 +29,8 @@ TRIGGER='
 '
 
 TRIGGER_GARNET_PUSH0='
-steps:
-  - trigger: "aha-flow"
-    label: "Garnet push"
+- trigger: "aha-flow"
+  label: "Garnet push"
 '
 
 TRIGGER_GARNET_PUSH='
@@ -166,7 +165,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
             # Wait why does this not work
             # buildkite_commit =? shoud be =? 87aada
             printf "UPLOADING\n$TRIGGER_GARNET_PUSH0\n"
-            echo "$TRIGGER_GARNET0" | buildkite-agent pipeline upload
+            echo "$TRIGGER_GARNET_PUSH0" | buildkite-agent pipeline upload
             echo "--- CUSTOM CHECKOUT END";
             set +x
             return
