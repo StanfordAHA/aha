@@ -28,6 +28,12 @@ TRIGGER='
       DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
+TRIGGER_GARNET_PUSH0='
+steps:
+  - trigger: "aha-flow"
+    label: "Garnet push"
+'
+
 TRIGGER_GARNET_PUSH='
 - trigger: "aha-flow"
   label: "PR check"
@@ -64,11 +70,6 @@ TRIGGER_GARNET_PUSH1='
       DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
-
-TRIGGER_GARNET_PUSH0='
-- trigger: "aha-flow"
-  label: "Garnet push"
-'
 
 # E.g: `echo '{"repo":{"name":"garnet"}}' | get_json repo name`  => "garnet"
 function get_json { python3 -c 'import sys,json;j=json.load(sys.stdin)
@@ -161,7 +162,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
         if [ "$repo" == "garnet" ]; then
             echo oh my goodness it is a garnet repo oh me oh moo
             function garnet { true; }
-
+            set -x
             # Wait why does this not work
             # buildkite_commit =? shoud be =? 87aada
             printf "UPLOADING\n$TRIGGER_GARNET_PUSH0\n"
