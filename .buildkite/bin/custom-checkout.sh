@@ -28,9 +28,23 @@ TRIGGER='
       DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
+# whatta we want:
+#   AHA_SUBMOD_FLOW_COMMIT=(garnet commit)
+#   BUILDKITE_PULL_REQUEST_REPO=https...garnet.gi
+# maybe that's enough
+
 TRIGGER_GARNET_PUSH0='
 - trigger: "aha-flow"
   label: "Garnet push"
+  build:
+    message: "Garnet push \"${BUILDKITE_MESSAGE}\""
+    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+    env:
+      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+      DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
 TRIGGER_GARNET_PUSH='
@@ -162,6 +176,16 @@ if [ "$1" == "--aha-submod-flow" ]; then
             echo oh my goodness it is a garnet repo oh me oh moo
             function garnet { true; }
             set -x
+# whatta we want:
+#   AHA_SUBMOD_FLOW_COMMIT=(garnet commit)
+#   BUILDKITE_PULL_REQUEST_REPO=https...garnet.gi
+# maybe that's enough
+#   "repository": {
+#     "clone_url": "https://github.com/StanfordAHA/garnet.git",
+#   "commits": [
+#       "id": "685d40053d17529983253cd59f0f9ec166df250f",
+            export BUILDKITE_PULL_REQUEST_REPO=$(echo "$webhook" | get_json repository clone_url)
+            export AHA_SUBMOD_FLOW_COMMIT=$(echo "$webhook" | get_json head_commit id)
             # Wait why does this not work
             # buildkite_commit =? shoud be =? 87aada
             printf "UPLOADING\n$TRIGGER_GARNET_PUSH0\n"
