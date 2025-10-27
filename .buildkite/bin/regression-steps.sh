@@ -149,6 +149,7 @@ elif [ "$next" == "gold" ]; then
     - label: "Zircon Gold"
       key: "zircon_gold"
       command: |
+        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
             msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
             echo "--- $$msg"
@@ -156,7 +157,6 @@ elif [ "$next" == "gold" ]; then
             exit 13
         else echo "--- $$msg Zircon gold check PASSED"
         fi
-        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
