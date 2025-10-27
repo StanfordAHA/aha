@@ -707,18 +707,14 @@ class Tests:
         elif testname == "mu":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            sparse_tests = [
-                # "vec_elemmul",
-            ]
+            sparse_tests = []
             glb_tests = []
             glb_tests_fp = []
             glb_tests_RV = []
-            glb_tests_fp_RV = [
-                # "apps/zircon_quant_fp_RV"
-            ]
+            glb_tests_fp_RV = []
             resnet_tests = []
             voyager_cgra_tests_fp = [
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB", # PASS
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
@@ -726,8 +722,8 @@ class Tests:
 
             ]
             behavioral_mu_tests = [
-                # "apps/pointwise_mu_io_RV_E64",
-                # "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
             ]
             external_mu_tests = [
             ]
@@ -756,19 +752,19 @@ class Tests:
                 "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
 
                 # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
-                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB", # PASS
-                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB", # PASS
+                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
 
                 # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
-                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB"
+                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
 
                 # Conv4_x
                 "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
                 "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
                 "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
 
-                # Conv5_1 strided Conv (NOTE: Has some mismatches according to histogram)
-                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB"
+                # Conv5_1 strided Conv
+                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
 
                 # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND)
                 "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
