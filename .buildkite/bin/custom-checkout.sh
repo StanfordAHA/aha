@@ -28,10 +28,28 @@ TRIGGER='
       DEV_BRANCH:                  "${DEV_BRANCH}"
 '
 
+TRIGGER_GARNET_PUSH='
+- trigger: "aha-flow"
+  label: "PR check"
+  build:
+    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
+    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+    env:
+      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+      DEV_BRANCH:                  "${DEV_BRANCH}"
+'
+
+
+
+
+
 # BUILDKITE_PULL_REQUEST:      "232"
 # BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
 
-TRIGGER_GARNET_PUSH='
+TRIGGER_GARNET_PUSH1='
 - trigger: "aha-flow"
   label: "Garnet push"
   build:
@@ -111,6 +129,7 @@ fi
 if [ "$1" == "--aha-submod-flow" ]; then
     echo "--- Found arg '$1'"
     #BOOKMARK
+    echo "+++ Found arg '$1'"
     # Submods only run regressions for pull requests
     # Except for Garnet, runs regressions on every git push
 
@@ -130,14 +149,14 @@ if [ "$1" == "--aha-submod-flow" ]; then
             echo oh my goodness it is a garnet repo oh me oh moo
             function garnet { true; }
 
-#             echo export RSTEPS=0
-#             export RSTEPS=0
+            # Wait why does this not work
+            # buildkite_commit =? shoud be =? 87aada
+            echo "$TRIGGER_GARNET0" | buildkite-agent pipeline upload
+            echo "--- CUSTOM CHECKOUT END";
+            set +x
+            return
 
-            TRIGGER="$TRIGGER      RSTEPS: 0"
 
-#             echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
-#             echo "--- CUSTOM CHECKOUT END - garnet-push edition";
-#             return
         fi
     fi
 
