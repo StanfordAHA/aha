@@ -438,6 +438,11 @@ def test_dense_app(
     ]
     skip_cgra_pnr = skip_cgra_map
 
+    # These tests skip output regs for easier PnR
+    skip_output_pipeline_regs = test in [
+        "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+    ]
+
     #------------------------------------------------------------------------
     if 'external_mu_tests' in tgroup:
         mu_test, test = parse_mu_cgra_test(test)
@@ -596,6 +601,11 @@ def test_dense_app(
         print(f"--- {testname} - SKIP CGRA PNR", flush=True)
         info.append([f"{testname} - SKIP CGRA PNR", 0])
         buildkite_args.append("--skip-cgra-pnr")
+
+    if skip_output_pipeline_regs:
+        print(f"--- {testname} - SKIP OUTPUT PIPELINE REGS", flush=True)
+        info.append([f"--- {testname} - SKIP OUTPUT PIPELINE REGS", 0])
+        buildkite_args.append("--no-output-pipelining")
 
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start

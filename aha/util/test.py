@@ -317,7 +317,7 @@ def dispatch(args, extra_args=None):
                         gold_output_path = f"{voyager_app_dir}/compare/gold_scale.txt"
                     else:
                         raise ValueError(f"Unexpected voyager gold output file name: {output_file_name}")
-                    
+
                     assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
 
                     with open(gold_output_path, "r") as gold_file:
