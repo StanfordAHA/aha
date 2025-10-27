@@ -64,7 +64,9 @@ if [ "$1" == '--pre-command' ]; then
 
     echo "--- Pass DO_PR info to docker"
     echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
-    if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
+
+    # if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
+    if ! [ "BUILDKITE_PULL_REQUEST" == "false" ]; then
         echo ".. SET DO_PR"; mkdir -p temp; touch temp/DO_PR
         if [ "$PR_REPO_TAIL" == "garnet" ]; then
             # Delete .TEST as a sign to skip tests
