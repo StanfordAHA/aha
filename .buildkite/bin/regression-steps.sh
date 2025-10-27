@@ -149,7 +149,6 @@ elif [ "$next" == "gold" ]; then
     - label: "Zircon Gold"
       key: "zircon_gold"
       command: |
-        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
             msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
             echo "--- $$msg"
@@ -160,7 +159,9 @@ elif [ "$next" == "gold" ]; then
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
+            pre-command: |
+              .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
+              \$BUILD_DOCKER cd . ; \$REGRESS_METAHOOKS --pre-command
     EOF
 )
 # setstate launch-state READY  # FIXME do we use this??
