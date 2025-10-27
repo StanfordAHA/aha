@@ -75,6 +75,13 @@ function get_json { python3 -c 'import sys,json;j=json.load(sys.stdin)
 for f in sys.argv[1:]: j=j[f];
 print(j)' $*; }
 
+# Test rig
+function TESTRIG { false; }
+[ "$1" == "--testrig" ] && shift && function TESTRIG { true; }
+TESTRIG && set -x
+
+if ! TESTRIG; then
+
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
 cd /  # Start in a safe place!
@@ -113,6 +120,12 @@ if ! git checkout -q $DEV_BRANCH; then
     export DEV_BRANCH=master
     echo "Cannot checkout dev branch '$DEV_BRANCH', continuing w master..."
 fi
+fi # TESTRIG
+
+
+
+
+
 
 SKIP_SUBMOD_INIT=
 save_reqtype=
@@ -151,6 +164,7 @@ if [ "$1" == "--aha-submod-flow" ]; then
 
             # Wait why does this not work
             # buildkite_commit =? shoud be =? 87aada
+            printf "UPLOADING\n$TRIGGER_GARNET_PUSH0\n"
             echo "$TRIGGER_GARNET0" | buildkite-agent pipeline upload
             echo "--- CUSTOM CHECKOUT END";
             set +x
@@ -204,7 +218,7 @@ EOF
     # Also see ~steveri/bin/status-update on kiwi
 
     echo "+++ Notify github of pending status";
-    ~/bin/status-update --force pending;
+    TESTRIG || ~/bin/status-update --force pending;
 
     # Restore BUILDKITE_COMMIT
     export BUILDKITE_COMMIT=$save_commit;
