@@ -2,8 +2,8 @@
 # This is designed to be called from pipeline.yml
 set -x
 # Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
-function buildkite-agent { [ "$2" == "upload" ] && cat; }
-function bkmsg { echo "$1"; }
+# function buildkite-agent { [ "$2" == "upload" ] && cat; }
+# function bkmsg { echo "$1"; }
 
 # Run first reg step on command line, then recurse on remaining args.
 # E.g. "$0 build gold 0 1 2" launches the build step(s) and then calls "$0 gold 0 1 2"
