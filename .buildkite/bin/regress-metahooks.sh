@@ -57,7 +57,7 @@ if [ "$1" == '--pre-command' ]; then
     # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
 
     # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
-    # also sets "PR_TAIL_REPO" to requesting submod e.g. "garnet"
+    # also sets "PR_REPO_TAIL" to requesting submod e.g. "garnet"
     echo cat /var/lib/buildkite-agent/builds/DELETEME/env-"$BUILDKITE_BUILD_NUMBER"
     cat /var/lib/buildkite-agent/builds/DELETEME/env-"$BUILDKITE_BUILD_NUMBER"
     source /var/lib/buildkite-agent/builds/DELETEME/env-"$BUILDKITE_BUILD_NUMBER"
@@ -87,12 +87,29 @@ elif [ "$1" == '--exec' ]; then
 
     # This is designed to be invoked from pipeline.yml, which should provide
     # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+#bookmark
+    # Create CONTAINER using IMAGE 
 
     docker kill "$CONTAINER" || echo okay
     docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
     docker run -id --name "$CONTAINER" --rm -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
     docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
     docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
+    
+    # Update IMAGE with submod info if necessary
+
+    # This is transformative maybe
+    function IS_SUBMOD { [ "$IMAGE" == "stanfordaha/garnet:latest" ]; }
+    if IS_SUBMOD; then
+        # submod, e.g. "https://github.com/StanfordAHA/garnet.git" => "garnet"
+        submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
+        cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
+        echo "DOING docker exec '$cmd'"
+        echo docker exec $CONTAINER /bin/bash -c "$cmd"
+    fi
+
+    # Execute the requested command
+
     docker exec $CONTAINER /bin/bash -c "$2" || exit 13
     docker kill $CONTAINER || echo okay  # Cleanup on aisle FOO
     echo "--- END regress-metahooks.sh --exec '$2'"
@@ -119,6 +136,22 @@ elif [ "$1" == '--commands' ]; then
            -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
     docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
     docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
+
+    # Update IMAGE with submod info if necessary
+
+    # This is transformative maybe
+    # FIXME note redundancy vs. --exec, above
+    function IS_SUBMOD { [ "$IMAGE" == "stanfordaha/garnet:latest" ]; }
+    if IS_SUBMOD; then
+        # submod, e.g. "https://github.com/StanfordAHA/garnet.git" => "garnet"
+        submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
+        cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
+        echo "DOING docker exec '$cmd'"
+        echo docker exec $CONTAINER /bin/bash -c "$cmd"
+    fi
+
+
+
     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
 
     if ! test -e /buildkite/.TEST; then
