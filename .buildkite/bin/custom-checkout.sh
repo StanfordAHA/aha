@@ -13,7 +13,11 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
-# This replaces ~/bin/pr_trigger.yml, which can now be deleted from khaki and r8cad
+# TRIGGER* replaces ~/bin/pr_trigger.yml, which can now be deleted from khaki and r8cad
+# Example values:
+#   BUILDKITE_PULL_REQUEST:      "232" (for pr) or "false" (for not-pr pushes)
+#   BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
+
 TRIGGER='
 - trigger: "aha-flow"
   label: "PR check"
@@ -28,13 +32,7 @@ TRIGGER='
       DEV_BRANCH:                  "${DEV_BRANCH}"
       IMAGE:                       "stanfordaha/garnet:latest"
 '
-
-# whatta we want:
-#   AHA_SUBMOD_FLOW_COMMIT=(garnet commit)
-#   BUILDKITE_PULL_REQUEST_REPO=https...garnet.gi
-# maybe that's enough
-
-TRIGGER_GARNET_PUSH0='
+TRIGGER_GARNET_PUSH='
 - trigger: "aha-flow"
   label: "Garnet push"
   build:
@@ -48,43 +46,6 @@ TRIGGER_GARNET_PUSH0='
       DEV_BRANCH:                  "${DEV_BRANCH}"
       IMAGE:                       "stanfordaha/garnet:latest"
 '
-
-TRIGGER_GARNET_PUSH='
-- trigger: "aha-flow"
-  label: "PR check"
-  build:
-    message: "PR from ${BPPR_TAIL} \"${BUILDKITE_MESSAGE}\""
-    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
-    env:
-      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
-      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
-      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
-      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
-      DEV_BRANCH:                  "${DEV_BRANCH}"
-'
-
-
-
-
-
-# BUILDKITE_PULL_REQUEST:      "232"
-# BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
-
-TRIGGER_GARNET_PUSH1='
-- trigger: "aha-flow"
-  label: "Garnet push"
-  build:
-    message: "Push from Garnet \"${BUILDKITE_MESSAGE}\""
-    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
-    env:
-      RSTEPS:                      "0"
-      BUILDKITE_PULL_REQUEST:      "0"
-      BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
-      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
-      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
-      DEV_BRANCH:                  "${DEV_BRANCH}"
-'
-
 
 # E.g: `echo '{"repo":{"name":"garnet"}}' | get_json repo name`  => "garnet"
 function get_json { python3 -c 'import sys,json;j=json.load(sys.stdin)
@@ -177,8 +138,8 @@ if [ "$1" == "--aha-submod-flow" ]; then
             export AHA_SUBMOD_FLOW_COMMIT=$(echo "$webhook" | get_json head_commit id)
             # Wait why does this not work
             # buildkite_commit =? shoud be =? 87aada
-            printf "UPLOADING\n$TRIGGER_GARNET_PUSH0\n"
-            echo "$TRIGGER_GARNET_PUSH0" | buildkite-agent pipeline upload
+            printf "UPLOADING\n$TRIGGER_GARNET_PUSH\n"
+            echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
             echo "--- CUSTOM CHECKOUT END";
             set +x
             return
