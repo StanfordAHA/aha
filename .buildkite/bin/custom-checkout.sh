@@ -167,25 +167,12 @@ if [ "$1" == "--aha-submod-flow" ]; then
         echo not a pr. but is it garnet
 
         webhook="$(buildkite-agent meta-data get buildkite:webhook)"
-        echo got webhook "$webhook"
-#         repo="$(echo "$webhook" | jq -r '.repository.name')"
-#         echo got repo "$repo"
-#         if [ "$repo" == "garnet" ]; then
-
-        # if echo "$webhook" | grep '"name":"garnet"' > /dev/null; then
+        # echo got webhook "$webhook"
         repo=$(echo "$webhook" | get_json repository name)
         if [ "$repo" == "garnet" ]; then
             echo oh my goodness it is a garnet repo oh me oh moo
             function garnet { true; }
-            set -x
-# whatta we want:
-#   AHA_SUBMOD_FLOW_COMMIT=(garnet commit)
-#   BUILDKITE_PULL_REQUEST_REPO=https...garnet.gi
-# maybe that's enough
-#   "repository": {
-#     "clone_url": "https://github.com/StanfordAHA/garnet.git",
-#   "commits": [
-#       "id": "685d40053d17529983253cd59f0f9ec166df250f",
+            # set -x
             export BUILDKITE_PULL_REQUEST_REPO=$(echo "$webhook" | get_json repository clone_url)
             export AHA_SUBMOD_FLOW_COMMIT=$(echo "$webhook" | get_json head_commit id)
             # Wait why does this not work
@@ -196,7 +183,9 @@ if [ "$1" == "--aha-submod-flow" ]; then
             set +x
             return
 
-
+        else
+            echo "it's a push but it's not garnet. we don't do anything for that. good-bye!"
+            exit 0
         fi
     fi
 
