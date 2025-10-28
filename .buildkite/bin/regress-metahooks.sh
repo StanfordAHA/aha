@@ -105,7 +105,7 @@ elif [ "$1" == '--exec' ]; then
         submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
         cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
         echo "DOING docker exec '$cmd'"
-        echo docker exec $CONTAINER /bin/bash -c "$cmd"
+        docker exec $CONTAINER /bin/bash -c "$cmd"
     fi
 
     # Execute the requested command
@@ -147,7 +147,7 @@ elif [ "$1" == '--commands' ]; then
         submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
         cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
         echo "DOING docker exec '$cmd'"
-        echo docker exec $CONTAINER /bin/bash -c "$cmd"
+        docker exec $CONTAINER /bin/bash -c "$cmd"
     fi
 
 
