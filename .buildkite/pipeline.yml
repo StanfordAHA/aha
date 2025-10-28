@@ -25,7 +25,7 @@ env:
   COMMON: /var/lib/buildkite-agent/builds/DELETEME-$BUILDKITE_BUILD_NUMBER
 
   REGRESS_METAHOOKS: $$COMMON/regress-metahooks.sh
-  IMAGE: garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER
+  IMAGE: ${IMAGE:-garnet:aha-flow-build-$BUILDKITE_BUILD_NUMBER}
   TAG: aha-flow-build-$BUILDKITE_BUILD_NUMBER
 
 steps:

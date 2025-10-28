@@ -259,11 +259,12 @@ exit
 # 
 #         echo "# We have the lock; look for $IMAGE"
 # 
-#         echo "# I see REQUEST_TYPE='$REQUEST_TYPE'"
-#         if [ "$REQUEST_$TYPE" == "SUBMOD_PR" ]; then
+#         echo "# I see IMAGE='$IMAGE'"
+#         if [ "$IMAGE" == "stanfordaha/garnet:latest" ]; then
 #             echo "See if we get away with this one..."
-#             echo "--- submod push or pull; use garnet:latest image why not"
-#             export IMAGE="stanfordaha/garnet:latest"
+#             # echo "--- submod push or pull; use garnet:latest image why not"
+#             # export IMAGE="stanfordaha/garnet:latest"
+#             echo docker pull $IMAGE
 #             docker pull $IMAGE
 # 
 #         elif ! [ `docker images -q $IMAGE` ]; then

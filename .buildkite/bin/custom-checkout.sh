@@ -26,6 +26,7 @@ TRIGGER='
       BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
       AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
       DEV_BRANCH:                  "${DEV_BRANCH}"
+      IMAGE:                       "stanfordaha/garnet:latest"
 '
 
 # whatta we want:
@@ -45,6 +46,7 @@ TRIGGER_GARNET_PUSH0='
       BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
       AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
       DEV_BRANCH:                  "${DEV_BRANCH}"
+      IMAGE:                       "stanfordaha/garnet:latest"
 '
 
 TRIGGER_GARNET_PUSH='
