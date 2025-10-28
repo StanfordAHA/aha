@@ -16,7 +16,7 @@ if [ "$1" == '--pre-command' ]; then
 
     # In case of e.g. manual retry, original docker image may have been deleted already.
     # This new code below gives us the opportunity to revive the dead image when needed.
-    if ! docker images | grep "$TAG"; then
+    if ! [ `docker images -q $IMAGE` ]; then
         echo "OH NO cannot find docker image $IMAGE...I will rebuild it for you"
 
         # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
@@ -42,7 +42,7 @@ if [ "$1" == '--pre-command' ]; then
         source "$bin/custom-checkout.sh"
         test -e .git/modules/sam/HEAD || echo OH NO HEAD not found
 
-        echo "--- (Re)creating garnet Image"
+        echo "--- (Re)creating garnet image $IMAGE"
         ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE"
     fi
 
