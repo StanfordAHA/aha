@@ -2,8 +2,8 @@
 # This is designed to be called from pipeline.yml
 set -x
 # Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
-# function buildkite-agent { [ "$2" == "upload" ] && cat; }
-# function bkmsg { echo "$1"; }
+function buildkite-agent { [ "$2" == "upload" ] && cat; }
+function bkmsg { echo "$1"; }
 
 # Run first reg step on command line, then recurse on remaining args.
 # E.g. "$0 build gold 0 1 2" launches the build step(s) and then calls "$0 gold 0 1 2"
@@ -258,14 +258,14 @@ exit
 #         done
 # 
 #         echo "# We have the lock; look for $IMAGE"
-#
+# 
 #         echo "# I see REQUEST_TYPE='$REQUEST_TYPE'"
-#         if [ "REQUEST_$TYPE" == "SUBMOD_PR" ]; then
+#         if [ "$REQUEST_$TYPE" == "SUBMOD_PR" ]; then
 #             echo "See if we get away with this one..."
 #             echo "--- submod push or pull; use garnet:latest image why not"
 #             export IMAGE="stanfordaha/garnet:latest"
 #             docker pull $IMAGE
-#
+# 
 #         elif ! [ `docker images -q $IMAGE` ]; then
 #             echo "+++ CANNOT FIND DOCKER IMAGE '$IMAGE'"
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
