@@ -264,10 +264,8 @@ exit
 # 
 #         echo "# I see IMAGE='$IMAGE'"
 #         if [ "$IMAGE" == "stanfordaha/garnet:latest" ]; then
-#             echo "See if we get away with this one..."
-#             # echo "--- submod push or pull; use garnet:latest image why not"
-#             # export IMAGE="stanfordaha/garnet:latest"
-#             echo docker pull $IMAGE
+#             echo "submod push or pull can use garnet:latest instead of rebuilding docker image from scratch"
+#             echo "docker pull $IMAGE"
 #             docker pull $IMAGE
 # 
 #         elif ! [ `docker images -q $IMAGE` ]; then
