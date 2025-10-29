@@ -82,6 +82,8 @@ if [ "$next" == "--cleanup" ]; then
 #------------------------------------------------------------------------------
 elif [ "$next" == "build" ]; then
 
+    echo DO NOT USE BUILD STEP; exit 13  # TODO delete this block of code
+
     # FIXME this launches two build steps at the same time; the
     # possibility exists that both call regression-steps.sh at same time.
     # That would be trouble for our new chaining approach, yes?
@@ -149,6 +151,7 @@ elif [ "$next" == "gold" ]; then
     - label: "Zircon Gold"
       key: "zircon_gold"
       command: |
+        export REGRESSION_STEP=-zgold
         if ! $REGRESS_METAHOOKS --exec '/aha/.buildkite/bin/rtl-goldcheck.sh zircon'; then
             msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
             echo "--- $$msg"
