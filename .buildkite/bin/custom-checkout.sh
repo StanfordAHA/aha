@@ -52,11 +52,11 @@ function get_json { python3 -c 'import sys,json;j=json.load(sys.stdin)
 for f in sys.argv[1:]: j=j[f];
 print(j)' $*; }
 
-# Test rig
+# Test rig - turn this ON and run e.g. ~/tmpdir/cc-testrig.sh to test w/o docker/CI
+# which does e.g. 'source custom-checkout.sh --testrig --aha-submod-flow'
 function TESTRIG { false; }
 [ "$1" == "--testrig" ] && shift && function TESTRIG { true; }
 TESTRIG && set -x
-
 if ! TESTRIG; then
 
 echo "+++ BEGIN custom-checkout.sh"
@@ -97,12 +97,7 @@ if ! git checkout -q $DEV_BRANCH; then
     export DEV_BRANCH=master
     echo "Cannot checkout dev branch '$DEV_BRANCH', continuing w master..."
 fi
-fi # TESTRIG
-
-
-
-
-
+fi # if TESTRIG
 
 SKIP_SUBMOD_INIT=
 save_reqtype=
@@ -118,22 +113,17 @@ fi
 # E.g. aha-flow online pipeline steps invokes '$0 --aha-flow'
 if [ "$1" == "--aha-submod-flow" ]; then
     echo "--- Found arg '$1'"
-    #BOOKMARK
-    echo "+++ Found arg '$1'"
-    # Submods only run regressions for pull requests
-    # Except for Garnet, runs regressions on every git push
+
+    # Submods (e.g. lake) run regressions only on pull-request, not for submod push
+    # Except for garnet submod, runs regressions on every git push or pull
 
     function garnet { false; } 
     if [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
-        echo not a pr. but is it garnet
-
-        webhook="$(buildkite-agent meta-data get buildkite:webhook)"
-        # echo got webhook "$webhook"
-        repo=$(echo "$webhook" | get_json repository name)
+        echo "not a pr. but is it garnet"
         if [ "$repo" == "garnet" ]; then
-            echo oh my goodness it is a garnet repo oh me oh moo
-            function garnet { true; }
-            # set -x
+            echo "Yes it is a garnet push"
+            webhook="$(buildkite-agent meta-data get buildkite:webhook)"
+            repo=$(echo "$webhook" | get_json repository name)
             export BUILDKITE_PULL_REQUEST_REPO=$(echo "$webhook" | get_json repository clone_url)
             export AHA_SUBMOD_FLOW_COMMIT=$(echo "$webhook" | get_json head_commit id)
             # Wait why does this not work
@@ -143,7 +133,6 @@ if [ "$1" == "--aha-submod-flow" ]; then
             echo "--- CUSTOM CHECKOUT END";
             set +x
             return
-
         else
             echo "it's a push but it's not garnet. we don't do anything for that. good-bye!"
             exit 0
@@ -151,13 +140,6 @@ if [ "$1" == "--aha-submod-flow" ]; then
     fi
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
-
-  if garnet; then
-      set -x; echo 'foo faw here i am garnetty'
-      export BPPR_TAIL=garnet
-      submod_commit=$(echo "$webhook" | get_json head_commit id)
-  else
-
     export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
     url=$BPPR_TAIL
     BPPR_TAIL=`echo "$BPPR_TAIL" | sed "s,http.*github.com/.*/,,"` || echo fail;
@@ -176,7 +158,6 @@ if [ "$1" == "--aha-submod-flow" ]; then
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
     /bin/rm $temp
-  fi
     echo "found submod commit $submod_commit";
 
     # Debuggin
@@ -211,7 +192,6 @@ EOF
 
     echo "$TRIGGER" | buildkite-agent pipeline upload
     echo "--- CUSTOM CHECKOUT END";
-      set +x
     return
 fi
 
