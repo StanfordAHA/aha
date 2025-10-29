@@ -117,6 +117,7 @@ class Tests:
                 "tensor3_ttv",
             ]
             voyager_cgra_tests_fp = [
+                # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
@@ -263,9 +264,7 @@ class Tests:
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
                 "apps/relu_layer_multiout_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64_MB",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/fully_connected_layer_fp_RV_E64_MB",
                 "apps/scalar_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
                 "apps/layer_norm_pass2_fp_RV",
@@ -281,6 +280,14 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
+            ]
+            voyager_cgra_tests_fp = [
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
 
         elif testname == "pr_aha9":
@@ -390,7 +397,6 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64_MB",
                 "apps/mat_vec_mul_fp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "tests/fp_conv_7_7_RV",
@@ -439,11 +445,15 @@ class Tests:
             resnet_tests = []
             resnet_tests_fp = []
             voyager_cgra_tests_fp = [
+                # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
@@ -624,9 +634,7 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
-                "apps/avgpool_layer_fp_RV_E64_MB",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/fully_connected_layer_fp_RV_E64_MB",
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
@@ -711,11 +719,19 @@ class Tests:
                 # "conv2_x_fp", # not yet supported by zircon
             ]
             voyager_cgra_tests_fp = [
+                # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
@@ -820,11 +836,19 @@ class Tests:
             glb_tests_fp_RV = []
             resnet_tests = []
             voyager_cgra_tests_fp = [
+                # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
