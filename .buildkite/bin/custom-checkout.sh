@@ -120,10 +120,10 @@ if [ "$1" == "--aha-submod-flow" ]; then
     function garnet { false; } 
     if [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
         echo "not a pr. but is it garnet"
+        webhook="$(buildkite-agent meta-data get buildkite:webhook)"
+        repo=$(echo "$webhook" | get_json repository name)
         if [ "$repo" == "garnet" ]; then
             echo "Yes it is a garnet push"
-            webhook="$(buildkite-agent meta-data get buildkite:webhook)"
-            repo=$(echo "$webhook" | get_json repository name)
             export BUILDKITE_PULL_REQUEST_REPO=$(echo "$webhook" | get_json repository clone_url)
             export AHA_SUBMOD_FLOW_COMMIT=$(echo "$webhook" | get_json head_commit id)
             # Wait why does this not work
