@@ -3,8 +3,31 @@
 # This is where we offload meta-hook commands for pipeline.yml
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
+# pipeline.yml is responsible for providing necessary env vars
+# including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+
 CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
 echo "--- using CONTAINER='${CONTAINER}'"
+
+function container_setup {
+    # Create a docker container based on IMAGE, update aha submod if needed
+    docker kill "$CONTAINER" || echo okay
+    docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
+    docker run -id --name "$CONTAINER" --rm \
+           -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" \
+           -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
+    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
+    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
+
+    function IS_SUBMOD { [ "$IMAGE" == "stanfordaha/garnet:latest" ]; }
+    if IS_SUBMOD; then
+        # Update /aha/<submod> in image to match submod commit
+        submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
+        cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
+        echo "DOING docker exec '$cmd'"
+        docker exec $CONTAINER /bin/bash -c "$cmd"
+    fi
+}
 
 if [ "$1" == '--pre-command' ]; then
 
@@ -65,19 +88,11 @@ if [ "$1" == '--pre-command' ]; then
     echo "--- Pass DO_PR info to docker"
     echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
 
-    # if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-    echo "I see BUILDKITE_PULL_REQUEST='$BUILDKITE_PULL_REQUEST'"
-    # if ! [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
-    if false; then
-        echo ".. SET DO_PR"; mkdir -p temp; touch temp/DO_PR
-        if [ "$PR_REPO_TAIL" == "garnet" ]; then
-            # Delete .TEST as a sign to skip tests
-            echo "+++ Garnet PR detected, so skip redundant regressions"
-            rm -rf temp/.TEST
-        fi
-    else
-        echo ".. UNSET DO_PR"; /bin/rm -rf temp/DO_PR
-    fi
+    # We no longer use DO_PR to select between configs "pr" and "pr_aha1-9"
+    # b/c submods now use pr_aha1-9 just like everyone else.
+    # We still have to make sure DO_PR is turned OFF though maybe
+    # (Also: we no longer regressions for garnet pull-requests)
+    echo ".. UNSET DO_PR"; /bin/rm -rf temp/DO_PR
     test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
     echo "--- OIT PRE COMMAND HOOK END"
@@ -86,72 +101,16 @@ elif [ "$1" == '--exec' ]; then
 
     echo "--- BEGIN regress-metahooks.sh --exec '$2'"
 
-    # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
-#bookmark
-    # Create CONTAINER using IMAGE 
-
-    docker kill "$CONTAINER" || echo okay
-    docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
-    docker run -id --name "$CONTAINER" --rm -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
-    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
-    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
-    
-    # Update IMAGE with submod info if necessary
-
-    # This is transformative maybe
-    function IS_SUBMOD { [ "$IMAGE" == "stanfordaha/garnet:latest" ]; }
-    if IS_SUBMOD; then
-        # submod, e.g. "https://github.com/StanfordAHA/garnet.git" => "garnet"
-        submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
-        cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
-        echo "DOING docker exec '$cmd'"
-        docker exec $CONTAINER /bin/bash -c "$cmd"
-    fi
-
-    # Execute the requested command
-
+    # Set up a container and execute the requested command
+    container_setup
     docker exec $CONTAINER /bin/bash -c "$2" || exit 13
     docker kill $CONTAINER || echo okay  # Cleanup on aisle FOO
     echo "--- END regress-metahooks.sh --exec '$2'"
 
-#     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
-#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-#         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-#         echo "++ $msg"
-#         echo "$msg" | buildkite-agent annotate --style "error" --context onyx
-#         exit 13
-# EOF
-
 elif [ "$1" == '--commands' ]; then
 
     echo "--- BEGIN regress-metahooks.sh --commands"
-
-    # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
-
-    docker kill "$CONTAINER" || echo okay
-    docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
-    docker run -id --name "$CONTAINER" --rm \
-           -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" \
-           -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
-    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
-    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
-
-    # Update IMAGE with submod info if necessary
-
-    # This is transformative maybe
-    # FIXME note redundancy vs. --exec, above
-    function IS_SUBMOD { [ "$IMAGE" == "stanfordaha/garnet:latest" ]; }
-    if IS_SUBMOD; then
-        # submod, e.g. "https://github.com/StanfordAHA/garnet.git" => "garnet"
-        submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
-        cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
-        echo "DOING docker exec '$cmd'"
-        docker exec $CONTAINER /bin/bash -c "$cmd"
-    fi
-
-
+    container_setup
 
     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
 
@@ -182,18 +141,8 @@ elif [ "$1" == '--commands' ]; then
 
     DO_AR=True
 
-#     # Prepare to run regression tests according to whether it's a submod PR
-#     if test -e /buildkite/DO_PR; then
-#       echo "Trigger came from submod repo pull request; use pr config"
-#       export CONFIG="pr --include-no-zircon-tests"
-# 
-#       # Must restrict to a single slice else they will ALL do the full regression(!)
-#       if [ "$REGSTEP" != 1 ]; then
-#         echo "Full regressions only run as 'Regress 1'"
-#         DO_AR=False
-#       fi
-# 
-#     el
+    # We no longer use DO_PR mechanism, see DO_PR comment above.
+
     if [ "$CONFIG" == "pr_aha" ]; then
       # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
       # Note REGSTEP 0 uses config "fast" instead of e.g. "regress0"
