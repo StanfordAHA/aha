@@ -377,29 +377,38 @@ class Tests:
     # List of tests that can run with E64 mode
     # ------------------------------------------------------------------------
     E64_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "conv5_x",
-        "apps/avgpool_layer_fp",
-        "apps/pointwise_custom_packing",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "conv5_x",
+            "apps/avgpool_layer_fp",
+            "apps/mat_vec_mul_fp",
+            "apps/maxpooling_dense_rv_fp",
+            "apps/fully_connected_layer_fp",
+            "apps/pointwise_custom_packing",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_test_fp",
+            "apps/get_apply_e8m0_scale_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp",
+            "apps/zircon_dequantize_relu_fp"
     ]
 
     # List of tests that can run with E64 multi_bank mode,
     E64_MB_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_test_fp",
+            "apps/get_apply_e8m0_scale_fp",
+            "apps/avgpool_layer_fp",
+            "apps/mat_vec_mul_fp",
+            "apps/maxpooling_dense_rv_fp",
+            "apps/fully_connected_layer_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp",
+            "apps/zircon_dequantize_relu_fp"
     ]
 
     # -----------------------------------------------------------------------------------
