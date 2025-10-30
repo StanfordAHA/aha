@@ -372,6 +372,12 @@ def parse_mu_cgra_test(testname):
     assert "-" in mu_test, f"ERROR: mu_test portion of {testname} does not contain '-'. Please check the test name format. Format should be 'model-layer', e.g., resnet18-submodule_2."
     return mu_test, cgra_test
 
+# Voyager CGRA test parsing
+def parse_voyager_cgra_test(testname):
+    assert "::" in testname, f"ERROR: Voyager CGRA test {testname} does not contain '::'. Please check the test name format. Format should be 'voyager_testname::cgra_testname'."
+    voyager_cgra_test, cgra_test = testname.split("::")
+    return voyager_cgra_test, cgra_test
+
 # Parametrized test parsing (for running generic functions on various NN layers with different shapes)
 def parse_layer_parametrized_test(testname, keyword, layer_in=""):
     layer = layer_in
@@ -429,11 +435,21 @@ def test_dense_app(
     # See tests.py for the names of the actual tests.
     skip_cgra_map = skip_cgra_pnr = test in Tests.skip_cgra_map
 
+    # These tests skip output regs for easier PnR
+    skip_output_pipeline_regs = test in [
+        "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+    ]
+
     #------------------------------------------------------------------------
     if 'external_mu_tests' in tgroup:
         mu_test, test = parse_mu_cgra_test(test)
     else:
         mu_test = ""
+
+    if 'voyager_cgra_tests_fp' in tgroup:
+        voyager_cgra_test, test = parse_voyager_cgra_test(test)
+    else:
+        voyager_cgra_test = ""
 
     test, dense_ready_valid = parse_RV_mode(test)
     test, E64_mode_on = parse_E64_mode(test)
@@ -453,6 +469,15 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_dequantize_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_dequant_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_deq_ResReLU_quant_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_deq_q_relu_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_deq_ResReLU_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_res_deq_ReLU_quant_fp", layer_in=layer)
+    elif tgroup == 'voyager_cgra_tests_fp':
+        test, layer = parse_layer_parametrized_test(test, "zircon_quant_fp")
+        test, layer = parse_layer_parametrized_test(test, "avgpool_layer_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "fully_connected_layer_fp", layer_in=layer)
 
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
@@ -507,9 +532,9 @@ def test_dense_app(
     if skip_cgra_map:
         print(f"--- {testname} - SKIP CGRA MAP", flush=True)
         info.append([f"--- {testname} - SKIP CGRA MAP", 0])
-        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--skip-cgra-map"] + layer_array, env=env_vars)
+        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test, "--skip-cgra-map"] + layer_array, env=env_vars)
     else:
-        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test] + layer_array, env=env_vars)
+        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
     time_compile = time.time() - start
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
@@ -588,6 +613,11 @@ def test_dense_app(
         info.append([f"--- {testname} - SKIP CGRA PNR", 0])
         buildkite_args.append("--skip-cgra-pnr")
 
+    if skip_output_pipeline_regs:
+        print(f"--- {testname} - SKIP OUTPUT PIPELINE REGS", flush=True)
+        info.append([f"--- {testname} - SKIP OUTPUT PIPELINE REGS", 0])
+        buildkite_args.append("--no-output-pipelining")
+
     buildkite_call(buildkite_args, env=env_vars)
     time_map = time.time() - start
 
@@ -602,9 +632,9 @@ def test_dense_app(
     if mu_test == "" or mu_test is None:
         mu_test = "inactive"
     if use_fp:
-        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test] + layer_array, env=env_vars)
+        buildkite_call(["aha", "test", test, "--dense-fp", "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
     else:
-        buildkite_call(["aha", "test", test, "--mu-test", mu_test] + layer_array, env=env_vars)
+        buildkite_call(["aha", "test", test, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
     time_test = time.time() - start
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
@@ -778,6 +808,7 @@ def dispatch(args, extra_args=None):
     glb_tests_fp_RV = imported_tests.glb_tests_fp_RV
     resnet_tests = imported_tests.resnet_tests
     resnet_tests_fp = imported_tests.resnet_tests_fp
+    voyager_cgra_tests_fp = imported_tests.voyager_cgra_tests_fp
     behavioral_mu_tests = imported_tests.behavioral_mu_tests
     external_mu_tests = imported_tests.external_mu_tests
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
@@ -825,6 +856,7 @@ def dispatch(args, extra_args=None):
             *sparse_tests,
             *glb_tests_RV,
             *glb_tests_fp_RV,
+            *voyager_cgra_tests_fp,
             *behavioral_mu_tests,
             *external_mu_tests,
             *external_mu_tests_fp,
@@ -924,6 +956,7 @@ def dispatch(args, extra_args=None):
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
             ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
+            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
             ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:
 
