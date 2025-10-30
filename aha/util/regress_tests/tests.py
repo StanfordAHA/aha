@@ -78,6 +78,7 @@ class Tests:
         'glb_tests_fp_RV' : [],
         'resnet_tests' : [],
         'resnet_tests_fp' : [],
+        'voyager_cgra_tests_fp' = []
         'behavioral_mu_tests' : [],
         'external_mu_tests' : [],
         'external_mu_tests_fp' : [],
@@ -209,6 +210,17 @@ class Tests:
     # ------------------------------------------------------------------------
     # pr_aha1
     # ------------------------------------------------------------------------
+    if True:
+            voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+            ]
+    
+
     configs['pr_aha1'] = combine(
         {},
         '''
@@ -229,6 +241,7 @@ class Tests:
             - tensor3_mttkrp
             - tensor3_ttv
         ''',
+        { 'voyager_cgra_tests_fp': voyager_cgra_tests_fp },
         resnet18_submod17
     )
     # ------------------------------------------------------------------------
@@ -327,7 +340,18 @@ class Tests:
     # ------------------------------------------------------------------------
     # pr_aha8
     # ------------------------------------------------------------------------
-    configs['pr_aha8'] = yaml.safe_load(
+    if True:
+            voyager_cgra_tests_fp = [
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+            ]
+
+    configs['pr_aha8'] = combine(
+        {},
         '''glb_tests_fp_RV:  # 28m build 12226
               - tests/fp_arith_RV
               - tests/fp_comp_RV
@@ -350,7 +374,9 @@ class Tests:
               - apps/swiglu_pass2_fp_RV
               - apps/rope_pass1_fp_RV
               - apps/rope_pass2_fp_RV
-        ''')
+        ''',
+        { 'voyager_cgra_tests_fp': voyager_cgra_tests_fp },
+    )
     # ------------------------------------------------------------------------
     # pr_aha9
     # ------------------------------------------------------------------------
