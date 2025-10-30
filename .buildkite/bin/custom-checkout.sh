@@ -117,7 +117,6 @@ if [ "$1" == "--aha-submod-flow" ]; then
     # Submods (e.g. lake) run regressions only on pull-request, not for submod push
     # Except for garnet submod, runs regressions on every git push or pull
 
-    function garnet { false; } 
     if [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
         echo "not a pr. but is it garnet"
         webhook="$(buildkite-agent meta-data get buildkite:webhook)"
