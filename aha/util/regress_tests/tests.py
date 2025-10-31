@@ -44,6 +44,7 @@ class Tests:
             "apps/zircon_deq_ResReLU_fp",
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
+            "apps/mu2glb_path_balance_test",
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -65,6 +66,7 @@ class Tests:
             "apps/zircon_deq_ResReLU_fp",
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
+            "apps/mu2glb_path_balance_test",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -176,6 +178,7 @@ class Tests:
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
@@ -458,6 +461,7 @@ class Tests:
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV",
@@ -736,6 +740,7 @@ class Tests:
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
@@ -851,7 +856,7 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
             behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
+                "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
             ]
             external_mu_tests = [
