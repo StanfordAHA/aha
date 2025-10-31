@@ -13,7 +13,11 @@ set +u    # nounset? not on my watch!
 set +x    # debug OFF
 PS4="."   # Prevents "+++" prefix during 3-deep "set -x" execution
 
-# This replaces ~/bin/pr_trigger.yml, which can now be deleted from khaki and r8cad
+# TRIGGER* replaces ~/bin/pr_trigger.yml, which can now be deleted from khaki and r8cad
+# Example values:
+#   BUILDKITE_PULL_REQUEST:      "232" (for pr) or "false" (for not-pr pushes)
+#   BUILDKITE_PULL_REQUEST_REPO: "https://github.com/StanfordAHA/garnet.git"
+
 TRIGGER='
 - trigger: "aha-flow"
   label: "PR check"
@@ -26,7 +30,34 @@ TRIGGER='
       BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
       AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
       DEV_BRANCH:                  "${DEV_BRANCH}"
+      IMAGE:                       "stanfordaha/garnet:latest"
 '
+TRIGGER_GARNET_PUSH='
+- trigger: "aha-flow"
+  label: "Garnet push"
+  build:
+    message: "Garnet push \"${BUILDKITE_MESSAGE}\""
+    commit: "${AHA_SUBMOD_FLOW_COMMIT}"
+    env:
+      BUILDKITE_PULL_REQUEST:      "${BUILDKITE_PULL_REQUEST}"
+      BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+      BUILDKITE_COMMIT:            "${AHA_SUBMOD_FLOW_COMMIT}"
+      AHA_SUBMOD_FLOW_COMMIT:      "${AHA_SUBMOD_FLOW_COMMIT}"
+      DEV_BRANCH:                  "${DEV_BRANCH}"
+      IMAGE:                       "stanfordaha/garnet:latest"
+'
+
+# E.g: `echo '{"repo":{"name":"garnet"}}' | get_json repo name`  => "garnet"
+function get_json { python3 -c 'import sys,json;j=json.load(sys.stdin)
+for f in sys.argv[1:]: j=j[f];
+print(j)' $*; }
+
+# Test rig - turn this ON and run e.g. ~/tmpdir/cc-testrig.sh to test w/o docker/CI
+# which does e.g. 'source custom-checkout.sh --testrig --aha-submod-flow'
+function TESTRIG { false; }
+[ "$1" == "--testrig" ] && shift && function TESTRIG { true; }
+TESTRIG && set -x
+if ! TESTRIG; then
 
 echo "+++ BEGIN custom-checkout.sh"
 echo I am in dir `pwd`
@@ -66,6 +97,7 @@ if ! git checkout -q $DEV_BRANCH; then
     export DEV_BRANCH=master
     echo "Cannot checkout dev branch '$DEV_BRANCH', continuing w master..."
 fi
+fi # if TESTRIG
 
 SKIP_SUBMOD_INIT=
 save_reqtype=
@@ -82,6 +114,30 @@ fi
 if [ "$1" == "--aha-submod-flow" ]; then
     echo "--- Found arg '$1'"
 
+    # Submods (e.g. lake) run regressions only on pull-request, not for submod push
+    # Except for garnet submod, runs regressions on every git push or pull
+
+    if [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
+        echo "not a pr. but is it garnet"
+        webhook="$(buildkite-agent meta-data get buildkite:webhook)"
+        repo=$(echo "$webhook" | get_json repository name)
+        if [ "$repo" == "garnet" ]; then
+            echo "Yes it is a garnet push"
+            export BUILDKITE_PULL_REQUEST_REPO=$(echo "$webhook" | get_json repository clone_url)
+            export AHA_SUBMOD_FLOW_COMMIT=$(echo "$webhook" | get_json head_commit id)
+            # Wait why does this not work
+            # buildkite_commit =? shoud be =? 87aada
+            printf "UPLOADING\n$TRIGGER_GARNET_PUSH\n"
+            echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
+            echo "--- CUSTOM CHECKOUT END";
+            set +x
+            return
+        else
+            echo "it's a push but it's not garnet. we don't do anything for that. good-bye!"
+            exit 0
+        fi
+    fi
+
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
     export BPPR_TAIL=`echo "$BUILDKITE_PULL_REQUEST_REPO" | sed "s/.git\$//"` || echo fail;
     url=$BPPR_TAIL
@@ -91,12 +147,16 @@ if [ "$1" == "--aha-submod-flow" ]; then
     # E.g. https://github.com/StanfordAHA/lake/pull/194
     # NOTE submod_commit must be full 40-char commit sha for status-update - DO NOT ABBREVIATE
     set -x;
-    curl $url/pull/$BUILDKITE_PULL_REQUEST > tmp;
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1;
-    grep 'oid=' tmp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
-    submod_commit=`curl -s $url/pull/$BUILDKITE_PULL_REQUEST \
+    temp=$(mktemp -u tmp-deleteme-XXX); echo $temp
+    curl $url/pull/$BUILDKITE_PULL_REQUEST > $temp;
+
+    # It sometimes throws an error without the OOPS at the end (but why?)
+    grep 'oid=' $temp | tr -cd '[:alnum:]=\n' | head -n 1 || echo OOPS;
+
+    submod_commit=`cat $temp \
           | grep 'oid=' | tr -cd '[:alnum:]=\n' | tail -n 1 \
           | sed 's/.*oid=\(.*\)/\1/'`;
+    /bin/rm $temp
     echo "found submod commit $submod_commit";
 
     # Debuggin
@@ -114,7 +174,7 @@ EOF
     # Also see ~steveri/bin/status-update on kiwi
 
     echo "+++ Notify github of pending status";
-    ~/bin/status-update --force pending;
+    TESTRIG || ~/bin/status-update --force pending;
 
     # Restore BUILDKITE_COMMIT
     export BUILDKITE_COMMIT=$save_commit;
