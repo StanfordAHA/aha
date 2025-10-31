@@ -44,6 +44,26 @@
             "SWEEP_PNR_PLACER_EXP":"1"
         }
     },
+    "apps/mu2glb_path_balance_test":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=4 myunroll_E64_MB=8",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=4 myunroll_E64_MB=8",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=4 myunroll_E64_MB=8",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1"
+        }
+    },
     "apps/pointwise_custom_packing":{
         "default":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=4 myunroll_E64_MB=16",
