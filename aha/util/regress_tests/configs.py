@@ -840,6 +840,8 @@ class Configs:
     # ------------------------------------------------------------------------------------
     def __init__(self, testname="BLANK", zircon=True):
 
+        Tests = Configs  # Hooooo brother
+
         # Initialize local vars with default group names
         self.__dict__.update(Tests.template.copy())
 
@@ -961,10 +963,44 @@ def check_for_dupes(DBG=0):
 
 check_for_dupes(DBG=0)
 
-def verify(testclass):
+# Helper routine
+def compare_classes(config):
+    'Verbose comparison of two dictionaries, throw error if they differ'
+    tconfig,cconfig = Tests(config).__dict__,Configs(config).__dict__
+    # tconfig['foo'] = ['bar']; cconfig['foo'] = ['baz']  # Uncomment to test
+
+    err = False
+    for key in set(list(tconfig.keys()) + list(cconfig.keys())):
+        if key in ["E64_supported_tests","E64_MB_supported_tests"]:
+            print(f'WARNING (configs.py): Not comparing {key}')
+            continue
+
+        if key in tconfig: tpretty = json.dumps(tconfig[key], indent=4)
+        if key in cconfig: cpretty = json.dumps(cconfig[key], indent=4)
+        if key not in tconfig:
+            print(f"*** ERROR: Configs({config}) should have {key}= {tpretty}"); err = True
+        elif key not in cconfig:
+            print(f"*** ERROR: Tests({config}) should have {key}= {tpretty}"); err = True
+        elif tconfig[key] != cconfig[key]:
+            tmsg = f'Tests({config})["{key}"] : {tpretty}'
+            cmsg = f'Configs({config})["{key}"] : {cpretty}'
+            print(f'*** ERROR: {tmsg}\nDOES NOT EQUAL {cmsg}'); err = True
+    if err:
+        print(''); return False
+    else:
+        return True
+
+compare_classes('fast')
+exit()
+
+
+
+def verify():
     '''Compare configs in Configs class vs. legacy Tests class'''
-    print('foo')
-    print("fast:", json.dumps(testclass('fast').__dict__, indent=4))
+    Tfast = Tests('fast').__dict__
+    Cfast = Configs('fast').__dict__
+    print("Tests('fast')", json.dumps(Tfast, indent=4))
+    print("Configs('fast')", json.dumps(Cfast, indent=4))
     exit()
 
     tests_fast = Tests('fast')
@@ -974,21 +1010,9 @@ def verify(testclass):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import sys
 if '--test' in sys.argv:
     print("HELLO TEST NURSE TWO!")
     # print("fast:", json.dumps(Tests.configs['fast'], indent=4))
-    Configs.verify(Tests)
+    # Configs.verify(Tests)
+    verify()
