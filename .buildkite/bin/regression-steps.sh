@@ -159,11 +159,12 @@ elif [ "$next" == "gold" ]; then
             exit 13
         else echo "--- $$msg Zircon gold check PASSED"
         fi
-        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
+            pre-command: |
+              .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
+              $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
     EOF
 )
 # setstate launch-state READY  # FIXME do we use this??
@@ -260,7 +261,14 @@ exit
 #         done
 # 
 #         echo "# We have the lock; look for $IMAGE"
-#         if ! [ `docker images -q $IMAGE` ]; then
+# 
+#         echo "# I see IMAGE='$IMAGE'"
+#         if [ "$IMAGE" == "stanfordaha/garnet:latest" ]; then
+#             echo "submod push or pull can use garnet:latest instead of rebuilding docker image from scratch"
+#             echo "docker pull $IMAGE"
+#             docker pull $IMAGE
+# 
+#         elif ! [ `docker images -q $IMAGE` ]; then
 #             echo "+++ CANNOT FIND DOCKER IMAGE '$IMAGE'"
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
 # 
