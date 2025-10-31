@@ -994,26 +994,28 @@ class Tests:
 # quick check to make sure that no configs have redundant apps
 
 from configs import *
-errors = ''
-# for config_name in Tests.configs:
-for config_name in Configs.configs:
-    DBG=1
-    if DBG: print('\n', config_name)
-    # config = Tests.configs[config_name]
-    config = Tests(config_name).__dict__
-    lists = [key for key in config if type(config[key]) is list]
-    for group in lists:
-        apps = config[group]
-        if DBG: print(f'    Config {config_name} has list {group}', end='')
-        dbg_result = ' - no dupes (good)'
-        for app in set(apps):  # Use set to prevent duplicate checks
-            n_app = apps.count(app)
-            if n_app > 1:
-                errors += f"    ERROR: Config {config_name}[{group}] has {n_app} copies of '{app}'\n"
-                dbg_result = ' - FOUND DUPES! (bad)'
-        if DBG: print(dbg_result)
 
-assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
+def check_for_dupes(DBG=0):
+    errors = ''
+    if DBG: print("tests.py: Verify no duplicates in any groups")
+    # for config_name in Tests.configs:
+    for config_name in Configs.configs:
+        if DBG: print('\n', config_name)
+        config = Tests(config_name).__dict__
+        lists = [key for key in config if type(config[key]) is list]
+        for group in lists:
+            apps = config[group]
+            if DBG: print(f'    Config {config_name} has list {group}', end='')
+            dbg_result = ' - no dupes (good)'
+            for app in set(apps):  # Use set to prevent duplicate checks
+                n_app = apps.count(app)
+                if n_app > 1:
+                    errors += f"    ERROR: Config {config_name}[{group}] has {n_app} copies of '{app}'\n"
+                    dbg_result = ' - FOUND DUPES! ERROR!'
+            if DBG: print(dbg_result)
+    assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
+
+check_for_dupes(DBG=0)
 
 # print("HELL OH!")
 # from configs import *

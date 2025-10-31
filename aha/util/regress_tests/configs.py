@@ -937,69 +937,54 @@ class Configs:
         print(f"Found yaml string:\n{Tests.prefix_lines(config, '    ')}\n")
         self.__dict__.update(config_dict)
         return True
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def verify(testclass):
-        '''Compare configs in Configs class vs. legacy Tests class'''
-        print('foo')
-        print("fast:", json.dumps(testclass('fast').__dict__, indent=4))
-        exit()
-
-        tests_fast = Tests('fast')
-        configs_fast = self.configs['fast']
-    # print("fast:", json.dumps(Tests.configs['fast'], indent=4))
 
 from tests import *
-foo=Tests
 
-errors = ''
-# for config_name in Tests.configs:
-for config_name in Configs.configs:
-    DBG=0
-    if DBG: print('\n', config_name)
-    config = Configs.configs[config_name]
-    lists = [key for key in config if type(config[key]) is list]
-    for group in lists:
-        apps = config[group]
-        if DBG: print(f'    Config {config_name} has list {key}')
-        for app in set(apps):  # Use set to prevent duplicate checks
-            n_app = apps.count(app)
-            if n_app > 1:
-                errors += f"    ERROR: Config {config_name}[{group}] has {n_app} copies of '{app}'\n"
+def check_for_dupes(DBG=0):
+    errors = ''
+    if DBG: print("configs.py: Verify no duplicates in any groups")
+    for config_name in Configs.configs:
+        if DBG: print('\n', config_name)
+        config = Configs.configs[config_name]
+        lists = [key for key in config if type(config[key]) is list]
+        for group in lists:
+            apps = config[group]
+            if DBG: print(f'    Config {config_name} has list {group}', end='')
+            dbg_result = ' - no dupes (good)'
+            for app in set(apps):  # Use set to prevent duplicate checks
+                n_app = apps.count(app)
+                if n_app > 1:
+                    errors += f"    ERROR: Config {config_name}[{group}] has {n_app} copies of '{app}'\n"
+                    dbg_result = ' - FOUND DUPES! ERROR!'
+            if DBG: print(dbg_result)
+    assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
 
-assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
+check_for_dupes(DBG=0)
+
+def verify(testclass):
+    '''Compare configs in Configs class vs. legacy Tests class'''
+    print('foo')
+    print("fast:", json.dumps(testclass('fast').__dict__, indent=4))
+    exit()
+
+    tests_fast = Tests('fast')
+    configs_fast = self.configs['fast']
+# print("fast:", json.dumps(Tests.configs['fast'], indent=4))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 import sys
