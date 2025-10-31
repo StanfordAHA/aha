@@ -12,7 +12,7 @@ from collections import defaultdict
 import shutil
 import toml
 from aha.util.regress_tests.tests import Tests
-
+import copy
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
@@ -531,7 +531,7 @@ def test_dense_app(
 
     if skip_cgra_map:
         print(f"--- {testname} - SKIP CGRA MAP", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA MAP", 0])
+        info.append([f"{testname} - SKIP CGRA MAP", 0])
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test, "--skip-cgra-map"] + layer_array, env=env_vars)
     else:
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
@@ -610,7 +610,7 @@ def test_dense_app(
 
     if skip_cgra_pnr:
         print(f"--- {testname} - SKIP CGRA PNR", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA PNR", 0])
+        info.append([f"{testname} - SKIP CGRA PNR", 0])
         buildkite_args.append("--skip-cgra-pnr")
 
     if skip_output_pipeline_regs:
@@ -796,6 +796,7 @@ def dispatch(args, extra_args=None):
     global info  # HA!
     info = []
 
+    # For config definitions see regress_tests/tests.py
     imported_tests = Tests(args.config)
 
     # Unpack imported_tests into convenient handles
