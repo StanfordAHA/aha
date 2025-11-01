@@ -30,7 +30,7 @@ class Tests:
     configs = {}
     for c in config_list: configs[c] = c  # Used by app utility
 
-    def __init__(self, testname="BLANK", zircon=True):
+    if True:
         use_custom = False
 
         # Defaults
@@ -96,6 +96,10 @@ class Tests:
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
         ]
+
+    template = {}
+    def __init__(self, testname="BLANK", zircon=True):
+        use_custom = False
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
         if testname in ["daily", "pr", "pr_submod"]:
@@ -758,23 +762,13 @@ class Tests:
             use_custom = True
 
         # Export everything
-        self.width, self.height = width, height
-        self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
-        self.sparse_tests = sparse_tests
-        self.glb_tests = glb_tests
-        self.glb_tests_fp = glb_tests_fp
-        self.glb_tests_RV = glb_tests_RV
-        self.glb_tests_fp_RV = glb_tests_fp_RV
-        self.resnet_tests = resnet_tests
-        self.resnet_tests_fp = resnet_tests_fp
-        self.voyager_cgra_tests_fp = voyager_cgra_tests_fp
-        self.behavioral_mu_tests = behavioral_mu_tests
-        self.external_mu_tests = external_mu_tests
-        self.external_mu_tests_fp = external_mu_tests_fp
-        self.hardcoded_dense_tests = hardcoded_dense_tests
-        self.E64_supported_tests = E64_supported_tests
-        self.E64_MB_supported_tests = E64_MB_supported_tests
-        self.no_zircon_sparse_tests = no_zircon_sparse_tests
+
+        vdic = vars().copy()
+        for key in self.template:
+            if key in vdic:
+                self.__dict__[key] = vdic[key]
+            else:
+                self.__dict__[key] = self.template[key]
 
         if use_custom:
             # Read a custom suite from external file <testname>.py
@@ -828,8 +822,6 @@ class Tests:
 # Every time someone tries to import this class, it triggers this
 # quick check to make sure that no configs have redundant apps
 
-# from configs import *
-
 def check_for_dupes(DBG=0):
     errors = ''
     if DBG: print("tests.py: Verify no duplicates in any groups")
@@ -851,6 +843,10 @@ def check_for_dupes(DBG=0):
     assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
 
 check_for_dupes(DBG=0)
+
+try: from configs import *
+except ModuleNotFoundError as e:
+    print(type(e).__name__, ': cannot import configs maybe:')
 
 # print("HELL OH!")
 # from configs import *
