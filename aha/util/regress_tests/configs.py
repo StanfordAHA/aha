@@ -175,10 +175,10 @@ class Configs:
     resnet18_submod17 = {  # 94m build 12226
         # K-DIM HOST TILING CONV5_X
         'external_mu_tests_fp': [
-            'resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB',
-            'resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB',
-            'resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB',
-            'resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB',]
+            'resnet18-submodule -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB',
+            'resnet18-submodule -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB',
+            'resnet18-submodule -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB',
+            'resnet18-submodule -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB',]
     }
     voyager_cgra_tests_fp = [
         # Standalone quantize layers
@@ -203,19 +203,21 @@ class Configs:
         "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
         "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
     ]
-    external_mu_tests_fp_all = [
+    resnet18_zdrfpc1 = [
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
-
+    ]
+    resnet18_sub2345 = [
                 # Conv2_x
                 "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
-
+    ]
+    resnet18_sub6_11 = [
                 # Conv3_1 strided conv
                 "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
 
@@ -226,19 +228,22 @@ class Configs:
                 "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
                 "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
                 "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
-
+    ]
+    resnet18_sub11_12 = [
                 # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
                 "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
                 "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
 
                 # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
                 "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
-
+    ]
+    resnet18_sub13_15 = [
                 # Conv4_x
                 "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
                 "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
                 "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
-
+    ]
+    resnet18_sub16_18 = [
                 # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
 
@@ -251,6 +256,8 @@ class Configs:
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
 
+    ]
+    resnet18_sub19_20 = [
                 "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
 
@@ -258,7 +265,17 @@ class Configs:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
-            ]
+    ]
+
+    external_mu_tests_fp_all = \
+        resnet18_zdrfpc1 + \
+        resnet18_sub2345 + \
+        resnet18_sub6_11 + \
+        resnet18_sub11_12 + \
+        resnet18_sub13_15 + \
+        resnet18_sub16_18 + \
+        resnet18_sub19_20
+
     configs['mu'] = combine(
         {
             "height": 16, "width": 28, "mu_oc_0": 32, "cols_removed": 12,
@@ -323,20 +340,21 @@ class Configs:
             - tensor3_ttv
         ''',
         { 'voyager_cgra_tests_fp': voyager_cgra_tests_fp },
-        resnet18_submod17
+        { 'external_mu_tests_fp' : resnet18_zdrfpc1 },
+        # resnet18_submod17,
     )
     # ------------------------------------------------------------------------
     # pr_aha2
     # ------------------------------------------------------------------------
     configs['pr_aha2'] = combine(
-        resnet18_submod3,  # 80m
+        { 'external_mu_tests_fp' : resnet18_sub2345 },
+        # resnet18_submod3,  # 80m
     )
     # ------------------------------------------------------------------------
     # pr_aha3
     # ------------------------------------------------------------------------
     configs['pr_aha3'] = combine(
-        resnet18_submod7,   # 52m
-        resnet18_submod11,  # 38m
+        { 'external_mu_tests_fp' : resnet18_sub6_11 },
     )
     # ------------------------------------------------------------------------
     # pr_aha4
@@ -353,17 +371,21 @@ class Configs:
             - apps/gaussian_RV
             - tests/bit8_packing_test_RV
             - tests/bit8_unpack_test_RV
-            - tests/fp_get_shared_exp_test_RV''',
+            - tests/fp_get_shared_exp_test_RV
+            - apps/maxpooling_dense_rv_fp_RV_E64_MB''',
 
         '''behavioral_mu_tests:  # 42m build 12226
             - apps/pointwise_mu_io_RV_E64
             - apps/pointwise_mu_io_RV_E64_MB
             - apps/abs_max_full_unroll_fp_RV
             - apps/get_e8m0_scale_test_fp_RV_E64_MB
-            - apps/get_apply_e8m0_scale_fp_RV''',
-
+            - apps/get_apply_e8m0_scale_fp_RV_E64_MB''',
+            
         '''hardcoded_dense_tests:  # 8m build 12226
             - apps/unsharp_RV''',
+            
+        # Probably not good to mix mu_test in here...
+        { 'external_mu_tests_fp' : resnet18_sub11_12 },
     )
     # ------------------------------------------------------------------------
     # pr_aha5
@@ -395,7 +417,10 @@ class Configs:
             - apps/matrix_multiplication_fp
             - apps/relu_layer_fp
             - apps/scalar_max_fp
-            - apps/scalar_avg_fp'''
+            - apps/scalar_avg_fp''',
+
+        # Probably not good to mix mu_test in here...
+        { 'external_mu_tests_fp' : resnet18_sub13_15 },
     )
     # ------------------------------------------------------------------------
     # pr_aha6
@@ -413,10 +438,11 @@ class Configs:
     # pr_aha7
     # ------------------------------------------------------------------------
     configs['pr_aha7'] = combine(
-        resnet18_conv2d6,     # 46m
-        resnet18_conv2d11,    # 28m
-        resnet18_conv2dfake,  # 22m
-        resnet18_conv2d16,    # 44m
+#         resnet18_conv2d6,     # 46m
+#         resnet18_conv2d11,    # 28m
+#         resnet18_conv2dfake,  # 22m
+#         resnet18_conv2d16,    # 44m
+        { 'external_mu_tests_fp' : resnet18_sub16_18 },
     )
     # ------------------------------------------------------------------------
     # pr_aha8
@@ -428,8 +454,7 @@ class Configs:
               - tests/fp_comp_RV
               - apps/relu_layer_fp_RV
               - apps/relu_layer_multiout_fp_RV
-              - apps/avgpool_layer_fp_RV_E64
-              - apps/mat_vec_mul_fp_RV
+              - apps/mat_vec_mul_fp_RV_E64_MB
               - apps/scalar_reduction_fp_RV
               - apps/scalar_max_fp_RV
               - apps/layer_norm_pass2_fp_RV
@@ -452,8 +477,9 @@ class Configs:
     # pr_aha9
     # ------------------------------------------------------------------------
     configs['pr_aha9'] = combine(
-        resnet18_zdqr,      # 82m build 12226
-        resnet18_submod15,  # 28m build 12226
+#         resnet18_zdqr,      # 82m build 12226
+#         resnet18_submod15,  # 28m build 12226
+        { 'external_mu_tests_fp' : resnet18_sub19_20 },
     )
     # ------------------------------------------------------------------------
     # pr_aha
@@ -469,152 +495,6 @@ class Configs:
         configs['pr_aha8'],
         configs['pr_aha9'],
     )
-
-    # PR_SUBMOD tests for push/pull from aha submod repos
-    # FIXME ask yuchen and michael if they use this? then DELETE IT maybe
-    configs['pr_submod'] = {
-        "width": 28,
-        "height": 16,
-        "mu_oc_0": 32,
-        "cols_removed": 12,
-
-        "behavioral_mu_tests": [
-            "apps/pointwise_mu_io_RV_E64",
-            "apps/pointwise_mu_io_RV_E64_MB",
-            "apps/abs_max_full_unroll_fp_RV",
-            "apps/get_e8m0_scale_test_fp_RV_E64_MB",
-            "apps/get_apply_e8m0_scale_fp_RV"
-        ],
-        "external_mu_tests": [
-            "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-            "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-            "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
-            "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
-            "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB"
-        ],
-        "external_mu_tests_fp": [
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
-            "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-            "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-            "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround_RV_E64_MB",
-            "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_inner_reduction_workaround_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB"
-        ],
-        "glb_tests": [
-            "apps/pointwise",
-            "tests/ushift",
-            "tests/arith",
-            "tests/absolute",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/uminmax",
-            "tests/rom",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-            "tests/bit8_packing_test",
-            "tests/bit8_unpack_test",
-            "tests/fp_get_shared_exp_test",
-            "tests/fp_e8m0_quant_test"
-        ],
-        "glb_tests_RV": [
-            "tests/ushift_RV",
-            "tests/arith_RV",
-            "tests/absolute_RV",
-            "tests/scomp_RV",
-            "tests/ucomp_RV",
-            "tests/uminmax_RV",
-            "tests/rom_RV",
-            "tests/conv_2_1_RV",
-            "tests/bit8_packing_test_RV",
-            "tests/bit8_unpack_test_RV",
-            "tests/fp_get_shared_exp_test_RV",
-            "tests/fp_e8m0_quant_test_RV",
-            "apps/pointwise_RV",
-            "apps/pointwise_RV_E64",
-            "apps/pointwise_RV_E64_MB",
-            "apps/pointwise_custom_packing_RV_E64",
-            "apps/gaussian_RV"
-        ],
-        "glb_tests_fp": [
-            "tests/fp_pointwise",
-            "tests/fp_arith",
-            "tests/fp_comp",
-            "tests/fp_conv_7_7",
-            "apps/relu_layer_fp",
-            "apps/scalar_max_fp",
-            "apps/stable_softmax_pass2_fp",
-            "apps/stable_softmax_pass3_fp",
-            "apps/scalar_avg_fp",
-            "apps/layer_norm_pass2_fp",
-            "apps/layer_norm_pass3_fp",
-            "apps/gelu_pass1_fp",
-            "apps/gelu_pass2_fp",
-            "apps/silu_pass1_fp",
-            "apps/silu_pass2_fp",
-            "apps/swiglu_pass2_fp",
-            "apps/rope_pass1_fp",
-            "apps/rope_pass2_fp"
-        ],
-        "glb_tests_fp_RV": [
-            "tests/fp_pointwise_RV",
-            "tests/fp_arith_RV",
-            "tests/fp_comp_RV",
-            "apps/relu_layer_fp_RV",
-            "apps/relu_layer_multiout_fp_RV",
-            "apps/scalar_reduction_fp_RV",
-            "apps/vector_reduction_fp_RV",
-            "apps/scalar_max_fp_RV",
-            "apps/stable_softmax_pass2_fp_RV",
-            "apps/stable_softmax_pass3_fp_RV",
-            "apps/scalar_avg_fp_RV",
-            "apps/layer_norm_pass2_fp_RV",
-            "apps/layer_norm_pass3_fp_RV",
-            "apps/gelu_pass1_fp_RV",
-            "apps/gelu_pass2_fp_RV",
-            "apps/silu_pass1_fp_RV",
-            "apps/silu_pass2_fp_RV",
-            "apps/swiglu_pass2_fp_RV",
-            "apps/rope_pass1_fp_RV",
-            "apps/rope_pass2_fp_RV",
-            "apps/avgpool_layer_fp_RV_E64",
-            "apps/mat_vec_mul_fp_RV"
-        ],
-        "hardcoded_dense_tests": [
-            "apps/unsharp_RV"
-        ],
-        "no_zircon_sparse_tests": [
-            "vec_elemmul",
-            "mat_vecmul_ij",
-            "mat_elemadd_leakyrelu_exp",
-            "matmul_ikj",
-            "tensor3_mttkrp"
-        ],
-        "resnet_tests": [],
-        "resnet_tests_fp": [],
-        "sparse_tests": [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "fp_relu_matmul_ijk_crddrop",
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_ttm",
-            "tensor3_ttv"
-        ],
-    }
-    # submod
 
     # FULL test is used by scheduled weekly aha regressions
     configs['full'] = {
