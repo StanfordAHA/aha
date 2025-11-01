@@ -1,6 +1,7 @@
 # Find and/or install pyyaml
 from subprocess import run, DEVNULL
-run(f'python3 -m pip install pyyaml', shell=True, stdout = stderr = DEVNULL)
+cmd = 'python3 -m pip install pyyaml'
+run(cmd, shell=True, stdout = DEVNULL, stderr = DEVNULL)
 import yaml
 
 import json

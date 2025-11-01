@@ -16,6 +16,19 @@ class Tests:
     #   "mu"      bunch of "external_mu_tests", mostly resnet18
     #
     #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
+    config_list = [
+        "fast",
+        "pr_aha1", "pr_aha2", "pr_aha3",
+        "pr_aha4", "pr_aha5", "pr_aha6",
+        "pr_aha7", "pr_aha8", "pr_aha9",
+        "pr_aha",
+        "full",
+        "resnet",
+        "mu",
+        "BLANK",
+    ]
+    configs = {}
+    for c in config_list: configs[c] = c  # Used by app utility
 
     def __init__(self, testname="BLANK", zircon=True):
         use_custom = False
@@ -815,13 +828,13 @@ class Tests:
 # Every time someone tries to import this class, it triggers this
 # quick check to make sure that no configs have redundant apps
 
-from configs import *
+# from configs import *
 
 def check_for_dupes(DBG=0):
     errors = ''
     if DBG: print("tests.py: Verify no duplicates in any groups")
     # for config_name in Tests.configs:
-    for config_name in Configs.configs:
+    for config_name in Tests.configs:
         if DBG: print('\n', config_name)
         config = Tests(config_name).__dict__
         lists = [key for key in config if type(config[key]) is list]
