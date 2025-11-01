@@ -154,7 +154,7 @@ fi
 #
 # pr_aha sparse_tests   vec_elemmul        28x16
 # pr_aha sparse_tests   mat_vecmul_ij      28x16
-
+set -x
 pyscript='if True:
     import sys, importlib
     spec = importlib.util.spec_from_file_location("tests", sys.argv[1])
@@ -165,7 +165,7 @@ pyscript='if True:
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
 suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
-
+echo "$suites"; exit
 #########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
 #   BEFORE:
@@ -185,7 +185,7 @@ function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 #     app 8x8 vec_identity       --removed 4 --mu 8
 #     app 8x8 apps/pointwise     --removed 4 --mu 8
 #     app 8x8 tests/fp_pointwise --removed 4 --mu 8
-
+set -x
 if [ "$SUITE" ]; then
     # Install column command if not exist yet (for docker mainly)
     if ! type column >& /dev/null; then

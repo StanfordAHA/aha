@@ -98,6 +98,16 @@ class Tests:
         ]
 
     template = {}
+    vdic = vars().copy()
+    print(vdic)
+    for key in vdic:
+        if key[0:2] == '__': continue
+        if key in ['template','config_list']: continue
+        if type(vdic[key]) in [int,list]: 
+            template[key] = vdic[key]
+    print('\n\n',1,template)
+
+    configs = {}
     def __init__(self, testname="BLANK", zircon=True):
         use_custom = False
 
@@ -762,7 +772,6 @@ class Tests:
             use_custom = True
 
         # Export everything
-
         vdic = vars().copy()
         for key in self.template:
             if key in vdic:
@@ -818,6 +827,15 @@ class Tests:
                 fmt = "%-12s %-16s %-32s %-s"
                 print(fmt % (config_name, group, app, parms))
                 # rval += (fmt % (config_name, group, app, d["app_parms"]))
+
+
+# config = 'fast'
+# Tests.show_config(config)
+# exit()
+# 
+# print(Tests.template)
+# exit()
+
 
 # Every time someone tries to import this class, it triggers this
 # quick check to make sure that no configs have redundant apps

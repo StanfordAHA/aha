@@ -983,9 +983,9 @@ def compare_classes(config):
         if key in tconfig: tpretty = json.dumps(tconfig[key], indent=4)
         if key in cconfig: cpretty = json.dumps(cconfig[key], indent=4)
         if key not in tconfig:
-            print(f"*** ERROR: Configs({config}) should have {key}= {tpretty}"); err = True
+            print(f"*** ERROR: Tests({config}) should have {key}= {cpretty}"); err = True
         elif key not in cconfig:
-            print(f"*** ERROR: Tests({config}) should have {key}= {tpretty}"); err = True
+            print(f"*** ERROR: Configs({config}) should have {key}= {tpretty}"); err = True
         elif tconfig[key] != cconfig[key]:
             print(f'*** ERROR: Tests({config})["{key}"] and Configs({config})["{key}"] DIFFER')
             printed = False
@@ -1009,11 +1009,13 @@ def compare_classes(config):
     else:
         return True
 
+# compare_classes('fast')
+
 print('WARNING (configs.py): Not comparing E64_supported_tests, E64_MB_supported_tests')
 err = False
 for config in Configs.configs:
     print('- Compare Tests vs. Configs:', config)
-    err = err and compare_classes(config)
+    err = err or compare_classes(config) 
 result = "FAIL" if err else "PASS"; print('COMPARISON RESULT:', result)
 exit()
 
