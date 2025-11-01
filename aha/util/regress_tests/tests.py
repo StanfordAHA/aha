@@ -334,7 +334,7 @@ class Tests:
             def merge_tests(s1, s2):
                 for key in s2:
                     if type(s2[key]) is list:
-                        s1[key] = list(set(s1[key] + s2[key]))  # merge lists
+                        s1[key] = list(dict.fromkeys(s1[key] + s2[key]))  # Removes dupes AND preserves list order
                     else:
                         # Non-lists (e.g. width, height) should be same for both sets
                         assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'

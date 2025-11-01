@@ -910,7 +910,6 @@ def compare_classes(config):
     # tconfig['foo'] = ['bar']; cconfig['foo'] = ['baz']  # Uncomment to test
 
     err = False
-    print('WARNING (configs.py): Not comparing E64_supported_tests, E64_MB_supported_tests')
     for key in set(list(tconfig.keys()) + list(cconfig.keys())):
         if key in ["E64_supported_tests","E64_MB_supported_tests"]: continue
         if key in tconfig: tpretty = json.dumps(tconfig[key], indent=4)
@@ -921,32 +920,33 @@ def compare_classes(config):
             print(f"*** ERROR: Tests({config}) should have {key}= {tpretty}"); err = True
         elif tconfig[key] != cconfig[key]:
             print(f'*** ERROR: Tests({config})["{key}"] and Configs({config})["{key}"] DIFFER')
+            printed = False
             for app in tconfig[key]:
                 if app not in cconfig[key]:
-                    print(f'  Tests({config})["{key}"] has {app}')
+                    print(f'  Tests({config})["{key}"] has {app}'); printed = True
             for app in cconfig[key]:
                 if app not in tconfig[key]:
-                    print(f'  Config({config})["{key}"] has {app}')
+                    print(f'  Config({config})["{key}"] has {app}'); printed = True
+            if not printed:
+                print('  test=', json.dumps(tconfig[key], indent=4))
+                print('  conf=', json.dumps(cconfig[key], indent=4))
             print("")
 
 
-            tmsg = f'Tests({config})["{key}"] : {tpretty}'
-            cmsg = f'Configs({config})["{key}"] : {cpretty}'
+            tmsg = f'Test({config})["{key}"] : {tpretty}'
+            cmsg = f'Conf({config})["{key}"] : {cpretty}'
 #             print(f'*** ERROR: {tmsg}\nDOES NOT EQUAL {cmsg}'); err = True
     if err:
         print(''); return False
     else:
         return True
 
+print('WARNING (configs.py): Not comparing E64_supported_tests, E64_MB_supported_tests')
 for config in Configs.configs:
-    print(config)
-    compare_classes(config); print("")
+    print('Compare Tests vs. Configs:', config)
+    compare_classes(config)
 
 exit()
-
-compare_classes('fast')
-
-
 
 
 
