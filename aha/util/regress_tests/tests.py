@@ -30,10 +30,8 @@ class Tests:
     configs = {}
     for c in config_list: configs[c] = c  # Used by app utility
 
-    if True:
-        use_custom = False
+    def configs_template():
 
-        # Defaults
         width, height = 28, 16  # default
         sparse_tests = []
         glb_tests_RV = []
@@ -96,18 +94,12 @@ class Tests:
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
         ]
-
-    template = {}
-    vdic = vars().copy()
-    print(vdic)
-    for key in vdic:
-        if key[0:2] == '__': continue
-        if key in ['template','config_list']: continue
-        if type(vdic[key]) in [int,list]: 
-            template[key] = vdic[key]
+        return vars().copy()
 
     configs = {}
     def __init__(self, testname="BLANK", zircon=True):
+        self.__dict__.update(Tests.configs_template())
+
         use_custom = False
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
@@ -770,16 +762,15 @@ class Tests:
         else:
             use_custom = True
 
-        # Export everything
+            
+# Wait.
+        # Export everything named in template
         vdic = vars().copy()
-        for key in self.template:
+        for key in Tests.configs_template():
             if key in vdic:
                 self.__dict__[key] = vdic[key]
-            else:
-                self.__dict__[key] = self.template[key]
-
-        # Wait.
-        
+#             else:
+#                 self.__dict__[key] = self.template[key]
 
         if use_custom:
             # Read a custom suite from external file <testname>.py
@@ -808,7 +799,7 @@ class Tests:
         # fast    glb_tests_fp   tests/fp_pointwise       8x8 --removed 4 --mu 8
 
         # Find config and populate it with default keys from template
-        d = Tests.template.copy()
+        d = Tests.configs_template()
         # d.update(Tests.configs[config_name])
         d.update(Tests(config_name).__dict__)
 
@@ -831,13 +822,15 @@ class Tests:
                 print(fmt % (config_name, group, app, parms))
                 # rval += (fmt % (config_name, group, app, d["app_parms"]))
 
+# print(825, __name__)
+if __name__ == '__main__':
+    config = 'fast'
+    Tests.show_config(config)
+    print('')
 
-config = 'fast'
-Tests.show_config(config)
-exit()
 
-print(999, Tests.template)
-exit()
+# print(999, Tests.template)
+# exit()
 
 
 # Every time someone tries to import this class, it triggers this

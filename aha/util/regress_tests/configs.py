@@ -3,12 +3,12 @@ from subprocess import run, DEVNULL
 cmd = 'python3 -m pip install pyyaml'
 run(cmd, shell=True, stdout = DEVNULL, stderr = DEVNULL)
 import yaml
-
 import json
 
 # To verify vs.  ground truth tests.py, can do:
 # python3 tests.py --test
 
+print('c',11)
 ########################################################################
 # Helper functions
 
