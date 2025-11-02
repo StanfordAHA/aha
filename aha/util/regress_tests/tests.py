@@ -16,19 +16,16 @@ class Tests:
     #   "mu"      bunch of "external_mu_tests", mostly resnet18
     #
     #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
-    config_list = [
+    configs_list = [
         "fast",
-        "pr_aha1", "pr_aha2", "pr_aha3",
-        "pr_aha4", "pr_aha5", "pr_aha6",
-        "pr_aha7", "pr_aha8", "pr_aha9",
-        "pr_aha",
+        "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4", "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9", "pr_aha",
         "full",
         "resnet",
         "mu",
         "BLANK",
     ]
-    configs = {}
-    for c in config_list: configs[c] = c  # Used by app utility
+#     configs = {}
+#     for c in config_list: configs[c] = c  # Used by app utility
 
     def configs_template():
 
@@ -96,7 +93,6 @@ class Tests:
         ]
         return vars().copy()
 
-    configs = {}
     def __init__(self, testname="BLANK", zircon=True):
         self.__dict__.update(Tests.configs_template())
 
@@ -840,7 +836,7 @@ def check_for_dupes(DBG=0):
     errors = ''
     if DBG: print("tests.py: Verify no duplicates in any groups")
     # for config_name in Tests.configs:
-    for config_name in Tests.configs:
+    for config_name in Tests.configs_list:
         if DBG: print('\n', config_name)
         config = Tests(config_name).__dict__
         lists = [key for key in config if type(config[key]) is list]

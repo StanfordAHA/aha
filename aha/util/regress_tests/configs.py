@@ -1011,35 +1011,56 @@ def compare_classes(config):
 
 # compare_classes('fast')
 
-print('WARNING (configs.py): Not comparing E64_supported_tests, E64_MB_supported_tests')
-err = False
-for config in Configs.configs:
-    print('- Compare Tests vs. Configs:', config)
-    err = err or compare_classes(config) 
-result = "FAIL" if err else "PASS"; print('COMPARISON RESULT:', result)
-exit()
-
-
-
-
-def verify():
-    '''Compare configs in Configs class vs. legacy Tests class'''
-    Tfast = Tests('fast').__dict__
-    Cfast = Configs('fast').__dict__
-    print("Tests('fast')", json.dumps(Tfast, indent=4))
-    print("Configs('fast')", json.dumps(Cfast, indent=4))
-    exit()
-
-    tests_fast = Tests('fast')
-    configs_fast = self.configs['fast']
-# print("fast:", json.dumps(Tests.configs['fast'], indent=4))
-
-
-
-
 import sys
 if '--test' in sys.argv:
-    print("HELLO TEST NURSE TWO!")
-    # print("fast:", json.dumps(Tests.configs['fast'], indent=4))
-    # Configs.verify(Tests)
-    verify()
+    print('WARNING (configs.py): Not comparing E64_supported_tests, E64_MB_supported_tests')
+    good = True
+    for config in Configs.configs:
+        print('- Compare Tests vs. Configs:', config)
+        good = good and compare_classes(config) 
+    result = "PASS" if good else "FAIL"; print('COMPARISON RESULT:', result, '\n')
+
+#     print(Tests.configs.keys())
+
+#     assert list(Tests.configs.keys()) == [
+    assert Tests.configs_list == [
+        "fast",
+        "pr_aha1", "pr_aha2", "pr_aha3",
+        "pr_aha4", "pr_aha5", "pr_aha6",
+        "pr_aha7", "pr_aha8", "pr_aha9",
+        "pr_aha",
+        "full",
+        "resnet",
+        "mu",
+        "BLANK",
+    ]
+# 
+# 
+# 
+#     exit()
+# 
+# 
+# 
+# 
+# def verify():
+#     '''Compare configs in Configs class vs. legacy Tests class'''
+#     Tfast = Tests('fast').__dict__
+#     Cfast = Configs('fast').__dict__
+#     print("Tests('fast')", json.dumps(Tfast, indent=4))
+#     print("Configs('fast')", json.dumps(Cfast, indent=4))
+#     exit()
+# 
+#     tests_fast = Tests('fast')
+#     configs_fast = self.configs['fast']
+# # print("fast:", json.dumps(Tests.configs['fast'], indent=4))
+# 
+# 
+# 
+# 
+# import sys
+# if '--test' in sys.argv:
+#     print("HELLO TEST NURSE TWO!")
+#     # print("fast:", json.dumps(Tests.configs['fast'], indent=4))
+#     # Configs.verify(Tests)
+#     verify()
+# 

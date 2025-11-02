@@ -126,7 +126,7 @@ test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
 # 
 # TEST_SUITES=`cat $TESTS_PY | filter1 | filter2`
 # TEST_SUITES=`echo $TEST_SUITES`  # Remove newlines maybe
-TEST_SUITES=`python3 <(cat $TESTS_PY; echo "print(*Tests.configs.keys())") | tail -1` || exit 13
+TEST_SUITES=`python3 <(cat $TESTS_PY; echo "print(*Tests.configs_list)") | tail -1` || exit 13
 
 [ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n'$TEST_SUITES'\n\n"
 
