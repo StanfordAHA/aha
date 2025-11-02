@@ -872,3 +872,11 @@ except ModuleNotFoundError as e:
 # #     E64_supported_tests = Configs.E64_supported_tests
 # #     E64_MB_supported_tests = Configs.E64_MB_supported_tests
 # #     skip_cgra_map = Configs.skip_cgra_map
+
+if __name__ == "__main__":
+    import sys
+    if '--exec' in sys.argv:
+        print("FOOOOOOOO")
+        # eval(sys.argv[2])
+        exec(sys.argv[2])
+        # for config in Tests.configs_list: Tests.show_config(config)

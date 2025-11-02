@@ -81,6 +81,7 @@ while [ $# -gt 0 ] ; do
         --vcs)        SIM=VCS             ;;
         --wave*)      export WAVEFORM=1   ;;
         --help)       echo "$HELP";  exit ;;
+        --debug)      DBG=1;              ;;
 
         # New and undocumented
         --copy*) COPY_SCRIPT=True ;;
@@ -144,7 +145,7 @@ if [ "$LIST_SUITES" ]; then
     echo "$TEST_SUITES all" | xargs printf "  $bn --show-suite %s\n" | sed 's/,//'
     exit
 fi
-
+[ "$DBG" ] && echo app 148
 ########################################################################
 # Build a COMPACT data structure containing all apps and suites e.g.
 #
@@ -154,7 +155,7 @@ fi
 #
 # pr_aha sparse_tests   vec_elemmul        28x16
 # pr_aha sparse_tests   mat_vecmul_ij      28x16
-set -x
+
 pyscript='if True:
     import sys, importlib
     spec = importlib.util.spec_from_file_location("tests", sys.argv[1])
@@ -164,8 +165,14 @@ pyscript='if True:
 '
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
+# python3 $TESTS_PY --showconfigs
+python3 $TESTS_PY --exec "for config in Tests.configs_list: Tests.show_config(config)"
+exit
+
+
+
 suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
-echo "$suites"; exit
+[ "$DBG" ] && echo "$suites"
 #########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
 #   BEFORE:
@@ -185,7 +192,7 @@ function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 #     app 8x8 vec_identity       --removed 4 --mu 8
 #     app 8x8 apps/pointwise     --removed 4 --mu 8
 #     app 8x8 tests/fp_pointwise --removed 4 --mu 8
-set -x
+
 if [ "$SUITE" ]; then
     # Install column command if not exist yet (for docker mainly)
     if ! type column >& /dev/null; then
@@ -217,7 +224,7 @@ if [ "$SUITE" ]; then
     done
     exit
 fi
-
+[ "$DBG" ] && echo app 221
 ########################################################################
 # If we get this far, it means we are going to to try and run an app
 [ "$DBG" ] && echo "okay here we are we gonna run app '$appname'"
