@@ -105,7 +105,6 @@ class Tests:
         if key in ['template','config_list']: continue
         if type(vdic[key]) in [int,list]: 
             template[key] = vdic[key]
-    print('\n\n',1,template)
 
     configs = {}
     def __init__(self, testname="BLANK", zircon=True):
@@ -779,6 +778,9 @@ class Tests:
             else:
                 self.__dict__[key] = self.template[key]
 
+        # Wait.
+        
+
         if use_custom:
             # Read a custom suite from external file <testname>.py
             # E.g. if we build a config file '/aha/aha/util/regress_tests/custom4485.py'
@@ -807,7 +809,8 @@ class Tests:
 
         # Find config and populate it with default keys from template
         d = Tests.template.copy()
-        d.update(Tests.configs[config_name])
+        # d.update(Tests.configs[config_name])
+        d.update(Tests(config_name).__dict__)
 
         (w,h) =  (d['width'], d['height'])
         (col,mu) = (d["cols_removed"], d["mu_oc_0"])
@@ -829,12 +832,12 @@ class Tests:
                 # rval += (fmt % (config_name, group, app, d["app_parms"]))
 
 
-# config = 'fast'
-# Tests.show_config(config)
-# exit()
-# 
-# print(Tests.template)
-# exit()
+config = 'fast'
+Tests.show_config(config)
+exit()
+
+print(999, Tests.template)
+exit()
 
 
 # Every time someone tries to import this class, it triggers this
