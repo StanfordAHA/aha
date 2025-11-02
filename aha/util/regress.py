@@ -394,7 +394,7 @@ def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
     Once done, please add the test to E64_supported_tests in regress_tests/tests.py
     '''
     if E64_mode_on:
-        assert testname in Tests.E64_supported_tests, err1
+        assert testname in Tests().E64_supported_tests, err1
 
     err2 = '''f"ERROR: E64 multi-bank mode not yet supported for {testname}.
     Please make the necessary changes in Halide-to-Hardware and application_parameters.json.
@@ -402,7 +402,7 @@ def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
     Once done, please add the test to E64_MB_supported_tests in regress_tests
     '''
     if E64_multi_bank_mode_on:
-        assert testname in Tests.E64_MB_supported_tests, err2
+        assert testname in Tests().E64_MB_supported_tests, err2
         assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
 
 
