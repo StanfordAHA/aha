@@ -755,35 +755,51 @@ class Tests:
         elif testname == "BLANK":
             pass
 
-        else:
-            use_custom = True
+        # json strings
+        elif self.detect_and_process_json(testname):
+            return
 
-            
-# Wait.
+        # yaml strings
+        elif self.detect_and_process_yaml(testname):
+            return
+
+        else: pass
+
         # Export everything named in template
         vdic = vars().copy()
         for key in Tests.configs_template():
             if key in vdic:
                 self.__dict__[key] = vdic[key]
-#             else:
-#                 self.__dict__[key] = self.template[key]
 
-        if use_custom:
-            # Read a custom suite from external file <testname>.py
-            # E.g. if we build a config file '/aha/aha/util/regress_tests/custom4485.py'
-            # "if True:
-            #     width, height = 4, 2
-            #     glb_tests = [ 'tests/pointwise' ]"
-            # then 'aha regress custom4485' would run a 4x2 pointwise test.
-            try:
-                # Update self parms w those found in custom config {testname}.py
-                import importlib
-                tmpmodule = importlib.import_module('aha.util.regress_tests.' + testname)
-                self.__dict__.update(tmpmodule.__dict__)
-            except:
-                raise NotImplementedError(
-                    f"Cannot find custom config /aha/aha/util/regress_tests/{testname}.py"
-                )
+        return
+
+
+    def prefix_lines(lines, prefix):
+        'Attach the indicated prefix to each line in "lines"'
+        return prefix + lines.replace('\n', '\n'+prefix)
+
+     # Json string as config e.g. '{"width":8,"height":8,"glb_tests":["apps/pointwise"]}'
+    def detect_and_process_json(self, config):
+        '''if "config" is a parsable json string, add it to selfdict and return True'''
+        try:    config_dict = json.loads(config)
+        except: return False
+        assert type(config_dict) == dict
+        print(f"Found json string:\n{Tests.prefix_lines(config, '    ')}\n")
+        self.__dict__.update(config_dict)
+        return True
+
+    # Yaml string as config e.g. "width: 8\nheight: 8\nglb_tests:\n- apps/pointwise"
+    def detect_and_process_yaml(self, config):
+        '''if "config" is a parsable yaml string, add it to selfdict and return True'''
+        try:
+            config_dict = yaml.safe_load(config)
+            assert type(config_dict) == dict
+        except: return False
+        print(f'{config_dict=}')
+        print(f"Found yaml string:\n{Tests.prefix_lines(config, '    ')}\n")
+        self.__dict__.update(config_dict)
+        return True
+
 
     def show_config(config_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_config('fast'):
@@ -860,7 +876,11 @@ check_for_dupes(DBG=0)
 
 try: from configs import *
 except ModuleNotFoundError as e:
-    print(type(e).__name__, ': cannot import configs maybe:')
+    # FIXME need to set some env var to include aha.util.regress_tests, up in regress.py maybe
+    try: from aha.util.regress_tests.configs import *
+    except ModuleNotFoundError as e:
+        print(type(e).__name__, ': cannot import configs maybe:')
+
 
 if __name__ == "__main__":
     import sys

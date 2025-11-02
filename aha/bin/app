@@ -321,7 +321,7 @@ else
 # Find which group 'appname' belongs to,
 # e.g. group('apps/pointwise') = 'glb_tests' maybe
 
-group=`echo "$suites" | grep $appname | awk '{print $2}' | sort | uniq`
+group=$(echo "$suites" | grep ",$appname," | awk -F, '{print $2}' | sort | uniq)
 n_groups_found=`echo "$group" | wc -l`
 if ! [ "$n_groups_found" -eq 1 ]; then
     echo "WARNING: Found multiple possible groups for app '$appname': " $groups
