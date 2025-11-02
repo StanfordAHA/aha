@@ -118,18 +118,9 @@ test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
 ########################################################################
 # Parse 'tests.py' to find suite names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
-
-# # This selects lines like 'elif testname == "pr_aha":'
-# function filter1 { sed -n '/BLANK/d;/^[^#]*if testname/p'; }
-# 
-# # This selects the last word in the above line
-# function filter2 { awk -F '"' '{print $(NF-1)}'; }
-# 
-# TEST_SUITES=`cat $TESTS_PY | filter1 | filter2`
-# TEST_SUITES=`echo $TEST_SUITES`  # Remove newlines maybe
-TEST_SUITES=`python3 <(cat $TESTS_PY; echo "print(*Tests.configs_list)") | tail -1` || exit 13
-
-[ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n'$TEST_SUITES'\n\n"
+TEST_SUITES=$(python3 $TESTS_PY --exec "print(*Tests.configs_list)") || exit 13
+TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
+[ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n$TEST_SUITES\n\n"
 
 ########################################################################
 # List suite names if requested, e.g.
