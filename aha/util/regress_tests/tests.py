@@ -804,9 +804,9 @@ class Tests:
 
         # Setup up the format string for parms e.g. "8x8 --removed 4 --mu 8"
         size = "%sx%s" % (w,h)                       # "8x8"
-        zparms = " --removed %s --mu %s" % (col,mu)  # "--removed 4 --mu 8"
+        zparms = ",--removed %s,--mu %s" % (col,mu)  # "--removed 4 --mu 8"
         if zircon: parms = size + zparms
-        else:      parms = size + ' --no-zircon'
+        else:      parms = size + ',--no-zircon'
 
         not_groups = ("width", "height", "cols_removed", "mu_oc_0")
         for group in d:
@@ -814,9 +814,13 @@ class Tests:
             if group in not_groups:        continue  # Not a group
             if "supported_tests" in group: continue  # Also not a group
             for app in d[group]:
-                fmt = "%-12s %-16s %-32s %-s"
+                # fmt = "%-12s %-16s %-32s %-s"
+                fmt = "%s,%s,%s,%-s"
                 print(fmt % (config_name, group, app, parms))
                 # rval += (fmt % (config_name, group, app, d["app_parms"]))
+
+    def show_configs(zircon=True):
+        for c in Tests.configs_list: Tests.show_config(c)
 
 # print(825, __name__)
 if __name__ == '__main__':
@@ -858,6 +862,15 @@ try: from configs import *
 except ModuleNotFoundError as e:
     print(type(e).__name__, ': cannot import configs maybe:')
 
+if __name__ == "__main__":
+    import sys
+    if '--exec' in sys.argv:
+        print("FOOOOOOOO")
+        # eval(sys.argv[2])
+        print(sys.argv[2])
+        exec(sys.argv[2])
+        # for config in Tests.configs_list: Tests.show_config(config)
+
 # print("HELL OH!")
 # from configs import *
 # 
@@ -873,10 +886,3 @@ except ModuleNotFoundError as e:
 # #     E64_MB_supported_tests = Configs.E64_MB_supported_tests
 # #     skip_cgra_map = Configs.skip_cgra_map
 
-if __name__ == "__main__":
-    import sys
-    if '--exec' in sys.argv:
-        print("FOOOOOOOO")
-        # eval(sys.argv[2])
-        exec(sys.argv[2])
-        # for config in Tests.configs_list: Tests.show_config(config)

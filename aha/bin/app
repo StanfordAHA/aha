@@ -166,13 +166,20 @@ pyscript='if True:
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
 # python3 $TESTS_PY --showconfigs
-python3 $TESTS_PY --exec "for config in Tests.configs_list: Tests.show_config(config)"
-exit
+# python3 $TESTS_PY --exec "for config in Tests.configs_list: Tests.show_config(config)"
+# python3 $TESTS_PY --exec "Tests.show_configs()"
+# exit
 
 
+# suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
 
-suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
+suites=`python3 $TESTS_PY --exec "Tests.show_configs()"` || exit 13
 [ "$DBG" ] && echo "$suites"
+# echo "$suites"; exit
+
+
+
+
 #########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
 #   BEFORE:
@@ -192,7 +199,7 @@ function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 #     app 8x8 vec_identity       --removed 4 --mu 8
 #     app 8x8 apps/pointwise     --removed 4 --mu 8
 #     app 8x8 tests/fp_pointwise --removed 4 --mu 8
-
+# set -x
 if [ "$SUITE" ]; then
     # Install column command if not exist yet (for docker mainly)
     if ! type column >& /dev/null; then
@@ -216,10 +223,10 @@ if [ "$SUITE" ]; then
         [ "$DBG" ] && hline 72
 
         # Note $ZIRCON is either "" or " --no-zircon"
-        (echo "$suites" | egrep ^"$s" | awk '{
+        (echo "$suites" | egrep ^"$s" | awk -F, '{
           suite=$1; group=$2; app=$3; size=$4; $1=$2=$3=$4="";
           gsub(/^ */, "", $0); parms = $0
-          printf("'$bn' %s %s %s\n", size, app, parms ZIRCON)
+          printf("'$bn' %s \"%s\" %s\n", size, app, parms ZIRCON)
         }') | filter | sed "s/\$/$ZIRCON/"
     done
     exit
