@@ -320,10 +320,13 @@ def dispatch(args, extra_args=None):
         if 'POND_PATH_BALANCING' in env and env['POND_PATH_BALANCING'] == '1':
             layer_path_balance_folder = f"{app_dir}/path_balancing_configs"
             assert os.path.exists(layer_path_balance_folder), f"ERROR: path_balancing_configs folder does not exist in {app_dir}, cannot copy path_balance.json"
-            assert model is not None and layer is not None, f"ERROR: voyager test must be specified to use POND_PATH_BALANCING"
 
-            layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
-            assert os.path.exists(layer_path_balance_json), f"ERROR: {model}_{layer}_path_balancing.json not found in {layer_path_balance_folder}."
+            if mu_test is None or mu_test == "":
+                layer_path_balance_json = os.path.join(layer_path_balance_folder, "path_balancing.json")
+                assert os.path.exists(layer_path_balance_json), f"ERROR: path_balancing.json not found in {layer_path_balance_folder}."
+            else:
+                layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
+                assert os.path.exists(layer_path_balance_json), f"ERROR: {model}_{layer}_path_balancing.json not found in {layer_path_balance_folder}."
             os.system(f"cp {layer_path_balance_json} {app_dir}/bin/path_balancing.json")
 
         if not chain:
