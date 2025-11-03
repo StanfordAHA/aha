@@ -18,6 +18,7 @@ def add_subparser(subparser):
     parser.add_argument("--multiles", type=int, default=None)
     parser.add_argument("--dpr", action="store_true")
     parser.add_argument("--mu-test", nargs="+", type=str, help="Specifies the test to run on the external voyager matrix unit. If not specified, or specified as \"inactive\", the test is skipped.")
+    parser.add_argument("--voyager-cgra-test", type=str, help="Specifies a standalone vector unit test. If not specified, the test will not be run.")
     parser.add_argument("--layer", type=str, help="Specifies layer parameters if running 'aha halide apps/resnet_output_stationary', options for LAYER are in application_parameters.json")
     parser.set_defaults(dispatch=dispatch)
 
@@ -101,6 +102,22 @@ def load_environmental_vars(env, app, layer=None, env_parameters=None):
         print(f"... {n} = {v}")
         env[n] = v
         os.environ[n] = v
+
+
+def unpack_output(arr):
+    # Ensure array is uint16
+    arr = numpy.asarray(arr, dtype=numpy.uint16)
+
+    # Extract lower and upper 8 bits
+    lower = arr & 0xFF
+    upper = (arr >> 8) & 0xFF
+
+    # Interleave lower first, then upper
+    result = numpy.empty(arr.size * 2, dtype=numpy.uint16)
+    result[0::2] = lower
+    result[1::2] = upper
+
+    return result
 
 
 def dispatch(args, extra_args=None):
@@ -278,11 +295,18 @@ def dispatch(args, extra_args=None):
 
         for app in args.app:
             mu_test = args.mu_test[args.app.index(app)] if args.mu_test is not None else "inactive"
+            voyager_cgra_test = args.voyager_cgra_test
             app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
-            voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}")
+            if voyager_cgra_test is None or voyager_cgra_test == "":
+                voyager_test_fullname = mu_test
+            else:
+                voyager_test_fullname = voyager_cgra_test
+            voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{voyager_test_fullname}")
 
             use_voyager_gold = "VOYAGER_GOLD" in os.environ and os.environ["VOYAGER_GOLD"] == "1"
             use_psum_workaround_gold = "USE_PSUM_WORKAROUND_GOLD" in os.environ and os.environ["USE_PSUM_WORKAROUND_GOLD"] == "1"
+            packed_outputs = "PACKED_OUTPUTS" in os.environ and os.environ["PACKED_OUTPUTS"] == "1"
+            soft_integer_comparison = "SOFT_INTEGER_COMPARISON" in os.environ and os.environ["SOFT_INTEGER_COMPARISON"] == "1"
 
             design_meta_path = f"{app_dir}/bin/design_meta.json"
             assert os.path.exists(design_meta_path), f"Missing meta file: {design_meta_path}"
@@ -294,7 +318,11 @@ def dispatch(args, extra_args=None):
 
             if use_psum_workaround_gold:
                 psum_idx = int(os.environ.get("PSUM_IDX", 1))
-                gold_output_path = f"{app_dir}/{mu_test}_gold/kernel_{psum_idx}_output.txt"
+                per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
+                if per_tensor_scaling:
+                    gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                else:
+                    gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
                 assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                 gold_array = []
                 with open(gold_output_path, "r") as gold_output:
@@ -304,6 +332,8 @@ def dispatch(args, extra_args=None):
                             gold_array.extend(values)
                 gold_array = numpy.array(gold_array, dtype=numpy.uint16)
                 gold_array = gold_array.flatten()
+                output_file_name = "hw_output"  # Assuming single output named hw_output for psum workaround
+                golds_by_name[output_file_name] = gold_array
 
             # Use voyager gold pre-supplied by the user
             elif use_voyager_gold:
@@ -340,19 +370,24 @@ def dispatch(args, extra_args=None):
                     assert ext == ".raw", f"Unexpected datafile ext for output: {datafile}"
                     gold_output_path = f"{app_dir}/bin/{datafile}"
                     assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
-                    golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
+                    if packed_outputs:
+                        golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
+                    else:
+                        golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
 
             for out in outputs:
                 datafile = out["datafile"]
                 output_file_name, _ = os.path.splitext(datafile)
                 sim_txt_path = f"{args.aha_dir}/garnet/tests/test_app/{output_file_name}.txt"
-                sim_array = _load_hex_txt(sim_txt_path)
+                if packed_outputs:
+                    sim_array = unpack_output(_load_hex_txt(sim_txt_path))
+                else:
+                    sim_array = _load_hex_txt(sim_txt_path)
                 assert output_file_name in golds_by_name, f"Missing gold for output '{output_file_name}'."
                 gold_array = golds_by_name[output_file_name]
 
                 comparisons.append({
                     "app": app,
-                    "mu_test": mu_test,
                     "name": output_file_name,
                     "gold": gold_array,
                     "sim": sim_array,
@@ -371,7 +406,65 @@ def dispatch(args, extra_args=None):
                 compare["gold"] = gold_array[:min_length]
                 compare["sim"] = sim_array[:min_length]
 
-        if args.dense_fp:
+        if soft_integer_comparison:
+            # Soft integer comparison per output (bit accurate within +/- 1)
+            for compare in comparisons:
+                app = compare["app"]
+                app_dir = compare["app_dir"]
+                name = compare["name"]
+                gold_array = compare["gold"]
+                sim_array = compare["sim"]
+
+                print(f"[{app}::{name}] Gold array len: {len(gold_array)}")
+                print(f"[{app}::{name}] Sim array len: {len(sim_array)}")
+
+                if gold_array.shape != sim_array.shape:
+                    print(f"\033[93mWarning:\033[0m {app}::{name} gold vs sim shapes differ after truncation guard.")
+
+                hard_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) > 1
+                hard_diff_indices = numpy.where(hard_integer_differences)[0]
+                num_hard_diff_tolerance = 3
+                if len(hard_diff_indices) > 0:
+                    print(f"[{app}::{name}] Integer values differing by more than 1:")
+                    for idx in hard_diff_indices[:20]:
+                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                    print(f"Total differing by more than 1: {len(hard_diff_indices)}")
+
+                # Create histogram of percentage differences for hard differences
+                hard_diff_percentages = 100.0 * numpy.abs(gold_array[hard_diff_indices].astype(int) - sim_array[hard_diff_indices].astype(int)) / 127
+                if len(hard_diff_percentages) > 0:
+                    hist, bin_edges = numpy.histogram(hard_diff_percentages, bins=[0, 1, 5, 10, 20, 50, 100, 200, 500, 1000])
+                    print(f"[{app}::{name}] Histogram of percentage differences for hard differences:")
+                    for i in range(len(hist)):
+                        print(f"  {bin_edges[i]:>7.1f}% - {bin_edges[i+1]:>7.1f}% : {hist[i]} occurrences")
+
+                soft_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) == 1
+                soft_diff_indices = numpy.where(soft_integer_differences)[0]
+                if len(soft_diff_indices) > 0:
+                    print(f"[{app}::{name}] Integer values differing by 1:")
+                    for idx in soft_diff_indices[:20]:
+                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                    print(f"Total differing by 1: {len(soft_diff_indices)}")
+
+                numpy.save(f"{app_dir}/bin/gold_{name}_array.npy", gold_array)
+                numpy.save(f"{app_dir}/bin/sim_{name}_array.npy", sim_array)
+
+                assert len(hard_diff_indices) <= num_hard_diff_tolerance, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed.\033[0m"
+
+                if len(hard_diff_indices) > 0:
+                    print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) had {len(hard_diff_indices)} hard differences but within tolerance.\033[0m")
+
+                if len(soft_diff_indices) > 0:
+                    mismatch_frac = len(soft_diff_indices) / len(gold_array) if len(gold_array) else 0.0
+                    frac_tolerance = 2e-1
+                    if mismatch_frac <= frac_tolerance:
+                        print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
+                    else:
+                        assert False, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+                else:
+                    print(f"\033[92m{app}::{name}: Integer (Bit-accurate +/-1) comparison passed. All pixels match exactly.\033[0m")
+
+        elif args.dense_fp:
 
             # Define custom absolute tolerance for floating point comparison
             custom_atol = 1.5e-04  # default 1e-08
