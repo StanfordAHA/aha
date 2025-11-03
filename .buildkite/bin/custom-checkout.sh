@@ -115,27 +115,9 @@ if [ "$1" == "--aha-submod-flow" ]; then
     echo "--- Found arg '$1'"
 
     # Submods (e.g. lake) run regressions only on pull-request, not for submod push
-    # Except for garnet submod, runs regressions on every git push or pull
-
     if [ "$BUILDKITE_PULL_REQUEST" == "false" ]; then
-        echo "not a pr. but is it garnet"
-        webhook="$(buildkite-agent meta-data get buildkite:webhook)"
-        repo=$(echo "$webhook" | get_json repository name)
-        if [ "$repo" == "garnet" ]; then
-            echo "Yes it is a garnet push"
-            export BUILDKITE_PULL_REQUEST_REPO=$(echo "$webhook" | get_json repository clone_url)
-            export AHA_SUBMOD_FLOW_COMMIT=$(echo "$webhook" | get_json head_commit id)
-            # Wait why does this not work
-            # buildkite_commit =? shoud be =? 87aada
-            printf "UPLOADING\n$TRIGGER_GARNET_PUSH\n"
-            echo "$TRIGGER_GARNET_PUSH" | buildkite-agent pipeline upload
-            echo "--- CUSTOM CHECKOUT END";
-            set +x
-            return
-        else
-            echo "it's a push but it's not garnet. we don't do anything for that. good-bye!"
-            exit 0
-        fi
+        echo "It's a submod push. We don't do anything for that. good-bye!"
+        exit 0
     fi
 
     echo "Set BPPR_TAIL for later usage, e.g. BPPR_TAIL=canal";
