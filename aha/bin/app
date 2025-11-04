@@ -52,7 +52,7 @@ if [ "$1" == "" ];       then echo "$HELP"; exit; fi
 # Unpack the args
 
 # Preserve original flags for later
-app_flags="$@"
+app_flags=("$@")
 
 # Defaults
 DBG=
@@ -213,8 +213,8 @@ test -e /aha/aha && IN_DOCKER=True || IN_DOCKER=
 if ! [ "$IN_DOCKER" ]; then
 
     if [ "$CONTAINER" ]; then
-        echo "Run '$bn $app_flags' in existing container '$CONTAINER'"
-        docker exec $CONTAINER /aha/aha/bin/$bn $app_flags || exit 13
+        echo "Run '$bn ${app_flags[@]}' in existing container '$CONTAINER'"
+        docker exec $CONTAINER /aha/aha/bin/$bn "${app_flags[@]}" || exit 13
         exit
     fi
 
@@ -233,6 +233,10 @@ if ! [ "$IN_DOCKER" ]; then
     docker pull $image
     container=deleteme-$USER-run-one-app-$$
     docker run -id --name $container --rm -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" $CAD $image bash
+
+    # Huh. Really? We still need this?
+    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$container":/aha/garnet/MatrixUnit_sim_sram.v
+    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$container":/aha/garnet/MatrixUnitWrapper_sim.v
 
     # Trap and kill docker container on exit ('--rm' no workee, but why?)
     function cleanup { printf '\n\n'; set -x; docker kill $container || echo okay; }
@@ -273,8 +277,8 @@ if ! [ "$IN_DOCKER" ]; then
     fi
 
     # Run script in container now
-    echo "Run '$bn $app_flags' in container"
-    docker exec $container /aha/aha/bin/$bn $app_flags || exit 13
+    echo "Run '$bn ${app_flags[@]}' in container"
+    docker exec $container /aha/aha/bin/$bn "${app_flags[@]}" || exit 13
     exit
 fi
 
@@ -283,7 +287,7 @@ fi
 #############################################################################
 # E.g. app_flags='8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8'
 echo '------------------------------------------------------------------------------'
-printf "Ready to do: $bn $app_flags\n\n"
+printf "Ready to do: $bn ${app_flags[@]}\n\n"
 
 if [ "$RUN_SUITE" ]; then
     # Run an entire suite of tests
@@ -410,13 +414,4 @@ function testing {
   }
   egrep '\+ app' alltests.log
   alltests-filter alltests.log
-
-
-  # (bash <(echo set -x; printf "$zi\$nz\n")) | shuf > alltests
-  # echo "$nz" | head
-  # echo "$z" | head
-  # printf "$nz\n$z\n" | less -N
-  # printf "$zi\n$nz\n" | sed 's/  */ /g' | less
-  # printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | less
-  # # app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
 }
