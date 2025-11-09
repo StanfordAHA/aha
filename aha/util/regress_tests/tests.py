@@ -48,7 +48,9 @@ class Tests:
             "apps/fully_connected_layer_fp",
             "apps/pointwise_custom_packing",
             "apps/pointwise_custom_place_multibank",
-            "apps/get_e8m0_scale_test_fp",
+            "apps/get_e8m0_scale_tree_mu_input",
+            "apps/get_e8m0_scale_tree_gb_input",
+            "apps/apply_e8m0_scale_single_IO",
             "apps/get_apply_e8m0_scale_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -66,7 +68,9 @@ class Tests:
             "apps/pointwise",
             "apps/pointwise_mu_io",
             "apps/pointwise_custom_place_multibank",
-            "apps/get_e8m0_scale_test_fp",
+            "apps/get_e8m0_scale_tree_mu_input",
+            "apps/get_e8m0_scale_tree_gb_input",
+            "apps/apply_e8m0_scale_single_IO",
             "apps/get_apply_e8m0_scale_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
@@ -186,24 +190,16 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_RV = [
-                "tests/conv_2_1_RV",
-                "tests/fp_e8m0_quant_test_RV",
-                "apps/pointwise_RV",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_custom_packing_RV_E64",
-                "apps/gaussian_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
             external_mu_tests_fp = [
@@ -319,6 +315,18 @@ class Tests:
         elif testname == "pr_aha9":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            glb_tests_RV = [
+                "tests/conv_2_1_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
+                "apps/gaussian_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+            ]
             external_mu_tests_fp = [
                 # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
@@ -437,6 +445,8 @@ class Tests:
                 "apps/brighten_and_blur_RV",
                 "apps/pointwise_custom_packing_RV_E64",
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
             ]
             glb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
@@ -563,7 +573,7 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
             external_mu_tests = [

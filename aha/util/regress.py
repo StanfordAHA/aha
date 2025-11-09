@@ -450,13 +450,14 @@ def test_dense_app(
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
-    
+
     skip_cgra_map = test in skip_cgra_map_list
     skip_cgra_pnr = test in skip_cgra_pnr_list
 
     # These tests skip output regs for easier PnR
     skip_output_pipeline_regs = test in [
         "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+        "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
