@@ -52,7 +52,7 @@ if [ "$1" == "" ];       then echo "$HELP"; exit; fi
 # Unpack the args
 
 # Preserve original flags for later
-app_flags="$@"
+app_flags=("$@")
 
 # Defaults
 DBG=
@@ -136,42 +136,22 @@ if [ "$LIST_SUITES" ]; then
     echo "$TEST_SUITES all" | xargs printf "  $bn --show-suite %s\n" | sed 's/,//'
     exit
 fi
-[ "$DBG" ] && echo app 148
 ########################################################################
 # Build a COMPACT data structure containing all apps and suites e.g.
 #
-# fast   sparse_tests   vec_identity       8x8 --removed 4 --mu 8
-# fast   glb_tests      apps/pointwise     8x8 --removed 4 --mu 8
-# fast   glb_tests_fp   tests/fp_pointwise 8x8 --removed 4 --mu 8
-#
-# pr_aha sparse_tests   vec_elemmul        28x16
-# pr_aha sparse_tests   mat_vecmul_ij      28x16
+# fast,sparse_tests,vec_identity,8x8,--removed 4,--mu 8
+# fast,glb_tests_RV,tests/conv_2_1_RV,8x8,--removed 4,--mu 8
+# fast,glb_tests_RV,apps/pointwise_RV_E64,8x8,--removed 4,--mu 8
+# 
+# pr_aha1,sparse_tests,vec_elemmul,28x16,--removed 12,--mu 32
+# pr_aha1,sparse_tests,mat_vecmul_ij,28x16,--removed 12,--mu 32
 
-pyscript='if True:
-    import sys, importlib
-    spec = importlib.util.spec_from_file_location("tests", sys.argv[1])
-    tests = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(tests)
-    for config in sys.argv[2:]: tests.Tests.show_config(config)
-'
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
-# python3 $TESTS_PY --showconfigs
-# python3 $TESTS_PY --exec "for config in Tests.configs_list: Tests.show_config(config)"
-# python3 $TESTS_PY --exec "Tests.show_configs()"
-# exit
-
-
-# suites=`python3 -c "$pyscript" $TESTS_PY $TEST_SUITES` || exit 13
-
 suites=`python3 $TESTS_PY --exec "Tests.show_configs()"` || exit 13
 [ "$DBG" ] && echo "$suites"
-# echo "$suites"; exit
 
-
-
-
-#########################################################################
+########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
 #   BEFORE:
 #     app 8x8 vec_identity --num-fabric-cols-removed 4 --mu_oc_0 8
@@ -183,14 +163,13 @@ suites=`python3 $TESTS_PY --exec "Tests.show_configs()"` || exit 13
 function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 
-#########################################################################
+########################################################################
 # Print contents of indicated suite "$SUITE" e.g.
 #
 #     % app --show-suite fast
 #     app 8x8 vec_identity       --removed 4 --mu 8
 #     app 8x8 apps/pointwise     --removed 4 --mu 8
 #     app 8x8 tests/fp_pointwise --removed 4 --mu 8
-# set -x
 if [ "$SUITE" ]; then
     # Install column command if not exist yet (for docker mainly)
     if ! type column >& /dev/null; then
@@ -222,7 +201,7 @@ if [ "$SUITE" ]; then
     done
     exit
 fi
-[ "$DBG" ] && echo app 221
+
 ########################################################################
 # If we get this far, it means we are going to to try and run an app
 [ "$DBG" ] && echo "okay here we are we gonna run app '$appname'"
@@ -234,8 +213,8 @@ test -e /aha/aha && IN_DOCKER=True || IN_DOCKER=
 if ! [ "$IN_DOCKER" ]; then
 
     if [ "$CONTAINER" ]; then
-        echo "Run '$bn $app_flags' in existing container '$CONTAINER'"
-        docker exec $CONTAINER /aha/aha/bin/$bn $app_flags || exit 13
+        echo "Run '$bn ${app_flags[@]}' in existing container '$CONTAINER'"
+        docker exec $CONTAINER /aha/aha/bin/$bn "${app_flags[@]}" || exit 13
         exit
     fi
 
@@ -254,6 +233,10 @@ if ! [ "$IN_DOCKER" ]; then
     docker pull $image
     container=deleteme-$USER-run-one-app-$$
     docker run -id --name $container --rm -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" $CAD $image bash
+
+    # Huh. Really? We still need this?
+    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$container":/aha/garnet/MatrixUnit_sim_sram.v
+    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$container":/aha/garnet/MatrixUnitWrapper_sim.v
 
     # Trap and kill docker container on exit ('--rm' no workee, but why?)
     function cleanup { printf '\n\n'; set -x; docker kill $container || echo okay; }
@@ -294,83 +277,81 @@ if ! [ "$IN_DOCKER" ]; then
     fi
 
     # Run script in container now
-    echo "Run '$bn $app_flags' in container"
-    docker exec $container /aha/aha/bin/$bn $app_flags || exit 13
+    echo "Run '$bn ${app_flags[@]}' in container"
+    docker exec $container /aha/aha/bin/$bn "${app_flags[@]}" || exit 13
     exit
 fi
 
 # NOTE we are (still) in a container now
-# TODO/FIXME this whole script needs a good cleaning
 
 #############################################################################
 # E.g. app_flags='8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8'
 echo '------------------------------------------------------------------------------'
-printf "Ready to do: $bn $app_flags\n\n"
+printf "Ready to do: $bn ${app_flags[@]}\n\n"
 
 if [ "$RUN_SUITE" ]; then
+    # Run an entire suite of tests
     config=$RUN_SUITE
 
-    # "fast" suite breaks if include dense-only tests, dunno why exactly FIXME (it should just ignore/skip them, right?)
+    # "fast" suite breaks if include dense-only tests, dunno why exactly
+    # FIXME (it should just ignore/skip them, right? in like regress.py?)
     [ $config == fast ] || config="$config --include-dense-only-tests"
 
     echo '------------------------------------------------------------------------------'
     printf "Ready to do: TOOL=$SIM aha regress $config\n\n"
 else
+    # Run a single test 'appname'. 
 
-########################################################################
-# Find which group 'appname' belongs to,
-# e.g. group('apps/pointwise') = 'glb_tests' maybe
+    # Find which group 'appname' belongs to,
+    # e.g. group('apps/pointwise') = 'glb_tests' maybe
 
-group=$(echo "$suites" | grep ",$appname," | awk -F, '{print $2}' | sort | uniq)
-n_groups_found=`echo "$group" | wc -l`
-if ! [ "$n_groups_found" -eq 1 ]; then
-    echo "WARNING: Found multiple possible groups for app '$appname': " $groups
-    group=`echo "$group" | head -1`
-    echo "Will use first group found '$group'"
-fi
-echo "Found group('$appname') = '$group'"
+    group=$(echo "$suites" | grep ",$appname," | awk -F, '{print $2}' | sort | uniq)
+    n_groups_found=`echo "$group" | wc -l`
+    if ! [ "$n_groups_found" -eq 1 ]; then
+        echo "WARNING: Found multiple possible groups for app '$appname': " $groups
+        group=`echo "$group" | head -1`
+        echo "Will use first group found '$group'"
+    fi
+    echo "Found group('$appname') = '$group'"
 
-########################################################################
-# Extract width, height, groupname, regression flags
-# '8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8' =>
-#     colrow: 'self.width, self.height = 4, 2'
-#     rflags: '--num-fabric-cols-removed 4 --mu_oc_0 8'
+    ########################################################################
+    # Extract width, height, groupname, regression flags
+    # '8x8 apps/pointwise --num-fabric-cols-removed 4 --mu_oc_0 8' =>
+    #     colrow: 'self.width, self.height = 4, 2'
+    #     rflags: '--num-fabric-cols-removed 4 --mu_oc_0 8'
 
-# colrow=$(echo $size | awk -F x '{printf("self.width, self.height = %s, %s", $1, $2)}')
-colrow=$(echo $size | awk -F x '{printf("width, height = %s, %s", $1, $2)}')
-rflags=$(echo $* | awk '{$1=""; $2=""; gsub(/^ */, "", $0); print $0}')
-if [ "$DBG" ]; then
-    hline 20
-    echo "group:  '$group'"
-    echo "colrow: '$colrow'"
-    echo "rflags: '$rflags'"
-    echo ""
-fi
+    # colrow=$(echo $size | awk -F x '{printf("self.width, self.height = %s, %s", $1, $2)}')
+    colrow=$(echo $size | awk -F x '{printf("width, height = %s, %s", $1, $2)}')
+    rflags=$(echo $* | awk '{$1=""; $2=""; gsub(/^ */, "", $0); print $0}')
+    if [ "$DBG" ]; then
+        hline 20
+        echo "group:  '$group'"
+        echo "colrow: '$colrow'"
+        echo "rflags: '$rflags'"
+        echo ""
+    fi
 
-########################################################################
-# Prepare a json string e.g. '{"width":8,"height":8,"glb_tests":["apps/pointwise"]}'
+    ########################################################################
+    # Prepare a json string e.g. '{"width":8,"height":8,"glb_tests":["apps/pointwise"]}'
 
-# awk input e.g. '"width"x"height"x8x8', output '"width":8",height":8
-wh=$(echo '"width":x,"height":x'$size | awk -F x '{print $1 $3 $2 $4}')
-cr='"cols_removed":'$FCR
-mu='"mu_oc_0":'$MU
-config="{$wh,$cr,$mu,\"$group\":[\"$appname\"]}"
+    # awk input e.g. '"width"x"height"x8x8', output '"width":8",height":8
+    wh=$(echo '"width":x,"height":x'$size | awk -F x '{print $1 $3 $2 $4}')
+    cr='"cols_removed":'$FCR
+    mu='"mu_oc_0":'$MU
+    config="{$wh,$cr,$mu,\"$group\":[\"$appname\"]}"
 
-echo '------------------------------------------------------------------------'
-printf "Prepared custom json string\n  $config\n\n"
-
-# I dunno, just run it I guess?
-
+    echo '------------------------------------------------------------------------'
+    printf "Prepared custom json string\n  $config\n\n"
 fi
 
 
 ########################################################################
 # Prepare docker environment for testing
 
-echo "pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe"
-pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe
+# echo "pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe"
+# pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe
 
-rm -f garnet/garnet.v  # Get rid of old verilog if it exists
+rm -f garnet/garnet.v       # Get rid of old verilog if it exists
 # source /aha/bin/activate  # Note we already did this, for importlib way up above...
 
 echo "# Set up access to requested RTL simulator vcs or verilator"
@@ -433,37 +414,4 @@ function testing {
   }
   egrep '\+ app' alltests.log
   alltests-filter alltests.log
-
-
-  # (bash <(echo set -x; printf "$zi\$nz\n")) | shuf > alltests
-  # echo "$nz" | head
-  # echo "$z" | head
-  # printf "$nz\n$z\n" | less -N
-  # printf "$zi\n$nz\n" | sed 's/  */ /g' | less
-  # printf "$zi\n$nz\n" | sed 's/  */ /g' | tabbit | less
-  # # app --show | egrep '^app ' | sort | uniq | shuf > /tmp/alltests
 }
-
-
-
-#     ########################################################################
-#     # Prepare a custom suite containing ONLY the desired app e.g.
-#     #     > if True:
-#     #     >     width, height = 8, 8
-#     #     >     cols_removed, mu_oc_0 = 8, 32
-#     #     >     glb_tests = [ 'apps/pointwise' ]
-# 
-#     config=config$$
-#     cat <<EOF > /aha/aha/util/regress_tests/$config.py
-# if True:
-#     $colrow
-#     cols_removed, mu_oc_0 = $FCR, $MU
-#     $group = [ '$appname' ]
-# EOF
-# 
-#     echo '------------------------------------------------------------------------'
-#     printf "Prepared custom config file /aha/aha/util/regress_tests/$config.py\n\n"
-#     # ls -l /aha/aha/util/regress_tests/$config.py
-#     cat /aha/aha/util/regress_tests/$config.py | sed 's/^/> /'
-#     echo ""
-
