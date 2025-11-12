@@ -55,17 +55,11 @@ class Configs:
     #   "mu"      bunch of "external_mu_tests", mostly resnet18
     #
     #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
-    config_name_list = ["fast",
-                        "pr_aha1",
-                        "pr_aha2",
-                        "pr_aha3",
-                        "pr_aha4",
-                        "pr_aha5",
-                        "pr_aha6",
-                        "pr_aha7",
-                        "pr_aha8",
-                        "pr_aha9","pr_aha","full","resnet","mu","BLANK", "pr_submod"]
-                        
+
+    configs_list = ["fast", "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4",
+                 "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
+                 "pr_aha", "full", "resnet", "mu", "BLANK"]
+
     configs = {}
 
     # Default groups and values
@@ -277,19 +271,9 @@ class Configs:
         {
             "height": 16, "width": 28, "mu_oc_0": 32, "cols_removed": 12,
             "behavioral_mu_tests": [
-                "apps/pointwise_mu_io_RV_E64",
+                "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB"],
         },
-        # resnet18_conv2d6,
-        # resnet18_conv2d11,
-        # resnet18_conv2dfake,
-        # resnet18_conv2d16,
-#         resnet18_zdqr,
-#         resnet18_submod3,
-#         resnet18_submod7,
-#         resnet18_submod11,
-#         resnet18_submod15,
-#         resnet18_submod17,
         { 'voyager_cgra_tests_fp': voyager_cgra_tests_fp + voyager_cgra_tests_fp2 },
         { 'external_mu_tests_fp': external_mu_tests_fp_all },
     )
@@ -374,6 +358,7 @@ class Configs:
         '''behavioral_mu_tests:  # 42m build 12226
             - apps/pointwise_mu_io_RV_E64
             - apps/pointwise_mu_io_RV_E64_MB
+            - apps/mu2glb_path_balance_test_RV_E64
             - apps/abs_max_full_unroll_fp_RV
             - apps/get_e8m0_scale_test_fp_RV_E64_MB
             - apps/get_apply_e8m0_scale_fp_RV_E64_MB''',
@@ -697,6 +682,7 @@ class Configs:
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_test_fp_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
