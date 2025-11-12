@@ -1,3 +1,8 @@
+# Find and/or install pyyaml
+from subprocess import run, DEVNULL
+run('python3 -m pip install pyyaml', shell=True, stdout = DEVNULL, stderr = DEVNULL)
+import json, yaml
+
 ########################################################################
 class Tests:
 
@@ -16,19 +21,13 @@ class Tests:
     #   "mu"      bunch of "external_mu_tests", mostly resnet18
     #
     #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
-    configs_list = [
-        "fast",
-        "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4", "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9", "pr_aha",
-        "full",
-        "resnet",
-        "mu",
-        "BLANK",
-    ]
-#     configs = {}
-#     for c in config_list: configs[c] = c  # Used by app utility
+
+    configs_list = ["fast", "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4",
+                 "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
+                 "pr_aha", "full", "resnet", "mu", "BLANK"]
 
     def configs_template():
-
+        # Defaults
         width, height = 28, 16  # default
         sparse_tests = []
         glb_tests_RV = []
@@ -97,8 +96,6 @@ class Tests:
 
     def __init__(self, testname="BLANK", zircon=True):
         self.__dict__.update(Tests.configs_template())
-
-        use_custom = False
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
         if testname in ["daily", "pr", "pr_submod"]:
@@ -759,11 +756,11 @@ class Tests:
         elif testname == "BLANK":
             pass
 
-        # json strings
+        # json strings for app util
         elif self.detect_and_process_json(testname):
             return
 
-        # yaml strings
+        # yaml strings for app util
         elif self.detect_and_process_yaml(testname):
             return
 
@@ -804,7 +801,7 @@ class Tests:
         self.__dict__.update(config_dict)
         return True
 
-
+    # Support function for app util
     def show_config(config_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_config('fast'):
         #
@@ -842,24 +839,13 @@ class Tests:
     def show_configs(zircon=True):
         for c in Tests.configs_list: Tests.show_config(c)
 
-# print(825, __name__)
-if __name__ == '__main__':
-    config = 'fast'
-    Tests.show_config(config)
-    print('')
-
-
-# print(999, Tests.template)
-# exit()
-
-
-# Every time someone tries to import this class, it triggers this
-# quick check to make sure that no configs have redundant apps
+# Every time someone tries to import this class, it triggers this quick
+# to make sure that no configs have redundant apps e.g. if someone accidentally
+# puts two copies of 'conv2_x" into the "full" config, this will catch it.
 
 def check_for_dupes(DBG=0):
     errors = ''
     if DBG: print("tests.py: Verify no duplicates in any groups")
-    # for config_name in Tests.configs:
     for config_name in Tests.configs_list:
         if DBG: print('\n', config_name)
         config = Tests(config_name).__dict__
@@ -885,28 +871,9 @@ except ModuleNotFoundError as e:
     except ModuleNotFoundError as e:
         print(type(e).__name__, ': cannot import configs maybe:')
 
-
+# app utility uses this to do things like e.g.
+#     tests.py --exec "print(*Tests.configs_list)"  # list config names
+#     tests.py --exec "for c in Tests.configs_list: Tests.show_config(c)  # list config contents
 if __name__ == "__main__":
     import sys
-    if '--exec' in sys.argv:
-        print("FOOOOOOOO")
-        # eval(sys.argv[2])
-        print(sys.argv[2])
-        exec(sys.argv[2])
-        # for config in Tests.configs_list: Tests.show_config(config)
-
-# print("HELL OH!")
-# from configs import *
-# 
-# import sys
-# print(sys.argv)
-# if '--test' in sys.argv:
-#     print("HELLO TEST NURSE!")
-#     # print("fast:", json.dumps(Tests.configs['fast'], indent=4))
-#     Configs.verify(Tests)
-# 
-# #     configs = Configs.configs
-# #     E64_supported_tests = Configs.E64_supported_tests
-# #     E64_MB_supported_tests = Configs.E64_MB_supported_tests
-# #     skip_cgra_map = Configs.skip_cgra_map
-
+    if '--exec' in sys.argv: exec(sys.argv[2])

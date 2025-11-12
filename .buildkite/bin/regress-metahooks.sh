@@ -91,7 +91,6 @@ if [ "$1" == '--pre-command' ]; then
     # We no longer use DO_PR to select between configs "pr" and "pr_aha1-9"
     # b/c submods now use pr_aha1-9 just like everyone else.
     # We still have to make sure DO_PR is turned OFF though maybe
-    # (Also: we no longer regressions for garnet pull-requests)
     echo ".. UNSET DO_PR"; /bin/rm -rf temp/DO_PR
     test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
