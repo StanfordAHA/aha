@@ -36,12 +36,11 @@ class Tests:
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
-        # voyager_cgra_tests_fp = []
         behavioral_mu_tests = []
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
-        no_zircon_sparse_tests = []
+        # no_zircon_sparse_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
@@ -93,10 +92,7 @@ class Tests:
             "apps/mu2glb_path_balance_test",
         ]
         vardic = vars().copy()
-
-        # Include any and all groups defined in groups() method
-        g = Tests.groups().copy()
-        for key in g: vardic[key] = []
+        for key in Tests.groups(): vardic[key] = []  # Include groups() groups
         return vardic
 
     def groups():
@@ -118,6 +114,14 @@ class Tests:
             # Fully connected layer (K-DIM HOST TILING)
             "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
             "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+        ]
+        # For sparse tests, we cherry pick some representative tests to run
+        no_zircon_sparse_tests = [
+            "vec_elemmul",
+            "mat_vecmul_ij",
+            "mat_elemadd_leakyrelu_exp",
+            "matmul_ikj",
+            "tensor3_mttkrp",
         ]
         return vars().copy()
 
@@ -252,14 +256,8 @@ class Tests:
         elif testname == "pr_aha5":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            # For sparse tests, we cherry pick some representative tests to run
-            no_zircon_sparse_tests = [
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "matmul_ikj",
-                "tensor3_mttkrp",
-            ]
+            self.addgroup("no_zircon_sparse_tests")
+
             # Tests below are non-zircon and won't run by default
             glb_tests = [
                 "apps/pointwise",
@@ -636,15 +634,7 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-
-            # For sparse tests, we cherry pick some representative tests to run
-            no_zircon_sparse_tests = [
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "matmul_ikj",
-                "tensor3_mttkrp",
-            ]
+            self.addgroup("no_zircon_sparse_tests")
 
         elif testname == "resnet":
             width, height = 28, 16
@@ -865,10 +855,20 @@ def addgroup(self, groupname, subgroup=[]):
         # If subgroups specified, only include apps in those subgroups
         elif sgi in subgroup: applist += [line]
 
-    self.__dict__['voyager_cgra_tests_fp'] = applist
+    # self.__dict__['voyager_cgra_tests_fp'] = applist
+    self.__dict__[groupname] = applist
     return True
-
 Tests.addgroup = addgroup
+
+check_for_dupes(DBG=0)
+
+# app utility uses this to do things like e.g.
+#     tests.py --exec "print(*Tests.configs_list)"  # list config names
+#     tests.py --exec "for c in Tests.configs_list: Tests.show_config(c)  # list config contents
+if __name__ == "__main__":
+    import sys
+    if '--exec' in sys.argv: exec(sys.argv[2])
+
 
 # def foo():
 #     g=Tests.group('voyager_cgra_tests_fp')
@@ -893,11 +893,4 @@ Tests.addgroup = addgroup
 # exit()
 
 
-check_for_dupes(DBG=0)
 
-# app utility uses this to do things like e.g.
-#     tests.py --exec "print(*Tests.configs_list)"  # list config names
-#     tests.py --exec "for c in Tests.configs_list: Tests.show_config(c)  # list config contents
-if __name__ == "__main__":
-    import sys
-    if '--exec' in sys.argv: exec(sys.argv[2])
