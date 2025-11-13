@@ -36,7 +36,7 @@ class Tests:
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
-        voyager_cgra_tests_fp = []
+        # voyager_cgra_tests_fp = []
         behavioral_mu_tests = []
         external_mu_tests = []
         external_mu_tests_fp = []
@@ -92,9 +92,14 @@ class Tests:
             "apps/zircon_quant_fp",
             "apps/mu2glb_path_balance_test",
         ]
-        return vars().copy()
+        vardic = vars().copy()
 
-    def groups(groupname):
+        # Include any and all groups defined in groups() method
+        g = Tests.groups().copy()
+        for key in g: vardic[key] = []
+        return vardic
+
+    def groups():
         voyager_cgra_tests_fp = [
 
             "subgroup1",
@@ -114,48 +119,9 @@ class Tests:
             "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
             "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
         ]
-        return vars()[groupname].copy()
-
-    def group(self, groupname, subgroup=[]):
-        '''E.g. group("voyager_cgra_tests_fp", [2,3])'''
-        applist = []
-        group_info = Tests.groups(groupname)
-        for line in group_info:
-
-            # Subgroup info line e.g. line == "subgroup2"
-            if line.startswith('subgroup'):
-                sgi = int(line[8:]); continue
-
-            # Default is to include ALL apps
-            if not subgroup: applist += [line]
-
-            # If subgroups specified, only include apps in those subgroups
-            elif sgi in subgroup: applist += [line]
-
-        self.__dict__['voyager_cgra_tests_fp'] = applist
-        return True
-
-    def foo():
-        g=Tests.group('voyager_cgra_tests_fp')
-        for app in g: print('   ', app)
-        exit()
-
-
-
-#     print(groups('voyager_cgra_tests_fp'))
-#     exit()
-
-
-#     g=group('voyager_cgra_tests_fp', subgroup=[2,3])
-# #     print('---')
-#     for app in g: print('   ', app)
-#     exit()
-
+        return vars().copy()
 
     def __init__(self, testname="BLANK", zircon=True):
-        def addgroup(groupname, subgroup=[]):
-            self.group(groupname, subgroup)
-
         self.__dict__.update(Tests.configs_template())
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
@@ -214,14 +180,7 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
-            voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
-            ]
+            self.addgroup("voyager_cgra_tests_fp", [1])
             external_mu_tests_fp = [
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
@@ -380,10 +339,7 @@ class Tests:
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
             ]
-            addgroup("voyager_cgra_tests_fp", [2,3])
-
-
-
+            self.addgroup("voyager_cgra_tests_fp", [2,3])
 
         elif testname == "pr_aha9":
             width, height = 28, 16
@@ -612,21 +568,7 @@ class Tests:
                 # TODO: Tests below are planned but not yet supported
                 # "conv2_x_fp", # not yet supported by zircon
             ]
-            voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
-
-                # Average pooling layer
-                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
-
-                # Fully connected layer (K-DIM HOST TILING)
-                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
-                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
-            ]
+            self.addgroup("voyager_cgra_tests_fp")
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
@@ -730,21 +672,7 @@ class Tests:
             glb_tests_RV = []
             glb_tests_fp_RV = []
             resnet_tests = []
-            voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
-
-                # Average pooling layer
-                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
-
-                # Fully connected layer (K-DIM HOST TILING)
-                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
-                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
-            ]
+            self.addgroup("voyager_cgra_tests_fp")
             behavioral_mu_tests = [
                 "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
@@ -919,17 +847,50 @@ def check_for_dupes(DBG=0):
             if DBG: print(dbg_result)
     assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
 
-# Tests.foo()
-foo = Tests('pr_aha8').__dict__
-for app in foo['voyager_cgra_tests_fp']: print('        ',app)
-exit()
-for group in foo:
-    print('   ', group)
-    if type(foo[group]) is list:
-        for app in foo[group]: print('        ',app)
 
 
-exit()
+def addgroup(self, groupname, subgroup=[]):
+    '''E.g. addgroup("voyager_cgra_tests_fp", [2,3])'''
+    applist = []
+    group_info = Tests.groups()[groupname]
+    for line in group_info:
+
+        # Subgroup info line e.g. line == "subgroup2"
+        if line.startswith('subgroup'):
+            sgi = int(line[8:]); continue
+
+        # Default is to include ALL apps
+        if not subgroup: applist += [line]
+
+        # If subgroups specified, only include apps in those subgroups
+        elif sgi in subgroup: applist += [line]
+
+    self.__dict__['voyager_cgra_tests_fp'] = applist
+    return True
+
+Tests.addgroup = addgroup
+
+# def foo():
+#     g=Tests.group('voyager_cgra_tests_fp')
+#     for app in g: print('   ', app)
+#     exit()
+
+
+
+#     g=group('voyager_cgra_tests_fp', subgroup=[2,3])
+# #     print('---')
+#     for app in g: print('   ', app)
+#     exit()
+
+# # Tests.foo()
+# foo = Tests('pr_aha8').__dict__
+# for app in foo['voyager_cgra_tests_fp']: print('        ',app)
+# exit()
+# for group in foo:
+#     print('   ', group)
+#     if type(foo[group]) is list:
+#         for app in foo[group]: print('        ',app)
+# exit()
 
 
 check_for_dupes(DBG=0)
@@ -940,33 +901,3 @@ check_for_dupes(DBG=0)
 if __name__ == "__main__":
     import sys
     if '--exec' in sys.argv: exec(sys.argv[2])
-
-
-
-#             print(self.__dict__['voyager_cgra_tests_fp'])
-# 
-# 
-# 
-#             print(vars())
-#             print(vars()['voyager_cgra_tests_fp'])
-# 
-#             vars()['voyager_cgra_tests_fp'] = ['a','b']
-# 
-#             print(vars()['voyager_cgra_tests_fp'])
-#             print(self.__dict__)
-#             print(self.__dict__['voyager_cgra_tests_fp'])
-# 
-#             voyager_cgra_tests_fp = [
-#                 # Average pooling layer
-#                 "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
-# 
-#                 # Fully connected layer (K-DIM HOST TILING)
-#                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
-#                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
-#             ]
-
-            # voyager_cgra_tests_fp = ['a1','1b']
-#             self.__dict__['voyager_cgra_tests_fp'] = ['c','d']
-
-            # self.__dict__['voyager_cgra_tests_fp'] = Tests.group('voyager_cgra_tests_fp', [2,3])
-            # self.group("voyager_cgra_tests_fp", [2,3])
