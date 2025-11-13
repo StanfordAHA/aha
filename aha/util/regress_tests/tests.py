@@ -40,7 +40,6 @@ class Tests:
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
-        # no_zircon_sparse_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
@@ -837,28 +836,21 @@ def check_for_dupes(DBG=0):
             if DBG: print(dbg_result)
     assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
 
-
-
 def addgroup(self, groupname, subgroup=[]):
-    '''E.g. addgroup("voyager_cgra_tests_fp", [2,3])'''
+    '''
+    Add groups defined in groups() to the Tests class dictionary.
+    E.g. addgroup("voyager_cgra_tests_fp", [2,3])
+    '''
     applist = []
     group_info = Tests.groups()[groupname]
     for line in group_info:
-
-        # Subgroup info line e.g. line == "subgroup2"
         if line.startswith('subgroup'):
             sgi = int(line[8:]); continue
-
-        # Default is to include ALL apps
-        if not subgroup: applist += [line]
-
-        # If subgroups specified, only include apps in those subgroups
-        elif sgi in subgroup: applist += [line]
-
-    # self.__dict__['voyager_cgra_tests_fp'] = applist
+        if not subgroup: applist += [line]       # Default is to include ALL apps
+        elif sgi in subgroup: applist += [line]  # Else only include specified subs
     self.__dict__[groupname] = applist
     return True
-Tests.addgroup = addgroup
+Tests.addgroup = addgroup  # Provide a handle so class methods can use it
 
 check_for_dupes(DBG=0)
 
@@ -868,29 +860,3 @@ check_for_dupes(DBG=0)
 if __name__ == "__main__":
     import sys
     if '--exec' in sys.argv: exec(sys.argv[2])
-
-
-# def foo():
-#     g=Tests.group('voyager_cgra_tests_fp')
-#     for app in g: print('   ', app)
-#     exit()
-
-
-
-#     g=group('voyager_cgra_tests_fp', subgroup=[2,3])
-# #     print('---')
-#     for app in g: print('   ', app)
-#     exit()
-
-# # Tests.foo()
-# foo = Tests('pr_aha8').__dict__
-# for app in foo['voyager_cgra_tests_fp']: print('        ',app)
-# exit()
-# for group in foo:
-#     print('   ', group)
-#     if type(foo[group]) is list:
-#         for app in foo[group]: print('        ',app)
-# exit()
-
-
-
