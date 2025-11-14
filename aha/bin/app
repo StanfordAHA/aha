@@ -104,6 +104,7 @@ while [ $# -gt 0 ] ; do
     esac
     shift
 done
+
 [ "$WAVEFORM" ] && printf "\nINFO env var WAVEFORM=='$WAVEFORM'\n"
 
 # echo "remaining args = '$@'"
@@ -161,7 +162,7 @@ suites=`python3 $TESTS_PY --exec "Tests.show_configs()"` || exit 13
 function filter { sed 's/--/|==/' | column -t -s '|' | sed 's/==/--/'; }
 function hline { seq -s- $1 | sed 's/[^-]//g'; }  # E.g. 'hline 5' = "-----\n"
 
-#########################################################################
+########################################################################
 # Print contents of indicated suite "$SUITE" e.g.
 #
 #     % app --show-suite fast
@@ -187,7 +188,7 @@ if [ "$SUITE" ]; then
         else
             echo ""
         fi
-        [ "$DBG" ] && echo "$suites" | egrep ^"$s "
+        [ "$DBG" ] && echo "$suites" | egrep ^"$s"
         [ "$DBG" ] && hline 72
 
         # Note $ZIRCON is either "" or " --no-zircon"

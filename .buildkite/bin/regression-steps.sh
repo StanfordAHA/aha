@@ -45,19 +45,8 @@ function key-exists {
 
 # Pop next step off arg list e.g. args=(build gold 1 2 3 4 5 6 7 8 9)
 # => next="build", args=(gold 1 2 3 4 5 6 7 8 9)
-next="$1"; if ! [ "$next" ]; then echo DONE; exit
-else shift  # Continue with next step in the chain...
-fi
-# bkmsg "Processing arg next='$next'"
-
-#------------------------------------------------------------------------------
-# We put in sooo much time making a separate "build" step unnecessary...why not use that?
-if [ "$next" == "build" ]; then
-    echo "--- WARNING We no longer support a separate 'build' step"
-    next="$1"; if ! [ "$next" ]; then echo DONE; exit
-    else shift  # Continue with next step in the chain...
-    fi
-fi
+next="$1"; if ! [ "$next" ]; then echo DONE; exit; fi
+shift
 # bkmsg "Processing arg next='$next'"
 
 #------------------------------------------------------------------------------
@@ -161,7 +150,7 @@ elif [ "$next" == "gold" ]; then
     # Upload gold step, wait for it to start running (i.e. "launch")
 
     # This is one way how you can skip a step for e.g. debugging
-    # exec "$0" "$@"  # Heavy-duty way to skip to next step
+    # exec "$0" "$@"  # FIXME Skip gold for now FIXME restore before final check-in
 
     # Early-out if step has already been launched!
     key='zircon_gold'; if key-exists $key; then
