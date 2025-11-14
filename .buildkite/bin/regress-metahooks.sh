@@ -8,6 +8,26 @@ CONFIG1=`echo "$CONFIG" | awk '{print $1}'`
 CONTAINER="deleteme-regress-${CONFIG1}-${BUILDKITE_BUILD_NUMBER}"
 echo "--- using CONTAINER='${CONTAINER}'"
 
+function container_setup {
+    # Create a docker container based on IMAGE, update aha submod if needed
+    docker kill "$CONTAINER" || echo okay
+    docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
+    docker run -id --name "$CONTAINER" --rm \
+           -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" \
+           -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
+    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
+    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
+
+    function IS_SUBMOD { [ "$IMAGE" == "stanfordaha/garnet:latest" ]; }
+    if IS_SUBMOD; then
+        # Update /aha/<submod> in image to match submod commit
+        submod=$(basename $BUILDKITE_PULL_REQUEST_REPO .git) 
+        cmd="cd /aha/$submod; git pull; git checkout $BUILDKITE_COMMIT"
+        echo "DOING docker exec '$cmd'"
+        docker exec $CONTAINER /bin/bash -c "$cmd"
+    fi
+}
+
 if [ "$1" == '--pre-command' ]; then
 
     # This is designed to be invoked from pipeline.yml, which should provide
@@ -18,7 +38,7 @@ if [ "$1" == '--pre-command' ]; then
 
     # In case of e.g. manual retry, original docker image may have been deleted already.
     # This new code below gives us the opportunity to revive the dead image when needed.
-    if ! docker images | grep "$TAG"; then
+    if ! [ `docker images -q $IMAGE` ]; then
         echo "OH NO cannot find docker image $IMAGE...I will rebuild it for you"
 
         # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
@@ -44,7 +64,7 @@ if [ "$1" == '--pre-command' ]; then
         source "$bin/custom-checkout.sh"
         test -e .git/modules/sam/HEAD || echo OH NO HEAD not found
 
-        echo "--- (Re)creating garnet Image"
+        echo "--- (Re)creating garnet image $IMAGE"
         ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE"
     fi
 
@@ -59,23 +79,18 @@ if [ "$1" == '--pre-command' ]; then
     # THIS ASSUMES THAT ALL STEPS RUN ON SAME HOST MACHINE and thus see the same commdir!
 
     # env file sets REQUEST_TYPE to one of "AHA_PUSH", "AHA_PR", or "SUBMOD_PR"
-    # also sets "PR_TAIL_REPO" to requesting submod e.g. "garnet"
+    # also sets "PR_REPO_TAIL" to requesting submod e.g. "garnet"
     echo cat /var/lib/buildkite-agent/builds/DELETEME/env-"$BUILDKITE_BUILD_NUMBER"
     cat /var/lib/buildkite-agent/builds/DELETEME/env-"$BUILDKITE_BUILD_NUMBER"
     source /var/lib/buildkite-agent/builds/DELETEME/env-"$BUILDKITE_BUILD_NUMBER"
 
     echo "--- Pass DO_PR info to docker"
     echo "Info gets passed to docker by mounting temp dir as /buildkite omg omg"
-    if [ "$REQUEST_TYPE" == "SUBMOD_PR" ]; then
-        echo ".. SET DO_PR"; mkdir -p temp; touch temp/DO_PR
-        if [ "$PR_REPO_TAIL" == "garnet" ]; then
-            # Delete .TEST as a sign to skip tests
-            echo "+++ Garnet PR detected, so skip redundant regressions"
-            rm -rf temp/.TEST
-        fi
-    else
-        echo ".. UNSET DO_PR"; /bin/rm -rf temp/DO_PR
-    fi
+
+    # We no longer use DO_PR to select between configs "pr" and "pr_aha1-9"
+    # b/c submods now use pr_aha1-9 just like everyone else.
+    # We still have to make sure DO_PR is turned OFF though maybe
+    echo ".. UNSET DO_PR"; /bin/rm -rf temp/DO_PR
     test -e temp/DO_PR && echo FOO temp/DO_PR exists || echo FOO temp/DO_PR not exists
 
     echo "--- OIT PRE COMMAND HOOK END"
@@ -84,40 +99,17 @@ elif [ "$1" == '--exec' ]; then
 
     echo "--- BEGIN regress-metahooks.sh --exec '$2'"
 
-    # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including IMAGE/TAG/CONFIG
-
-    docker kill "$CONTAINER" || echo okay
-    docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
-    docker run -id --name "$CONTAINER" --rm -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
-    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
-    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
-    docker "exec $CONTAINER" /bin/bash -c "$2"
-    docker "kill $CONTAINER" || echo okay  # Cleanup on aisle FOO
+    # Set up a container and execute the requested command
+    container_setup
+    docker exec $CONTAINER /bin/bash -c "$2" || exit 13
+    docker kill $CONTAINER || echo okay  # Cleanup on aisle FOO
     echo "--- END regress-metahooks.sh --exec '$2'"
-
-#     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
-#     if ! /aha/.buildkite/bin/rtl-goldcheck.sh zircon; then
-#         msg="Zircon gold check FAILED. We don't want to touch Zircon RTL for now."
-#         echo "++ $msg"
-#         echo "$msg" | buildkite-agent annotate --style "error" --context onyx
-#         exit 13
-# EOF
 
 elif [ "$1" == '--commands' ]; then
 
     echo "--- BEGIN regress-metahooks.sh --commands"
+    container_setup
 
-    # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including IMAGE/TAG/CONFIG
-
-    docker kill "$CONTAINER" || echo okay
-    docker images; echo "IMAGE=$IMAGE"; echo "TAG=$TAG"
-    docker run -id --name "$CONTAINER" --rm \
-           -e HUGGINGFACE_HUB_TOKEN="$HF_SERVICE_TOKEN" \
-           -v /cad:/cad -v ./temp:/buildkite:rw "$IMAGE" bash
-    docker cp /nobackup/zircon/MatrixUnit_sim_sram.v "$CONTAINER":/aha/garnet/MatrixUnit_sim_sram.v
-    docker cp /nobackup/zircon/MatrixUnitWrapper_sim.v "$CONTAINER":/aha/garnet/MatrixUnitWrapper_sim.v
     cat <<'EOF' > tmp$$  # Single-quotes prevent var expansion etc.
 
     if ! test -e /buildkite/.TEST; then
@@ -142,9 +134,44 @@ elif [ "$1" == '--commands' ]; then
     echo    "+++ RUN REGRESSION $CONFIG"
     echo -n "Garnet version "; (cd garnet && git rev-parse --verify HEAD)
 
-    # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
-    echo "aha regress $CONFIG --include-no-zircon-tests --daemon auto"
-    aha       regress $CONFIG --include-no-zircon-tests --daemon auto || exit 13
+    # FIXME (below) this if-then-else jungle is awful; redo it!
+
+    DO_AR=True
+
+    # We no longer use DO_PR mechanism, see DO_PR comment above.
+
+    if [ "$CONFIG" == "pr_aha" ]; then
+      # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
+      # Note REGSTEP 0 uses config "fast" instead of e.g. "regress0"
+      if [ "$REGSTEP" ]; then
+          export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests"
+          [ "$REGSTEP" == 0 ] && export CONFIG="fast"
+          echo "Trigger came from aha-flow step '$REGSTEP', so now CONFIG=$CONFIG";
+      fi
+
+    else
+      echo "Trigger came from OTHER, use default and/or config='$CONFIG'"
+      # FIXME what is this and why is it here??? Pretty sure it's outdated/unnecessary :(
+      if [ "$REGSTEP" != 1 ]; then
+        echo "Full regressions only run as 'Regress 1'"
+        DO_AR=False
+      fi
+      CONFIG="$CONFIG --include-no-zircon-tests"
+    fi
+
+    if [ "$DO_AR" == "True" ]; then
+      # aha regress --BENCHMARK-- --include-dense-only-tests || exit 13  # Magic happens here...
+      # aha regress pr_aha1 --daemon auto --include-dense-only-tests || exit 13
+
+      # For fast prototyping: ECHO ONLY and/or try config 'fast'
+      # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
+      set -x
+      echo "aha regress $CONFIG"
+      # aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
+      aha regress $CONFIG --daemon auto || exit 13
+      set +x
+    fi
+
 
     # Remove .TEST to signal that benchmark completed successfully
     # Okay to remove or check but DO NOT CREATE anything in /buildkite, it is owned by root :(

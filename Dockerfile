@@ -269,7 +269,7 @@ RUN echo "--- ..Voyager step 0"
 RUN mkdir -p /usr/include/sys && \
     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
 
-RUN apt-get install -y libc6-dev-amd64
+RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
 RUN apt-get update && apt-get install -y linux-headers-generic
 
 RUN ln -s /usr/include/asm-generic/ /usr/include/asm
