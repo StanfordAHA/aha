@@ -44,7 +44,11 @@ class Tests:
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
 
-        E64_supported_tests = [
+        vardic = vars().copy()
+        for key in Tests.groups(): vardic[key] = []  # Include groups() groups
+        return vardic
+
+    E64_supported_tests = [
             "apps/pointwise",
             "apps/pointwise_mu_io",
             "conv5_x",
@@ -67,8 +71,8 @@ class Tests:
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
             "apps/mu2glb_path_balance_test",
-        ]
-        E64_MB_supported_tests = [
+    ]
+    E64_MB_supported_tests = [
             "apps/pointwise",
             "apps/pointwise_mu_io",
             "apps/pointwise_custom_place_multibank",
@@ -89,10 +93,7 @@ class Tests:
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
             "apps/mu2glb_path_balance_test",
-        ]
-        vardic = vars().copy()
-        for key in Tests.groups(): vardic[key] = []  # Include groups() groups
-        return vardic
+    ]
 
     def groups():
         voyager_cgra_tests_fp = [
