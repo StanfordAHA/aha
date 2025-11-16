@@ -52,6 +52,7 @@ class Tests:
             "apps/get_e8m0_scale_tree_gb_input",
             "apps/get_e8m0_scale_accum_gb_input",
             "apps/apply_e8m0_scale_single_IO",
+            "apps/apply_e8m0_scale_multi_IOs",
             "apps/get_apply_e8m0_scale_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -73,6 +74,7 @@ class Tests:
             "apps/get_e8m0_scale_tree_gb_input",
             "apps/get_e8m0_scale_accum_gb_input",
             "apps/apply_e8m0_scale_single_IO",
+            "apps/apply_e8m0_scale_multi_IOs",
             "apps/get_apply_e8m0_scale_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
@@ -196,6 +198,7 @@ class Tests:
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
@@ -451,6 +454,7 @@ class Tests:
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
+                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
             glb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
