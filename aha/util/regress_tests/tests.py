@@ -36,17 +36,16 @@ class Tests:
         glb_tests_fp = []
         resnet_tests = []
         resnet_tests_fp = []
+        voyager_cgra_tests_fp = []
         behavioral_mu_tests = []
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
+        no_zircon_sparse_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
-
-        vardic = vars().copy()
-        for key in Tests.groups(): vardic[key] = []  # Include groups() groups
-        return vardic
+        return vars().copy()
 
     E64_supported_tests = [
             "apps/pointwise",
@@ -94,36 +93,6 @@ class Tests:
             "apps/zircon_quant_fp",
             "apps/mu2glb_path_balance_test",
     ]
-
-    def groups():
-        voyager_cgra_tests_fp = [
-
-            "subgroup1",
-            # Standalone quantize layers
-            "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-            "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-            "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-            "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-            "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
-
-            "subgroup2",
-            # Average pooling layer
-            "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
-
-            "subgroup3",
-            # Fully connected layer (K-DIM HOST TILING)
-            "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
-            "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
-        ]
-        # For sparse tests, we cherry pick some representative tests to run
-        no_zircon_sparse_tests = [
-            "vec_elemmul",
-            "mat_vecmul_ij",
-            "mat_elemadd_leakyrelu_exp",
-            "matmul_ikj",
-            "tensor3_mttkrp",
-        ]
-        return vars().copy()
 
     def __init__(self, testname="BLANK", zircon=True):
         self.__dict__.update(Tests.configs_template())
@@ -184,7 +153,14 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
-            self.addgroup("voyager_cgra_tests_fp", [1])
+            voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+            ]
             external_mu_tests_fp = [
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
@@ -256,8 +232,14 @@ class Tests:
         elif testname == "pr_aha5":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            self.addgroup("no_zircon_sparse_tests")
-
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
             # Tests below are non-zircon and won't run by default
             glb_tests = [
                 "apps/pointwise",
@@ -337,7 +319,14 @@ class Tests:
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
             ]
-            self.addgroup("voyager_cgra_tests_fp", [2,3])
+            voyager_cgra_tests_fp = [
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+            ]
 
         elif testname == "pr_aha9":
             width, height = 28, 16
@@ -566,7 +555,21 @@ class Tests:
                 # TODO: Tests below are planned but not yet supported
                 # "conv2_x_fp", # not yet supported by zircon
             ]
-            self.addgroup("voyager_cgra_tests_fp")
+            voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+            ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
@@ -634,7 +637,15 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-            self.addgroup("no_zircon_sparse_tests")
+
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
 
         elif testname == "resnet":
             width, height = 28, 16
@@ -662,7 +673,21 @@ class Tests:
             glb_tests_RV = []
             glb_tests_fp_RV = []
             resnet_tests = []
-            self.addgroup("voyager_cgra_tests_fp")
+            voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+            ]
             behavioral_mu_tests = [
                 "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
@@ -836,22 +861,6 @@ def check_for_dupes(DBG=0):
                     dbg_result = ' - FOUND DUPES! ERROR!'
             if DBG: print(dbg_result)
     assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
-
-def addgroup(self, groupname, subgroup=[]):
-    '''
-    Add groups defined in groups() to the Tests class dictionary.
-    E.g. addgroup("voyager_cgra_tests_fp", [2,3])
-    '''
-    applist = []
-    group_info = Tests.groups()[groupname]
-    for line in group_info:
-        if line.startswith('subgroup'):
-            sgi = int(line[8:]); continue
-        if not subgroup: applist += [line]       # Default is to include ALL apps
-        elif sgi in subgroup: applist += [line]  # Else only include specified subs
-    self.__dict__[groupname] = applist
-    return True
-Tests.addgroup = addgroup  # Provide a handle so class methods can use it
 
 check_for_dupes(DBG=0)
 
