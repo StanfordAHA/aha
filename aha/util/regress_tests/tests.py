@@ -54,6 +54,7 @@ class Tests:
             "apps/apply_e8m0_scale_single_IO",
             "apps/apply_e8m0_scale_multi_IOs",
             "apps/get_apply_e8m0_scale_fp",
+            "apps/tanh_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
             "apps/zircon_psum_reduction_fp",
@@ -76,6 +77,7 @@ class Tests:
             "apps/apply_e8m0_scale_single_IO",
             "apps/apply_e8m0_scale_multi_IOs",
             "apps/get_apply_e8m0_scale_fp",
+            "apps/tanh_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
             "apps/maxpooling_dense_rv_fp",
@@ -308,6 +310,7 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
+                "apps/tanh_fp_RV",
             ]
             voyager_cgra_tests_fp = [
                 # Average pooling layer
@@ -478,6 +481,7 @@ class Tests:
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
+                "apps/tanh_fp_RV",
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
