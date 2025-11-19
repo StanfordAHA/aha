@@ -457,7 +457,11 @@ def test_dense_app(
     # These tests skip output regs for easier PnR
     skip_output_pipeline_regs = test in [
         "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+        "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
         "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
+        "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
+        "apps/stable_softmax_pass1_fp_RV_E64_MB",
+        "apps/stable_softmax_pass2_fp_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
