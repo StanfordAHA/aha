@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 # Timing
 echo "BEGIN $(date)"
 t_begin=$(date +%s)  # 1664872377
@@ -40,9 +40,13 @@ function get_submod {
     c8=$(echo $c | cut -b 1-8)  # E.g. '8ef41175'
 
     # Handle error conditions
-    if ! test $(basename $(pwd)) = aha; then
-        echo "ERROR script must be invoked from inside aha directory"; return
-    elif test -e $s/.git; then
+
+    pwd
+#     if ! test $(basename $PWD) = aha; then
+#         echo "ERROR script must be invoked from inside aha directory"; return
+
+
+    if test -e $s/.git; then
         echo "Submod '$s' already exists; not updating '$s'"; return
     fi
 
