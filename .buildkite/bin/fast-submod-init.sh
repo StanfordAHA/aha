@@ -60,8 +60,17 @@ function get_submod {
             dtrunc=$(echo $d | sed 's/.stanford.*//')
             printf " - Copying %-27s from $dtrunc\n" "$c8 $s"
             cp -rp $d/$s .
+
+
             if test -e $d/.git/modules/$s; then cp -rp $d/.git/modules/$s .git/modules
-            else DBG && echo "  - cannot find .git/modules/$s, maybe that's okay"; fi
+            else
+                # DBG && echo "  - cannot find .git/modules/$s, maybe that's okay"
+                echo "  - cannot find .git/modules/$s"
+                echo "  - creating dummy .git/modules/$s, this might be terrible FIXME"
+                mkdir -p .git/modules/$s
+            fi
+
+
             return
         fi
     done    
