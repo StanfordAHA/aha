@@ -1,20 +1,15 @@
 #!/bin/bash
-
+set -x
 # Timing
 echo "BEGIN $(date)"
 t_begin=$(date +%s)  # 1664872377
 
-function reuse_existing_aha { true; }
-function reuse_existing_aha { false; }
-if ! reuse_existing_aha; then
-    if test -e aha; then
-        echo "Dir aha already exists; please delete/move it and try again"
-        exit 13
-    fi
-    # Clone the repo
-    git clone https://github.com/StanfordAHA/aha
+# Quick error check
+repo=$(basename $(git remote get-url origin) | cut -d. -f1)
+if ! test "$repo" = "aha"; then
+    echo "ERROR must invoke script from within aha repo directory"
+    exit 13
 fi
-cd aha
 
 # Populate the submodules
 
@@ -197,4 +192,16 @@ exit
 #     mkdir -p $dba
 #     cd $dba
 # fi
+
+# function reuse_existing_aha { true; }
+# # function reuse_existing_aha { false; }
+# if ! reuse_existing_aha; then
+#     if test -e aha; then
+#         echo "Dir aha already exists; please delete/move it and try again"
+#         exit 13
+#     fi
+#     # Clone the repo
+#     git clone https://github.com/StanfordAHA/aha
+# fi
+# cd aha
 
