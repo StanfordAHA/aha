@@ -77,16 +77,17 @@ function get_submod {
 
             return
         fi
-    done    
+    done
+
+    # Slow-initialize recalcitrant submodules
     printf "\n\nCannot find cache for $s $c, must use backup/slow method\n"
-    git submodule update --checkout $s
+    echo "--- git submodule update --init --recursive --force"
+    git submodule update --init --recursive --force $s
     (cd $s; git clean -ffxdq; git submodule foreach --recursive "git clean -ffxdq")
+    git submodule sync --recursive $s
+    echo '--- git submodule foreach --recursive "git reset --hard"'
+    (cd $s; git reset --hard; git submodule foreach --recursive "git reset --hard")
 
-
-
-
-#     fails="$(echo $fails $s)"
-#     echo fails=$fails
 }
 function DBG { false; }
 
