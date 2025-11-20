@@ -206,6 +206,8 @@ echo -n "Aha master commit = "; git rev-parse master
 echo -n "We now have commit: "; git rev-parse HEAD
 
 if ! [ "$SKIP_SUBMOD_INIT" ]; then
+
+  if false; then
     echo "--- Initialize all submodules YES THIS TAKES AWHILE"
     set -x
     git submodule update --checkout # This is probably unnecessary but whatevs
@@ -216,6 +218,11 @@ if ! [ "$SKIP_SUBMOD_INIT" ]; then
     echo '--- git submodule foreach --recursive "git reset --hard"'
     git submodule foreach --recursive "git reset --hard"
     set +x
+  else
+    echo "--- Initialize all submodules THIS IS THE NEW STUFF"
+    .buildkite/bin/custom-checkout.sh
+  fi
+
 else
     echo "Skip lengthy submodule initialization"
 fi
