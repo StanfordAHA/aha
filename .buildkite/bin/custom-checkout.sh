@@ -220,7 +220,7 @@ if ! [ "$SKIP_SUBMOD_INIT" ]; then
     set +x
   else
     echo "--- Initialize all submodules THIS IS THE NEW STUFF"
-    .buildkite/bin/custom-checkout.sh
+    .buildkite/bin/fast-submod-init.sh
   fi
 
 else
