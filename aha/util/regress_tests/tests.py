@@ -306,7 +306,7 @@ class Tests:
                 "apps/scalar_avg_fp_RV",
                 "apps/stable_softmax_pass1_fp_RV_E64_MB",
                 "apps/stable_softmax_pass2_fp_RV_E64_MB",
-                "apps/stable_softmax_pass3_fp_RV",
+                "apps/stable_softmax_pass3_fp_RV_E64_MB",
                 "apps/vector_reduction_fp_RV",
                 "apps/gelu_pass1_fp_RV",
                 "apps/gelu_pass2_fp_RV",
