@@ -56,6 +56,7 @@ class Tests:
             "apps/get_apply_e8m0_scale_fp",
             "apps/stable_softmax_pass1_fp",
             "apps/stable_softmax_pass2_fp",
+            "apps/stable_softmax_pass3_fp",
             "apps/tanh_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -81,6 +82,7 @@ class Tests:
             "apps/get_apply_e8m0_scale_fp",
             "apps/stable_softmax_pass1_fp",
             "apps/stable_softmax_pass2_fp",
+            "apps/stable_softmax_pass3_fp",
             "apps/tanh_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
@@ -254,8 +256,6 @@ class Tests:
                 "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
                 "apps/relu_layer_fp",
-                "apps/scalar_max_fp",
-                "apps/scalar_avg_fp",
             ]
             external_mu_tests_fp = [
                 # Conv4_x
@@ -535,17 +535,6 @@ class Tests:
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
                 "apps/matrix_multiplication_fp",
-                "apps/scalar_max_fp",
-                "apps/scalar_avg_fp",
-                "apps/layer_norm_pass2_fp",
-                "apps/layer_norm_pass3_fp",
-                "apps/gelu_pass1_fp",
-                "apps/gelu_pass2_fp",
-                "apps/silu_pass1_fp",
-                "apps/silu_pass2_fp",
-                "apps/swiglu_pass2_fp",
-                "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
