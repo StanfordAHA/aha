@@ -7,6 +7,7 @@ t_begin=$(date +%s)  # 1664872377
 # Quick error check
 repo=$(basename $(git remote get-url origin) | cut -d. -f1)
 if ! test "$repo" = "aha"; then
+    # git clone https://github.com/StanfordAHA/aha
     echo "ERROR must invoke script from within aha repo directory"
     exit 13
 fi
@@ -19,6 +20,12 @@ fi
 #   9dabe69af0e5445401aafc48bc654a27beea5550 Halide-to-Hardware
 #   ...
 submods=$(git ls-tree HEAD | grep commit | awk '{print $3,$4}')
+
+# Use this to test slow path maybe
+if true; then
+  submods=$(echo "$submods" | sed 's/.*voyager/00000000000000000000000000000000 voyager/')
+  echo "$submods"
+fi
 
 # Use '--reset' to delete all submods and start over maybe
 if [ "$1" == "--reset" ]; then
@@ -39,13 +46,7 @@ function get_submod {
     c=$2  # E.g. '8ef41175ab512bf0938283beb65d099935522990'
     c8=$(echo $c | cut -b 1-8)  # E.g. '8ef41175'
 
-    # Handle error conditions
-
-    pwd
-#     if ! test $(basename $PWD) = aha; then
-#         echo "ERROR script must be invoked from inside aha directory"; return
-
-
+    # Don't touch existing initialized submodules
     if test -e $s/.git; then
         echo "Submod '$s' already exists; not updating '$s'"; return
     fi
@@ -60,39 +61,35 @@ function get_submod {
         # Find SHA for submod $s in the target cache
         cached=$(cd $d; git ls-tree HEAD $s | awk '{print $3}')
         if test "$cached" = "$c"; then
-            # echo "Copying $s::$c8 from dir $d"
+
+            # Copy submodule contents
             dtrunc=$(echo $d | sed 's/.stanford.*//')
             printf " - Copying %-27s from $dtrunc\n" "$c8 $s"
             cp -rp $d/$s .
 
-
-            if test -e $d/.git/modules/$s; then cp -rp $d/.git/modules/$s .git/modules
+            # Copy submodule metadata if it exists
+            if test -e $d/.git/modules/$s; then
+                cp -rp $d/.git/modules/$s .git/modules
             else
-                # DBG && echo "  - cannot find .git/modules/$s, maybe that's okay"
+                # Things break w/o the dummy
                 echo "  - cannot find .git/modules/$s"
-                echo "  - creating dummy .git/modules/$s, this might be terrible FIXME"
+                echo "  - creating dummy .git/modules/$s, this might be terrible"
                 mkdir -p .git/modules/$s
             fi
-
-
             return
         fi
     done
 
     # Slow-initialize recalcitrant submodules
     printf "\n\nCannot find cache for $s $c, must use backup/slow method\n"
-    echo "--- git submodule update --init --recursive --force"
+    echo "... git submodule update --init --recursive --force $s ..."
     git submodule update --init --recursive --force $s
     (cd $s; git clean -ffxdq; git submodule foreach --recursive "git clean -ffxdq")
     git submodule sync --recursive $s
-    echo '--- git submodule foreach --recursive "git reset --hard"'
+    echo "... git reset --hard $s recursively ..."
     (cd $s; git reset --hard; git submodule foreach --recursive "git reset --hard")
-
 }
 function DBG { false; }
-
-            # cp -rp $d/.git/modules/$s .git/modules >& /dev/null || echo okay
-# Found pono::b243cef7 in dir /var/lib/buildkite-agent/builds/khaki-1/stanford-aha/aha-flow
 
 mkdir -p .git/modules  # A secret tool that will help us later
 echo "$submods" | while read line; do
@@ -114,108 +111,6 @@ function time_elapsed {
 }
 echo "TIME $(time_elapsed $t_begin $t_end)"
 
-exit
-
-s=BufferMapping
-c=8ef41175ab512bf0938283beb65d099935522990
-get_submod $s $c
-exit
-
-
-########################################################################
-# TRASH
-# 
-#     echo "--- Processing failed submods '$fails'"
-#     for submod in $fails; do
-#         echo "  - processing $submod"
-#         echo "  - searching cached info for submod commit number"
-#         
-#     done
-
-#     FOUND IT! in dir /var/lib/buildkite-agent/builds/r8cad-docker-1/stanford-aha/aha-flow/BufferMapping
-#     + cp -rp /var/lib/buildkite-agent/builds/r8cad-docker-1/stanford-aha/aha-flow/BufferMapping .
-#     + mkdir -p .git/modules
-#     ++ dirname /var/lib/buildkite-agent/builds/r8cad-docker-1/stanford-aha/aha-flow/BufferMapping
-#     + subdir=/var/lib/buildkite-agent/builds/r8cad-docker-1/stanford-aha/aha-flow/.git/modules
-#     + cp -rp /var/lib/buildkite-agent/builds/r8cad-docker-1/stanford-aha/aha-flow/.git/modules/BufferMapping .git/modules
-#     + return
-#     + exit
-
-# pwd
-# echo Now do:
-# echo cp -rp $d .
-# echo ls $s/.git
-# echo mkdir -p .git/modules
-# subdir=$(dirname $d)/.git/modules
-# echo cp -rp $subdir/$s .git/modules
-
-
-########################################################################
-# TRASH
-# 
-# # TODO these must be treated differently maybe
-# # git submodule status | egrep ^+ | sed 's/^.//'
-# 
-# # FOUND IT! in dir /var/lib/buildkite-agent/builds/r8cad-docker-1/stanford-aha/aha-flow/BufferMapping
-# 
-# #     echo -n $(echo $f | sed 's/.*builds..//;s/.stanford.*//'); \
-# #     (cd $(dirname $f); git rev-parse HEAD); done
-# 
-# # for f in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow/*/.git; do \
-# #     (cd $(dirname $f); git rev-parse HEAD)
-# 
-# # git clone https://github.com/StanfordAHA/aha $aha_clone
-# 
-# # /home/steveri/0bugs/2504-bugs.txt:# GIT_TRACE=1 GIT_TRANSFER_TRACE=1 GIT_CURL_VERBOSE=1 
-# # 
-# # git clone git@github.com:github/debug-repo /tmp/debug-repo-ssh
-# # git clone git@github.com:StanfordAHA/aha
-
-
-#         # test -e $d/.git/modules/$s || continue
-#         c2=FAIL; function is_backup { false; }
-#         if test -e $d/.git/modules/$s; then
-#             c2=$(cd $d/$s; git rev-parse HEAD)
-#         elif test -e $d/.my-submod-list; then
-#             echo "Cannot find '.git/modules/$s'; checking '.my-submod-list'"
-#             c2=$(egrep " $s\$" $d/.my-submod-list | egrep ^- | sed 's/^.//; s/ .*//')
-#             function is_backup { true; }
-#         fi
-#         # c2=$(cd $d/$s; git rev-parse HEAD)
-#         if test "$c2" = "$c"; then
-#             c8=$(echo $c | cut -b 1-8)
-#             echo "Found '$s $c8' in dir $d"
-#             set -x
-#             cp -rp $d/$s .
-#             is_backup || cp -rp $d/.git/modules/$s .git/modules
-#             set +x
-#             return
-#         fi
-#     done    
-# 
-# 
-#     # echo "ERROR did not find existing $s $c; you'll have to do a submod init maybe"
-#     echo "Cannot find existing $s $c"
-
-# get_submod Halide-to-Hardware 9dabe69af0e5445401aafc48bc654a27beea5550
-# echo fails=$fails
-# exit
-
-# if true; then
-#     dba=/tmp/deleteme-bsi-aha
-#     mkdir -p $dba
-#     cd $dba
-# fi
-
-# function reuse_existing_aha { true; }
-# # function reuse_existing_aha { false; }
-# if ! reuse_existing_aha; then
-#     if test -e aha; then
-#         echo "Dir aha already exists; please delete/move it and try again"
-#         exit 13
-#     fi
-#     # Clone the repo
-#     git clone https://github.com/StanfordAHA/aha
-# fi
-# cd aha
-
+# s=BufferMapping
+# c=8ef41175ab512bf0938283beb65d099935522990
+# get_submod $s $c
