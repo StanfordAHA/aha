@@ -24,12 +24,12 @@ echo "--- Restoring .git metadata for submodule '$submod'"
 
 echo ""
 echo "--- Find desired 'official' submod hash"
-#  999dc896fc716f57e539f8819e4436a1b4d5c7bc clockwork (detailed_timing)
-# submod_sha=999dc896f
 cd $AHA
-git submodule | grep $submod | cut -b 2-1000
-git submodule | grep $submod | cut -b 2-10
-submod_sha=`git submodule | grep $submod | cut -b 2-10`
+
+# Note "git submodule" not guaranteed to work here when/if
+# git is updated to newer version. Instead, use 'git ls-tree'
+git ls-tree HEAD $submod | awk '{print $3}'
+submod_sha=$(git ls-tree HEAD $submod | awk '{print $3}')
 
 # E.g. url=https://github.com/StanfordAHA/clockwork.git
 echo ""
