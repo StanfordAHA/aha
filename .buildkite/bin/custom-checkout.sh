@@ -208,7 +208,7 @@ echo -n "We now have commit: "; git rev-parse HEAD
 if ! [ "$SKIP_SUBMOD_INIT" ]; then
 
   # Change condition to TRUE to compare fast vs. slow maybe
-  if false; then
+  if true; then
     echo "--- Initialize all submodules YES THIS TAKES AWHILE"
     set -x
     git submodule update --checkout # This is probably unnecessary but whatevs
