@@ -463,6 +463,7 @@ def test_dense_app(
         "apps/stable_softmax_pass1_fp_RV_E64_MB",
         "apps/stable_softmax_pass2_fp_RV_E64_MB",
         "apps/stable_softmax_pass3_fp_RV_E64_MB",
+        "apps/layer_norm_pass1_fp_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
