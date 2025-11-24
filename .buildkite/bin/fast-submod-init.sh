@@ -55,8 +55,6 @@ function get_submod {
     # echo "Looking for $c in agent cache(s)"
     for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow; do
 
-        echo "--- pwd = $PWD"
-        echo "---   d = $d"
         if test "$d" = "$PWD"; then
             echo "--- haha don't copy from yourself dummy, you'll surely fail"
             continue
