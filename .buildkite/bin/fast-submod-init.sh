@@ -24,7 +24,7 @@ submods=$(git ls-tree HEAD | grep commit | awk '{print $3,$4}')
 # Use this to test slow path maybe
 function TEST_SLOW_PATH { false; }
 if TEST_SLOW_PATH; then
-  for i in {1..99}; echo "+++ TEST_SLOW_PATH in fast-submod-init.sh, please turn me OFF"; done
+  for i in {1..99}; do echo "+++ TEST_SLOW_PATH in fast-submod-init.sh, please turn me OFF"; done
   submods=$(echo "$submods" | sed 's/.*voyager/00000000000000000000000000000000 voyager/')
   echo "$submods"
 fi
