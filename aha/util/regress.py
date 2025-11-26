@@ -464,6 +464,8 @@ def test_dense_app(
         "apps/stable_softmax_pass2_fp_RV_E64_MB",
         "apps/stable_softmax_pass3_fp_RV_E64_MB",
         "apps/layer_norm_pass1_fp_RV_E64_MB",
+        "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+        "apps/gelu_pass2_fp_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
@@ -508,7 +510,7 @@ def test_dense_app(
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
     use_fp = '_fp' in tgroup
-    behavioral_MU = (tgroup == 'behavioral_mu_tests')
+    behavioral_MU = (tgroup == 'behavioral_mu_tests' or tgroup == 'behavioral_mu_tests_fp')
     #------------------------------------------------------------------------
 
     env_parameters = str(env_parameters)
@@ -818,6 +820,7 @@ def dispatch(args, extra_args=None):
     resnet_tests_fp = imported_tests.resnet_tests_fp
     voyager_cgra_tests_fp = imported_tests.voyager_cgra_tests_fp
     behavioral_mu_tests = imported_tests.behavioral_mu_tests
+    behavioral_mu_tests_fp = imported_tests.behavioral_mu_tests_fp
     external_mu_tests = imported_tests.external_mu_tests
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
@@ -866,6 +869,7 @@ def dispatch(args, extra_args=None):
             *glb_tests_fp_RV,
             *voyager_cgra_tests_fp,
             *behavioral_mu_tests,
+            *behavioral_mu_tests_fp,
             *external_mu_tests,
             *external_mu_tests_fp,
             *hardcoded_dense_tests
@@ -964,6 +968,7 @@ def dispatch(args, extra_args=None):
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
             ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
+            ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
             ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
             ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:

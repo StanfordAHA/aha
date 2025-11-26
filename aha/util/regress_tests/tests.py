@@ -30,6 +30,7 @@ class Tests:
         resnet_tests_fp = []
         voyager_cgra_tests_fp = []
         behavioral_mu_tests = []
+        behavioral_mu_tests_fp = []
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
@@ -59,6 +60,8 @@ class Tests:
             "apps/stable_softmax_pass3_fp",
             "apps/layer_norm_pass1_fp",
             "apps/layer_norm_pass2_fp",
+            "apps/gelu_pass1_mu_input_fp",
+            "apps/gelu_pass2_fp",
             "apps/tanh_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -87,6 +90,8 @@ class Tests:
             "apps/stable_softmax_pass3_fp",
             "apps/layer_norm_pass1_fp",
             "apps/layer_norm_pass2_fp",
+            "apps/gelu_pass1_mu_input_fp",
+            "apps/gelu_pass2_fp",
             "apps/tanh_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
@@ -312,8 +317,7 @@ class Tests:
                 "apps/stable_softmax_pass2_fp_RV_E64_MB",
                 "apps/stable_softmax_pass3_fp_RV_E64_MB",
                 "apps/vector_reduction_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
+                "apps/gelu_pass2_fp_RV_E64_MB",
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/swiglu_pass2_fp_RV",
@@ -328,6 +332,9 @@ class Tests:
                 # Fully connected layer (K-DIM HOST TILING)
                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+            ]
+            behavioral_mu_tests_fp = [
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
 
         elif testname == "pr_aha9":
@@ -483,8 +490,7 @@ class Tests:
                 "apps/scalar_avg_fp_RV",
                 "apps/layer_norm_pass2_fp_RV",
                 "apps/layer_norm_pass3_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
+                "apps/gelu_pass2_fp_RV_E64_MB",
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/swiglu_pass2_fp_RV",
@@ -584,6 +590,9 @@ class Tests:
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+            ]
+            behavioral_mu_tests_fp = [
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
 
@@ -778,6 +787,7 @@ class Tests:
         self.resnet_tests_fp = resnet_tests_fp
         self.voyager_cgra_tests_fp = voyager_cgra_tests_fp
         self.behavioral_mu_tests = behavioral_mu_tests
+        self.behavioral_mu_tests_fp = behavioral_mu_tests_fp
         self.external_mu_tests = external_mu_tests
         self.external_mu_tests_fp = external_mu_tests_fp
         self.hardcoded_dense_tests = hardcoded_dense_tests
