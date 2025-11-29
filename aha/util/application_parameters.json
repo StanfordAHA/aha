@@ -2314,7 +2314,7 @@
     },
     "apps/gelu_pass1_mu_input_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"vec_width=256 vec_height=64 mu_i=32 dummy_max_nop=1",
+            "HALIDE_GEN_ARGS":"vec_width=3072 vec_height=64 mu_i=32 dummy_max_nop=1",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"0",
@@ -2323,12 +2323,14 @@
             "HW_OUTPUT_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
             "HW_ACTIVATION_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1"
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         }
     },
     "apps/gelu_pass2_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"vec_width=128 vec_height=64 glb_i=16",
+            "HALIDE_GEN_ARGS":"vec_width=1536 vec_height=64 glb_i=16",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"0",
@@ -2336,7 +2338,9 @@
             "INPUT_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_OUTPUT_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1"
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         }
     },
     "apps/silu_pass1_fp":{
