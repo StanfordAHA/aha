@@ -800,6 +800,19 @@ def dispatch(args, extra_args=None):
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
 
+    # It's painful if we don't catch this up front! (E.g. missing vcs.)
+    if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
+    else: TOOL = 'vcs'
+    p = subprocess.run(
+        f'set -x; command -v {TOOL}',
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+    )
+    if p.returncode:
+        print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
+        exit(p.returncode)
+    
     imported_tests = None
 
     # For printing info at the end...

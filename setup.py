@@ -21,7 +21,8 @@ setup(
         'tabulate',
         'pandas',
         'pulp',
-        'toml'
+        'toml',
+        'pyyaml',
     ],
     setup_requires = [
         'networkx',

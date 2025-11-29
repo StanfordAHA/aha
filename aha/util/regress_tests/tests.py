@@ -1,3 +1,9 @@
+# Find and/or install pyyaml
+from subprocess import run, DEVNULL
+run('python3 -m pip install pyyaml', shell=True, stdout = DEVNULL, stderr = DEVNULL)
+import json, yaml
+
+########################################################################
 class Tests:
 
     # Valid configs as of Oct 2025:
@@ -16,9 +22,11 @@ class Tests:
     #
     #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
 
-    def __init__(self, testname="BLANK", zircon=True):
-        use_custom = False
+    configs_list = ["fast", "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4",
+                 "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
+                 "pr_aha", "full", "resnet", "mu", "BLANK"]
 
+    def configs_template():
         # Defaults
         width, height = 28, 16  # default
         sparse_tests = []
@@ -109,6 +117,10 @@ class Tests:
             "apps/zircon_quant_fp",
             "apps/mu2glb_path_balance_test",
         ]
+        return vars().copy()
+
+    def __init__(self, testname="BLANK", zircon=True):
+        self.__dict__.update(Tests.configs_template())
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
         if testname in ["daily", "pr", "pr_submod"]:
@@ -369,7 +381,7 @@ class Tests:
             def merge_tests(s1, s2):
                 for key in s2:
                     if type(s2[key]) is list:
-                        s1[key] = list(set(s1[key] + s2[key]))  # merge lists
+                        s1[key] = list(dict.fromkeys(s1[key] + s2[key]))  # Removes dupes AND preserves list order
                     else:
                         # Non-lists (e.g. width, height) should be same for both sets
                         assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
@@ -772,48 +784,54 @@ class Tests:
         elif testname == "BLANK":
             pass
 
-        else:
-            use_custom = True
+        # json strings for app util
+        elif self.detect_and_process_json(testname):
+            return
 
-        # Export everything
-        self.width, self.height = width, height
-        self.cols_removed, self.mu_oc_0 = cols_removed, mu_oc_0
-        self.sparse_tests = sparse_tests
-        self.glb_tests = glb_tests
-        self.glb_tests_fp = glb_tests_fp
-        self.glb_tests_RV = glb_tests_RV
-        self.glb_tests_fp_RV = glb_tests_fp_RV
-        self.resnet_tests = resnet_tests
-        self.resnet_tests_fp = resnet_tests_fp
-        self.voyager_cgra_tests_fp = voyager_cgra_tests_fp
-        self.behavioral_mu_tests = behavioral_mu_tests
-        self.behavioral_mu_tests_fp = behavioral_mu_tests_fp
-        self.external_mu_tests = external_mu_tests
-        self.external_mu_tests_fp = external_mu_tests_fp
-        self.hardcoded_dense_tests = hardcoded_dense_tests
-        self.E64_supported_tests = E64_supported_tests
-        self.E64_MB_supported_tests = E64_MB_supported_tests
-        self.no_zircon_sparse_tests = no_zircon_sparse_tests
+        # yaml strings for app util
+        elif self.detect_and_process_yaml(testname):
+            return
 
-        if use_custom:
-            # Read a custom suite from external file <testname>.py
-            # E.g. if we build a config file '/aha/aha/util/regress_tests/custom4485.py'
-            # "if True:
-            #     width, height = 4, 2
-            #     glb_tests = [ 'tests/pointwise' ]"
-            # then 'aha regress custom4485' would run a 4x2 pointwise test.
-            try:
-                # Update self parms w those found in custom config {testname}.py
-                import importlib
-                tmpmodule = importlib.import_module('aha.util.regress_tests.' + testname)
-                self.__dict__.update(tmpmodule.__dict__)
-            except:
-                raise NotImplementedError(
-                    f"Cannot find custom config /aha/aha/util/regress_tests/{testname}.py"
-                )
+        else: pass
 
-    def show_suite(self, suite_name='', zircon=True):
-        # Dump regression suite contents in compact form e.g. show_suite('fast'):
+        # Export everything named in template
+        vdic = vars().copy()
+        for key in Tests.configs_template():
+            if key in vdic:
+                self.__dict__[key] = vdic[key]
+
+        return
+
+
+    def prefix_lines(lines, prefix):
+        'Attach the indicated prefix to each line in "lines"'
+        return prefix + lines.replace('\n', '\n'+prefix)
+
+     # Json string as config e.g. '{"width":8,"height":8,"glb_tests":["apps/pointwise"]}'
+    def detect_and_process_json(self, config):
+        '''if "config" is a parsable json string, add it to selfdict and return True'''
+        try:    config_dict = json.loads(config)
+        except: return False
+        assert type(config_dict) == dict
+        print(f"Found json string:\n{Tests.prefix_lines(config, '    ')}\n")
+        self.__dict__.update(config_dict)
+        return True
+
+    # Yaml string as config e.g. "width: 8\nheight: 8\nglb_tests:\n- apps/pointwise"
+    def detect_and_process_yaml(self, config):
+        '''if "config" is a parsable yaml string, add it to selfdict and return True'''
+        try:
+            config_dict = yaml.safe_load(config)
+            assert type(config_dict) == dict
+        except: return False
+        print(f'{config_dict=}')
+        print(f"Found yaml string:\n{Tests.prefix_lines(config, '    ')}\n")
+        self.__dict__.update(config_dict)
+        return True
+
+    # Support function for app util
+    def show_config(config_name='', zircon=True):
+        # Dump regression suite contents in compact form e.g. show_config('fast'):
         #
         # fast    sparse_tests   vec_identity             8x8 --removed 4 --mu 8
         # fast    glb_tests      apps/pointwise           8x8 --removed 4 --mu 8
@@ -821,11 +839,19 @@ class Tests:
         # fast    glb_tests      apps/pointwise_RV_E64_MB 8x8 --removed 4 --mu 8
         # fast    glb_tests_fp   tests/fp_pointwise       8x8 --removed 4 --mu 8
 
-        d = self.__dict__
-        size = "%sx%s" % (d['width'], d['height'])
-        zparms = " --removed %s --mu %s" % (d["cols_removed"], d["mu_oc_0"])
+        # Find config and populate it with default keys from template
+        d = Tests.configs_template()
+        # d.update(Tests.configs[config_name])
+        d.update(Tests(config_name).__dict__)
+
+        (w,h) =  (d['width'], d['height'])
+        (col,mu) = (d["cols_removed"], d["mu_oc_0"])
+
+        # Setup up the format string for parms e.g. "8x8 --removed 4 --mu 8"
+        size = "%sx%s" % (w,h)                       # "8x8"
+        zparms = ",--removed %s,--mu %s" % (col,mu)  # "--removed 4 --mu 8"
         if zircon: parms = size + zparms
-        else:      parms = size + ' --no-zircon'
+        else:      parms = size + ',--no-zircon'
 
         not_groups = ("width", "height", "cols_removed", "mu_oc_0")
         for group in d:
@@ -833,6 +859,42 @@ class Tests:
             if group in not_groups:        continue  # Not a group
             if "supported_tests" in group: continue  # Also not a group
             for app in d[group]:
-                fmt = "%-12s %-16s %-32s %-s"
-                print(fmt % (suite_name, group, app, parms))
-                # rval += (fmt % (suite_name, group, app, d["app_parms"]))
+                # fmt = "%-12s %-16s %-32s %-s"
+                fmt = "%s,%s,%s,%-s"
+                print(fmt % (config_name, group, app, parms))
+                # rval += (fmt % (config_name, group, app, d["app_parms"]))
+
+    def show_configs(zircon=True):
+        for c in Tests.configs_list: Tests.show_config(c)
+
+# Every time someone tries to import this class, it triggers this quick
+# to make sure that no configs have redundant apps e.g. if someone accidentally
+# puts two copies of 'conv2_x" into the "full" config, this will catch it.
+
+def check_for_dupes(DBG=0):
+    errors = ''
+    if DBG: print("tests.py: Verify no duplicates in any groups")
+    for config_name in Tests.configs_list:
+        if DBG: print('\n', config_name)
+        config = Tests(config_name).__dict__
+        lists = [key for key in config if type(config[key]) is list]
+        for group in lists:
+            apps = config[group]
+            if DBG: print(f'    Config {config_name} has list {group}', end='')
+            dbg_result = ' - no dupes (good)'
+            for app in set(apps):  # Use set to prevent duplicate checks
+                n_app = apps.count(app)
+                if n_app > 1:
+                    errors += f"    ERROR: Config {config_name}[{group}] has {n_app} copies of '{app}'\n"
+                    dbg_result = ' - FOUND DUPES! ERROR!'
+            if DBG: print(dbg_result)
+    assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
+
+check_for_dupes(DBG=0)
+
+# app utility uses this to do things like e.g.
+#     tests.py --exec "print(*Tests.configs_list)"  # list config names
+#     tests.py --exec "for c in Tests.configs_list: Tests.show_config(c)  # list config contents
+if __name__ == "__main__":
+    import sys
+    if '--exec' in sys.argv: exec(sys.argv[2])
