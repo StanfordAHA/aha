@@ -467,6 +467,7 @@ def test_dense_app(
         "apps/layer_norm_pass2_fp_RV_E64_MB",
         "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
         "apps/gelu_pass2_fp_RV_E64_MB",
+        "apps/tanh_fp_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
@@ -812,7 +813,7 @@ def dispatch(args, extra_args=None):
     if p.returncode:
         print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
         exit(p.returncode)
-    
+
     imported_tests = None
 
     # For printing info at the end...

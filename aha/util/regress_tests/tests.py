@@ -335,7 +335,7 @@ class Tests:
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
-                "apps/tanh_fp_RV",
+                "apps/tanh_fp_RV_E64_MB",
             ]
             voyager_cgra_tests_fp = [
                 # Average pooling layer
@@ -509,7 +509,7 @@ class Tests:
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/tanh_fp_RV",
+                "apps/tanh_fp_RV_E64_MB",
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
