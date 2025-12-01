@@ -450,13 +450,15 @@ def test_dense_app(
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
-    
+
     skip_cgra_map = test in skip_cgra_map_list
     skip_cgra_pnr = test in skip_cgra_pnr_list
 
     # These tests skip output regs for easier PnR
     skip_output_pipeline_regs = test in [
         "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+        "apps/maxpooling_dense_rv_fp_RV_E64",
+        "apps/maxpooling_dense_rv_fp_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
@@ -802,7 +804,7 @@ def dispatch(args, extra_args=None):
     if p.returncode:
         print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
         exit(p.returncode)
-    
+
     imported_tests = None
 
     # For printing info at the end...

@@ -2189,15 +2189,18 @@
     },
     "apps/maxpooling_dense_rv_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"in_img=58 n_ic=32 unroll=16 ksize=3 stride=2 in_img_fake=33 n_ic_fake=64",
+            "HALIDE_GEN_ARGS":"in_img=58 n_ic=32 unroll=16 ksize=3 stride=2 in_img_fake=33 n_ic_fake=64 dummy_max_nop=0",
             "HL_TARGET":"host-x86-64-bfloat_hardware",
             "DISABLE_GP":"1",
             "USE_GLB_BANK_CONFIG":"1",
-            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
-            "HW_OUTPUT_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,16,16,16,16,22,22,22,22,24,24,24,24",
+            "HW_OUTPUT_POS":"18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21",
             "SKIP_RV_CLOCKWORK":"1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
-            "VOYAGER_STANDALONE_CGRA_APP":"1"
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "INPUT_HOST_STENCIL_MULTI_BANK_MODE": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "GLOBAL_PE_TILE_OUTPUT_FIFO_BYPASS":"1"
         }
     },
     "apps/scalar_reduction":{
