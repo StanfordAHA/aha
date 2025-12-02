@@ -54,6 +54,7 @@ class Tests:
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
             "apps/maxpooling_dense_rv_fp",
+            "apps/maxpooling_dense_rv_mem_buf_fp",
             "apps/fully_connected_layer_fp",
             "apps/pointwise_custom_packing",
             "apps/pointwise_custom_place_multibank",
@@ -104,6 +105,7 @@ class Tests:
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
             "apps/maxpooling_dense_rv_fp",
+            "apps/maxpooling_dense_rv_mem_buf_fp",
             "apps/fully_connected_layer_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -287,6 +289,9 @@ class Tests:
         elif testname == "pr_aha6":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            glb_tests_RV = [
+                "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
+            ]
             resnet_tests = [
                 "conv1",
                 "conv2_x",
@@ -482,6 +487,7 @@ class Tests:
                 "apps/brighten_and_blur_RV",
                 "apps/pointwise_custom_packing_RV_E64",
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
