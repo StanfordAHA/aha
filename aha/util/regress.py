@@ -11,8 +11,8 @@ import glob
 from collections import defaultdict
 import shutil
 import toml
+from aha.util.regress_tests.tests import Tests
 import copy
-
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
@@ -387,7 +387,6 @@ def parse_layer_parametrized_test(testname, keyword, layer_in=""):
     return testname, layer
 
 def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
-    from aha.util.regress_tests.tests import Tests
 
     err1 = f'''E64 mode not yet supported for app "{testname}".
     Please make the necessary changes in Halide-to-Hardware and application_parameters.json.
@@ -458,6 +457,19 @@ def test_dense_app(
     # These tests skip output regs for easier PnR
     skip_output_pipeline_regs = test in [
         "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+        "apps/maxpooling_dense_rv_fp_RV_E64",
+        "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+        "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
+        "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
+        "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
+        "apps/stable_softmax_pass1_fp_RV_E64_MB",
+        "apps/stable_softmax_pass2_fp_RV_E64_MB",
+        "apps/stable_softmax_pass3_fp_RV_E64_MB",
+        "apps/layer_norm_pass1_fp_RV_E64_MB",
+        "apps/layer_norm_pass2_fp_RV_E64_MB",
+        "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+        "apps/gelu_pass2_fp_RV_E64_MB",
+        "apps/tanh_fp_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
@@ -504,7 +516,7 @@ def test_dense_app(
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
     use_fp = '_fp' in tgroup
-    behavioral_MU = (tgroup == 'behavioral_mu_tests')
+    behavioral_MU = (tgroup == 'behavioral_mu_tests' or tgroup == 'behavioral_mu_tests_fp')
     #------------------------------------------------------------------------
 
     env_parameters = str(env_parameters)
@@ -553,7 +565,7 @@ def test_dense_app(
 
     if skip_cgra_map:
         print(f"--- {testname} - SKIP CGRA MAP", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA MAP", 0])
+        info.append([f"{testname} - SKIP CGRA MAP", 0])
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test, "--skip-cgra-map"] + layer_array, env=env_vars)
     else:
         buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
@@ -632,7 +644,7 @@ def test_dense_app(
 
     if skip_cgra_pnr:
         print(f"--- {testname} - SKIP CGRA PNR", flush=True)
-        info.append([f"--- {testname} - SKIP CGRA PNR", 0])
+        info.append([f"{testname} - SKIP CGRA PNR", 0])
         buildkite_args.append("--skip-cgra-pnr")
 
     if skip_output_pipeline_regs:
@@ -793,34 +805,27 @@ def dispatch(args, extra_args=None):
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
 
-    # Preserve backward compatibility
-    if args.config == "daily":
-        args.config = "pr_aha"  # noqa
-    if args.config == "pr":
-        args.config = "pr_submod"  # noqa
+    # It's painful if we don't catch this up front! (E.g. missing vcs.)
+    if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
+    else: TOOL = 'vcs'
+    p = subprocess.run(
+        f'set -x; command -v {TOOL}',
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+    )
+    if p.returncode:
+        print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
+        exit(p.returncode)
 
-    from aha.util.regress_tests.tests import Tests
     imported_tests = None
 
     # For printing info at the end...
     global info  # HA!
     info = []
 
-    # pr_aha1 starts with the pr_aha suite and remove some tests
-    if args.config == "pr_aha1":
-        imported_tests = Tests("pr_aha1")
-
-    # pr_aha2 contains part of the remaining tests
-    elif args.config == "pr_aha2":
-        imported_tests = Tests("pr_aha2")
-
-    # pr_aha3 contains all the remaining tests
-    elif args.config == "pr_aha3":
-        imported_tests = Tests("pr_aha3")
-
-    # For configs 'fast', 'pr_aha', 'pr_submod', 'full', 'resnet', see regress_tests/tests.py
-    else:
-        imported_tests = Tests(args.config)
+    # For config definitions see regress_tests/tests.py
+    imported_tests = Tests(args.config)
 
     # Unpack imported_tests into convenient handles
     width, height = imported_tests.width, imported_tests.height
@@ -834,6 +839,7 @@ def dispatch(args, extra_args=None):
     resnet_tests_fp = imported_tests.resnet_tests_fp
     voyager_cgra_tests_fp = imported_tests.voyager_cgra_tests_fp
     behavioral_mu_tests = imported_tests.behavioral_mu_tests
+    behavioral_mu_tests_fp = imported_tests.behavioral_mu_tests_fp
     external_mu_tests = imported_tests.external_mu_tests
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
@@ -882,6 +888,7 @@ def dispatch(args, extra_args=None):
             *glb_tests_fp_RV,
             *voyager_cgra_tests_fp,
             *behavioral_mu_tests,
+            *behavioral_mu_tests_fp,
             *external_mu_tests,
             *external_mu_tests_fp,
             *hardcoded_dense_tests
@@ -980,6 +987,7 @@ def dispatch(args, extra_args=None):
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
             ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
+            ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
             ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
             ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:

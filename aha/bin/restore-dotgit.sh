@@ -6,8 +6,9 @@ Example: test -e /aha/.git/modules/clockwork || $0 clockwork
 "
 if ! [ "$1" ]; then echo "$HELP"; exit 13; fi
 
+AHA=/aha
 submod=$1
-dotgit=/aha/.git/modules/$submod
+dotgit=$AHA/.git/modules/$submod
 
 if test -e $dotgit; then
     echo ""
@@ -23,23 +24,23 @@ echo "--- Restoring .git metadata for submodule '$submod'"
 
 echo ""
 echo "--- Find desired 'official' submod hash"
-#  999dc896fc716f57e539f8819e4436a1b4d5c7bc clockwork (detailed_timing)
-# submod_sha=999dc896f
-cd /aha
-git submodule | grep $submod | cut -b 2-1000
-git submodule | grep $submod | cut -b 2-10
-submod_sha=`git submodule | grep $submod | cut -b 2-10`
+cd $AHA
+
+# Note "git submodule" not guaranteed to work here when/if
+# git is updated to newer version. Instead, use 'git ls-tree'
+git ls-tree HEAD $submod | awk '{print $3}'
+submod_sha=$(git ls-tree HEAD $submod | awk '{print $3}')
 
 # E.g. url=https://github.com/StanfordAHA/clockwork.git
 echo ""
-url=`git config --file=/aha/.gitmodules submodule.$submod.url`
+url=`git config --file=$AHA/.gitmodules submodule.$submod.url`
 echo "--- Restore metadata from repo '$url'"
 
 # Use timeout-and-retry method b/c netowrk is flaky
-# git clone --bare "$url" /aha/.git/modules/$submod
+# git clone --bare "$url" $AHA/.git/modules/$submod
 
 ntries=8; timeouts=(x 20 30 60 120 300 600 1200 1200)
-clone_dest=/aha/.git/modules/$submod
+clone_dest=$AHA/.git/modules/$submod
 
 # Cleanup is necessary in case child process of a failed clone
 # keeps clone-dest directory locked during attempted retry
@@ -72,11 +73,11 @@ for i in `seq $ntries`; do
    done
 
 # Convert bare repo into something useful, with a work tree
-cd /aha/$submod; git config --local --bool core.bare false
+cd $AHA/$submod; git config --local --bool core.bare false
 
 echo ""
 echo "--- Restore '$submod' branch '$submod_sha'"
-cd /aha/$submod; git checkout -f $submod_sha
+cd $AHA/$submod; git checkout -f $submod_sha
 
 echo ""
 echo "--- Remove unnecessary local branches"
@@ -87,7 +88,7 @@ git for-each-ref --format '%(refname:short)' refs/heads \
 echo ""
 echo "--- Restore remote-branch access"
 set -x
-cd /aha/$submod
+cd $AHA/$submod
 git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
 git fetch -p
 set +x
