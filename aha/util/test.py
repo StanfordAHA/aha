@@ -319,8 +319,11 @@ def dispatch(args, extra_args=None):
             if use_psum_workaround_gold:
                 psum_idx = int(os.environ.get("PSUM_IDX", 1))
                 per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
+                psum_gold_path = os.environ.get("PSUM_GOLD_PATH", "")
                 if per_tensor_scaling:
                     gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                elif psum_gold_path != "":
+                    gold_output_path = f"{psum_gold_path}/kernel_{psum_idx}_output.txt"
                 else:
                     gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
                 assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."

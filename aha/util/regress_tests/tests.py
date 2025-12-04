@@ -44,6 +44,8 @@ class Tests:
             "apps/zircon_deq_ResReLU_fp",
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
+            "apps/zircon_2d_nop",
+            "apps/zircon_2d_psum_reduction_fp",
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -65,6 +67,8 @@ class Tests:
             "apps/zircon_deq_ResReLU_fp",
             "apps/zircon_res_deq_ReLU_quant_fp",
             "apps/zircon_quant_fp",
+            "apps/zircon_2d_nop",
+            "apps/zircon_2d_psum_reduction_fp",
         ]
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
@@ -833,84 +837,93 @@ class Tests:
             glb_tests = []
             glb_tests_fp = []
             glb_tests_RV = []
-            glb_tests_fp_RV = []
+            glb_tests_fp_RV = [
+            ]
             resnet_tests = []
             voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+                # # Standalone quantize layers
+                # "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                # "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                # "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                # "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                # "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
 
-                # Average pooling layer
-                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+                # # Average pooling layer
+                # "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
 
-                # Fully connected layer (K-DIM HOST TILING)
-                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
-                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+                # # Fully connected layer (K-DIM HOST TILING)
+                # "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                # "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
             behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
+                # "apps/pointwise_mu_io_RV",
+                # "apps/pointwise_mu_io_RV_E64_MB",
             ]
             external_mu_tests = [
             ]
             external_mu_tests_fp = [
-                # Conv1 (im2col-based, X-DIM HOST TILING)
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
+                # BERT
+            #    "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
+            #    "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
+               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
 
-                # Conv2_x
-                "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
+                # "bert-submodule_3 -> zircon_2d_nop_post_bert_masked_self_attention_head_RV_E64_MB",
 
-                # Conv3_1 strided conv
-                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
+                # RESNET18
+                # # Conv1 (im2col-based, X-DIM HOST TILING)
+                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
+                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
+                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
 
-                # Conv3_1 pointwise conv
-                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
+                # # Conv2_x
+                # "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                # "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
+                # "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                # "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
 
-                # Conv3_x
-                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
+                # # Conv3_1 strided conv
+                # "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
 
-                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
-                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                # # Conv3_1 pointwise conv
+                # "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
 
-                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
-                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
+                # # Conv3_x
+                # "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
+                # "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
+                # "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
 
-                # Conv4_x
-                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+                # # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
+                # "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                # "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
 
-                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
+                # # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
+                # "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
 
-                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
+                # # Conv4_x
+                # "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                # "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                # "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
 
-                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+                # # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
+                # "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
 
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+                # # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
+                # "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
 
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+                # # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
+                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+
+                # "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                # "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+
+                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
 

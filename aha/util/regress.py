@@ -451,7 +451,7 @@ def test_dense_app(
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
-    
+
     skip_cgra_map = test in skip_cgra_map_list
     skip_cgra_pnr = test in skip_cgra_pnr_list
 
@@ -486,6 +486,8 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
     elif tgroup == 'external_mu_tests_fp':
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+        test, layer = parse_layer_parametrized_test(test, "zircon_2d_nop", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_2d_psum_reduction_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_dequantize_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
