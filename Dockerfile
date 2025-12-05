@@ -100,12 +100,12 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
-# Frequent sanity checks maybe
+# Frequent sanity checks maybe gcc YES x86 NO
 WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- SANITY CHECK 108" && \
-  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
@@ -127,12 +127,12 @@ RUN --mount=type=secret,id=gtoken \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
-# Frequent sanity checks maybe
+# Frequent sanity checks maybe - gcc YES x86 YES
 WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- SANITY CHECK 134" && \
-  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
@@ -245,12 +245,12 @@ RUN \
   : DONE && \
     echo DONE
 
-# Frequent sanity checks maybe
+# Frequent sanity checks maybe - gcc YES x86 YES
 WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- SANITY CHECK 252" && \
-  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
@@ -294,12 +294,12 @@ RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64
     && rm miniconda.sh \
     && $CONDA_DIR/bin/conda clean -afy
 
-# Frequent sanity checks maybe
+# Frequent sanity checks maybe - gcc YES x86 YES
 WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- SANITY CHECK 301" && \
-  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
@@ -315,6 +315,13 @@ RUN mkdir -p /usr/include/sys && \
     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
 
 RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
+
+
+# REMOVES cpp cpp-9 g++ g++-9 gcc gcc -9 g++ g++-9
+# INSTALLS gcc-10-base:i386
+RUN test -e /usr/bin/gcc || apt-get install -y gcc-9 g++-9
+
+
 RUN apt-get update && apt-get install -y linux-headers-generic
 
 RUN ln -s /usr/include/asm-generic/ /usr/include/asm
@@ -323,12 +330,15 @@ RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 # Voyager 1 temporarily moved to beginning of file for debugging, see above
 # If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
 
-# Frequent sanity checks maybe
+##############################################################################
+##############################################################################
+##############################################################################
+# Frequent sanity checks maybe - gcc NO x86 NO
 WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- SANITY CHECK 319" && \
-  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
@@ -384,7 +394,7 @@ WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- ..Final aha deps install" && \
-  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
