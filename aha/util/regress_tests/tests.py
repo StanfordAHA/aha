@@ -84,6 +84,7 @@ class Tests:
             "apps/zircon_2d_nop",
             "apps/zircon_2d_psum_reduction_fp",
             "apps/mu2glb_path_balance_test",
+            "apps/zircon_scale_add_fp"
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -120,6 +121,7 @@ class Tests:
             "apps/zircon_2d_nop",
             "apps/zircon_2d_psum_reduction_fp",
             "apps/mu2glb_path_balance_test",
+            "apps/zircon_scale_add_fp",
         ]
         return vars().copy()
 
@@ -724,24 +726,27 @@ class Tests:
             behavioral_mu_tests = [
                 # "apps/pointwise_mu_io_RV",
                 # "apps/pointwise_mu_io_RV_E64_MB",
+                # "apps/zircon_psum_reduction_fp_RV",
+                # "apps/zircon_scale_add_fp_RV"
             ]
             external_mu_tests = [
             ]
             external_mu_tests_fp = [
                 # BERT
+                # Query, Key, Value projection layers
             #    "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
             #    "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
             #    "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
+
+            #    "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
+            #    "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel1_RV_E64_MB",
+            #    "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
 
             #    "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
             #    "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel1_RV_E64_MB",
             #    "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel2_RV_E64_MB",
 
-            #    "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
-            #    "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel1_RV_E64_MB",
-               "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
-
-                # "bert-submodule_3 -> zircon_2d_nop_post_bert_masked_self_attention_head_RV_E64_MB",
+                "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
 
                 # RESNET18
                 # # Conv1 (im2col-based, X-DIM HOST TILING)

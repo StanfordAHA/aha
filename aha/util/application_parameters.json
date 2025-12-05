@@ -579,6 +579,42 @@
             "VOYAGER_GOLD":"1"
         }
     },
+    "zircon_scale_add_fp_post_bert_masked_self_attention_head":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "VOYAGER_GOLD":"1",
+            "ATTENTION_SCALING":"1",
+            "BROADCAST_TENSORS": "HW_ATTN_MASK_INPUT_STENCIL",
+            "HW_ATTN_MASK_INPUT_STENCIL_BROADCAST_DIMS": "X"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "VOYAGER_GOLD":"1",
+            "ATTENTION_SCALING":"1",
+            "BROADCAST_TENSORS": "HW_ATTN_MASK_INPUT_STENCIL",
+            "HW_ATTN_MASK_INPUT_STENCIL_BROADCAST_DIMS": "X"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "VOYAGER_GOLD":"1",
+            "ATTENTION_SCALING":"1",
+            "BROADCAST_TENSORS": "HW_ATTN_MASK_INPUT_STENCIL",
+            "HW_ATTN_MASK_INPUT_STENCIL_BROADCAST_DIMS": "X"
+        }
+    },
     "zircon_dequantize_relu_fp_post_conv1_kernel0":{
         "default":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",

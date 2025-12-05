@@ -204,6 +204,7 @@ def dispatch(args, extra_args=None):
             print(f"\nParsing tensors for layer {layer} of {model}...\n")
 
             per_tensor_scaling = "PER_TENSOR_SCALING" in env and env["PER_TENSOR_SCALING"] == "1"
+            attention_scaling = "ATTENTION_SCALING" in env and env["ATTENTION_SCALING"] == "1"
 
             parse_tensor_args = [
                 "--model", model,
@@ -214,6 +215,9 @@ def dispatch(args, extra_args=None):
 
             if per_tensor_scaling:
                 parse_tensor_args.append("--per-tensor-scaling")
+
+            if attention_scaling:
+                parse_tensor_args.append("--attention-scaling")
 
             if not(is_mu_test):
                 parse_tensor_args.append("--standalone-cgra-test")
@@ -241,6 +245,13 @@ def dispatch(args, extra_args=None):
                             env['DEQUANT_SCALE'] = scale_value
                         elif 'quantize_scale' in scale_name and not('dequantize_scale' in scale_name):
                             env['QUANT_SCALE'] = scale_value
+
+            if attention_scaling:
+                attention_scale_file = f'/aha/voyager/compiled_collateral/{model}-{layer}/tensor_files/attention_scale.txt'
+                assert os.path.exists(attention_scale_file), f"ERROR: {attention_scale_file} not found, something went wrong in parse_dnnLayer_tensors.py"
+                with open(attention_scale_file, 'r') as f:
+                    attention_scale_value = f.readline().strip()
+                    env['ATTN_SCALE'] = attention_scale_value
 
         # For conv1, we want the gold-check to be done using submodule_1's gold
         # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module

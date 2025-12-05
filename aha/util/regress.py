@@ -500,6 +500,7 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
         test, layer = parse_layer_parametrized_test(test, "zircon_2d_nop", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_2d_psum_reduction_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_scale_add_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_dequantize_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
@@ -530,15 +531,15 @@ def test_dense_app(
 
     layer_array = [] if layer is None else ["--layer", layer]
 
-    if not(skip_cgra_map or skip_cgra_pnr):
-        try:
-            subprocess.call(["make", "clean"], cwd=app_path)
-        except:
-            pass
+    # if not(skip_cgra_map or skip_cgra_pnr):
+    #     try:
+    #         subprocess.call(["make", "clean"], cwd=app_path)
+    #     except:
+    #         pass
 
-    if mu_test is not None and mu_test != "":
-        # Clean up old mu_test collateral
-        os.system(f"rm -rf {voyager_collateral_path}/{mu_test}")
+    # if mu_test is not None and mu_test != "":
+    #     # Clean up old mu_test collateral
+    #     os.system(f"rm -rf {voyager_collateral_path}/{mu_test}")
 
     env_vars = {}
     if dense_ready_valid:
@@ -560,15 +561,15 @@ def test_dense_app(
 
     # For conv1, we want the gold-check to be done using submodule_1's gold
     # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module
-    if mu_test == "resnet18-submodule":
-        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", "", "--mu-test", "resnet18-submodule_1", "--skip-cgra-map", "--voyager-gold-model-only" ,"--skip-env-vars"] + layer_array)
+    # if mu_test == "resnet18-submodule":
+    #     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", "", "--mu-test", "resnet18-submodule_1", "--skip-cgra-map", "--voyager-gold-model-only" ,"--skip-env-vars"] + layer_array)
 
-    if skip_cgra_map:
-        print(f"--- {testname} - SKIP CGRA MAP", flush=True)
-        info.append([f"{testname} - SKIP CGRA MAP", 0])
-        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test, "--skip-cgra-map"] + layer_array, env=env_vars)
-    else:
-        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
+    # if skip_cgra_map:
+    #     print(f"--- {testname} - SKIP CGRA MAP", flush=True)
+    #     info.append([f"{testname} - SKIP CGRA MAP", 0])
+    #     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test, "--skip-cgra-map"] + layer_array, env=env_vars)
+    # else:
+    #     buildkite_call(["aha", "map", test, "--chain", "--env-parameters", env_parameters, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
     time_compile = time.time() - start
 
     print(f"--- {testname} - pnr and pipelining", flush=True)
