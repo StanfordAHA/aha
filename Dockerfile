@@ -324,8 +324,11 @@ COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
 
 WORKDIR /aha
-RUN source bin/activate && \
+# thunder setup errmsg says we must set CC and CXX full paths
+RUN \
+  source bin/activate && \
   echo "--- ..Final aha deps install" && \
+  export CC=/usr/bin/gcc && export CXX=/usr/bin/g++ && \
   pip install -e . && \
   aha deps install
 
