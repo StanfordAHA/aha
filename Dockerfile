@@ -127,6 +127,13 @@ RUN --mount=type=secret,id=gtoken \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
+# Quick fail maybe
+RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
+# REMOVES cpp cpp-9 g++ g++-9 gcc gcc -9 g++ g++-9
+# INSTALLS gcc-10-base:i386
+RUN test -e /usr/bin/gcc || apt-get install -y gcc-9 g++-9
+
+
 # Frequent sanity checks maybe - gcc YES x86 YES
 WORKDIR /aha
 RUN \
@@ -315,8 +322,6 @@ RUN mkdir -p /usr/include/sys && \
     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
 
 RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
-
-
 # REMOVES cpp cpp-9 g++ g++-9 gcc gcc -9 g++ g++-9
 # INSTALLS gcc-10-base:i386
 RUN test -e /usr/bin/gcc || apt-get install -y gcc-9 g++-9
