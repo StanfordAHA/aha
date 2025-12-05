@@ -4,6 +4,20 @@
 echo "BEGIN $(date)"
 t_begin=$(date +%s)  # 1664872377
 
+# How to test this script locally
+# Do it on r8cad-docker or someplace that might actually have cached submods see?
+if false; then
+   mkdir -p /tmp/deleteme-bsi-aha; cd /tmp/deleteme-bsi-aha
+   git clone https://github.com/StanfordAHA/aha; cd aha
+   # on kiwi: scp /nobackup/steveri/github/aha/.buildkite/bin/fast-submod-init.sh r8cad-docker:tmpdir/
+   alias fsi=/home/steveri/tmpdir/fast-submod-init.sh
+   fsi --reset
+   fsi |& tee tmp.log |& less
+   test -e .git/modules/sam/HEAD
+
+fi
+
+
 # Quick error check
 repo=$(basename $(git remote get-url origin) | cut -d. -f1)
 if ! test "$repo" = "aha"; then
@@ -34,19 +48,19 @@ if [ "$1" == "--reset" ]; then
     echo "# Cut'n'paste"
     echo "$submods" | while read line; do
         s=$(echo $line | awk '{print $2}')
-        echo /bin/rm -rf aha/"{.git/modules/$s,$s}"
+        echo /bin/rm -rf "{.git/modules/$s,$s}; \\"
     done
     exit
 fi
 
-function is_initialized {
-  git submodule status $1 | egrep -v '^[-]' > /dev/null && true || false
-}
+function is_empty { test -z "$(ls -A $1)"; }  # TRUE if dir has no contents
 
-function DBG { false; }
 function get_submod {
     # Search for existing submod. If found, copy it. Else,
     # record its name in a 'fails' list i.e. fails="clockwork sam"
+
+    function DBG { true; }
+    function DBG { false; }
 
     s=$1  # E.g. 'Buffermapping'
     c=$2  # E.g. '8ef41175ab512bf0938283beb65d099935522990'
@@ -59,8 +73,9 @@ function get_submod {
 
     # Search all dirs that might have cached info
     # echo "Looking for $c in agent cache(s)"
+    DBG && echo "Searching for cached version of $c $s"
     for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow; do
-
+        DBG && echo "  $d"
         if test "$d" = "$PWD"; then
             echo "--- haha don't copy from yourself dummy, you'll surely fail"
             continue
@@ -69,8 +84,13 @@ function get_submod {
         # Skip squirrely repos w/no submod info
         test -e $d/.git/modules || continue
 
-        # Skip if submod uninitialized
-        is_initialized $s || continue
+        # Skip if submod has no contents
+        if ! is_empty $d/$s; then
+            echo "  - oops submod $s is empty"
+            continue
+        fi
+        
+        # is_initialized $s || continue
 
         # Find SHA for submod $s in the target cache
         cached=$(cd $d; git ls-tree HEAD $s | awk '{print $3}')
@@ -93,6 +113,7 @@ function get_submod {
             return
         fi
     done
+
 
     # Slow-initialize recalcitrant submodules
     printf "\n\nCannot find cache for $s $c, must use backup/slow method\n"
