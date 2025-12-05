@@ -61,7 +61,7 @@ function get_submod {
 
     function DBG { false; }
     function DBG { true; }
-
+    set -x
     s=$1  # E.g. 'Buffermapping'
     c=$2  # E.g. '8ef41175ab512bf0938283beb65d099935522990'
     c8=$(echo $c | cut -b 1-8)  # E.g. '8ef41175'
@@ -77,12 +77,17 @@ function get_submod {
     for d in /var/lib/buildkite-agent/builds/*/stanford-aha/aha-flow; do
         DBG && echo "  $d"
         if test "$d" = "$PWD"; then
-            echo "--- haha don't copy from yourself dummy, you'll surely fail"
+            DBG && echo "  - haha don't copy from yourself dummy, you'll surely fail"
             continue
         fi
 
         # Skip squirrely repos w/no submod info
+        DBG && test -e $d/.git/modules || echo '  - cannot find .git/modules'
         test -e $d/.git/modules || continue
+
+        # Skip if submod does not exist (it happens!?)
+        DBG && test -e $d/$s || echo '  - cannot find $s subdir'
+        test -e $d/$s || continue
 
         # Skip if submod has no contents
         if is_empty $d/$s; then

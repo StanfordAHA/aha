@@ -328,6 +328,7 @@ WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- ..Final aha deps install" && \
+  (ls -l /usr/bin || echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 x86_64-linux-gnu-g++-9 || echo okay) && \
