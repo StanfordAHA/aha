@@ -100,6 +100,18 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
+# Frequent sanity checks maybe
+WORKDIR /aha
+RUN \
+  source bin/activate && \
+  echo "--- SANITY CHECK 108" && \
+  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay)
+
+
 # Put the problem child here up front so that it can fail quickly :(
 
 # Voyager 1 - clone voyager
@@ -114,6 +126,17 @@ RUN --mount=type=secret,id=gtoken \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
+# Frequent sanity checks maybe
+WORKDIR /aha
+RUN \
+  source bin/activate && \
+  echo "--- SANITY CHECK 134" && \
+  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay)
 
 # Pono
 WORKDIR /aha
@@ -222,6 +245,17 @@ RUN \
   : DONE && \
     echo DONE
 
+# Frequent sanity checks maybe
+WORKDIR /aha
+RUN \
+  source bin/activate && \
+  echo "--- SANITY CHECK 252" && \
+  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay)
+
 # Sam 1 - clone and set up sam
 COPY ./.git/modules/sam/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
@@ -260,6 +294,17 @@ RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64
     && rm miniconda.sh \
     && $CONDA_DIR/bin/conda clean -afy
 
+# Frequent sanity checks maybe
+WORKDIR /aha
+RUN \
+  source bin/activate && \
+  echo "--- SANITY CHECK 301" && \
+  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay)
+
 # Make conda globally available
 ENV PATH=$CONDA_DIR/bin:$PATH
 
@@ -277,6 +322,17 @@ RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 # FIXME
 # Voyager 1 temporarily moved to beginning of file for debugging, see above
 # If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
+
+# Frequent sanity checks maybe
+WORKDIR /aha
+RUN \
+  source bin/activate && \
+  echo "--- SANITY CHECK 319" && \
+  (ls -l /usr/bin || echo okay) && \
+  (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay)
 
 # Voyager 2 - setup voyager
 COPY ./voyager /aha/voyager
@@ -331,9 +387,9 @@ RUN \
   (ls -l /usr/bin || echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
-  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 x86_64-linux-gnu-g++-9 || echo okay) && \
-  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 x86_64-linux-gnu-g++-9 || echo okay) && \
-  export CC=/usr/bin/x86_64-linux-gnu-gcc-9 && export CXX=x86_64-linux-gnu-g++-9 && \
+  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay)
+  export CC=/usr/bin/x86_64-linux-gnu-gcc-9 && export CXX=/usr/bin/x86_64-linux-gnu-g++-9 && \
   pip install -e . && \
   aha deps install
 
