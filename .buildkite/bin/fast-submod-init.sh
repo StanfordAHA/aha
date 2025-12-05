@@ -39,6 +39,10 @@ if [ "$1" == "--reset" ]; then
     exit
 fi
 
+function is_initialized {
+  git submodule status $1 | egrep -v '^[-]' > /dev/null && true || false
+}
+
 function DBG { false; }
 function get_submod {
     # Search for existing submod. If found, copy it. Else,
@@ -64,6 +68,9 @@ function get_submod {
 
         # Skip squirrely repos w/no submod info
         test -e $d/.git/modules || continue
+
+        # Skip if submod uninitialized
+        is_initialized $s || continue
 
         # Find SHA for submod $s in the target cache
         cached=$(cd $d; git ls-tree HEAD $s | awk '{print $3}')
