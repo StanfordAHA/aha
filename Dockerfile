@@ -388,7 +388,7 @@ RUN \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
-  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay)
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
   export CC=/usr/bin/x86_64-linux-gnu-gcc-9 && export CXX=/usr/bin/x86_64-linux-gnu-g++-9 && \
   pip install -e . && \
   aha deps install
