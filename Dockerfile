@@ -328,7 +328,11 @@ WORKDIR /aha
 RUN \
   source bin/activate && \
   echo "--- ..Final aha deps install" && \
-  export CC=/usr/bin/gcc && export CXX=/usr/bin/g++ && \
+  (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
+  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 x86_64-linux-gnu-g++-9 || echo okay) && \
+  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 x86_64-linux-gnu-g++-9 || echo okay) && \
+  export CC=/usr/bin/x86_64-linux-gnu-gcc-9 && export CXX=x86_64-linux-gnu-g++-9 && \
   pip install -e . && \
   aha deps install
 
