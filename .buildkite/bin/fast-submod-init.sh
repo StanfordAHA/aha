@@ -59,8 +59,8 @@ function get_submod {
     # Search for existing submod. If found, copy it. Else,
     # record its name in a 'fails' list i.e. fails="clockwork sam"
 
-    function DBG { true; }
     function DBG { false; }
+    function DBG { true; }
 
     s=$1  # E.g. 'Buffermapping'
     c=$2  # E.g. '8ef41175ab512bf0938283beb65d099935522990'
@@ -85,7 +85,7 @@ function get_submod {
         test -e $d/.git/modules || continue
 
         # Skip if submod has no contents
-        if ! is_empty $d/$s; then
+        if is_empty $d/$s; then
             echo "  - oops submod $s is empty"
             continue
         fi
