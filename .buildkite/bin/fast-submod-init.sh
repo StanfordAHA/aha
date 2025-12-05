@@ -53,7 +53,7 @@ if [ "$1" == "--reset" ]; then
     exit
 fi
 
-function is_empty { test -z "$(ls -A $1)"; }  # TRUE if dir has no contents
+function is_empty { test -z "$(ls $1)"; }  # TRUE if dir has no contents
 
 function get_submod {
     # Search for existing submod. If found, copy it. Else,
@@ -94,6 +94,7 @@ function get_submod {
 
         # Find SHA for submod $s in the target cache
         cached=$(cd $d; git ls-tree HEAD $s | awk '{print $3}')
+        DBG && echo "  - $cached"
         if test "$cached" = "$c"; then
 
             # Copy submodule contents
