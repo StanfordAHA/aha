@@ -730,23 +730,28 @@ class Tests:
                 # "apps/zircon_scale_add_fp_RV"
             ]
             external_mu_tests = [
+                # Using inner reduction workaround
+                "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
             ]
             external_mu_tests_fp = [
                 # BERT
                 # Query, Key, Value projection layers
+                 # All using gemm_reduction_tiling_workaround
             #    "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
             #    "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
             #    "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
 
+                 # All using gemm_reduction_tiling_workaround
             #    "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
             #    "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel1_RV_E64_MB",
             #    "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
 
+                 # All using gemm_reduction_tiling_workaround
             #    "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
             #    "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel1_RV_E64_MB",
             #    "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel2_RV_E64_MB",
 
-                "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
+                # "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
 
                 # RESNET18
                 # # Conv1 (im2col-based, X-DIM HOST TILING)
