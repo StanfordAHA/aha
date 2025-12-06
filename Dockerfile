@@ -323,18 +323,20 @@ COPY ./Lego_v0 /aha/Lego_v0
 COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
 
-# REMOVES cpp cpp-9 g++ g++-9 gcc gcc -9 g++ g++-9
-# INSTALLS gcc-10-base:i386
-RUN test -e /usr/bin/gcc || apt-get install -y gcc-9 g++-9
+# Re-install gcc if it is missing
+RUN test -e /usr/bin/gcc || ( \
+   apt-get install -y gcc-9 g++-9 && \
+   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
 
 WORKDIR /aha
 # thunder setup errmsg says we must set CC and CXX full paths
 # export CC=/usr/bin/x86_64-linux-gnu-gcc-9 && export CXX=/usr/bin/x86_64-linux-gnu-g++-9 && \
 # export CC=/usr/bin/gcc && export CXX=/usr/bin/g++ && \
+# export CC=/usr/bin/gcc-9 && export CXX=/usr/bin/g++-9 && \
 RUN \
   source bin/activate && \
   echo "--- ..Final aha deps install" && \
-  (test -e /usr/bin/gcc || apt-get install -y gcc-9 g++-9) && \
   (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
   (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
   (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
