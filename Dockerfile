@@ -115,9 +115,18 @@ RUN --mount=type=secret,id=gtoken \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
+  \
   du -sh /aha/.git && \
   /bin/rm -rf /aha/.git/modules/voyager/ && \
-  du -sh /aha/.git
+  du -sh /aha/.git && \
+  \
+  echo "--- DU.MODELS1" && \
+  du -sh /aha/voyager/models/* && \
+  /bin/rm -rf /aha/voyager/models/* && \
+  du -sh /aha/voyager/models/* && \
+  \
+  du -sh /aha && \
+  true
 
 
 
@@ -293,11 +302,16 @@ RUN echo "--- ..Voyager step 2"
 WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager && git lfs pull
+RUN echo "--- DU.MODELS2" && du -sh /aha/voyager/models/*
+
 # RUN cd /aha/voyager
 # RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
 #     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
 #     conda activate /aha/voyager/.conda-env && \
 #     cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
+  du -sh /aha/voyager/models/* && \
+  /bin/rm -rf /aha/voyager/models/* && \
+  du -sh /aha/voyager/models/* && \
 #     cd /aha/voyager && pip install quantized-training && \
 #     source env.sh && \
 #     conda deactivate && export PATH="$ORIGINAL_PATH"
