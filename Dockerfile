@@ -114,7 +114,13 @@ RUN --mount=type=secret,id=gtoken \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
+  du -sh /aha/.git && \
+  /bin/rm -rf /aha/.git/modules/voyager/ && \
+  du -sh /aha/.git
+
+
+
 
 # Pono
 WORKDIR /aha
