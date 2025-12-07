@@ -84,7 +84,8 @@ class Tests:
             "apps/zircon_2d_nop",
             "apps/zircon_2d_psum_reduction_fp",
             "apps/mu2glb_path_balance_test",
-            "apps/zircon_scale_add_fp"
+            "apps/zircon_scale_add_fp",
+            "apps/nop_2d",
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -122,6 +123,7 @@ class Tests:
             "apps/zircon_2d_psum_reduction_fp",
             "apps/mu2glb_path_balance_test",
             "apps/zircon_scale_add_fp",
+            "apps/nop_2d",
         ]
         return vars().copy()
 
@@ -722,6 +724,9 @@ class Tests:
                 # # Fully connected layer (K-DIM HOST TILING)
                 # "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
                 # "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+
+                # BERT
+                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 # "apps/pointwise_mu_io_RV",

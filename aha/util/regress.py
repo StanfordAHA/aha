@@ -514,6 +514,7 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_quant_fp")
         test, layer = parse_layer_parametrized_test(test, "avgpool_layer_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "fully_connected_layer_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "nop_2d", layer_in=layer)
 
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
