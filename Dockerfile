@@ -298,11 +298,13 @@ RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 
 # Voyager 2 - setup voyager
 COPY ./voyager /aha/voyager
-RUN echo "--- ..Voyager step 2"
-WORKDIR /aha/voyager
-RUN git lfs install
-RUN cd /aha/voyager && git lfs pull
-RUN echo "--- DU.MODELS2" && (du -sh /aha/voyager/models/* || echo okay)
+
+# bashrc is going to have to do this maybe, in the future...
+# RUN echo "--- ..Voyager step 2"
+# WORKDIR /aha/voyager
+# RUN git lfs install
+# RUN cd /aha/voyager && git lfs pull
+# RUN echo "--- DU.MODELS2" && (du -sh /aha/voyager/models/* || echo okay)
 
 # RUN cd /aha/voyager
 # RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
