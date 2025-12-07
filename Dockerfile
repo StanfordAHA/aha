@@ -121,9 +121,9 @@ RUN --mount=type=secret,id=gtoken \
   du -sh /aha/.git && \
   \
   echo "--- DU.MODELS1" && \
-  du -sh /aha/voyager/models/* && \
+  (du -sh /aha/voyager/models/* || echo okay) && \
   /bin/rm -rf /aha/voyager/models/* && \
-  du -sh /aha/voyager/models/* && \
+  (du -sh /aha/voyager/models/* || echo okay) && \
   \
   du -sh /aha && \
   true
@@ -302,7 +302,7 @@ RUN echo "--- ..Voyager step 2"
 WORKDIR /aha/voyager
 RUN git lfs install
 RUN cd /aha/voyager && git lfs pull
-RUN echo "--- DU.MODELS2" && du -sh /aha/voyager/models/*
+RUN echo "--- DU.MODELS2" && (du -sh /aha/voyager/models/* || echo okay)
 
 # RUN cd /aha/voyager
 # RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
