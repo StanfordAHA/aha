@@ -309,9 +309,6 @@ RUN echo "--- DU.MODELS2" && du -sh /aha/voyager/models/*
 #     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
 #     conda activate /aha/voyager/.conda-env && \
 #     cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
-  du -sh /aha/voyager/models/* && \
-  /bin/rm -rf /aha/voyager/models/* && \
-  du -sh /aha/voyager/models/* && \
 #     cd /aha/voyager && pip install quantized-training && \
 #     source env.sh && \
 #     conda deactivate && export PATH="$ORIGINAL_PATH"
