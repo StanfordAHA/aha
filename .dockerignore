@@ -12,7 +12,7 @@ Dockerfile
 
 .git/modules/Halide-to-Hardware
 .git/modules/clockwork
-.git/modules/voyager
+.git/modules/voyager/objects
 
 
 
