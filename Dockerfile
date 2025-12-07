@@ -22,6 +22,7 @@ LABEL description="garnet"
 ENV DEBIAN_FRONTEND=noninteractive
 # ARG GITHUB_TOKEN
 
+# 1GB maybe
 RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
@@ -102,18 +103,18 @@ RUN source bin/activate && \
 
 # Put the problem child here up front so that it can fail quickly :(
 
-# # Voyager 1 - clone voyager
-# COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+# Voyager 1 - clone voyager
+COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 
-# # Use token provided by docker-build `--secrets` to clone voyager
-# RUN --mount=type=secret,id=gtoken \
-#   cd /aha && \
-#   git clone https://$(cat /run/secrets/gtoken)@github.com:/StanfordAHA/voyager.git voyager && \
-#   cd /aha/voyager && \
-#   mkdir -p /aha/.git/modules && \
-#   mv .git/ /aha/.git/modules/voyager/ && \
-#   ln -s /aha/.git/modules/voyager/ .git && \
-#   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+# Use token provided by docker-build `--secrets` to clone voyager
+RUN --mount=type=secret,id=gtoken \
+  cd /aha && \
+  git clone https://$(cat /run/secrets/gtoken)@github.com:/StanfordAHA/voyager.git voyager && \
+  cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
 # Pono
 WORKDIR /aha
@@ -222,6 +223,7 @@ RUN \
   : DONE && \
     echo DONE
 
+# 2GB maybe
 # Sam 1 - clone and set up sam
 COPY ./.git/modules/sam/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
@@ -231,6 +233,7 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   ln -s /aha/.git/modules/sam/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
+# 10MB (COPY) + 210 MB (RUN) maybe
 # Sam 2 - build sam
 COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
@@ -263,35 +266,35 @@ RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64
 # Make conda globally available
 ENV PATH=$CONDA_DIR/bin:$PATH
 
-# # Voyager 0 - voyager misc
-# RUN echo "--- ..Voyager step 0"
-# # Install additional dependencies for building C++ code
-# RUN mkdir -p /usr/include/sys && \
-#     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
+# Voyager 0 - voyager misc
+RUN echo "--- ..Voyager step 0"
+# Install additional dependencies for building C++ code
+RUN mkdir -p /usr/include/sys && \
+    curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
 
 RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
 RUN apt-get update && apt-get install -y linux-headers-generic
 
 RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 
-# # FIXME
-# # Voyager 1 temporarily moved to beginning of file for debugging, see above
-# # If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
-# 
-# # Voyager 2 - setup voyager
-# COPY ./voyager /aha/voyager
-# RUN echo "--- ..Voyager step 2"
-# WORKDIR /aha/voyager
-# RUN git lfs install
-# RUN cd /aha/voyager && git lfs pull
-# # RUN cd /aha/voyager
-# # RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
-# #     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
-# #     conda activate /aha/voyager/.conda-env && \
-# #     cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
-# #     cd /aha/voyager && pip install quantized-training && \
-# #     source env.sh && \
-# #     conda deactivate && export PATH="$ORIGINAL_PATH"
+# FIXME
+# Voyager 1 temporarily moved to beginning of file for debugging, see above
+# If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
+
+# Voyager 2 - setup voyager
+COPY ./voyager /aha/voyager
+RUN echo "--- ..Voyager step 2"
+WORKDIR /aha/voyager
+RUN git lfs install
+RUN cd /aha/voyager && git lfs pull
+# RUN cd /aha/voyager
+# RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
+#     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
+#     conda activate /aha/voyager/.conda-env && \
+#     cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
+#     cd /aha/voyager && pip install quantized-training && \
+#     source env.sh && \
+#     conda deactivate && export PATH="$ORIGINAL_PATH"
 
 # ------------------------------------------------------------------------------
 # Final pip installs: AHA Tools etc.
@@ -330,10 +333,12 @@ RUN test -e /usr/bin/gcc || ( \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
 
 WORKDIR /aha
+
 # thunder setup errmsg says we must set CC and CXX full paths
 # export CC=/usr/bin/x86_64-linux-gnu-gcc-9 && export CXX=/usr/bin/x86_64-linux-gnu-g++-9 && \
 # export CC=/usr/bin/gcc && export CXX=/usr/bin/g++ && \
 # export CC=/usr/bin/gcc-9 && export CXX=/usr/bin/g++-9 && \
+
 RUN \
   source bin/activate && \
   echo "--- ..Final aha deps install" && \

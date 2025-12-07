@@ -10,6 +10,10 @@ Dockerfile
 *.md
 *.json
 
+.git/modules/Halide-to-Hardware
+.git/modules/clockwork
+
+
 
 # Created by https://www.gitignore.io/api/c++,python
 # Edit at https://www.gitignore.io/?templates=c++,python
