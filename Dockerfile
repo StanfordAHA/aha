@@ -115,21 +115,19 @@ RUN --mount=type=secret,id=gtoken \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
-  \
-  du -sh /aha/.git && \
-  /bin/rm -rf /aha/.git/modules/voyager/ && \
-  du -sh /aha/.git && \
-  \
-  echo "--- DU.MODELS1" && \
-  (du -sh /aha/voyager/models/* || echo okay) && \
-  /bin/rm -rf /aha/voyager/models/* && \
-  (du -sh /aha/voyager/models/* || echo okay) && \
-  \
-  du -sh /aha && \
-  true
-
-
-
+  : CLEANUP1 800 MB && \
+      echo "# cleanup: delete 800MB of git history; will be restored by bashrc/restore-dotgit" && \
+      du -sh /aha/.git && \
+      /bin/rm -rf /aha/.git/modules/voyager/ && \
+      du -sh /aha/.git && \
+  : CLEANUP2 600 MB && \
+      echo "--- DU.MODELS1" && \
+      echo "delete 600MB of models; user will have to reload them manually in container" && \
+      (du -sh /aha/voyager/models/* || echo okay) && \
+      /bin/rm -rf /aha/voyager/models/* && \
+      (du -sh /aha/voyager/models/* || echo okay) && \
+  : FINAL SIZE && \
+      du -sh /aha
 
 # Pono
 WORKDIR /aha
@@ -297,8 +295,12 @@ RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 # If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
 
 # Voyager 2 - setup voyager
+# Bring in local changes on top of base clone
 COPY ./voyager /aha/voyager
 
+# Cannot do 'git lfs' now that we have delete voyager git history
+# User will have to do this manually in the container when/if desired
+# 
 # bashrc is going to have to do this maybe, in the future...
 # RUN echo "--- ..Voyager step 2"
 # WORKDIR /aha/voyager
@@ -346,26 +348,16 @@ COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
 
 # Re-install gcc if it is missing
+# (Apparently github actions deletes gcc when it installs libc6, see above)
 RUN test -e /usr/bin/gcc || ( \
    apt-get install -y gcc-9 g++-9 && \
    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
 
 WORKDIR /aha
-
-# thunder setup errmsg says we must set CC and CXX full paths
-# export CC=/usr/bin/x86_64-linux-gnu-gcc-9 && export CXX=/usr/bin/x86_64-linux-gnu-g++-9 && \
-# export CC=/usr/bin/gcc && export CXX=/usr/bin/g++ && \
-# export CC=/usr/bin/gcc-9 && export CXX=/usr/bin/g++-9 && \
-
 RUN \
   source bin/activate && \
   echo "--- ..Final aha deps install" && \
-  (ls -l /usr/bin/*gcc* /usr/bin/*g++* ||  echo okay) && \
-  (ls -l /usr/bin/gcc /usr/bin/g++ || echo okay) && \
-  (ls -lH /usr/bin/gcc /usr/bin/g++ || echo okay) && \
-  (ls -l /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
-  (ls -lH /usr/bin/x86_64-linux-gnu-gcc-9 /usr/bin/x86_64-linux-gnu-g++-9 || echo okay) && \
   pip install -e . && \
   aha deps install
 
