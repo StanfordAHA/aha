@@ -852,6 +852,485 @@
             "VOYAGER_GOLD":"1"
         }
     },
+     "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"0"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"0",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"0",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"1",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"1",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel2":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"2"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"2",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"2",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel3":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"3"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"3",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"3",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel4":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"4"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"4",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"4",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel5":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"5"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"5",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"5",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel6":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"6"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"6",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"6",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel7":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"7"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"7",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"7",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel8":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"8"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"8",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"8",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel9":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"9"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"9",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"9",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel10":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"10"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"10",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"10",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
+        }
+    },
+    "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel11":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"11",
+            "VOYAGER_GOLD":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"11",
+            "VOYAGER_GOLD":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "ZIRCON_HARDCODED_TILING":"1",
+            "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
+            "NUM_PSUMS":"12",
+            "PSUM_IDX":"11",
+            "VOYAGER_GOLD":"1"
+        }
+    },
     "zircon_dequantize_relu_fp_post_conv1_kernel1":{
         "default":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
