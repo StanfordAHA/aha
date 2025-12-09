@@ -115,6 +115,8 @@ RUN --mount=type=secret,id=gtoken \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
+  : GIT LFS although maybe this does not really do anything && \
+      git lfs install && git lfs pull && \
   : CLEANUP1 800 MB && \
       echo "# cleanup: delete 800MB of git history; will be restored by bashrc/restore-dotgit" && \
       du -sh /aha/.git && \
@@ -373,8 +375,12 @@ ENV USER=docker
 # 1. Create a /root/.modules so as to avoid this warning on startup:
 #    "+(0):WARN:0: Directory '/root/.modules' not found"
 # 2. Tell user how to restore gch headers.
-
-RUN echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && echo DONE
+#
+# Also: Final dotfile cleanup, just in case
+RUN \
+  echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && \
+  /bin/rm -rf /aha/.git/modules/{clockwork,Halide-to-Hardware,voyager} && \
+  echo DONE
 
 # Restore halide distrib files on every container startup
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]

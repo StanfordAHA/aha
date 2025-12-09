@@ -17,7 +17,7 @@ Dockerfile
 
 .git/modules/Halide-to-Hardware
 .git/modules/clockwork
-.git/modules/voyager/objects
+.git/modules/voyager
 
 # Created by https://www.gitignore.io/api/c++,python
 # Edit at https://www.gitignore.io/?templates=c++,python

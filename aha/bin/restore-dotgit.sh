@@ -94,6 +94,13 @@ git fetch -p
 set +x
 
 echo ""
+echo "--- Restore submodules"
+submods=$(git submodule status | awk '{print $2}')
+echo $submods
+for s in $submods; do git submodule deinit -f $s; git submodule init $s; git submodule update $s; done
+for s in . $submods; do (cd $s; echo "$(git rev-parse HEAD) $(basename $PWD)"); done
+
+echo ""
 echo "+++ DONE"
 printf "\ngit status\n"; git status -uno
 printf "\ngit branch\n"; git branch
