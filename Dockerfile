@@ -104,7 +104,10 @@ RUN source bin/activate && \
 # Put the problem child here up front so that it can fail quickly :(
 
 # Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+
+# COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+# Cannot COPY because .git/modules/voyager is in .dockerignore
+RUN --mount=source=/.git/modules/voyager/HEAD,target=/tmp/HEAD ls -lr /tmp/HEAD && cat /tmp/HEAD
 
 # Use token provided by docker-build `--secrets` to clone voyager
 RUN --mount=type=secret,id=gtoken \
