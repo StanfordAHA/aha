@@ -448,6 +448,25 @@ def test_dense_app(
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+        "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
+        "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
+        "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel2_RV_E64_MB",
+        "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
+        "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel2_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel2_RV_E64_MB",
+
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel3_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel4_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel5_RV_E64_MB",
+
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel6_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel7_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel8_RV_E64_MB",
+
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel9_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel10_RV_E64_MB",
+        "bert-submodule_17 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel11_RV_E64_MB",
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
 

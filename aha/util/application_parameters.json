@@ -862,7 +862,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"0"
+            "PSUM_IDX":"0",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -902,7 +904,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"1"
+            "PSUM_IDX":"1",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -942,7 +946,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"2"
+            "PSUM_IDX":"2",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -982,7 +988,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"3"
+            "PSUM_IDX":"3",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -1022,7 +1030,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"4"
+            "PSUM_IDX":"4",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -1062,7 +1072,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"5"
+            "PSUM_IDX":"5",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -1102,7 +1114,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"6"
+            "PSUM_IDX":"6",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -1142,7 +1156,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"7"
+            "PSUM_IDX":"7",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -1182,7 +1198,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"8"
+            "PSUM_IDX":"8",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -1222,7 +1240,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"9"
+            "PSUM_IDX":"9",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
@@ -1262,7 +1282,9 @@
             "ZIRCON_HARDCODED_TILING":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"12",
-            "PSUM_IDX":"10"
+            "PSUM_IDX":"10",
+            "USE_PSUM_WORKAROUND_GOLD":"1",
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-submodule_17_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=768 seq_len=128",
