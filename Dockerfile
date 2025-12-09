@@ -105,9 +105,15 @@ RUN source bin/activate && \
 
 # Voyager 1 - clone voyager
 
+# 'COPY voyager' below, plus restore-dotgit on startup, should take care of
+# the final checkout of correct voyager and its submodules (i hope!)
+
 # COPY ./.git/modules/voyager/HEAD /tmp/HEAD
 # Cannot COPY because .git/modules/voyager is in .dockerignore
-RUN --mount=source=/.git/modules/voyager/HEAD,target=/tmp/HEAD ls -lr /tmp/HEAD && cat /tmp/HEAD
+# RUN --mount=source=./.git/modules/voyager/HEAD,target=/tmp/HEAD ls -lr /tmp/HEAD && cat /tmp/HEAD
+#  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
+
+
 
 # Use token provided by docker-build `--secrets` to clone voyager
 RUN --mount=type=secret,id=gtoken \
@@ -117,7 +123,6 @@ RUN --mount=type=secret,id=gtoken \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
   : GIT LFS although maybe this does not really do anything && \
       git lfs install && git lfs pull && \
   : CLEANUP1 800 MB && \
@@ -284,8 +289,9 @@ RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64
 # Make conda globally available
 ENV PATH=$CONDA_DIR/bin:$PATH
 
-# Voyager 0 - voyager misc
-RUN echo "--- ..Voyager step 0"
+# # Voyager 0 - voyager misc
+# RUN echo "--- ..Voyager step 0"
+
 # Install additional dependencies for building C++ code
 RUN mkdir -p /usr/include/sys && \
     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
