@@ -37,6 +37,7 @@ class Tests:
         resnet_tests = []
         resnet_tests_fp = []
         behavioral_mu_tests = []
+        behavioral_mu_tests_fp = []
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
@@ -54,8 +55,20 @@ class Tests:
             "apps/fully_connected_layer_fp",
             "apps/pointwise_custom_packing",
             "apps/pointwise_custom_place_multibank",
-            "apps/get_e8m0_scale_test_fp",
+            "apps/get_e8m0_scale_tree_mu_input",
+            "apps/get_e8m0_scale_tree_gb_input",
+            "apps/get_e8m0_scale_accum_gb_input",
+            "apps/apply_e8m0_scale_single_IO",
+            "apps/apply_e8m0_scale_multi_IOs",
             "apps/get_apply_e8m0_scale_fp",
+            "apps/stable_softmax_pass1_fp",
+            "apps/stable_softmax_pass2_fp",
+            "apps/stable_softmax_pass3_fp",
+            "apps/layer_norm_pass1_fp",
+            "apps/layer_norm_pass2_fp",
+            "apps/gelu_pass1_mu_input_fp",
+            "apps/gelu_pass2_fp",
+            "apps/tanh_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
             "apps/zircon_psum_reduction_fp",
@@ -72,8 +85,20 @@ class Tests:
             "apps/pointwise",
             "apps/pointwise_mu_io",
             "apps/pointwise_custom_place_multibank",
-            "apps/get_e8m0_scale_test_fp",
+            "apps/get_e8m0_scale_tree_mu_input",
+            "apps/get_e8m0_scale_tree_gb_input",
+            "apps/get_e8m0_scale_accum_gb_input",
+            "apps/apply_e8m0_scale_single_IO",
+            "apps/apply_e8m0_scale_multi_IOs",
             "apps/get_apply_e8m0_scale_fp",
+            "apps/stable_softmax_pass1_fp",
+            "apps/stable_softmax_pass2_fp",
+            "apps/stable_softmax_pass3_fp",
+            "apps/layer_norm_pass1_fp",
+            "apps/layer_norm_pass2_fp",
+            "apps/gelu_pass1_mu_input_fp",
+            "apps/gelu_pass2_fp",
+            "apps/tanh_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
             "apps/maxpooling_dense_rv_fp",
@@ -221,24 +246,18 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_RV = [
-                "tests/conv_2_1_RV",
-                "tests/fp_e8m0_quant_test_RV",
-                "apps/pointwise_RV",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_custom_packing_RV_E64",
-                "apps/gaussian_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
+                "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
             external_mu_tests_fp = [
@@ -275,8 +294,6 @@ class Tests:
                 "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
                 "apps/relu_layer_fp",
-                "apps/scalar_max_fp",
-                "apps/scalar_avg_fp",
             ]
             external_mu_tests_fp = [
                 # Conv4_x
@@ -322,25 +339,41 @@ class Tests:
                 "apps/mat_vec_mul_fp_RV_E64_MB",
                 "apps/scalar_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
-                "apps/layer_norm_pass2_fp_RV",
-                "apps/layer_norm_pass3_fp_RV",
+                "apps/layer_norm_pass1_fp_RV_E64_MB",
+                "apps/layer_norm_pass2_fp_RV_E64_MB",
                 "apps/scalar_avg_fp_RV",
-                "apps/stable_softmax_pass2_fp_RV",
-                "apps/stable_softmax_pass3_fp_RV",
+                "apps/stable_softmax_pass1_fp_RV_E64_MB",
+                "apps/stable_softmax_pass2_fp_RV_E64_MB",
+                "apps/stable_softmax_pass3_fp_RV_E64_MB",
                 "apps/vector_reduction_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
+                "apps/gelu_pass2_fp_RV_E64_MB",
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
+                "apps/tanh_fp_RV_E64_MB",
             ]
             self.addgroup("voyager_cgra_tests_fp", [2,3])
+            behavioral_mu_tests_fp = [
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+            ]
 
         elif testname == "pr_aha9":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            glb_tests_RV = [
+                "tests/conv_2_1_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
+                "apps/gaussian_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+            ]
             external_mu_tests_fp = [
                 # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
@@ -459,6 +492,10 @@ class Tests:
                 "apps/brighten_and_blur_RV",
                 "apps/pointwise_custom_packing_RV_E64",
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
+                "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
+                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
             glb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
@@ -469,19 +506,20 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/scalar_max_fp_RV",
-                "apps/stable_softmax_pass2_fp_RV",
+                "apps/stable_softmax_pass1_fp_RV_E64_MB",
+                "apps/stable_softmax_pass2_fp_RV_E64_MB",
                 "apps/stable_softmax_pass3_fp_RV",
                 "apps/scalar_avg_fp_RV",
-                "apps/layer_norm_pass2_fp_RV",
-                "apps/layer_norm_pass3_fp_RV",
-                "apps/gelu_pass1_fp_RV",
-                "apps/gelu_pass2_fp_RV",
+                "apps/layer_norm_pass1_fp_RV_E64_MB",
+                "apps/layer_norm_pass2_fp_RV_E64_MB",
+                "apps/gelu_pass2_fp_RV_E64_MB",
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/swiglu_pass2_fp_RV",
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
+                "apps/tanh_fp_RV_E64_MB",
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
@@ -529,19 +567,6 @@ class Tests:
                 "tests/fp_comp",
                 "tests/fp_conv_7_7",
                 "apps/matrix_multiplication_fp",
-                "apps/scalar_max_fp",
-                "apps/stable_softmax_pass2_fp",
-                "apps/stable_softmax_pass3_fp",
-                "apps/scalar_avg_fp",
-                "apps/layer_norm_pass2_fp",
-                "apps/layer_norm_pass3_fp",
-                "apps/gelu_pass1_fp",
-                "apps/gelu_pass2_fp",
-                "apps/silu_pass1_fp",
-                "apps/silu_pass2_fp",
-                "apps/swiglu_pass2_fp",
-                "apps/rope_pass1_fp",
-                "apps/rope_pass2_fp",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
                 # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
@@ -571,8 +596,11 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_test_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+            ]
+            behavioral_mu_tests_fp = [
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
 

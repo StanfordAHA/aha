@@ -22,6 +22,7 @@ LABEL description="garnet"
 ENV DEBIAN_FRONTEND=noninteractive
 # ARG GITHUB_TOKEN
 
+# 1GB maybe
 RUN apt-get update && \
     apt-get install -y \
         build-essential software-properties-common && \
@@ -103,7 +104,16 @@ RUN source bin/activate && \
 # Put the problem child here up front so that it can fail quickly :(
 
 # Voyager 1 - clone voyager
-COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+
+# 'COPY voyager' below, plus restore-dotgit on startup, should take care of
+# the final checkout of correct voyager and its submodules (i hope!)
+
+# COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+# Cannot COPY because .git/modules/voyager is in .dockerignore
+# RUN --mount=source=./.git/modules/voyager/HEAD,target=/tmp/HEAD ls -lr /tmp/HEAD && cat /tmp/HEAD
+#  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
+
+
 
 # Use token provided by docker-build `--secrets` to clone voyager
 RUN --mount=type=secret,id=gtoken \
@@ -113,7 +123,21 @@ RUN --mount=type=secret,id=gtoken \
   mkdir -p /aha/.git/modules && \
   mv .git/ /aha/.git/modules/voyager/ && \
   ln -s /aha/.git/modules/voyager/ .git && \
-  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+  : GIT LFS although maybe this does not really do anything && \
+      git lfs install && git lfs pull && \
+  : CLEANUP1 800 MB && \
+      echo "# cleanup: delete 800MB of git history; will be restored by bashrc/restore-dotgit" && \
+      du -sh /aha/.git && \
+      /bin/rm -rf /aha/.git/modules/voyager/ && \
+      du -sh /aha/.git && \
+  : CLEANUP2 600 MB && \
+      echo "--- DU.MODELS1" && \
+      echo "delete 600MB of models; user will have to reload them manually in container" && \
+      (du -sh /aha/voyager/models/* || echo okay) && \
+      /bin/rm -rf /aha/voyager/models/* && \
+      (du -sh /aha/voyager/models/* || echo okay) && \
+  : FINAL SIZE && \
+      du -sh /aha
 
 # Pono
 WORKDIR /aha
@@ -222,6 +246,7 @@ RUN \
   : DONE && \
     echo DONE
 
+# 2GB maybe
 # Sam 1 - clone and set up sam
 COPY ./.git/modules/sam/HEAD /tmp/HEAD
 RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
@@ -231,6 +256,7 @@ RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
   ln -s /aha/.git/modules/sam/ .git && \
   git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
 
+# 10MB (COPY) + 210 MB (RUN) maybe
 # Sam 2 - build sam
 COPY ./sam /aha/sam
 RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
@@ -263,13 +289,14 @@ RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64
 # Make conda globally available
 ENV PATH=$CONDA_DIR/bin:$PATH
 
-# Voyager 0 - voyager misc
-RUN echo "--- ..Voyager step 0"
+# # Voyager 0 - voyager misc
+# RUN echo "--- ..Voyager step 0"
+
 # Install additional dependencies for building C++ code
 RUN mkdir -p /usr/include/sys && \
     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
 
-RUN apt-get install -y libc6-dev-amd64
+RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
 RUN apt-get update && apt-get install -y linux-headers-generic
 
 RUN ln -s /usr/include/asm-generic/ /usr/include/asm
@@ -279,11 +306,19 @@ RUN ln -s /usr/include/asm-generic/ /usr/include/asm
 # If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
 
 # Voyager 2 - setup voyager
+# Bring in local changes on top of base clone
 COPY ./voyager /aha/voyager
-RUN echo "--- ..Voyager step 2"
-WORKDIR /aha/voyager
-RUN git lfs install
-RUN cd /aha/voyager && git lfs pull
+
+# Cannot do 'git lfs' now that we have delete voyager git history
+# User will have to do this manually in the container when/if desired
+# 
+# bashrc is going to have to do this maybe, in the future...
+# RUN echo "--- ..Voyager step 2"
+# WORKDIR /aha/voyager
+# RUN git lfs install
+# RUN cd /aha/voyager && git lfs pull
+# RUN echo "--- DU.MODELS2" && (du -sh /aha/voyager/models/* || echo okay)
+
 # RUN cd /aha/voyager
 # RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
 #     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
@@ -323,8 +358,16 @@ COPY ./Lego_v0 /aha/Lego_v0
 COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
 
+# Re-install gcc if it is missing
+# (Apparently github actions deletes gcc when it installs libc6, see above)
+RUN test -e /usr/bin/gcc || ( \
+   apt-get install -y gcc-9 g++-9 && \
+   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
+
 WORKDIR /aha
-RUN source bin/activate && \
+RUN \
+  source bin/activate && \
   echo "--- ..Final aha deps install" && \
   pip install -e . && \
   aha deps install
@@ -341,8 +384,12 @@ ENV USER=docker
 # 1. Create a /root/.modules so as to avoid this warning on startup:
 #    "+(0):WARN:0: Directory '/root/.modules' not found"
 # 2. Tell user how to restore gch headers.
-
-RUN echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && echo DONE
+#
+# Also: Final dotfile cleanup, just in case
+RUN \
+  echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && \
+  /bin/rm -rf /aha/.git/modules/{clockwork,Halide-to-Hardware,voyager} && \
+  echo DONE
 
 # Restore halide distrib files on every container startup
 ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
