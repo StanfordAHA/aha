@@ -10,6 +10,14 @@ Dockerfile
 *.md
 *.json
 
+# 12/2025 steveri: to keep docker image size manageable, we
+# exclude these overlarge git histories.  Docker image has a
+# .bashrc (aha/aha/bin/docker-bashrc) that reloads/rebuilds
+# them when a user starts a new container interactively.
+
+.git/modules/Halide-to-Hardware
+.git/modules/clockwork
+.git/modules/voyager
 
 # Created by https://www.gitignore.io/api/c++,python
 # Edit at https://www.gitignore.io/?templates=c++,python

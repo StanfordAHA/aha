@@ -26,17 +26,16 @@ cat << EOF
       tail /tmp/restore-halide
 
 EOF
-# Restore 420MB of clockwork .git data + 320MB of halide data
+# Restore 420MB of clockwork .git data + 320MB of halide data + 800MB of voyager data
 
-( echo '  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork'
-  /aha/aha/bin/restore-dotgit.sh clockwork >& /tmp/restore-clockwork
-  printf "\nFinished restoring clockwork metadata\n"
-) &
-
-( echo '  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide'
-  /aha/aha/bin/restore-dotgit.sh Halide-to-Hardware >& /tmp/restore-halide
-  printf "\nFinished restoring halide metadata\n"
-) &
+function restore {
+    echo '  /aha/aha/bin/restore-dotgit.sh $1 >& /tmp/restore-$1'
+    /aha/aha/bin/restore-dotgit.sh $1 >& /tmp/restore-$1
+    printf "\nFinished restoring $1 metadata for details see /tmp/restore-$1\n"
+}
+restore clockwork &
+restore Halide-to-Hardware &
+restore voyager &
 
 ########################################################################
 # Restore clang - do it in the background for minimal disruption
