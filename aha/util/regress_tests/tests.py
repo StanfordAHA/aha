@@ -71,6 +71,7 @@ class Tests:
             "apps/layer_norm_pass2_fp",
             "apps/gelu_pass1_mu_input_fp",
             "apps/gelu_pass2_fp",
+            "apps/add_gelu_pass1_mu_input_fp",
             "apps/tanh_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -101,6 +102,7 @@ class Tests:
             "apps/layer_norm_pass2_fp",
             "apps/gelu_pass1_mu_input_fp",
             "apps/gelu_pass2_fp",
+            "apps/add_gelu_pass1_mu_input_fp",
             "apps/tanh_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
@@ -352,6 +354,7 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
 
         elif testname == "pr_aha9":
@@ -611,6 +614,7 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
 
