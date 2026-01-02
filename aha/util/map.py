@@ -266,6 +266,7 @@ def dispatch(args, extra_args=None):
             # Move collateral to desired folders
             if is_mu_test:
                 subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])
+                subprocess.check_call(["mv", "/aha/voyager/post_silicon_serialized_matrix_params.txt", voyager_app_base_path])
             systemC_comparison_files = glob.glob("/aha/voyager/*systemC.txt")
             subprocess.check_call(["mv"] + systemC_comparison_files + [compare_path])
             subprocess.check_call(["mv", "/aha/voyager/gold_activation.txt", compare_path])
