@@ -142,10 +142,9 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                 mu_test = args.mu_test[args.app.index(app)] if args.mu_test is not None else "inactive"
                 voyager_cgra_test = args.voyager_cgra_test
                 if post_silicon_check:
-                    app_dir = ""
+                    app_dir = Path(f"{post_silicon_base_dir}/aha/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
                 else:
                     app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
-                # TODO: Try to make an argument which passes the zircon_codegen base path
                 if post_silicon_check:
                     app_bin_dir = f"{post_silicon_base_dir}/dense_tests/_prepare/aha_src/{app}"
                 else:
@@ -178,9 +177,15 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                     psum_idx = int(os.environ.get("PSUM_IDX", 1))
                     per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
                     if per_tensor_scaling:
-                        gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                        if post_silicon_check:
+                            gold_output_path = f"{post_silicon_base_dir}/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                        else:
+                            gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
                     else:
-                        gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                        if post_silicon_check:
+                            gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                        else:
+                            gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
                     assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                     gold_array = []
                     with open(gold_output_path, "r") as gold_output:
