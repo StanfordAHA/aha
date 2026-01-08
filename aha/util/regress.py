@@ -483,6 +483,7 @@ def test_dense_app(
     else:
         voyager_cgra_test = ""
 
+    orig_test = test
     test, dense_ready_valid = parse_RV_mode(test)
     test, E64_mode_on = parse_E64_mode(test)
     test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
@@ -668,6 +669,14 @@ def test_dense_app(
     else:
         buildkite_call(["aha", "test", test, "--mu-test", mu_test, "--voyager-cgra-test", voyager_cgra_test] + layer_array, env=env_vars)
     time_test = time.time() - start
+
+    # HACK: Custom hack for copying folders for chip testing
+    os.system(f"cp -a {app_path}/bin /aha/aha_src")
+    os.system(f"rm -rf /aha/aha_src/{mu_test},,,{orig_test}")
+    os.system(f"mv /aha/aha_src/bin /aha/aha_src/{mu_test},,,{orig_test}")
+    os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src")
+    os.system(f"rm -rf /aha/voyager_src/{mu_test},,,{orig_test}")
+    os.system(f"mv /aha/voyager_src/{mu_test} /aha/voyager_src/{mu_test},,,{orig_test}")
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
     return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles

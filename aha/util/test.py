@@ -120,6 +120,303 @@ def unpack_output(arr):
     return result
 
 
+# Helper function to load hex txt files into uint16 arrays
+def _load_hex_txt(txt_path: str):
+    assert os.path.exists(txt_path), f"The RTL sim output file {txt_path} does not exist."
+    vals = []
+    with open(txt_path, "r") as f:
+        for line in f:
+            if line.strip():
+                vals.extend(int(v, 16) for v in line.split())
+    return numpy.array(vals, dtype=numpy.uint16)
+
+
+def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post_silicon_full_app_name=""):
+            if post_silicon_check:
+                assert post_silicon_base_dir != "", "post_silicon_base_dir must be specified for post silicon check."
+
+            # Build a list of (app, mu_test, output_file_name, gold_array, sim_array, app_dir)
+            comparisons = []
+
+            for app in args.app:
+                mu_test = args.mu_test[args.app.index(app)] if args.mu_test is not None else "inactive"
+                voyager_cgra_test = args.voyager_cgra_test
+                if post_silicon_check:
+                    app_dir = ""
+                else:
+                    app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
+                # TODO: Try to make an argument which passes the zircon_codegen base path
+                if post_silicon_check:
+                    app_bin_dir = f"{post_silicon_base_dir}/dense_tests/_prepare/aha_src/{app}"
+                else:
+                    app_bin_dir = f"{app_dir}/bin"
+                if voyager_cgra_test is None or voyager_cgra_test == "":
+                    voyager_test_fullname = mu_test
+                else:
+                    voyager_test_fullname = voyager_cgra_test
+
+                if post_silicon_check:
+                    voyager_app_dir = Path(f"{post_silicon_base_dir}/dense_tests/_prepare/voyager_src/{post_silicon_full_app_name}")
+
+                else:
+                    voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{voyager_test_fullname}")
+
+                use_voyager_gold = "VOYAGER_GOLD" in os.environ and os.environ["VOYAGER_GOLD"] == "1"
+                use_psum_workaround_gold = "USE_PSUM_WORKAROUND_GOLD" in os.environ and os.environ["USE_PSUM_WORKAROUND_GOLD"] == "1"
+                packed_outputs = "PACKED_OUTPUTS" in os.environ and os.environ["PACKED_OUTPUTS"] == "1"
+                soft_integer_comparison = "SOFT_INTEGER_COMPARISON" in os.environ and os.environ["SOFT_INTEGER_COMPARISON"] == "1"
+
+                design_meta_path = f"{app_bin_dir}/design_meta.json"
+                assert os.path.exists(design_meta_path), f"Missing meta file: {design_meta_path}"
+                with open(design_meta_path) as design_meta_file:
+                    design_meta = json.load(design_meta_file)
+                outputs = design_meta.get("IOs", {}).get("outputs", [])
+                assert len(outputs) >= 1, "There should be at least one output."
+                golds_by_name = {}
+
+                if use_psum_workaround_gold:
+                    psum_idx = int(os.environ.get("PSUM_IDX", 1))
+                    per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
+                    if per_tensor_scaling:
+                        gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                    else:
+                        gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                    assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
+                    gold_array = []
+                    with open(gold_output_path, "r") as gold_output:
+                        for line in gold_output:
+                            if line.strip():  # Check if the line is not empty
+                                values = [int(value, 16) for value in line.split()]
+                                gold_array.extend(values)
+                    gold_array = numpy.array(gold_array, dtype=numpy.uint16)
+                    gold_array = gold_array.flatten()
+                    output_file_name = "hw_output"  # Assuming single output named hw_output for psum workaround
+                    golds_by_name[output_file_name] = gold_array
+
+                # Use voyager gold pre-supplied by the user
+                elif use_voyager_gold:
+                    for out in outputs:
+                        datafile = out["datafile"]
+                        output_file_name, ext = os.path.splitext(datafile)
+
+                        if output_file_name == "hw_output":
+                            gold_output_path = f"{voyager_app_dir}/compare/gold_activation.txt"
+                        elif output_file_name == "hw_output_scale":
+                            gold_output_path = f"{voyager_app_dir}/compare/gold_scale.txt"
+                        else:
+                            raise ValueError(f"Unexpected voyager gold output file name: {output_file_name}")
+
+                        assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
+
+                        with open(gold_output_path, "r") as gold_file:
+                            gold_array = []
+                            for line in gold_file:
+
+                                if line.strip():  # Check if the line is not empty
+                                    values = [int(value, 16) for value in line.split()]
+                                    gold_array.extend(values)
+                        gold_array = numpy.array(gold_array, dtype=numpy.uint16)
+                        gold_array = gold_array.flatten()
+
+                        golds_by_name[output_file_name] = gold_array
+
+                # Else, get the gold output generated by halide
+                else:
+                    for out in outputs:
+                        datafile = out["datafile"]
+                        output_file_name, ext = os.path.splitext(datafile)
+                        assert ext == ".raw", f"Unexpected datafile ext for output: {datafile}"
+                        gold_output_path = f"{app_bin_dir}/{datafile}"
+                        assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
+                        if packed_outputs:
+                            golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
+                        else:
+                            golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
+
+                for out in outputs:
+                    datafile = out["datafile"]
+                    output_file_name, _ = os.path.splitext(datafile)
+                    if post_silicon_check:
+                        sim_txt_path = f"{post_silicon_base_dir}/zircon_test/temp_offsite_compare/{output_file_name}/{output_file_name}.txt"
+                    else:
+                        sim_txt_path = f"{args.aha_dir}/garnet/tests/test_app/{output_file_name}.txt"
+                    if packed_outputs:
+                        sim_array = unpack_output(_load_hex_txt(sim_txt_path))
+                    else:
+                        sim_array = _load_hex_txt(sim_txt_path)
+                    assert output_file_name in golds_by_name, f"Missing gold for output '{output_file_name}'."
+                    gold_array = golds_by_name[output_file_name]
+
+                    comparisons.append({
+                        "app": app,
+                        "name": output_file_name,
+                        "gold": gold_array,
+                        "sim": sim_array,
+                        "app_dir": app_dir
+                    })
+
+            print(f"-------------- Dense Test Result --------------")
+
+            for compare in comparisons:
+                gold_array = compare["gold"]
+                sim_array = compare["sim"]
+                if gold_array.shape != sim_array.shape:
+                    print(f"\033[93mWarning:\033[0m {compare['app']}::{compare['name']} gold vs sim shapes differ "
+                        f"({gold_array.shape} vs {sim_array.shape}). Truncating to smaller length.")
+                    min_length = min(len(gold_array), len(sim_array))
+                    compare["gold"] = gold_array[:min_length]
+                    compare["sim"] = sim_array[:min_length]
+
+            if soft_integer_comparison:
+                # Soft integer comparison per output (bit accurate within +/- 1)
+                for compare in comparisons:
+                    app = compare["app"]
+                    app_dir = compare["app_dir"]
+                    name = compare["name"]
+                    gold_array = compare["gold"]
+                    sim_array = compare["sim"]
+
+                    print(f"[{app}::{name}] Gold array len: {len(gold_array)}")
+                    print(f"[{app}::{name}] Sim array len: {len(sim_array)}")
+
+                    if gold_array.shape != sim_array.shape:
+                        print(f"\033[93mWarning:\033[0m {app}::{name} gold vs sim shapes differ after truncation guard.")
+
+                    hard_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) > 1
+                    hard_diff_indices = numpy.where(hard_integer_differences)[0]
+                    num_hard_diff_tolerance = 3
+                    if len(hard_diff_indices) > 0:
+                        print(f"[{app}::{name}] Integer values differing by more than 1:")
+                        for idx in hard_diff_indices[:20]:
+                            print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                        print(f"Total differing by more than 1: {len(hard_diff_indices)}")
+
+                    # Create histogram of percentage differences for hard differences
+                    hard_diff_percentages = 100.0 * numpy.abs(gold_array[hard_diff_indices].astype(int) - sim_array[hard_diff_indices].astype(int)) / 127
+                    if len(hard_diff_percentages) > 0:
+                        hist, bin_edges = numpy.histogram(hard_diff_percentages, bins=[0, 1, 5, 10, 20, 50, 100, 200, 500, 1000])
+                        print(f"[{app}::{name}] Histogram of percentage differences for hard differences:")
+                        for i in range(len(hist)):
+                            print(f"  {bin_edges[i]:>7.1f}% - {bin_edges[i+1]:>7.1f}% : {hist[i]} occurrences")
+
+                    soft_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) == 1
+                    soft_diff_indices = numpy.where(soft_integer_differences)[0]
+                    if len(soft_diff_indices) > 0:
+                        print(f"[{app}::{name}] Integer values differing by 1:")
+                        for idx in soft_diff_indices[:20]:
+                            print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                        print(f"Total differing by 1: {len(soft_diff_indices)}")
+
+                    numpy.save(f"{app_bin_dir}/gold_{name}_array.npy", gold_array)
+                    numpy.save(f"{app_bin_dir}/sim_{name}_array.npy", sim_array)
+
+                    assert len(hard_diff_indices) <= num_hard_diff_tolerance, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed.\033[0m"
+
+                    if len(hard_diff_indices) > 0:
+                        print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) had {len(hard_diff_indices)} hard differences but within tolerance.\033[0m")
+
+                    if len(soft_diff_indices) > 0:
+                        mismatch_frac = len(soft_diff_indices) / len(gold_array) if len(gold_array) else 0.0
+                        frac_tolerance = 2e-1
+                        if mismatch_frac <= frac_tolerance:
+                            print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
+                        else:
+                            assert False, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+                    else:
+                        print(f"\033[92m{app}::{name}: Integer (Bit-accurate +/-1) comparison passed. All pixels match exactly.\033[0m")
+
+            elif args.dense_fp:
+
+                # Define custom absolute tolerance for floating point comparison
+                custom_atol = 1.5e-04  # default 1e-08
+                custom_rtol = 2.0e-01  # default 1e-05
+                for compare in comparisons:
+                    app_dir = compare["app_dir"]
+                    gold_array = compare["gold"]
+                    sim_array = compare["sim"]
+
+                    sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype=numpy.float32)
+                    gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype=numpy.float32)
+
+                    differences = numpy.abs(gold_array_fp - sim_array_fp)
+                    tolerances = custom_atol + custom_rtol * numpy.abs(gold_array_fp)
+                    exceed_indices = numpy.where(differences > tolerances)[0]
+                    max_diff = float(numpy.max(differences)) if differences.size else 0.0
+                    max_diff_index = int(numpy.argmax(differences)) if differences.size else -1
+                    relative_differences = numpy.zeros_like(differences)
+                    mask = gold_array_fp != 0
+                    relative_differences[mask] = differences[mask] / numpy.abs(gold_array_fp[mask])
+                    max_relative_diff = float(numpy.max(relative_differences)) if numpy.any(mask) else 0.0
+                    max_relative_diff_index = int(numpy.argmax(relative_differences)) if numpy.any(mask) else -1
+
+                    if len(exceed_indices) > 0:
+                        print(f"[{compare['app']}::{compare['name']}] Floating-point values exceeding tolerance:")
+                        for idx in exceed_indices[:20]:
+                            actual_tol = custom_atol + custom_rtol * abs(gold_array_fp[idx])
+                            print(f"Index: {idx}, Gold: {gold_array_fp[idx]}, Sim: {sim_array_fp[idx]}, Diff: {differences[idx]}, Allowed Tolerance: {actual_tol}")
+                        print(f"Total exceeding tolerance: {len(exceed_indices)}")
+                        print("Max absolute difference is:", max_diff)
+                        if max_diff_index != -1:
+                            print(f"Index: {max_diff_index}, Gold value: {gold_array_fp[max_diff_index]}, Sim value: {sim_array_fp[max_diff_index]}")
+                        if max_relative_diff_index != -1:
+                            print(f"Max relative difference is {max_relative_diff}")
+                            print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
+                        else:
+                            print("No valid maximum relative difference found (all gold values might be zero).")
+
+                    numpy.save(f"{app_bin_dir}/gold_{compare['name']}_array_fp.npy", gold_array_fp)
+                    numpy.save(f"{app_bin_dir}/sim_{compare['name']}_array_fp.npy", sim_array_fp)
+
+                    close_elements = numpy.isclose(sim_array_fp, gold_array_fp, atol=custom_atol, rtol=custom_rtol)
+                    if numpy.all(close_elements):
+                        print(f"\033[92m[{compare['app']}::{compare['name']}] Floating point comparison passed.\033[0m")
+                    else:
+                        mismatch_idx = numpy.nonzero(~close_elements)[0]
+                        mismatch_frac = len(mismatch_idx) / len(gold_array_fp) if len(gold_array_fp) else 0.0
+                        frac_tolerance = 6e-2
+                        if mismatch_frac <= frac_tolerance:
+                            print(f"\033[93m[{compare['app']}::{compare['name']}] Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
+                        else:
+                            assert False, f"\033[91m[{compare['app']}::{compare['name']}] Floating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+
+                    print("Max absolute difference is:", max_diff)
+                    if max_diff_index != -1:
+                        print(f"Index: {max_diff_index}, Gold value: {gold_array_fp[max_diff_index]}, Sim value: {sim_array_fp[max_diff_index]}")
+                    if max_relative_diff_index != -1:
+                        print(f"Max relative difference is {max_relative_diff}")
+                        print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
+                    else:
+                        print("No valid maximum relative difference found (all simulation values might be zero).")
+
+            else:
+                # Integer bit-accurate comparison per output
+                for compare in comparisons:
+                    app = compare["app"]
+                    app_dir = compare["app_dir"]
+                    name = compare["name"]
+                    gold_array = compare["gold"]
+                    sim_array = compare["sim"]
+
+                    print(f"[{app}::{name}] Gold array len: {len(gold_array)}")
+                    print(f"[{app}::{name}] Sim array len: {len(sim_array)}")
+
+                    if gold_array.shape != sim_array.shape:
+                        print(f"\033[93mWarning:\033[0m {app}::{name} gold vs sim shapes differ after truncation guard.")
+
+                    differences = gold_array != sim_array
+                    diff_indices = numpy.where(differences)[0]
+                    if len(diff_indices) > 0:
+                        print(f"[{app}::{name}] Integer values differing:")
+                        for idx in diff_indices[:20]:
+                            print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
+                        print(f"Total differing: {len(diff_indices)}")
+
+                    numpy.save(f"{app_bin_dir}/gold_{name}_array.npy", gold_array)
+                    numpy.save(f"{app_bin_dir}/sim_{name}_array.npy", sim_array)
+
+                    assert numpy.array_equal(gold_array, sim_array), f"\033[91m{app}::{name}: Integer comparison (Bit-accurate) failed.\033[0m"
+                    print(f"\033[92m{app}::{name}: Integer (Bit-accurate) comparison passed.\033[0m")
+
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
     if args.mu_test is not None and len(args.mu_test) > 0:
@@ -280,278 +577,4 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path
             )
 
-        # Helper function to load hex txt files into uint16 arrays
-        def _load_hex_txt(txt_path: str):
-            assert os.path.exists(txt_path), f"The RTL sim output file {txt_path} does not exist."
-            vals = []
-            with open(txt_path, "r") as f:
-                for line in f:
-                    if line.strip():
-                        vals.extend(int(v, 16) for v in line.split())
-            return numpy.array(vals, dtype=numpy.uint16)
-
-        # Build a list of (app, mu_test, output_file_name, gold_array, sim_array, app_dir)
-        comparisons = []
-
-        for app in args.app:
-            mu_test = args.mu_test[args.app.index(app)] if args.mu_test is not None else "inactive"
-            voyager_cgra_test = args.voyager_cgra_test
-            app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
-            if voyager_cgra_test is None or voyager_cgra_test == "":
-                voyager_test_fullname = mu_test
-            else:
-                voyager_test_fullname = voyager_cgra_test
-            voyager_app_dir = Path(f"{args.aha_dir}/voyager/compiled_collateral/{voyager_test_fullname}")
-
-            use_voyager_gold = "VOYAGER_GOLD" in os.environ and os.environ["VOYAGER_GOLD"] == "1"
-            use_psum_workaround_gold = "USE_PSUM_WORKAROUND_GOLD" in os.environ and os.environ["USE_PSUM_WORKAROUND_GOLD"] == "1"
-            packed_outputs = "PACKED_OUTPUTS" in os.environ and os.environ["PACKED_OUTPUTS"] == "1"
-            soft_integer_comparison = "SOFT_INTEGER_COMPARISON" in os.environ and os.environ["SOFT_INTEGER_COMPARISON"] == "1"
-
-            design_meta_path = f"{app_dir}/bin/design_meta.json"
-            assert os.path.exists(design_meta_path), f"Missing meta file: {design_meta_path}"
-            with open(design_meta_path) as design_meta_file:
-                design_meta = json.load(design_meta_file)
-            outputs = design_meta.get("IOs", {}).get("outputs", [])
-            assert len(outputs) >= 1, "There should be at least one output."
-            golds_by_name = {}
-
-            if use_psum_workaround_gold:
-                psum_idx = int(os.environ.get("PSUM_IDX", 1))
-                per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
-                if per_tensor_scaling:
-                    gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
-                else:
-                    gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
-                assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
-                gold_array = []
-                with open(gold_output_path, "r") as gold_output:
-                    for line in gold_output:
-                        if line.strip():  # Check if the line is not empty
-                            values = [int(value, 16) for value in line.split()]
-                            gold_array.extend(values)
-                gold_array = numpy.array(gold_array, dtype=numpy.uint16)
-                gold_array = gold_array.flatten()
-                output_file_name = "hw_output"  # Assuming single output named hw_output for psum workaround
-                golds_by_name[output_file_name] = gold_array
-
-            # Use voyager gold pre-supplied by the user
-            elif use_voyager_gold:
-                for out in outputs:
-                    datafile = out["datafile"]
-                    output_file_name, ext = os.path.splitext(datafile)
-
-                    if output_file_name == "hw_output":
-                        gold_output_path = f"{voyager_app_dir}/compare/gold_activation.txt"
-                    elif output_file_name == "hw_output_scale":
-                        gold_output_path = f"{voyager_app_dir}/compare/gold_scale.txt"
-                    else:
-                        raise ValueError(f"Unexpected voyager gold output file name: {output_file_name}")
-
-                    assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
-
-                    with open(gold_output_path, "r") as gold_file:
-                        gold_array = []
-                        for line in gold_file:
-
-                            if line.strip():  # Check if the line is not empty
-                                values = [int(value, 16) for value in line.split()]
-                                gold_array.extend(values)
-                    gold_array = numpy.array(gold_array, dtype=numpy.uint16)
-                    gold_array = gold_array.flatten()
-
-                    golds_by_name[output_file_name] = gold_array
-
-            # Else, get the gold output generated by halide
-            else:
-                for out in outputs:
-                    datafile = out["datafile"]
-                    output_file_name, ext = os.path.splitext(datafile)
-                    assert ext == ".raw", f"Unexpected datafile ext for output: {datafile}"
-                    gold_output_path = f"{app_dir}/bin/{datafile}"
-                    assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
-                    if packed_outputs:
-                        golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
-                    else:
-                        golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
-
-            for out in outputs:
-                datafile = out["datafile"]
-                output_file_name, _ = os.path.splitext(datafile)
-                sim_txt_path = f"{args.aha_dir}/garnet/tests/test_app/{output_file_name}.txt"
-                if packed_outputs:
-                    sim_array = unpack_output(_load_hex_txt(sim_txt_path))
-                else:
-                    sim_array = _load_hex_txt(sim_txt_path)
-                assert output_file_name in golds_by_name, f"Missing gold for output '{output_file_name}'."
-                gold_array = golds_by_name[output_file_name]
-
-                comparisons.append({
-                    "app": app,
-                    "name": output_file_name,
-                    "gold": gold_array,
-                    "sim": sim_array,
-                    "app_dir": app_dir
-                })
-
-        print(f"-------------- Dense Test Result --------------")
-
-        for compare in comparisons:
-            gold_array = compare["gold"]
-            sim_array = compare["sim"]
-            if gold_array.shape != sim_array.shape:
-                print(f"\033[93mWarning:\033[0m {compare['app']}::{compare['name']} gold vs sim shapes differ "
-                      f"({gold_array.shape} vs {sim_array.shape}). Truncating to smaller length.")
-                min_length = min(len(gold_array), len(sim_array))
-                compare["gold"] = gold_array[:min_length]
-                compare["sim"] = sim_array[:min_length]
-
-        if soft_integer_comparison:
-            # Soft integer comparison per output (bit accurate within +/- 1)
-            for compare in comparisons:
-                app = compare["app"]
-                app_dir = compare["app_dir"]
-                name = compare["name"]
-                gold_array = compare["gold"]
-                sim_array = compare["sim"]
-
-                print(f"[{app}::{name}] Gold array len: {len(gold_array)}")
-                print(f"[{app}::{name}] Sim array len: {len(sim_array)}")
-
-                if gold_array.shape != sim_array.shape:
-                    print(f"\033[93mWarning:\033[0m {app}::{name} gold vs sim shapes differ after truncation guard.")
-
-                hard_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) > 1
-                hard_diff_indices = numpy.where(hard_integer_differences)[0]
-                num_hard_diff_tolerance = 3
-                if len(hard_diff_indices) > 0:
-                    print(f"[{app}::{name}] Integer values differing by more than 1:")
-                    for idx in hard_diff_indices[:20]:
-                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
-                    print(f"Total differing by more than 1: {len(hard_diff_indices)}")
-
-                # Create histogram of percentage differences for hard differences
-                hard_diff_percentages = 100.0 * numpy.abs(gold_array[hard_diff_indices].astype(int) - sim_array[hard_diff_indices].astype(int)) / 127
-                if len(hard_diff_percentages) > 0:
-                    hist, bin_edges = numpy.histogram(hard_diff_percentages, bins=[0, 1, 5, 10, 20, 50, 100, 200, 500, 1000])
-                    print(f"[{app}::{name}] Histogram of percentage differences for hard differences:")
-                    for i in range(len(hist)):
-                        print(f"  {bin_edges[i]:>7.1f}% - {bin_edges[i+1]:>7.1f}% : {hist[i]} occurrences")
-
-                soft_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) == 1
-                soft_diff_indices = numpy.where(soft_integer_differences)[0]
-                if len(soft_diff_indices) > 0:
-                    print(f"[{app}::{name}] Integer values differing by 1:")
-                    for idx in soft_diff_indices[:20]:
-                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
-                    print(f"Total differing by 1: {len(soft_diff_indices)}")
-
-                numpy.save(f"{app_dir}/bin/gold_{name}_array.npy", gold_array)
-                numpy.save(f"{app_dir}/bin/sim_{name}_array.npy", sim_array)
-
-                assert len(hard_diff_indices) <= num_hard_diff_tolerance, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed.\033[0m"
-
-                if len(hard_diff_indices) > 0:
-                    print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) had {len(hard_diff_indices)} hard differences but within tolerance.\033[0m")
-
-                if len(soft_diff_indices) > 0:
-                    mismatch_frac = len(soft_diff_indices) / len(gold_array) if len(gold_array) else 0.0
-                    frac_tolerance = 2e-1
-                    if mismatch_frac <= frac_tolerance:
-                        print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
-                    else:
-                        assert False, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
-                else:
-                    print(f"\033[92m{app}::{name}: Integer (Bit-accurate +/-1) comparison passed. All pixels match exactly.\033[0m")
-
-        elif args.dense_fp:
-
-            # Define custom absolute tolerance for floating point comparison
-            custom_atol = 1.5e-04  # default 1e-08
-            custom_rtol = 2.0e-01  # default 1e-05
-            for compare in comparisons:
-                app_dir = compare["app_dir"]
-                gold_array = compare["gold"]
-                sim_array = compare["sim"]
-
-                sim_array_fp = numpy.array([bfbin2float(bin(x)[2:].zfill(16)) for x in sim_array], dtype=numpy.float32)
-                gold_array_fp = numpy.array([bfbin2float(bin(y)[2:].zfill(16)) for y in gold_array], dtype=numpy.float32)
-
-                differences = numpy.abs(gold_array_fp - sim_array_fp)
-                tolerances = custom_atol + custom_rtol * numpy.abs(gold_array_fp)
-                exceed_indices = numpy.where(differences > tolerances)[0]
-                max_diff = float(numpy.max(differences)) if differences.size else 0.0
-                max_diff_index = int(numpy.argmax(differences)) if differences.size else -1
-                relative_differences = numpy.zeros_like(differences)
-                mask = gold_array_fp != 0
-                relative_differences[mask] = differences[mask] / numpy.abs(gold_array_fp[mask])
-                max_relative_diff = float(numpy.max(relative_differences)) if numpy.any(mask) else 0.0
-                max_relative_diff_index = int(numpy.argmax(relative_differences)) if numpy.any(mask) else -1
-
-                if len(exceed_indices) > 0:
-                    print(f"[{compare['app']}::{compare['name']}] Floating-point values exceeding tolerance:")
-                    for idx in exceed_indices[:20]:
-                        actual_tol = custom_atol + custom_rtol * abs(gold_array_fp[idx])
-                        print(f"Index: {idx}, Gold: {gold_array_fp[idx]}, Sim: {sim_array_fp[idx]}, Diff: {differences[idx]}, Allowed Tolerance: {actual_tol}")
-                    print(f"Total exceeding tolerance: {len(exceed_indices)}")
-                    print("Max absolute difference is:", max_diff)
-                    if max_diff_index != -1:
-                        print(f"Index: {max_diff_index}, Gold value: {gold_array_fp[max_diff_index]}, Sim value: {sim_array_fp[max_diff_index]}")
-                    if max_relative_diff_index != -1:
-                        print(f"Max relative difference is {max_relative_diff}")
-                        print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
-                    else:
-                        print("No valid maximum relative difference found (all gold values might be zero).")
-
-                numpy.save(f"{app_dir}/bin/gold_{compare['name']}_array_fp.npy", gold_array_fp)
-                numpy.save(f"{app_dir}/bin/sim_{compare['name']}_array_fp.npy", sim_array_fp)
-
-                close_elements = numpy.isclose(sim_array_fp, gold_array_fp, atol=custom_atol, rtol=custom_rtol)
-                if numpy.all(close_elements):
-                    print(f"\033[92m[{compare['app']}::{compare['name']}] Floating point comparison passed.\033[0m")
-                else:
-                    mismatch_idx = numpy.nonzero(~close_elements)[0]
-                    mismatch_frac = len(mismatch_idx) / len(gold_array_fp) if len(gold_array_fp) else 0.0
-                    frac_tolerance = 6e-2
-                    if mismatch_frac <= frac_tolerance:
-                        print(f"\033[93m[{compare['app']}::{compare['name']}] Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
-                    else:
-                        assert False, f"\033[91m[{compare['app']}::{compare['name']}] Floating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
-
-                print("Max absolute difference is:", max_diff)
-                if max_diff_index != -1:
-                    print(f"Index: {max_diff_index}, Gold value: {gold_array_fp[max_diff_index]}, Sim value: {sim_array_fp[max_diff_index]}")
-                if max_relative_diff_index != -1:
-                    print(f"Max relative difference is {max_relative_diff}")
-                    print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
-                else:
-                    print("No valid maximum relative difference found (all simulation values might be zero).")
-
-        else:
-            # Integer bit-accurate comparison per output
-            for compare in comparisons:
-                app = compare["app"]
-                app_dir = compare["app_dir"]
-                name = compare["name"]
-                gold_array = compare["gold"]
-                sim_array = compare["sim"]
-
-                print(f"[{app}::{name}] Gold array len: {len(gold_array)}")
-                print(f"[{app}::{name}] Sim array len: {len(sim_array)}")
-
-                if gold_array.shape != sim_array.shape:
-                    print(f"\033[93mWarning:\033[0m {app}::{name} gold vs sim shapes differ after truncation guard.")
-
-                differences = gold_array != sim_array
-                diff_indices = numpy.where(differences)[0]
-                if len(diff_indices) > 0:
-                    print(f"[{app}::{name}] Integer values differing:")
-                    for idx in diff_indices[:20]:
-                        print(f"Index: {idx}, Gold: {gold_array[idx]}, Sim: {sim_array[idx]}")
-                    print(f"Total differing: {len(diff_indices)}")
-
-                numpy.save(f"{app_dir}/bin/gold_{name}_array.npy", gold_array)
-                numpy.save(f"{app_dir}/bin/sim_{name}_array.npy", sim_array)
-
-                assert numpy.array_equal(gold_array, sim_array), f"\033[91m{app}::{name}: Integer comparison (Bit-accurate) failed.\033[0m"
-                print(f"\033[92m{app}::{name}: Integer (Bit-accurate) comparison passed.\033[0m")
+        do_gold_check(args)
