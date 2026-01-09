@@ -315,7 +315,10 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                     numpy.save(f"{app_bin_dir}/gold_{name}_array.npy", gold_array)
                     numpy.save(f"{app_bin_dir}/sim_{name}_array.npy", sim_array)
 
-                    assert len(hard_diff_indices) <= num_hard_diff_tolerance, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed.\033[0m"
+                    if not(len(hard_diff_indices) <= num_hard_diff_tolerance):
+                        print(f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed.\033[0m")
+                        return False
+                    # assert len(hard_diff_indices) <= num_hard_diff_tolerance, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed.\033[0m"
 
                     if len(hard_diff_indices) > 0:
                         print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) had {len(hard_diff_indices)} hard differences but within tolerance.\033[0m")
@@ -326,9 +329,13 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         if mismatch_frac <= frac_tolerance:
                             print(f"\033[93m{app}::{name}: Integer comparison (Bit-accurate +/-1) mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
                         else:
-                            assert False, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+                            print(f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m")
+                            return False
+                            # assert False, f"\033[91m{app}::{name}: Integer comparison (Bit-accurate +/-1) failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
                     else:
                         print(f"\033[92m{app}::{name}: Integer (Bit-accurate +/-1) comparison passed. All pixels match exactly.\033[0m")
+
+                return True
 
             elif args.dense_fp:
 
@@ -382,7 +389,9 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         if mismatch_frac <= frac_tolerance:
                             print(f"\033[93m[{compare['app']}::{compare['name']}] Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
                         else:
-                            assert False, f"\033[91m[{compare['app']}::{compare['name']}] Floating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
+                            print(f"\033[91m[{compare['app']}::{compare['name']}] Floating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m")
+                            return False
+                            # assert False, f"\033[91m[{compare['app']}::{compare['name']}] Floating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
 
                     print("Max absolute difference is:", max_diff)
                     if max_diff_index != -1:
@@ -392,6 +401,8 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         print(f"Index: {max_relative_diff_index}, Gold value: {gold_array_fp[max_relative_diff_index]}, Sim value: {sim_array_fp[max_relative_diff_index]}")
                     else:
                         print("No valid maximum relative difference found (all simulation values might be zero).")
+
+                return True
 
             else:
                 # Integer bit-accurate comparison per output
@@ -419,8 +430,13 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                     numpy.save(f"{app_bin_dir}/gold_{name}_array.npy", gold_array)
                     numpy.save(f"{app_bin_dir}/sim_{name}_array.npy", sim_array)
 
-                    assert numpy.array_equal(gold_array, sim_array), f"\033[91m{app}::{name}: Integer comparison (Bit-accurate) failed.\033[0m"
+                    if not numpy.array_equal(gold_array, sim_array):
+                        print(f"\033[91m{app}::{name}: Integer comparison (Bit-accurate) failed.\033[0m")
+                        return False
+                    # assert numpy.array_equal(gold_array, sim_array), f"\033[91m{app}::{name}: Integer comparison (Bit-accurate) failed.\033[0m"
                     print(f"\033[92m{app}::{name}: Integer (Bit-accurate) comparison passed.\033[0m")
+                return True
+
 
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
@@ -582,4 +598,4 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path
             )
 
-        do_gold_check(args)
+        assert(do_gold_check(args))
