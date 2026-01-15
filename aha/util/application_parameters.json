@@ -101,7 +101,7 @@
             "MATRIX_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "VECTOR_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "BIAS_HOST_STENCIL_POS":"10",
-            "HW_OUTPUT_POS":"8",
+            "HW_OUTPUT_POS":"9",
             "BIAS_HOST_STENCIL_PACKED":"0",
             "HW_OUTPUT_PACKED":"0",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
@@ -121,7 +121,7 @@
             "MATRIX_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "VECTOR_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "BIAS_HOST_STENCIL_POS":"10",
-            "HW_OUTPUT_POS":"8",
+            "HW_OUTPUT_POS":"9",
             "BIAS_HOST_STENCIL_PACKED":"0",
             "HW_OUTPUT_PACKED":"0",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
@@ -169,7 +169,8 @@
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
             "ZIRCON_CONV1_GOLD": "1",
-            "ZIRCON_HARDCODED_TILING":"1"
+            "ZIRCON_HARDCODED_TILING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -183,7 +184,8 @@
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
             "ZIRCON_CONV1_GOLD": "1",
-            "ZIRCON_HARDCODED_TILING":"1"
+            "ZIRCON_HARDCODED_TILING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -198,7 +200,8 @@
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
             "ZIRCON_CONV1_GOLD": "1",
-            "ZIRCON_HARDCODED_TILING":"1"
+            "ZIRCON_HARDCODED_TILING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_dequantize_relu_fp_post_conv1_kernel1":{
@@ -213,7 +216,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -226,7 +230,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -240,7 +245,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_dequantize_relu_fp_post_conv1_kernel2":{
@@ -255,7 +261,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -268,7 +275,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -282,7 +290,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_dequantize_relu_fp_post_conv1_kernel3":{
@@ -297,7 +306,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -310,7 +320,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -324,7 +335,8 @@
             "X_DIM_HOST_TILING_SLICE_LENGTH": "3136",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
             "CONV1_BIAS_HACK": "1",
-            "ZIRCON_CONV1_GOLD": "1"
+            "ZIRCON_CONV1_GOLD": "1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "apps/zircon_quant_fp":{
@@ -532,7 +544,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -540,7 +553,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -549,7 +563,8 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_dequant_fp_post_conv4_1_inner_reduction_workaround":{
@@ -559,7 +574,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -567,7 +583,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -576,7 +593,8 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_INNER_LOOP_REDUCTION_WORKAROUND": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
       "zircon_dequant_fp_post_conv5_1_inner_reduction_workaround":{
@@ -590,7 +608,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
             "ZIRCON_HARDCODED_TILING":"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -602,7 +621,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
             "ZIRCON_HARDCODED_TILING":"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -615,7 +635,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
             "ZIRCON_HARDCODED_TILING":"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_fp_post_conv2_x":{
@@ -625,7 +646,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -633,7 +655,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -642,7 +665,8 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_fp_post_conv3_x":{
@@ -652,7 +676,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -660,7 +685,8 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -669,7 +695,8 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
             "ZIRCON_HARDCODED_TILING" :"1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_fp_post_conv4_x":{
@@ -681,7 +708,8 @@
             "ZIRCON_HARDCODED_TILING" :"1",
             "PER_TENSOR_SCALING":"1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING":"1"
+            "POND_PATH_BALANCING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -691,7 +719,8 @@
             "ZIRCON_HARDCODED_TILING" :"1",
             "PER_TENSOR_SCALING":"1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING":"1"
+            "POND_PATH_BALANCING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -702,7 +731,8 @@
             "ZIRCON_HARDCODED_TILING" :"1",
             "PER_TENSOR_SCALING":"1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING":"1"
+            "POND_PATH_BALANCING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_fp_post_conv5_x_kernel0":{
@@ -718,7 +748,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -732,7 +763,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -747,7 +779,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_fp_post_conv5_x_kernel1":{
@@ -763,7 +796,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -777,7 +811,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -792,7 +827,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_fp_post_conv5_x_kernel2":{
@@ -808,7 +844,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -822,7 +859,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -837,7 +875,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_fp_post_conv5_x_kernel3":{
@@ -853,7 +892,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -867,7 +907,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -882,7 +923,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
-            "PER_TENSOR_SCALING":"1"
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_q_relu_fp_post_conv2_x":{
@@ -892,6 +934,7 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -902,6 +945,7 @@
             "DISABLE_GP":"1",
             "MB_IO_OFFSET": "12",
             "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -913,6 +957,7 @@
             "SWEEP_PNR_PLACER_EXP":"1",
             "MB_IO_OFFSET": "12",
             "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1"
@@ -927,7 +972,8 @@
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
-            "ZIRCON_HARDCODED_TILING":"1"
+            "ZIRCON_HARDCODED_TILING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -937,7 +983,8 @@
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
-            "ZIRCON_HARDCODED_TILING":"1"
+            "ZIRCON_HARDCODED_TILING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -948,7 +995,8 @@
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
-            "ZIRCON_HARDCODED_TILING":"1"
+            "ZIRCON_HARDCODED_TILING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_q_relu_fp_post_conv3_x":{
@@ -960,7 +1008,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -970,7 +1019,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -981,7 +1031,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_q_relu_fp_post_conv4_x":{
@@ -993,7 +1044,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -1003,7 +1055,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -1014,7 +1067,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_q_relu_fp_post_conv5_x_kernel0":{
@@ -1032,7 +1086,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1048,7 +1103,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1065,7 +1121,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_q_relu_fp_post_conv5_x_kernel1":{
@@ -1083,7 +1140,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1099,7 +1157,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1116,7 +1175,8 @@
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1",
             "PER_TENSOR_SCALING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
      "zircon_nop_tiled_outer_reduction_workaround_post_conv4_1":{
@@ -1166,7 +1226,8 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
-            "PSUM_IDX":"1"
+            "PSUM_IDX":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -1178,7 +1239,8 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
-            "PSUM_IDX":"1"
+            "PSUM_IDX":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -1191,7 +1253,8 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_OUTER_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"2",
-            "PSUM_IDX":"1"
+            "PSUM_IDX":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
      "zircon_deq_q_relu_fp_post_conv4_1":{
@@ -1235,7 +1298,8 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1247,7 +1311,8 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -1260,7 +1325,8 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND":"1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
-            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2"
+            "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "2",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_quant_fp_post_conv2_x":{
@@ -1272,7 +1338,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -1282,7 +1349,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -1293,7 +1361,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_quant_fp_post_conv3_x":{
@@ -1305,7 +1374,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -1315,7 +1385,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -1326,7 +1397,8 @@
             "PER_TENSOR_SCALING":"1",
             "ZIRCON_HARDCODED_TILING":"1",
             "PACKED_OUTPUTS" :"1",
-            "SOFT_INTEGER_COMPARISON":"1"
+            "SOFT_INTEGER_COMPARISON":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_deq_ResReLU_quant_fp_post_conv4_x":{
@@ -1340,7 +1412,8 @@
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING":"1"
+            "POND_PATH_BALANCING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -1352,7 +1425,8 @@
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING":"1"
+            "POND_PATH_BALANCING":"1",
+            "VOYAGER_GOLD":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -1365,7 +1439,8 @@
             "PACKED_OUTPUTS" :"1",
             "SOFT_INTEGER_COMPARISON":"1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING":"1"
+            "POND_PATH_BALANCING":"1",
+            "VOYAGER_GOLD":"1"
         }
     },
     "zircon_nop_post_conv3_x":{
@@ -2177,7 +2252,7 @@
             "MATRIX_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "VECTOR_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "BIAS_HOST_STENCIL_POS":"10",
-            "HW_OUTPUT_POS":"8",
+            "HW_OUTPUT_POS":"9",
             "BIAS_HOST_STENCIL_PACKED":"0",
             "HW_OUTPUT_PACKED":"0",
             "VOYAGER_STANDALONE_CGRA_APP":"1"
