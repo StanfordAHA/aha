@@ -153,7 +153,20 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_RV = [
-                "tests/rom_RV",
+                # "tests/rom_RV",
+                "tests/arith_RV",
+                "tests/absolute_RV",
+                "tests/boolean_ops_RV",
+                "tests/equal_RV",
+                "tests/ternary_RV",
+                "tests/scomp_RV",
+                "tests/ucomp_RV",
+                "tests/sminmax_RV",
+                "tests/uminmax_RV",
+                "tests/sshift_RV",
+                "tests/ushift_RV",
+                "tests/conv_2_1_RV",
+                "tests/conv_3_3_RV",
             ]
 
         elif testname == "pr_aha1":
