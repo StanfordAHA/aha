@@ -127,9 +127,8 @@ class Tests:
             print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead')
             config = "pr_aha"
 
-
         # FAST test suite should complete in just a minute or two
-        if testname == "fast":
+        if testname == "fast_orig":
             width, height = 8, 8,
             cols_removed, mu_oc_0 = 4, 8  # Ignored if --no-zircon is set
             sparse_tests = [
@@ -149,12 +148,13 @@ class Tests:
             glb_tests_fp = [
                 "tests/fp_pointwise",
             ]
-            resnet_tests = []
-            resnet_tests_fp = []
-            behavioral_mu_tests = []
-            external_mu_tests = []
-            external_mu_tests_fp = []
-            hardcoded_dense_tests = []
+
+        elif testname == "fast":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            glb_tests_RV = [
+                "tests/rom_RV",
+            ]
 
         elif testname == "pr_aha1":
 
