@@ -367,7 +367,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -378,7 +380,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -390,7 +394,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         }
     },
     "zircon_quant_fp_post_conv3x":{
@@ -403,7 +409,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -414,7 +422,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
@@ -426,7 +436,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         }
     },
     "zircon_quant_fp_post_conv4x":{
@@ -439,7 +451,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -450,7 +464,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=14 n_oc=256",
@@ -462,7 +478,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         }
     },
     "zircon_quant_fp_post_conv5x":{
@@ -475,7 +493,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -486,7 +506,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=7 n_oc=512",
@@ -498,7 +520,9 @@
             "SOFT_INTEGER_COMPARISON":"1",
             "PER_TENSOR_SCALING":"1",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         }
     },
     "zircon_dequant_fp_post_conv3_1":{
@@ -2193,11 +2217,14 @@
             "HL_TARGET":"host-x86-64-bfloat_hardware",
             "DISABLE_GP":"1",
             "USE_GLB_BANK_CONFIG":"1",
-            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
-            "HW_OUTPUT_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,16,16,16,16,22,22,22,22,24,24,24,24",
+            "HW_OUTPUT_POS":"18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21",
             "SKIP_RV_CLOCKWORK":"1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
-            "VOYAGER_STANDALONE_CGRA_APP":"1"
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "INPUT_HOST_STENCIL_MULTI_BANK_MODE": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "GLOBAL_PE_TILE_OUTPUT_FIFO_BYPASS":"1"
         }
     },
     "apps/maxpooling_dense_rv_mem_buf_fp":{
