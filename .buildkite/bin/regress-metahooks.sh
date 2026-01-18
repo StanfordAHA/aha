@@ -4,9 +4,12 @@
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
 # pipeline.yml is responsible for providing necessary env vars
-# including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+# including CONTAINER/IMAGE/TAG/CONFIG
 
-CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
+# Note CONFIG can be e.g. 'pr_aha1 --include-no-zircon-tests'
+configname=`echo "$CONFIG" | awk '{print $1}'`
+CONTAINER="deleteme-regress-${configname}-${BUILDKITE_BUILD_NUMBER}"
+
 echo "--- using CONTAINER='${CONTAINER}'"
 
 function container_setup {
@@ -32,7 +35,7 @@ function container_setup {
 if [ "$1" == '--pre-command' ]; then
 
     # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+    # necessary env vars including IMAGE/TAG/CONFIG
 
     echo "--- OIT PRE COMMAND HOOK BEGIN"
     echo "Check for valid docker image"
@@ -129,11 +132,10 @@ elif [ "$1" == '--commands' ]; then
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
 
     # Install 'time' package (what? why?)
-    apt update
-    apt install time
+    apt update; apt install time
 
     echo    "--- PIP FREEZE"; pip freeze  # ??? okay? why? ???
-    echo    "+++ RUN REGRESSIONS"
+    echo    "+++ RUN REGRESSION $CONFIG"
     echo -n "Garnet version "; (cd garnet && git rev-parse --verify HEAD)
 
     # FIXME (below) this if-then-else jungle is awful; redo it!
@@ -184,7 +186,6 @@ EOF
     # '-e' means 'set environment variable'
     docker exec \
            -e CONFIG="$CONFIG" \
-           -e REGSTEP="$REGRESSION_STEP" \
            "$CONTAINER" /bin/bash -c "$(cat tmp$$)" \
         || exit 13
     docker kill "$CONTAINER" || echo okay; rm -f tmp$$  # Cleanup on aisle FOO

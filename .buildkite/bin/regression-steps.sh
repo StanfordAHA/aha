@@ -1,6 +1,17 @@
 #!/bin/bash
+export CONFIG=full  # Uncomment to test full regressions maybe
+
 # This is designed to be called from pipeline.yml
 set -x
+
+# "full" is a special case why not
+if [ "$CONFIG" == "full" ]; then
+    if [ "$next" != "--cleanup" ]; then
+        # Delete ALL steps, run full config as step "1" i.e. set $1="1"
+        set -- "1"  # This deletes all other steps so only 'full' runs and only runs once
+    fi
+fi
+
 # Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
 # function buildkite-agent { [ "$2" == "upload" ] && cat; }
 # function bkmsg { echo "$1"; }
@@ -64,6 +75,7 @@ if [ "$next" == "--cleanup" ]; then
         else
             # Only remaining choice is that step is a single digit 0-9
             [ "$step" == 0 ] && label="Fast" || label="Regress $i"
+            [ "$CONFIG" == "full" ] && label="Full Regressions"
             cleanup "$label" regress"$step"
         fi
     done
@@ -167,7 +179,6 @@ elif [ "$next" == "gold" ]; then
               $BUILD_DOCKER cd . ; $REGRESS_METAHOOKS --pre-command
     EOF
 )
-# setstate launch-state READY  # FIXME do we use this??
 echo "$goldstep" | buildkite-agent pipeline upload
 
 
@@ -183,17 +194,26 @@ else
         echo "Step '$key' already exists in pipeline. So. Nothing to do!"; exit 0
     fi
 
-    # Fairness algorithm (CONCURRENCY=4) means at most four regression steps can run at a time
-CONCURRENCY="
-  concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
-  concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
-"
+    # Decode args and CONFIG to set correct CONFIG for final regression call
+
+    if [ "$i" == 0 ]; then
+        # Per existing code, does *not* include no-zircon tests
+        label="Fast"; export CONFIG=fast
+
+    elif [ "$CONFIG" == "pr_aha" ]; then
+        label="Regress $i"; export CONFIG="pr_aha${i} --include-no-zircon-tests"
+
+    elif [ "$CONFIG" == "full" ]; then
+        label="Full Regressions"
+         export CONFIG="full --include-no-zircon-test" 
+    else
+        label="$CONFIG"
+    fi
+
+    echo "--- regression-steps has set CONFIG='$CONFIG'"
+    
     # Launch next step
     # Each new step uploads only after previous step has started running.
-    [ "$i" == 0 ] && label="Fast" || label="Regress $i"
-
-    # setstate launch-state READY
-    # bkmsg "$label READY TO LAUNCH"
 
     (sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"
     cat <<EOF | sed 's/^    //' | sed "s/ARGS/$*/"
@@ -201,22 +221,28 @@ CONCURRENCY="
     - label: "$label"
       # agents: { hostname: khaki }  # Can uncomment for debugging etc.
       key: "regress$i"
-      env: { REGRESSION_STEP: $i }
+      # env: { REGRESSION_STEP: $i } no longer used maybe
       command: |
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
-        \$REGRESS_METAHOOKS --commands
+        CONFIG="$CONFIG" \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
             pre-command: |
-                RSTEP=$i
+                RSTEP=$i  # Never used? Right???
                 \$BUILD_DOCKER
                 cd .
                 \$REGRESS_METAHOOKS --pre-command
             pre-exit: |
                 \$REGRESS_METAHOOKS --pre-exit
 EOF
-    [ "$i" != 0 ] && echo "$CONCURRENCY"
+
+    [ "$MAX_AGENTS" ] || MAX_AGENTS=4
+    [ "$i" != 0 ] && echo "
+  concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
+  concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
+"
+
     echo "") | buildkite-agent pipeline upload
 fi
 
@@ -273,7 +299,8 @@ exit
 #             echo "And I have the lock so...guess I am the one who will be (re)building it"
 # 
 #             # Change step label to reflect docker build DB
-#             buildkite-agent step update "label" " + DB($(hostname))" --append
+#             h5=$(hostname | cut -b 1-5)  # "r8cad-docker" => "r8cad"
+#             buildkite-agent step update "label" " + DB($$h5)" --append
 # 
 #             # Remove docker images older than one day
 #             echo "--- Cleanup old docker images"
@@ -281,7 +308,7 @@ exit
 #             docker image ls | awk '/(days|weeks|months) ago/ {print $$3}' | xargs docker image rm || echo okay
 # 
 #             # Remove DELETEME* dirs older than one week
-#             # FIXME pretty sure this is BROKEN
+#             # FIXME pretty sure this is BROKEN. On TODO list: do this as crontab(s) instead
 #             echo "--- Cleanup old common areas"
 #             find /var/lib/buildkite-agent/builds/DELETEME* -type d -mtime +7 -exec /bin/rm -rf {} \; || echo okay
 # 
@@ -326,8 +353,9 @@ exit
 #     function setstate { buildkite-agent meta-data set $$1 --job $BUILDKITE_JOB_ID $$2; }
 #     function bkmsg    { buildkite-agent annotate --context foo --append "$$1<br />"; }
 # 
-#     setstate image-exists TRUE
-#     setstate launch-state LAUNCHED
+#     # No longer used, but left here as a reminder of what we can do...
+#     # setstate image-exists TRUE
+#     # setstate launch-state LAUNCHED
 #     # bkmsg "BD: $$BUILDKITE_LABEL LAUNCHED"
 # 
 #END preamble
