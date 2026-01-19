@@ -4,14 +4,6 @@ export CONFIG=full  # Uncomment to test full regressions maybe
 # This is designed to be called from pipeline.yml
 set -x
 
-# "full" is a special case why not
-if [ "$CONFIG" == "full" ]; then
-    if [ "$next" != "--cleanup" ]; then
-        # Delete ALL steps, run full config as step "1" i.e. set $1="1"
-        set -- "1"  # This deletes all other steps so only 'full' runs and only runs once
-    fi
-fi
-
 # Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
 # function buildkite-agent { [ "$2" == "upload" ] && cat; }
 # function bkmsg { echo "$1"; }
@@ -48,6 +40,13 @@ function key-exists {
 next="$1"; if ! [ "$next" ]; then echo DONE; exit; fi
 shift
 # bkmsg "Processing arg next='$next'"
+
+# "full" is a special case why not
+if [ "$CONFIG" == "full" ]; then
+    # Delete ALL steps, run full config as step "1" i.e. set $1="1"
+    while [ "$1" ]; do shift; done
+    next=1
+fi
 
 #------------------------------------------------------------------------------
 if [ "$next" == "--cleanup" ]; then
@@ -96,54 +95,6 @@ elif [ "$next" == "build" ]; then
 
     echo DO NOT USE BUILD STEP; exit 13  # TODO delete this block of code
 
-    # FIXME this launches two build steps at the same time; the
-    # possibility exists that both call regression-steps.sh at same time.
-    # That would be trouble for our new chaining approach, yes?
-    # Need flock? something simpler/smarter?
-
-    # Early-out if these steps have already been launched!
-    if key-exists 'kprep'; then
-        if key-exists 'r8prep'; then
-            echo "Steps 'kprep' and 'r8prep' already exist in pipeline. So. Nothing to do!"; exit 0
-        fi
-    fi
-
-    # Build the two individual build steps, one for each agent :)
-    bdkhaki=$(
-  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    - label: "khaki prep"
-      key: "kprep"
-      agents: { hostname: khaki }
-      # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
-      plugins:
-        - uber-workflow/run-without-clone:
-        - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER
-    EOF
-)
-    bdcad=$(
-  cat << '    EOF' | sed 's/^    //' | sed "s/ARGS/$*/"
-    - label: "r8cad prep"
-      key: "r8prep"
-      agents: { hostname: r8cad-docker }
-      # Launch next step if/when build is complete
-      command: .buildkite/bin/regression-steps.sh ARGS
-      plugins:
-        - uber-workflow/run-without-clone:
-        - improbable-eng/metahook:
-            pre-command: $BUILD_DOCKER
-    EOF
-)
-    # Package the two steps into one bundle, then upload the bundle
-    buildsteps=$(
-      sed '1,/^#BEGIN preamble/d;s/^# //g;/^#END preamble/,$d' "$0"  # Preamble from below
-      echo "steps:"
-      key-exists 'kprep'  || echo "$bdkhaki"
-      key-exists 'r8prep' || echo "$bdcad"  # FIXME restore before final check-in
-    )
-    echo "$buildsteps" | buildkite-agent pipeline upload
-
 #------------------------------------------------------------------------------
 elif [ "$next" == "gold" ]; then
 
@@ -185,8 +136,8 @@ echo "$goldstep" | buildkite-agent pipeline upload
 # BOOKMARK
 #------------------------------------------------------------------------------
 else
-    # "$next" must be "build", "gold" or a single digit 0-9
-    # Since we already processed "build and "gold" above, that leaves 0-9
+    # "$next" must be "gold" or a single digit 0-9
+    # Since we already processed "gold" above, that leaves 0-9
     i=$next  # Should be one of {0,1,2,3,4,5,6,7,8,9}
 
     # Early-out if step has already been launched!
@@ -204,8 +155,8 @@ else
         label="Regress $i"; export CONFIG="pr_aha${i} --include-no-zircon-tests"
 
     elif [ "$CONFIG" == "full" ]; then
-        label="Full Regressions"
-         export CONFIG="full --include-no-zircon-test" 
+        label="Full Regressions"; export CONFIG="full --include-no-zircon-test" 
+
     else
         label="$CONFIG"
     fi
