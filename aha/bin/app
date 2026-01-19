@@ -193,7 +193,7 @@ if [ "$SUITE" ]; then
         [ "$DBG" ] && hline 72
 
         # Note $ZIRCON is either "" or " --no-zircon"
-        (echo "$suites" | egrep ^"$s" | awk -F, '{
+        (echo "$suites" | egrep "^$s," | awk -F, '{
           suite=$1; group=$2; app=$3; size=$4; $1=$2=$3=$4="";
           gsub(/^ */, "", $0); parms = $0
           printf("'$bn' %s \"%s\" %s\n", size, app, parms ZIRCON)
