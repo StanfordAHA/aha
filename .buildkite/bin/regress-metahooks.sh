@@ -154,13 +154,13 @@ elif [ "$1" == '--commands' ]; then
       fi
 
     else
-      echo "Trigger came from OTHER, use default and/or config='$CONFIG'"
-      # FIXME what is this and why is it here??? Pretty sure it's outdated/unnecessary :(
-      if [ "$REGSTEP" != 1 ]; then
-        echo "Full regressions only run as 'Regress 1'"
-        DO_AR=False
-      fi
+#       # FIXME what is this and why is it here??? Pretty sure it's outdated/unnecessary :(
+#       if [ "$REGSTEP" != 1 ]; then
+#         echo "Full regressions only run as 'Regress 1'"
+#         DO_AR=False
+#       fi
       CONFIG="$CONFIG --include-no-zircon-tests"
+      echo "Trigger came from OTHER, config='$CONFIG'"
     fi
 
     if [ "$DO_AR" == "True" ]; then
