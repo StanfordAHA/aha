@@ -54,6 +54,7 @@ class Tests:
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
             "apps/maxpooling_dense_rv_fp",
+            "apps/maxpooling_dense_rv_mem_buf_fp",
             "apps/fully_connected_layer_fp",
             "apps/pointwise_custom_packing",
             "apps/pointwise_custom_place_multibank",
@@ -70,6 +71,8 @@ class Tests:
             "apps/layer_norm_pass2_fp",
             "apps/gelu_pass1_mu_input_fp",
             "apps/gelu_pass2_fp",
+            "apps/add_gelu_pass1_mu_input_fp",
+            "apps/add_gelu_pass2_fp",
             "apps/tanh_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -100,10 +103,13 @@ class Tests:
             "apps/layer_norm_pass2_fp",
             "apps/gelu_pass1_mu_input_fp",
             "apps/gelu_pass2_fp",
+            "apps/add_gelu_pass1_mu_input_fp",
+            "apps/add_gelu_pass2_fp",
             "apps/tanh_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
             "apps/maxpooling_dense_rv_fp",
+            "apps/maxpooling_dense_rv_mem_buf_fp",
             "apps/fully_connected_layer_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
@@ -280,6 +286,9 @@ class Tests:
         elif testname == "pr_aha6":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            glb_tests_RV = [
+                "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
+            ]
             resnet_tests = [
                 "conv1",
                 "conv2_x",
@@ -323,6 +332,7 @@ class Tests:
                 "apps/stable_softmax_pass3_fp_RV_E64_MB",
                 "apps/vector_reduction_fp_RV",
                 "apps/gelu_pass2_fp_RV_E64_MB",
+                "apps/add_gelu_pass2_fp_RV_E64_MB",
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/swiglu_pass2_fp_RV",
@@ -340,6 +350,7 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
 
         elif testname == "pr_aha9":
@@ -486,6 +497,7 @@ class Tests:
                 "apps/brighten_and_blur_RV",
                 "apps/pointwise_custom_packing_RV_E64",
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
@@ -507,6 +519,7 @@ class Tests:
                 "apps/layer_norm_pass1_fp_RV_E64_MB",
                 "apps/layer_norm_pass2_fp_RV_E64_MB",
                 "apps/gelu_pass2_fp_RV_E64_MB",
+                "apps/add_gelu_pass2_fp_RV_E64_MB",
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/swiglu_pass2_fp_RV",
@@ -609,6 +622,7 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
 
