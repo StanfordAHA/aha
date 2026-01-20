@@ -409,11 +409,6 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = [
-<<<<<<< Updated upstream
-                "apps/stable_softmax_pass2_fp_RV_E64_MB",
-                "apps/stable_softmax_pass3_fp_RV",
-                "apps/stable_softmax_pass1_fp_RV_E64_MB",
-=======
                 # "apps/stable_softmax_pass1_fp_RV_E64_MB",  # FAILED 01/20
                 # "apps/stable_softmax_pass2_fp_RV_E64_MB",  # PASSED 01/20
                 # "apps/stable_softmax_pass3_fp_RV",         # FAILED 01/20
@@ -429,8 +424,6 @@ class Tests:
                 "apps/rope_pass2_fp_RV",
                 "apps/mat_vec_mul_fp_RV_E64_MB",
                 "apps/tanh_fp_RV_E64_MB",
-            ]
->>>>>>> Stashed changes
             ]
 
         # FULL test is used by scheduled weekly aha regressions
