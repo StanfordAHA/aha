@@ -397,6 +397,17 @@ class Tests:
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            glb_tests_fp_RV = [
+                "apps/stable_softmax_pass2_fp_RV_E64_MB",
+                "apps/stable_softmax_pass3_fp_RV",
+                "apps/stable_softmax_pass1_fp_RV_E64_MB",
+            ]
+
+        # FULL test is used by scheduled weekly aha regressions
+        elif testname == "full_orig":
+
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
