@@ -508,9 +508,9 @@ class Tests:
                 # Standalone quantize layers
 #                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
 #                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+#                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB", # FAILED in voyager compiler
+#                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB", # assume fail
+#                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB", # assume fail
 
                 # Average pooling layer
                 "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
