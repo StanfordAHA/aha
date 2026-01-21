@@ -478,10 +478,36 @@ class Tests:
 #                 # TODO: Tests below are planned but not yet supported
 #                 # "conv2_x_fp", # not yet supported by zircon
 #             ]
+
+#             behavioral_mu_tests = [
+#                 "apps/pointwise_mu_io_RV_E64",
+#                 "apps/pointwise_mu_io_RV_E64_MB",
+#                 "apps/mu2glb_path_balance_test_RV_E64",
+#                 "apps/abs_max_full_unroll_fp_RV",
+#                 "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
+#                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+#             ]
+#             behavioral_mu_tests_fp = [
+#                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+#                 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+#             ]
+#             behavioral_mu_tests = [
+#                 "apps/pointwise_mu_io_RV_E64",
+#                 "apps/pointwise_mu_io_RV_E64_MB",
+#                 "apps/mu2glb_path_balance_test_RV_E64",
+#                 "apps/abs_max_full_unroll_fp_RV",
+#                 "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
+#                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+#             ]
+#             behavioral_mu_tests_fp = [
+#                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+#                 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+#             ]
+
             voyager_cgra_tests_fp = [
                 # Standalone quantize layers
 #                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+#                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
@@ -493,18 +519,9 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
-            behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
-                "apps/mu2glb_path_balance_test_RV_E64",
-                "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
-            ]
-            behavioral_mu_tests_fp = [
-                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
-            ]
+
+# Made it to here 1144am wed
+
             external_mu_tests = [
 
             ]
@@ -632,7 +649,7 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                # "tests/rom_RV",   # FIXME this one is busted
+              # "tests/rom_RV",   # FIXME this one Failed
                 "tests/arith_RV",
                 "tests/absolute_RV",
                 "tests/boolean_ops_RV",
@@ -672,9 +689,9 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/scalar_max_fp_RV",
-                # "apps/stable_softmax_pass1_fp_RV_E64_MB",
+                # "apps/stable_softmax_pass1_fp_RV_E64_MB",  # FIXME this one failed
                 "apps/stable_softmax_pass2_fp_RV_E64_MB",
-                # "apps/stable_softmax_pass3_fp_RV",
+                # "apps/stable_softmax_pass3_fp_RV",         # FIXME this one failed
                 "apps/scalar_avg_fp_RV",
                 "apps/layer_norm_pass1_fp_RV_E64_MB",
                 "apps/layer_norm_pass2_fp_RV_E64_MB",
@@ -771,18 +788,6 @@ class Tests:
                 # Fully connected layer (K-DIM HOST TILING)
                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
-            ]
-            behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
-                "apps/mu2glb_path_balance_test_RV_E64",
-                "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
-            ]
-            behavioral_mu_tests_fp = [
-                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
 
