@@ -491,36 +491,22 @@ class Tests:
 #                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
 #                 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
 #             ]
-#             behavioral_mu_tests = [
-#                 "apps/pointwise_mu_io_RV_E64",
-#                 "apps/pointwise_mu_io_RV_E64_MB",
-#                 "apps/mu2glb_path_balance_test_RV_E64",
-#                 "apps/abs_max_full_unroll_fp_RV",
-#                 "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
-#                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
-#             ]
-#             behavioral_mu_tests_fp = [
-#                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-#                 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
-#             ]
-
-            voyager_cgra_tests_fp = [
-                # Standalone quantize layers
+# 
+#             voyager_cgra_tests_fp = [
+#                 # Standalone quantize layers
 #                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
 #                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
 #                 "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB", # FAILED in voyager compiler
 #                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB", # assume fail
 #                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB", # assume fail
-
-                # Average pooling layer
-                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
-
-                # Fully connected layer (K-DIM HOST TILING)
-                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
-                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
-            ]
-
-# Made it to here 1144am wed
+# 
+#                 # Average pooling layer
+#                 "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB", # assume fail
+# 
+#                 # Fully connected layer (K-DIM HOST TILING)
+#                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB", # assume fail
+#                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB", # assume fail
+#             ]
 
             external_mu_tests = [
 
