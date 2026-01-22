@@ -261,6 +261,20 @@ def dispatch(args, extra_args=None):
         if model == "resnet18" and layer == "submodule":
             subprocess.check_call(["mv", "/aha/voyager/gold_activation_submodule_1.txt", "/aha/voyager/gold_activation.txt"])
 
+        if model == "bert" and layer == "linear_mx_default_4":
+            subprocess_call_log(
+                cmd=[sys.executable,
+                        f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",
+                        "--model", model,
+                        "--layer", layer,
+                        ],
+                cwd=args.aha_dir / "voyager",
+                log=args.log,
+                log_file_path=log_file_path,
+                env=env
+            )
+            subprocess.check_call(["mv", "/aha/voyager/gold_activation_gelu.txt", "/aha/voyager/gold_activation.txt"])
+
         if not args.voyager_gold_model_only:
             subprocess_call_log(
                 cmd=[sys.executable,
@@ -337,7 +351,19 @@ def dispatch(args, extra_args=None):
                 assert os.path.exists(layer_path_balance_json), f"ERROR: path_balancing.json not found in {layer_path_balance_folder}."
             else:
                 layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
-                assert os.path.exists(layer_path_balance_json), f"ERROR: {model}_{layer}_path_balancing.json not found in {layer_path_balance_folder}."
+
+                path_balance_json_exists = False
+
+                if os.path.exists(layer_path_balance_json):
+                    path_balance_json_exists = True
+                else:
+                    # Try alternative naming convention
+                    default_path_balance_json = os.path.join(layer_path_balance_folder, f"path_balancing.json")
+                    if os.path.exists(default_path_balance_json):
+                        layer_path_balance_json = default_path_balance_json
+                        path_balance_json_exists = True
+
+                assert path_balance_json_exists, f"ERROR: {layer_path_balance_json} not found in {layer_path_balance_folder}."
             os.system(f"cp {layer_path_balance_json} {app_dir}/bin/path_balancing.json")
 
         if not chain:
