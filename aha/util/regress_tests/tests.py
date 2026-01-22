@@ -133,6 +133,7 @@ class Tests:
             print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead')
             config = "pr_aha"
 
+
         # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
@@ -529,10 +530,11 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",  # PASSED
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
 
-            voyager_cgra_tests_fp = [
+            # voyager_cgra_tests_fp = [
+            BROKEN___voyager_cgra_tests_fp = [
                 # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
@@ -547,14 +549,13 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB", # assume fail
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB", # assume fail
             ]
-            voyager_cgra_tests_fp = []
 
             external_mu_tests = [
 
             ]
 
-            # Assume these will all fail :(
-            external_mu_tests_fp = [
+            # external_mu_tests_fp = [
+            BROKEN___external_mu_tests_fp = [
 
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB", # ERROR: Some voyager tests failed in SystemC
@@ -611,7 +612,6 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-            external_mu_tests_fp = []
 
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
@@ -691,285 +691,6 @@ class Tests:
                 # "conv2_x_fp", # not yet supported by zircon
             ]
 
-
-        # FULL test is used by scheduled weekly aha regressions
-        elif testname == "full_orig":
-
-            width, height = 28, 16
-            cols_removed, mu_oc_0 = 12, 32
-            sparse_tests = [
-                "vec_elemadd",
-                "vec_elemmul",
-                "vec_identity",
-                "vec_scalar_mul",
-                "mat_vecmul_ij",
-                "mat_elemadd",
-                "mat_elemadd_relu",
-                "mat_elemadd_leakyrelu_exp",
-                "mat_elemadd3",
-                "mat_elemmul",
-                "mat_elemdiv",
-                "mat_identity",
-                "mat_mattransmul",
-                "matmul_ijk",
-                "matmul_ijk_crddrop",
-                "matmul_ikj",
-                "matmul_jik",
-                "spmm_ijk_crddrop",
-                "spmv",
-                "spmv_relu",
-                "masked_broadcast",
-                "trans_masked_broadcast",
-                "mat_dn2sp",
-                "mat_sp2dn",
-                # Turned off until SUB ordering fixed in mapping
-                # 'mat_residual',
-                "mat_sddmm",
-                "mat_mask_tri",
-                "mat_vecmul_iter",
-                "tensor3_elemadd",
-                "tensor3_elemmul",
-                "tensor3_identity",
-                "tensor3_innerprod",
-                "tensor3_mttkrp",
-                "tensor3_mttkrp_unfused1",
-                "tensor3_mttkrp_unfused2",
-                "tensor3_ttm",
-                "tensor3_ttv",
-                "fp_relu_matmul_ijk_crddrop",
-                "fp_relu_matmul_ikj",
-                "fp_spmm_ijk_crddrop",
-                "fp_spmm_ijk_crddrop_locator",
-                "fp_spmm_ikj",
-                "fp_relu_spmm_ijk_crddrop",
-                "fp_relu_spmm_ikj",
-                "fp_matmul_ijk_crddrop",
-                "fp_matmul_ikj",
-            ]
-            glb_tests_RV = [
-                "apps/pointwise_RV",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-              # "tests/rom_RV",   # FIXME this one Failed
-                "tests/arith_RV",
-                "tests/absolute_RV",
-                "tests/boolean_ops_RV",
-                "tests/equal_RV",
-                "tests/ternary_RV",
-                "tests/scomp_RV",
-                "tests/ucomp_RV",
-                "tests/sminmax_RV",
-                "tests/uminmax_RV",
-                "tests/sshift_RV",
-                "tests/ushift_RV",
-                "tests/conv_2_1_RV",
-                "tests/conv_3_3_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
-                "tests/mem_slice_test_RV",
-                "tests/mem_transpose_test_RV",
-                "tests/mem_filter_test_RV",
-                "tests/fp_e8m0_quant_test_RV",
-                "apps/gaussian_RV",
-                "apps/brighten_and_blur_RV",
-                "apps/pointwise_custom_packing_RV_E64",
-                "apps/maxpooling_dense_rv_fp_RV_E64_MB",
-                "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
-                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
-                "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
-                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
-                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
-            ]
-            glb_tests_fp_RV = [
-                "apps/relu_layer_fp_RV",
-                "apps/relu_layer_multiout_fp_RV",
-                "apps/scalar_reduction_fp_RV",
-                "apps/vector_reduction_fp_RV",
-                "tests/fp_pointwise_RV",
-                "tests/fp_arith_RV",
-                "tests/fp_comp_RV",
-                "apps/scalar_max_fp_RV",
-                # "apps/stable_softmax_pass1_fp_RV_E64_MB",  # FIXME this one failed
-                "apps/stable_softmax_pass2_fp_RV_E64_MB",
-                # "apps/stable_softmax_pass3_fp_RV",         # FIXME this one failed
-                "apps/scalar_avg_fp_RV",
-                "apps/layer_norm_pass1_fp_RV_E64_MB",
-                "apps/layer_norm_pass2_fp_RV_E64_MB",
-                "apps/gelu_pass2_fp_RV_E64_MB",
-                "apps/add_gelu_pass2_fp_RV_E64_MB",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
-                "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/tanh_fp_RV_E64_MB",
-            ]
-            behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
-                "apps/mu2glb_path_balance_test_RV_E64",
-                "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
-            ]
-            behavioral_mu_tests_fp = [
-                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
-            ]
-
-            voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
-
-                # Average pooling layer
-                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
-
-                # Fully connected layer (K-DIM HOST TILING)
-                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
-                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
-            ]
-            external_mu_tests = [
-
-            ]
-            external_mu_tests_fp = [
-                # Conv1 (im2col-based, X-DIM HOST TILING)
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
-
-                # Conv2_x
-                "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
-
-                # Conv3_1 strided conv
-                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
-
-                # Conv3_1 pointwise conv
-                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
-
-                # Conv3_x
-                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
-
-                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
-                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-
-                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
-                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
-
-                # Conv4_x
-                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
-
-                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
-
-                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
-
-                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
-
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
-            ]
-            hardcoded_dense_tests = [
-                "apps/unsharp_RV",
-                # TODO: Tests below are planned but not yet supported
-                # "apps/depthwise_conv" # down on Zircon
-            ]
-            # For sparse tests, we cherry pick some representative tests to run
-            no_zircon_sparse_tests = [
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "matmul_ikj",
-                "tensor3_mttkrp",
-            ]
-            # Tests below are non-zircon and won't run by default
-            glb_tests = [
-                "apps/maxpooling",
-                "apps/pointwise",
-                "tests/rom",
-                "tests/arith",
-                "tests/absolute",
-                "tests/boolean_ops",
-                "tests/equal",
-                "tests/ternary",
-                "tests/scomp",
-                "tests/ucomp",
-                "tests/sminmax",
-                "tests/uminmax",
-                "tests/sshift",
-                "tests/ushift",
-                "tests/conv_1_2",
-                "tests/conv_2_1",
-                "tests/conv_3_3",
-                "tests/bit8_packing_test",
-                "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test",
-                "apps/gaussian",
-                "apps/brighten_and_blur",
-                "apps/cascade",
-                "apps/harris",
-                "apps/resnet_layer_gen",
-                "apps/unsharp",
-                "apps/harris_color",
-                "apps/camera_pipeline_2x2",
-                "apps/matrix_multiplication",
-            ]
-            glb_tests_fp = [
-                "apps/maxpooling_fp",
-                "apps/relu_layer_fp",
-                "tests/fp_pointwise",
-                "tests/fp_arith",
-                "tests/fp_comp",
-                "tests/fp_conv_7_7",
-                "apps/matrix_multiplication_fp",
-                # TODO: Tests below are planned but not yet supported
-                # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
-                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
-            ]
-
-            # FIXME would it be better here to do e.g.
-            # resnet_tests = Tests('resnet').resnet_tests ?
-
-            resnet_tests = [
-                "conv1",
-                "conv2_x",
-                "conv5_x",
-            ]
-            resnet_tests_fp = [
-                "sequential_0_fp",
-                "InvRes1_pw_fp",
-                "InvRes2_pw_exp_fp",
-                "InvRes2_pw_sq_fp",
-                "InvRes3_pw_exp_fp",
-                "InvRes3_pw_sq_residual_fp",
-                # TODO: Tests below are planned but not yet supported
-                # "conv2_x_fp", # not yet supported by zircon
-            ]
 
         elif testname == "resnet":
             width, height = 28, 16
