@@ -119,177 +119,18 @@ def unpack_output(arr):
 
     return result
 
+# Helper function to load hex txt files into uint16 arrays
+def _load_hex_txt(txt_path: str):
+    assert os.path.exists(txt_path), f"The RTL sim output file {txt_path} does not exist."
+    vals = []
+    with open(txt_path, "r") as f:
+        for line in f:
+            if line.strip():
+                vals.extend(int(v, 16) for v in line.split())
+    return numpy.array(vals, dtype=numpy.uint16)
 
-def dispatch(args, extra_args=None):
-    assert len(args.app) > 0
-    if args.mu_test is not None and len(args.mu_test) > 0:
-        assert len(args.app) == len(args.mu_test), "If using --mu_tests, number of apps and mu tests must match."
-    env = os.environ.copy()
-    app_args = []
-    for idx, app in enumerate(args.app):
-        load_environmental_vars(env, app, layer=args.layer)
-        # this is how many apps we 're running
-        arg_name = f"APP{idx}"
-        # get the full path of the app
-        if not args.sparse:
-            arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}"
-        else:
-            arg_path = f"{args.aha_dir}/garnet/SPARSE_TESTS/{app}"
-        app_args.append(f"+{arg_name}={arg_path}")
 
-        if args.mu_test is not None and len(args.mu_test) > 0:
-            mu_test = args.mu_test[idx]
-            if mu_test != "inactive":
-                mu_test_path = f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}"
-                app_args.append(f"+MU_TEST{idx}={mu_test_path}")
-            else:
-                app_args.append(f"+MU_TEST{idx}=inactive")
-
-    if args.dpr is True:
-        app_args.append(f"+DPR=1")
-
-    app_args = " ".join(app_args)
-    env["APP_ARGS"] = app_args
-    if args.waveform:
-        env["WAVEFORM"] = "1"
-    elif args.waveform_glb:
-        env["WAVEFORM_GLB_ONLY"] = "1"
-
-    # if there are more than 1 app, store the log in the first app
-    if not args.sparse:
-        app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
-    else:
-        app_dir = Path(f"{args.aha_dir}/garnet/SPARSE_TESTS/{args.app[0]}")
-    log_path = app_dir / Path("log")
-    log_file_path = log_path / Path("aha_test.log")
-    if args.log:
-        subprocess.check_call(["mkdir", "-p", log_path])
-        subprocess.check_call(["rm", "-f", log_file_path])
-
-    if args.sparse:
-
-        try:
-
-            subprocess_call_log(
-                cmd=["make", "clean_sparse_outputs"],
-                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-                env=env,
-                log=args.log,
-                log_file_path=log_file_path
-            )
-
-            if args.run:
-                subprocess_call_log(
-                    cmd=["make", "run"] + extra_args,
-                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-                    env=env,
-                    log=args.log,
-                    log_file_path=log_file_path
-                )
-            else:
-                subprocess_call_log(
-                    cmd=["make", "sim"] + extra_args,
-                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-                    env=env,
-                    log=args.log,
-                    log_file_path=log_file_path
-                )
-        except:
-            print("Failed as expected...move to offsite comparison...")
-
-        from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
-
-        sparse_comp = str(app_dir)
-        batches = len(args.app)
-
-        tiles = 1
-        if args.multiles:
-            tiles = args.multiles
-        # This is where we do the fallback comparison...
-        # First get gold matrix from the output...
-
-        name_line = None
-        with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
-            name_line = output_name_h_.readlines()[0].strip()
-        output_name = name_line
-        assert output_name is not None
-
-        output_mode_map = None
-        with open(f"{sparse_comp}/output_mode_map.json") as output_mode_map_h_:
-            output_mode_map = json.load(output_mode_map_h_)
-        assert output_mode_map is not None
-
-        # Find the output files...
-        all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
-        just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
-        for file__ in just_out_files_sim:
-            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles, batches)
-        for j in range(batches):
-            for i in range(tiles):
-                gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/{args.app[j]}/output_gold_{i}.npy")
-                # Process according to the data type of the gold matrix
-                if gold_matrix.dtype == int:
-                    gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
-                elif gold_matrix.dtype == numpy.float32:
-                    # the gold matrix were already in bf16, no need to truncate again
-                    pass
-                sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
-                                                   format="CSF",
-                                                   shape=gold_matrix.shape, base=16, early_terminate='x',
-                                                   use_fp=(gold_matrix.dtype == numpy.float32),
-                                                   suffix=f"_batch{j}_tile{i}",
-                                                   tensor_ordering=output_mode_map).get_matrix()
-
-                # Rearrange the axes of the sim_matrix base on the tensor ordering of the app
-                rearrng_axis = []
-                for reorder_tup in output_mode_map:
-                    rearrng_axis.append(reorder_tup[0])
-                is_scalar = (rearrng_axis == [])
-                if not is_scalar:
-                    sim_matrix = numpy.transpose(sim_matrix, rearrng_axis)
-
-                # Set up numpy so it doesn't print in scientific notation
-                numpy.set_printoptions(suppress=True)
-                print("Batch: ", j, "Tile: ", i)
-                # for comparing floating point
-                if numpy.allclose(gold_matrix, sim_matrix):
-                    print(f"Check Passed.")
-                else:
-                    print(f"GOLD")
-                    print(gold_matrix)
-                    print(f"SIM")
-                    print(sim_matrix)
-                    assert numpy.allclose(gold_matrix, sim_matrix), f"Check Failed.\n"
-
-    else:
-
-        # if args.run:
-        #     subprocess_call_log(
-        #         cmd=["make", "run"] + extra_args,
-        #         cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-        #         env=env,
-        #         log=args.log,
-        #         log_file_path=log_file_path
-        #     )
-        # else:
-        #     subprocess_call_log(
-        #         cmd=["make", "sim"] + extra_args,
-        #         cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
-        #         env=env,
-        #         log=args.log,
-        #         log_file_path=log_file_path
-        #     )
-
-        # Helper function to load hex txt files into uint16 arrays
-        def _load_hex_txt(txt_path: str):
-            assert os.path.exists(txt_path), f"The RTL sim output file {txt_path} does not exist."
-            vals = []
-            with open(txt_path, "r") as f:
-                for line in f:
-                    if line.strip():
-                        vals.extend(int(v, 16) for v in line.split())
-            return numpy.array(vals, dtype=numpy.uint16)
-
+def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post_silicon_full_app_name=""):
         # Build a list of (app, mu_test, output_file_name, gold_array, sim_array, app_dir)
         comparisons = []
 
@@ -568,3 +409,168 @@ def dispatch(args, extra_args=None):
 
                 assert numpy.array_equal(gold_array, sim_array), f"\033[91m{app}::{name}: Integer comparison (Bit-accurate) failed.\033[0m"
                 print(f"\033[92m{app}::{name}: Integer (Bit-accurate) comparison passed.\033[0m")
+
+
+
+def dispatch(args, extra_args=None):
+    assert len(args.app) > 0
+    if args.mu_test is not None and len(args.mu_test) > 0:
+        assert len(args.app) == len(args.mu_test), "If using --mu_tests, number of apps and mu tests must match."
+    env = os.environ.copy()
+    app_args = []
+    for idx, app in enumerate(args.app):
+        load_environmental_vars(env, app, layer=args.layer)
+        # this is how many apps we 're running
+        arg_name = f"APP{idx}"
+        # get the full path of the app
+        if not args.sparse:
+            arg_path = f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{app}"
+        else:
+            arg_path = f"{args.aha_dir}/garnet/SPARSE_TESTS/{app}"
+        app_args.append(f"+{arg_name}={arg_path}")
+
+        if args.mu_test is not None and len(args.mu_test) > 0:
+            mu_test = args.mu_test[idx]
+            if mu_test != "inactive":
+                mu_test_path = f"{args.aha_dir}/voyager/compiled_collateral/{mu_test}"
+                app_args.append(f"+MU_TEST{idx}={mu_test_path}")
+            else:
+                app_args.append(f"+MU_TEST{idx}=inactive")
+
+    if args.dpr is True:
+        app_args.append(f"+DPR=1")
+
+    app_args = " ".join(app_args)
+    env["APP_ARGS"] = app_args
+    if args.waveform:
+        env["WAVEFORM"] = "1"
+    elif args.waveform_glb:
+        env["WAVEFORM_GLB_ONLY"] = "1"
+
+    # if there are more than 1 app, store the log in the first app
+    if not args.sparse:
+        app_dir = Path(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{args.app[0]}")
+    else:
+        app_dir = Path(f"{args.aha_dir}/garnet/SPARSE_TESTS/{args.app[0]}")
+    log_path = app_dir / Path("log")
+    log_file_path = log_path / Path("aha_test.log")
+    if args.log:
+        subprocess.check_call(["mkdir", "-p", log_path])
+        subprocess.check_call(["rm", "-f", log_file_path])
+
+    if args.sparse:
+
+        try:
+
+            subprocess_call_log(
+                cmd=["make", "clean_sparse_outputs"],
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
+
+            if args.run:
+                subprocess_call_log(
+                    cmd=["make", "run"] + extra_args,
+                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                    env=env,
+                    log=args.log,
+                    log_file_path=log_file_path
+                )
+            else:
+                subprocess_call_log(
+                    cmd=["make", "sim"] + extra_args,
+                    cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                    env=env,
+                    log=args.log,
+                    log_file_path=log_file_path
+                )
+        except:
+            print("Failed as expected...move to offsite comparison...")
+
+        from sam.onyx.generate_matrices import convert_aha_glb_output_file, get_tensor_from_files
+
+        sparse_comp = str(app_dir)
+        batches = len(args.app)
+
+        tiles = 1
+        if args.multiles:
+            tiles = args.multiles
+        # This is where we do the fallback comparison...
+        # First get gold matrix from the output...
+
+        name_line = None
+        with open(f"{sparse_comp}/output_name.txt") as output_name_h_:
+            name_line = output_name_h_.readlines()[0].strip()
+        output_name = name_line
+        assert output_name is not None
+
+        output_mode_map = None
+        with open(f"{sparse_comp}/output_mode_map.json") as output_mode_map_h_:
+            output_mode_map = json.load(output_mode_map_h_)
+        assert output_mode_map is not None
+
+        # Find the output files...
+        all_test_files_sim = os.listdir("/aha/garnet/tests/test_app/")
+        just_out_files_sim = [file_ for file_ in all_test_files_sim if "tensor" in file_ and ".txt" in file_]
+        for file__ in just_out_files_sim:
+            convert_aha_glb_output_file(f"/aha/garnet/tests/test_app/{file__}", "/aha/garnet/SPARSE_TESTS/", tiles, batches)
+        for j in range(batches):
+            for i in range(tiles):
+                gold_matrix = numpy.load(f"/aha/garnet/SPARSE_TESTS/{args.app[j]}/output_gold_{i}.npy")
+                # Process according to the data type of the gold matrix
+                if gold_matrix.dtype == int:
+                    gold_matrix = gold_matrix.astype(numpy.uint16, casting='unsafe')
+                elif gold_matrix.dtype == numpy.float32:
+                    # the gold matrix were already in bf16, no need to truncate again
+                    pass
+                sim_matrix = get_tensor_from_files(name=output_name, files_dir="/aha/garnet/SPARSE_TESTS/",
+                                                   format="CSF",
+                                                   shape=gold_matrix.shape, base=16, early_terminate='x',
+                                                   use_fp=(gold_matrix.dtype == numpy.float32),
+                                                   suffix=f"_batch{j}_tile{i}",
+                                                   tensor_ordering=output_mode_map).get_matrix()
+
+                # Rearrange the axes of the sim_matrix base on the tensor ordering of the app
+                rearrng_axis = []
+                for reorder_tup in output_mode_map:
+                    rearrng_axis.append(reorder_tup[0])
+                is_scalar = (rearrng_axis == [])
+                if not is_scalar:
+                    sim_matrix = numpy.transpose(sim_matrix, rearrng_axis)
+
+                # Set up numpy so it doesn't print in scientific notation
+                numpy.set_printoptions(suppress=True)
+                print("Batch: ", j, "Tile: ", i)
+                # for comparing floating point
+                if numpy.allclose(gold_matrix, sim_matrix):
+                    print(f"Check Passed.")
+                else:
+                    print(f"GOLD")
+                    print(gold_matrix)
+                    print(f"SIM")
+                    print(sim_matrix)
+                    assert numpy.allclose(gold_matrix, sim_matrix), f"Check Failed.\n"
+
+    else:
+
+        if args.run:
+            subprocess_call_log(
+                cmd=["make", "run"] + extra_args,
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
+        else:
+            subprocess_call_log(
+                cmd=["make", "sim"] + extra_args,
+                cwd=str(args.aha_dir / "garnet" / "tests" / "test_app"),
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
+
+        assert(do_gold_check(args))
+
