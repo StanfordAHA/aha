@@ -175,17 +175,29 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
 
                 if use_psum_workaround_gold:
                     psum_idx = int(os.environ.get("PSUM_IDX", 1))
+                    # Try to find intermediate gold index, or else, use psum_idx
+                    intermediate_gold_idx = os.environ.get("INTERMEDIATE_GOLD_IDX", None)
+                    if intermediate_gold_idx is None:
+                        intermediate_gold_idx = psum_idx
+                    else:
+                        intermediate_gold_idx = int(intermediate_gold_idx)
                     per_tensor_scaling = "PER_TENSOR_SCALING" in os.environ and os.environ["PER_TENSOR_SCALING"] == "1"
+                    psum_gold_path = os.environ.get("PSUM_GOLD_PATH", "")
                     if per_tensor_scaling:
                         if post_silicon_check:
-                            gold_output_path = f"{post_silicon_base_dir}/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                            gold_output_path = f"{post_silicon_base_dir}/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{intermediate_gold_idx}_output.txt"
                         else:
-                            gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                            gold_output_path = f"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_psum_reduction_fp/per_tensor_{voyager_test_fullname}_gold/kernel_{intermediate_gold_idx}_output.txt"
+                    elif psum_gold_path != "":
+                        if post_silicon_check:
+                            gold_output_path = f"{post_silicon_base_dir}{psum_gold_path}/kernel_{intermediate_gold_idx}_output.txt"
+                        else:
+                            gold_output_path = f"{psum_gold_path}/kernel_{intermediate_gold_idx}_output.txt"
                     else:
                         if post_silicon_check:
-                            gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                            gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{intermediate_gold_idx}_output.txt"
                         else:
-                            gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt"
+                            gold_output_path = f"{app_dir}/{voyager_test_fullname}_gold/kernel_{intermediate_gold_idx}_output.txt"
                     assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                     gold_array = []
                     with open(gold_output_path, "r") as gold_output:
@@ -204,10 +216,13 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         datafile = out["datafile"]
                         output_file_name, ext = os.path.splitext(datafile)
 
-                        if output_file_name == "hw_output":
+                        if output_file_name == "hw_output" or output_file_name == "hw_output_mxint8_act":
                             gold_output_path = f"{voyager_app_dir}/compare/gold_activation.txt"
                         elif output_file_name == "hw_output_scale":
                             gold_output_path = f"{voyager_app_dir}/compare/gold_scale.txt"
+                        elif output_file_name == "hw_psum1_lower_output":
+                            psum_1_lower_output_path = os.environ.get("PSUM_1_LOWER_GOLD_PATH", "")
+                            gold_output_path = psum_1_lower_output_path
                         else:
                             raise ValueError(f"Unexpected voyager gold output file name: {output_file_name}")
 

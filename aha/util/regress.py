@@ -448,8 +448,43 @@ def test_dense_app(
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+        "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
+        "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
+        "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel2_RV_E64_MB",
+        "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
+        "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel2_RV_E64_MB",
+
+        "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel2_RV_E64_MB",
+        "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel3_RV_E64_MB",
+        "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel4_RV_E64_MB",
+
+        "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel8_RV_E64_MB",
+        "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel9_RV_E64_MB",
+        "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel10_RV_E64_MB",
+        "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel11_RV_E64_MB",
+
+
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel2_RV_E64_MB",
+
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel3_RV_E64_MB",
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel4_RV_E64_MB",
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel5_RV_E64_MB",
+
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel6_RV_E64_MB",
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel7_RV_E64_MB",
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel8_RV_E64_MB",
+
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel9_RV_E64_MB",
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel10_RV_E64_MB",
+        "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel11_RV_E64_MB",
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
+
+    skip_cgra_pnr_list += [
+        "bert-layer_norm_1::layer_norm_pass1_fp_bert_RV_E64_MB",
+        "bert-layer_norm_1::layer_norm_pass2_fp_bert_RV_E64_MB",
+    ]
 
     skip_cgra_map = test in skip_cgra_map_list
     skip_cgra_pnr = test in skip_cgra_pnr_list
@@ -469,7 +504,10 @@ def test_dense_app(
         "apps/layer_norm_pass2_fp_RV_E64_MB",
         "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
         "apps/gelu_pass2_fp_RV_E64_MB",
+        "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+        "apps/add_gelu_pass2_fp_RV_E64_MB",
         "apps/tanh_fp_RV_E64_MB",
+        "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
@@ -497,8 +535,12 @@ def test_dense_app(
         layer = test_orig
     if tgroup == 'external_mu_tests':
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+        test, layer = parse_layer_parametrized_test(test, "zircon_2d_nop", layer_in=layer)
     elif tgroup == 'external_mu_tests_fp':
         test, layer = parse_layer_parametrized_test(test, "zircon_nop")
+        test, layer = parse_layer_parametrized_test(test, "zircon_2d_nop", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_2d_psum_reduction_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "zircon_scale_add_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_dequantize_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_residual_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_psum_reduction_fp", layer_in=layer)
@@ -507,10 +549,19 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_deq_q_relu_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_deq_ResReLU_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "zircon_res_deq_ReLU_quant_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "add_gelu_pass1_mu_input_fp", layer_in=layer)
     elif tgroup == 'voyager_cgra_tests_fp':
         test, layer = parse_layer_parametrized_test(test, "zircon_quant_fp")
         test, layer = parse_layer_parametrized_test(test, "avgpool_layer_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "fully_connected_layer_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "nop_2d", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "add_gelu_pass2_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "tanh_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "get_e8m0_scale_accum_gb_input", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "layer_norm_pass1_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "layer_norm_pass2_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "apply_e8m0_scale_multi_IOs", layer_in=layer)
+
 
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
