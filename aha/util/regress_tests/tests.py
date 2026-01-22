@@ -691,75 +691,19 @@ class Tests:
                 "apps/mat_vec_mul_fp_RV_E64_MB",
                 "apps/tanh_fp_RV_E64_MB",
             ]
-            hardcoded_dense_tests = [
-                "apps/unsharp_RV",
-                # TODO: Tests below are planned but not yet supported
-                # "apps/depthwise_conv" # down on Zircon
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/mu2glb_path_balance_test_RV_E64",
+                "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
-            # Tests below are non-zircon and won't run by default
-            glb_tests = [
-                "apps/maxpooling",
-                "apps/pointwise",
-                "tests/rom",
-                "tests/arith",
-                "tests/absolute",
-                "tests/boolean_ops",
-                "tests/equal",
-                "tests/ternary",
-                "tests/scomp",
-                "tests/ucomp",
-                "tests/sminmax",
-                "tests/uminmax",
-                "tests/sshift",
-                "tests/ushift",
-                "tests/conv_1_2",
-                "tests/conv_2_1",
-                "tests/conv_3_3",
-                "tests/bit8_packing_test",
-                "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test",
-                "apps/gaussian",
-                "apps/brighten_and_blur",
-                "apps/cascade",
-                "apps/harris",
-                "apps/resnet_layer_gen",
-                "apps/unsharp",
-                "apps/harris_color",
-                "apps/camera_pipeline_2x2",
-                "apps/matrix_multiplication",
-            ]
-            glb_tests_fp = [
-                "apps/maxpooling_fp",
-                "apps/relu_layer_fp",
-                "tests/fp_pointwise",
-                "tests/fp_arith",
-                "tests/fp_comp",
-                "tests/fp_conv_7_7",
-                "apps/matrix_multiplication_fp",
-                # TODO: Tests below are planned but not yet supported
-                # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
-                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
+            behavioral_mu_tests_fp = [
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
 
-            # FIXME would it be better here to do e.g.
-            # resnet_tests = Tests('resnet').resnet_tests ?
-
-            resnet_tests = [
-                "conv1",
-                "conv2_x",
-                "conv5_x",
-            ]
-            resnet_tests_fp = [
-                "sequential_0_fp",
-                "InvRes1_pw_fp",
-                "InvRes2_pw_exp_fp",
-                "InvRes2_pw_sq_fp",
-                "InvRes3_pw_exp_fp",
-                "InvRes3_pw_sq_residual_fp",
-                # TODO: Tests below are planned but not yet supported
-                # "conv2_x_fp", # not yet supported by zircon
-            ]
             voyager_cgra_tests_fp = [
                 # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
@@ -834,7 +778,11 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
-
+            hardcoded_dense_tests = [
+                "apps/unsharp_RV",
+                # TODO: Tests below are planned but not yet supported
+                # "apps/depthwise_conv" # down on Zircon
+            ]
             # For sparse tests, we cherry pick some representative tests to run
             no_zircon_sparse_tests = [
                 "vec_elemmul",
@@ -842,6 +790,70 @@ class Tests:
                 "mat_elemadd_leakyrelu_exp",
                 "matmul_ikj",
                 "tensor3_mttkrp",
+            ]
+            # Tests below are non-zircon and won't run by default
+            glb_tests = [
+                "apps/maxpooling",
+                "apps/pointwise",
+                "tests/rom",
+                "tests/arith",
+                "tests/absolute",
+                "tests/boolean_ops",
+                "tests/equal",
+                "tests/ternary",
+                "tests/scomp",
+                "tests/ucomp",
+                "tests/sminmax",
+                "tests/uminmax",
+                "tests/sshift",
+                "tests/ushift",
+                "tests/conv_1_2",
+                "tests/conv_2_1",
+                "tests/conv_3_3",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
+                "apps/gaussian",
+                "apps/brighten_and_blur",
+                "apps/cascade",
+                "apps/harris",
+                "apps/resnet_layer_gen",
+                "apps/unsharp",
+                "apps/harris_color",
+                "apps/camera_pipeline_2x2",
+                "apps/matrix_multiplication",
+            ]
+            glb_tests_fp = [
+                "apps/maxpooling_fp",
+                "apps/relu_layer_fp",
+                "tests/fp_pointwise",
+                "tests/fp_arith",
+                "tests/fp_comp",
+                "tests/fp_conv_7_7",
+                "apps/matrix_multiplication_fp",
+                # TODO: Tests below are planned but not yet supported
+                # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
+                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
+            ]
+
+            # FIXME would it be better here to do e.g.
+            # resnet_tests = Tests('resnet').resnet_tests ?
+
+            resnet_tests = [
+                "conv1",
+                "conv2_x",
+                "conv5_x",
+            ]
+            resnet_tests_fp = [
+                "sequential_0_fp",
+                "InvRes1_pw_fp",
+                "InvRes2_pw_exp_fp",
+                "InvRes2_pw_sq_fp",
+                "InvRes3_pw_exp_fp",
+                "InvRes3_pw_sq_residual_fp",
+                # TODO: Tests below are planned but not yet supported
+                # "conv2_x_fp", # not yet supported by zircon
             ]
 
         elif testname == "resnet":
