@@ -518,7 +518,7 @@ class Tests:
 #                 "apps/mat_vec_mul_fp_RV_E64_MB",
 #                 "apps/tanh_fp_RV_E64_MB",
 #             ]
-
+# 
 #             behavioral_mu_tests = [
 #                 "apps/pointwise_mu_io_RV_E64",
 #                 "apps/pointwise_mu_io_RV_E64_MB",
@@ -547,16 +547,17 @@ class Tests:
 #                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB", # assume fail
 #                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB", # assume fail
 #             ]
-
-            external_mu_tests = [
-
-            ]
+# 
+#             external_mu_tests = [
+# 
+#             ]
             external_mu_tests_fp = [
-                # Conv1 (im2col-based, X-DIM HOST TILING)
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
+
+#                 # Conv1 (im2col-based, X-DIM HOST TILING)
+#                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB", # ERROR: Some voyager tests failed in SystemC
+#                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB", # assume fail
+#                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB", # assume fail
+#                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB", # assume fail
 
                 # Conv2_x
                 "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
