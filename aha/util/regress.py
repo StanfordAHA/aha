@@ -457,6 +457,8 @@ def test_dense_app(
     # These tests skip output regs for easier PnR
     skip_output_pipeline_regs = test in [
         "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+        "apps/maxpooling_dense_rv_fp_RV_E64",
+        "apps/maxpooling_dense_rv_fp_RV_E64_MB",
         "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
         "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
         "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
@@ -467,6 +469,8 @@ def test_dense_app(
         "apps/layer_norm_pass2_fp_RV_E64_MB",
         "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
         "apps/gelu_pass2_fp_RV_E64_MB",
+        "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+        "apps/add_gelu_pass2_fp_RV_E64_MB",
         "apps/tanh_fp_RV_E64_MB",
         "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
     ]
