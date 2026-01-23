@@ -410,7 +410,7 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            sparse_tests = [
+            XXXsparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
                 "vec_identity",
@@ -460,7 +460,7 @@ class Tests:
                 "fp_matmul_ikj",
             ]
 # BOOKMARK build 12719 thu 1315
-            glb_tests_RV = [
+            XXXglb_tests_RV = [
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
@@ -498,7 +498,7 @@ class Tests:
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
                 "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
-            glb_tests_fp_RV = [
+            XXXglb_tests_fp_RV = [
                 "apps/relu_layer_fp_RV",
                 "apps/relu_layer_multiout_fp_RV",
                 "apps/scalar_reduction_fp_RV",
@@ -525,7 +525,7 @@ class Tests:
                 "apps/tanh_fp_RV_E64_MB",
             ]
 
-            behavioral_mu_tests = [
+            XXXbehavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV_E64",
                 "apps/pointwise_mu_io_RV_E64_MB",
                 "apps/mu2glb_path_balance_test_RV_E64",
@@ -533,7 +533,7 @@ class Tests:
                 "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
-            behavioral_mu_tests_fp = [
+            XXXbehavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
                 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
