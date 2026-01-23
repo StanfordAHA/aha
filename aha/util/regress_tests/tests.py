@@ -412,7 +412,6 @@ class Tests:
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-
             sparse_tests = [
                 "vec_elemadd",
                 "vec_elemmul",
@@ -506,9 +505,9 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/scalar_max_fp_RV",
-                # "apps/stable_softmax_pass1_fp_RV_E64_MB",  # FIXME this one failed
+              # "apps/stable_softmax_pass1_fp_RV_E64_MB",  # FIXME this one failed
                 "apps/stable_softmax_pass2_fp_RV_E64_MB",
-                # "apps/stable_softmax_pass3_fp_RV",         # FIXME this one failed
+              # "apps/stable_softmax_pass3_fp_RV",         # FIXME this one failed
                 "apps/scalar_avg_fp_RV",
                 "apps/layer_norm_pass1_fp_RV_E64_MB",
                 "apps/layer_norm_pass2_fp_RV_E64_MB",
@@ -524,111 +523,19 @@ class Tests:
                 "apps/tanh_fp_RV_E64_MB",
             ]
 
-            behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
-                "apps/mu2glb_path_balance_test_RV_E64",
-                "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
-            ]
-            behavioral_mu_tests_fp = [
-                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
-            ]
-
-            # voyager_cgra_tests_fp = [
-            BROKEN___voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB", # FAILED in voyager compiler
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB", # FAILED in voyager compiler
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB", # assume fail
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB", # assume fail
-
-                # Average pooling layer
-                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB", # assume fail
-
-                # Fully connected layer (K-DIM HOST TILING)
-                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB", # assume fail
-                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB", # assume fail
-            ]
-
-            external_mu_tests = [
-
-            ]
-
-            # external_mu_tests_fp = [
-            BROKEN___external_mu_tests_fp = [
-
-                # Conv1 (im2col-based, X-DIM HOST TILING)
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB", # ERROR: Some voyager tests failed in SystemC
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB", # assume fail
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB", # assume fail
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB", # assume fail
-
-                # Conv2_x
-                "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
-
-                # Conv3_1 strided conv
-                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
-
-                # Conv3_1 pointwise conv
-                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
-
-                # Conv3_x
-                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
-                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
-
-                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
-                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-
-                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
-                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
-
-                # Conv4_x
-                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
-
-                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
-
-                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
-
-                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
-
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
-            ]
+            # FIXME tests from here down are out of order; should be:
+            #   behavioral_mu_tests*
+            #   voyager_cgra_tests_fp
+            #   external_mu_tests*
+            #   hardcoded_dense_tests
+            #   no_zircon_sparse_tests
+            #   glb_tests*
+            #   resnet_tests*
 
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
                 # TODO: Tests below are planned but not yet supported
                 # "apps/depthwise_conv" # down on Zircon
-            ]
-            # For sparse tests, we cherry pick some representative tests to run
-            no_zircon_sparse_tests = [
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "matmul_ikj",
-                "tensor3_mttkrp",
             ]
             # Tests below are non-zircon and won't run by default
             glb_tests = [
@@ -695,6 +602,104 @@ class Tests:
                 # "conv2_x_fp", # not yet supported by zircon
             ]
 
+            # 01/2026 FIXME/TODO This group appears to be broken, so I turned it off, see below
+            voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
+            ]
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/mu2glb_path_balance_test_RV_E64",
+                "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+            ]
+            behavioral_mu_tests_fp = [
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+            ]
+            external_mu_tests = [
+
+            ]
+
+            # 01/2026 FIXME/TODO This group appears to be broken, so I turned it off, see below
+            external_mu_tests_fp = [
+                # Conv1 (im2col-based, X-DIM HOST TILING)
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
+
+                # Conv2_x
+                "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
+
+                # Conv3_1 strided conv
+                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
+
+                # Conv3_1 pointwise conv
+                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
+
+                # Conv3_x
+                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
+
+                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
+                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+
+                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
+                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
+
+                # Conv4_x
+                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+
+                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
+
+                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
+
+                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+            ]
+
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
 
         elif testname == "resnet":
             width, height = 28, 16
@@ -814,6 +819,10 @@ class Tests:
             return
 
         else: pass
+
+        # 01/2026 FIXME/TODO These groups appear to be BROKEN so I am turning them off entirely for now :(
+        voyager_cgra_tests_fp = []
+        external_mu_tests_fp = []
 
         # Export everything named in template
         vdic = vars().copy()
