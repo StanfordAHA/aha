@@ -945,7 +945,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -962,7 +962,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -979,7 +979,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1":{
@@ -998,7 +998,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1015,7 +1015,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1032,7 +1032,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel2":{
@@ -1051,7 +1051,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1068,7 +1068,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1085,7 +1085,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel3":{
@@ -1104,7 +1104,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1121,7 +1121,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1138,7 +1138,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel4":{
@@ -1157,7 +1157,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1174,7 +1174,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1191,7 +1191,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_nop_post_bert_up_projection_kernel6":{
@@ -1211,7 +1211,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1228,7 +1228,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1245,7 +1245,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7":{
@@ -1265,7 +1265,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1282,7 +1282,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1299,7 +1299,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel8":{
@@ -1319,7 +1319,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1336,7 +1336,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1353,7 +1353,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel9":{
@@ -1373,7 +1373,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1390,7 +1390,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1407,7 +1407,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel10":{
@@ -1427,7 +1427,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "fastest":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1444,7 +1444,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         },
         "sweep":{
             "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 hidden_dim=1536 seq_len=128 n_oc=3072",
@@ -1461,7 +1461,7 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "USE_PSUM_WORKAROUND_GOLD":"1",
-            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4"
+            "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/bert-linear_mx_default_4_gold"
         }
     },
     "add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5":{
@@ -1492,7 +1492,7 @@
             "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"0",
-            "PSUM_1_LOWER_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass1_mu_input_fp/hw_psum1_lower_output_k_tiling_kernel0.txt"
+            "PSUM_1_LOWER_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/hw_psum1_lower_output_k_tiling_kernel0.txt"
         }
     },
     "add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11":{
@@ -1523,7 +1523,7 @@
             "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"0",
-            "PSUM_1_LOWER_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass1_mu_input_fp/hw_psum1_lower_output_k_tiling_kernel1.txt"
+            "PSUM_1_LOWER_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/hw_psum1_lower_output_k_tiling_kernel1.txt"
         }
     },
      "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0":{
@@ -4194,6 +4194,21 @@
             "VOYAGER_STANDALONE_CGRA_APP":"1"
         }
     },
+    "stable_softmax_pass1_fp_bert":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=128 vec_height=128 glb_i=32 glb_o=1 tree_stages=5 vec_width_fake=512 vec_height_fake=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "HW_OUTPUT_POS":"10",
+            "HW_OUTPUT_PACKED":"0",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "USE_REAL_INPUT":"1",
+            "CUSTOM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/bert-softmax_1_pass1_gold/stable_softmax_pass1_gold.txt"
+        }
+    },
     "apps/stable_softmax_pass2_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=128 vec_height=128 glb_i=32",
@@ -4209,6 +4224,24 @@
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1"
         }
     },
+    "stable_softmax_pass2_fp_bert":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=128 vec_height=128 glb_i=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "VEC_MAX_HOST_STENCIL_POS":"10",
+            "HW_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "VEC_MAX_HOST_STENCIL_PACKED":"0",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "USE_REAL_INPUT":"1",
+            "PASS1_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/bert-softmax_1_pass1_gold/stable_softmax_pass1_gold.raw",
+            "CUSTOM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/bert-softmax_1_pass2_gold/stable_softmax_pass2_gold.txt"
+        }
+    },
     "apps/stable_softmax_pass3_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=128 vec_height=128 glb_i=32 tree_stages=5 vec_width_fake=2048 vec_height_fake=4",
@@ -4220,6 +4253,22 @@
             "HW_OUTPUT_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1"
+        }
+    },
+    "stable_softmax_pass3_fp_bert":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=128 vec_height=128 glb_i=32 tree_stages=5 vec_width_fake=2048 vec_height_fake=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "HW_OUTPUT_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "USE_REAL_INPUT":"1",
+            "PASS2_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/bert-softmax_1_pass2_gold/stable_softmax_pass2_gold.raw",
+            "VOYAGER_GOLD":"1"
         }
     },
     "apps/scalar_avg_fp":{
@@ -4274,10 +4323,11 @@
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
             "MANUAL_PATH_BALANCE_PLACER":"1",
             "POND_PATH_BALANCING":"1",
-            "USE_REAL_INPUT":"1"
+            "USE_REAL_INPUT":"1",
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass2_fp/bert-layer_norm_pass1_gold/layer_norm_pass1_gold.txt"
         }
     },
-    "layer_norm_pass2_fp_bert":{
+    "layer_norm_pass2_fp_bert_post_attn":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=768 vec_height=128 glb_i=32 tree_stages=5 vec_width_fake=2048 vec_height_fake=4",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
@@ -4291,7 +4341,28 @@
             "MANUAL_PATH_BALANCE_PLACER":"1",
             "POND_PATH_BALANCING":"1",
             "USE_REAL_INPUT":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "PASS1_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass2_fp/bert-layer_norm_pass1_gold/layer_norm_pass1_gold.raw",
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_pass2_gold/layer_norm_pass2_gold.txt"
+        }
+    },
+    "layer_norm_pass2_fp_bert_post_proj":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=768 vec_height=128 glb_i=32 tree_stages=5 vec_width_fake=2048 vec_height_fake=4",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "HW_OUTPUT_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1",
+            "USE_REAL_INPUT":"1",
+            "VOYAGER_GOLD":"1",
+            "PASS1_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass2_fp/bert-layer_norm_1_pass1_gold/layer_norm_pass1_gold.raw",
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_1_pass2_gold/layer_norm_pass2_gold.txt"
         }
     },
     "apps/layer_norm_pass3_fp":{
@@ -4349,6 +4420,48 @@
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"1",
             "USE_REAL_INPUT":"1",
             "PASS2_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_pass2_gold/layer_norm_pass2_gold_kernel1.raw"
+        }
+    },
+     "layer_norm_pass3_fp_bert_post_proj_kernel0":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=384 vec_height=128 glb_i=16",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
+            "WEIGHT_HOST_STENCIL_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "BIAS_HOST_STENCIL_POS":"8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11",
+            "HW_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"0",
+            "USE_REAL_INPUT":"1",
+            "PASS2_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_1_pass2_gold/layer_norm_pass2_gold_kernel0.raw"
+        }
+    },
+    "layer_norm_pass3_fp_bert_post_proj_kernel1":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=384 vec_height=128 glb_i=16",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "WEIGHT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
+            "BIAS_HOST_STENCIL_POS":"8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11",
+            "HW_OUTPUT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"1",
+            "USE_REAL_INPUT":"1",
+            "PASS2_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_1_pass2_gold/layer_norm_pass2_gold_kernel1.raw"
         }
     },
     "apps/gelu_pass1_mu_input_fp":{
@@ -4884,8 +4997,24 @@
             "HW_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
             "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
+        }
+    },
+    "tanh_fp_bert":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_len=768 glb_i=1 glb_o=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12",
+            "INPUT_HOST_STENCIL_PACKED":"0",
+            "HW_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
             "POND_PATH_BALANCING":"1",
-            "VOYAGER_GOLD":"1"
+            "VOYAGER_GOLD":"1",
+            "USE_REAL_INPUT":"1"
         }
     },
     "conv1":{
