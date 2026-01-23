@@ -461,6 +461,7 @@ class Tests:
                 "fp_matmul_ijk_crddrop",
                 "fp_matmul_ikj",
             ]
+# BOOKMARK fri 212pm
             glb_tests_RV = [
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
