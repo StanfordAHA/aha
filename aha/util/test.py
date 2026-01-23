@@ -217,7 +217,11 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         output_file_name, ext = os.path.splitext(datafile)
 
                         if output_file_name == "hw_output" or output_file_name == "hw_output_mxint8_act":
-                            gold_output_path = f"{voyager_app_dir}/compare/gold_activation.txt"
+                            custom_gold_path = os.environ.get("CUSTOM_GOLD_PATH", "")
+                            if custom_gold_path != "":
+                                gold_output_path = custom_gold_path
+                            else:
+                                gold_output_path = f"{voyager_app_dir}/compare/gold_activation.txt"
                         elif output_file_name == "hw_output_scale" or output_file_name == "hw_scale_output" or output_file_name == "hw_scale_packed_output":
                             gold_output_path = f"{voyager_app_dir}/compare/gold_scale.txt"
                         elif output_file_name == "hw_psum1_lower_output":
@@ -246,7 +250,11 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         datafile = out["datafile"]
                         output_file_name, ext = os.path.splitext(datafile)
                         assert ext == ".raw", f"Unexpected datafile ext for output: {datafile}"
-                        gold_output_path = f"{app_bin_dir}/{datafile}"
+                        custom_gold_path = os.environ.get("CUSTOM_GOLD_PATH", "")
+                        if custom_gold_path != "":
+                            gold_output_path = custom_gold_path
+                        else:
+                            gold_output_path = f"{app_bin_dir}/{datafile}"
                         assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                         if packed_outputs:
                             golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))

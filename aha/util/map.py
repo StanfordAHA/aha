@@ -261,7 +261,7 @@ def dispatch(args, extra_args=None):
         if model == "resnet18" and layer == "submodule":
             subprocess.check_call(["mv", "/aha/voyager/gold_activation_submodule_1.txt", "/aha/voyager/gold_activation.txt"])
 
-        if model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu"):
+        if model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh"):
             subprocess_call_log(
                 cmd=[sys.executable,
                         f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",
@@ -273,7 +273,6 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path,
                 env=env
             )
-            subprocess.check_call(["mv", "/aha/voyager/gold_activation_gelu.txt", "/aha/voyager/gold_activation.txt"])
 
         if not args.voyager_gold_model_only:
             subprocess_call_log(
@@ -292,7 +291,8 @@ def dispatch(args, extra_args=None):
             if is_mu_test:
                 subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])
             systemC_comparison_files = glob.glob("/aha/voyager/*systemC.txt")
-            subprocess.check_call(["mv"] + systemC_comparison_files + [compare_path])
+            if systemC_comparison_files:
+                subprocess.check_call(["mv"] + systemC_comparison_files + [compare_path])
             subprocess.check_call(["mv", "/aha/voyager/gold_activation.txt", compare_path])
             gold_scale_path = "/aha/voyager/gold_scale.txt"
             if os.path.exists(gold_scale_path):
