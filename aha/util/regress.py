@@ -560,6 +560,8 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "layer_norm_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "layer_norm_pass2_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "apply_e8m0_scale_multi_IOs", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "get_e8m0_scale_tree_gb_input", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "apply_e8m0_scale_single_IO", layer_in=layer)
 
 
     feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
