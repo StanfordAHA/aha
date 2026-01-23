@@ -1489,9 +1489,9 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "VOYAGER_GOLD":"1",
-            "BERT_UP_PROJ_GELU_GOLD_CHANNEL_ADJUSTMENT":"1",
-            "GELU_GOLD_NUM_KERNELS":"2",
-            "GELU_GOLD_KERNEL_IDX":"0",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"0",
             "PSUM_1_LOWER_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass1_mu_input_fp/hw_psum1_lower_output_k_tiling_kernel0.txt"
         }
     },
@@ -1520,9 +1520,9 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "VOYAGER_GOLD":"1",
-            "BERT_UP_PROJ_GELU_GOLD_CHANNEL_ADJUSTMENT":"1",
-            "GELU_GOLD_NUM_KERNELS":"2",
-            "GELU_GOLD_KERNEL_IDX":"0",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"0",
             "PSUM_1_LOWER_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass1_mu_input_fp/hw_psum1_lower_output_k_tiling_kernel1.txt"
         }
     },
@@ -4228,6 +4228,48 @@
             "VOYAGER_STANDALONE_CGRA_APP":"1"
         }
     },
+    "layer_norm_pass3_fp_bert_post_attn_kernel0":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=384 vec_height=128 glb_i=16",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
+            "WEIGHT_HOST_STENCIL_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "BIAS_HOST_STENCIL_POS":"8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11",
+            "HW_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"0",
+            "USE_REAL_INPUT":"1",
+            "PASS2_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_pass2_gold/layer_norm_pass2_gold_kernel0.raw"
+        }
+    },
+    "layer_norm_pass3_fp_bert_post_attn_kernel1":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=384 vec_height=128 glb_i=16",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "WEIGHT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
+            "BIAS_HOST_STENCIL_POS":"8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11",
+            "HW_OUTPUT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"1",
+            "USE_REAL_INPUT":"1",
+            "PASS2_OUTPUT_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_pass2_gold/layer_norm_pass2_gold_kernel1.raw"
+        }
+    },
     "apps/gelu_pass1_mu_input_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=3072 vec_height=64 mu_i=32 dummy_max_nop=1",
@@ -4311,9 +4353,9 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
             "VOYAGER_GOLD":"1",
-            "BERT_UP_PROJ_GELU_GOLD_CHANNEL_ADJUSTMENT":"1",
-            "GELU_GOLD_NUM_KERNELS":"2",
-            "GELU_GOLD_KERNEL_IDX":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"6",
             "PSUM_IDX":"5",
@@ -4340,9 +4382,9 @@
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
             "VOYAGER_GOLD":"1",
-            "BERT_UP_PROJ_GELU_GOLD_CHANNEL_ADJUSTMENT":"1",
-            "GELU_GOLD_NUM_KERNELS":"2",
-            "GELU_GOLD_KERNEL_IDX":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND":"1",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS":"2",
+            "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX":"1",
             "ZIRCON_GEMM_REDUCTION_TILING_WORKAROUND":"1",
             "NUM_PSUMS":"6",
             "PSUM_IDX":"5",
@@ -4587,6 +4629,102 @@
             "CALCULATED_SCALE_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/bert-quantize_mx_default_scale.raw"
         }
     },
+    "apply_e8m0_scale_single_IO_bert_quantize_mx_default_3":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_height=128 vec_width=768 glb_i=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_BF_ACT_HOST_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "INPUT_SCALE_HOST_POS":"14",
+            "HW_SCALE_PACKED_OUTPUT_POS":"10,12",
+            "HW_OUTPUT_MXINT8_ACT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "INPUT_SCALE_HOST_PACKED":"0",
+            "HW_SCALE_PACKED_OUTPUT_PACKED":"0,0",
+            "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE":"1,1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "MANUAL_PLACER":"1",
+            "VOYAGER_GOLD":"1",
+            "USE_REAL_INPUT":"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PACKED_OUTPUTS":"1",
+            "CALCULATED_SCALE_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/bert-quantize_mx_default_3_scale.raw"
+        }
+    },
+    "apply_e8m0_scale_single_IO_bert_quantize_mx_default_4":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_height=128 vec_width=768 glb_i=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_BF_ACT_HOST_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "INPUT_SCALE_HOST_POS":"14",
+            "HW_SCALE_PACKED_OUTPUT_POS":"10,12",
+            "HW_OUTPUT_MXINT8_ACT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "INPUT_SCALE_HOST_PACKED":"0",
+            "HW_SCALE_PACKED_OUTPUT_PACKED":"0,0",
+            "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE":"1,1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "MANUAL_PLACER":"1",
+            "VOYAGER_GOLD":"1",
+            "USE_REAL_INPUT":"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PACKED_OUTPUTS":"1",
+            "CALCULATED_SCALE_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/bert-quantize_mx_default_4_scale.raw"
+        }
+    },
+    "apply_e8m0_scale_single_IO_bert_quantize_mx_default_1":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_height=1536 vec_width=64 glb_i=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_BF_ACT_HOST_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "INPUT_SCALE_HOST_POS":"14",
+            "HW_SCALE_PACKED_OUTPUT_POS":"10,12",
+            "HW_OUTPUT_MXINT8_ACT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "INPUT_SCALE_HOST_PACKED":"0",
+            "HW_SCALE_PACKED_OUTPUT_PACKED":"0,0",
+            "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE":"1,1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "MANUAL_PLACER":"1",
+            "VOYAGER_GOLD":"1",
+            "USE_REAL_INPUT":"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PACKED_OUTPUTS":"1",
+            "CALCULATED_SCALE_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/bert-quantize_mx_default_1_scale.raw"
+        }
+    },
+    "apply_e8m0_scale_single_IO_bert_quantize_mx_default_6":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_height=128 vec_width=128 glb_i=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_BF_ACT_HOST_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "INPUT_SCALE_HOST_POS":"14",
+            "HW_SCALE_PACKED_OUTPUT_POS":"10,12",
+            "HW_OUTPUT_MXINT8_ACT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "INPUT_SCALE_HOST_PACKED":"0",
+            "HW_SCALE_PACKED_OUTPUT_PACKED":"0,0",
+            "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE":"1,1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "MANUAL_PLACER":"1",
+            "VOYAGER_GOLD":"1",
+            "USE_REAL_INPUT":"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PACKED_OUTPUTS":"1",
+            "CALCULATED_SCALE_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/bert-quantize_mx_default_6_scale.raw"
+        }
+    },
     "apps/apply_e8m0_scale_multi_IOs":{
         "default":{
             "HALIDE_GEN_ARGS":"head_dim=64 seq_heads_prod=1536 glb_i=32",
@@ -4604,6 +4742,24 @@
     "apply_e8m0_scale_multi_IOs_bert":{
         "default":{
             "HALIDE_GEN_ARGS":"head_dim=64 seq_heads_prod=1536 glb_i=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_BF_ACT_HOST_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "INPUT_SCALE_HOST_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "HW_OUTPUT_MXINT8_ACT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PACKED_OUTPUTS":"1",
+            "USE_REAL_INPUT":"1"
+        }
+    },
+    "apply_e8m0_scale_multi_IOs_bert_post_transpose":{
+        "default":{
+            "HALIDE_GEN_ARGS":"head_dim=128 seq_heads_prod=768 glb_i=32",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"0",

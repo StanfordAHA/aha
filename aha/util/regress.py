@@ -482,6 +482,10 @@ def test_dense_app(
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
 
     skip_cgra_pnr_list += [
+        "bert-quantize_mx_default_3::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+        "bert-quantize_mx_default_4::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+        "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB", # 128, 768
+        "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB", # 128, 768
         "bert-layer_norm_1::layer_norm_pass1_fp_bert_RV_E64_MB",
         "bert-layer_norm_1::layer_norm_pass2_fp_bert_RV_E64_MB",
     ]
@@ -495,6 +499,10 @@ def test_dense_app(
         "apps/maxpooling_dense_rv_fp_RV_E64",
         "apps/maxpooling_dense_rv_fp_RV_E64_MB",
         "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
+        "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
+        "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
+        "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
+        "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
         "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
         "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
         "apps/stable_softmax_pass1_fp_RV_E64_MB",
@@ -505,9 +513,19 @@ def test_dense_app(
         "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
         "apps/gelu_pass2_fp_RV_E64_MB",
         "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+        "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
+        "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
         "apps/add_gelu_pass2_fp_RV_E64_MB",
+        "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
+        "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
         "apps/tanh_fp_RV_E64_MB",
+        "bert-tanh::tanh_fp_RV_E64_MB",
         "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
+        "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB",
+        "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB",
+        "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB",
+        "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB",
+        "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
@@ -559,6 +577,7 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "get_e8m0_scale_accum_gb_input", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "layer_norm_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "layer_norm_pass2_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "layer_norm_pass3_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "apply_e8m0_scale_multi_IOs", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "get_e8m0_scale_tree_gb_input", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "apply_e8m0_scale_single_IO", layer_in=layer)

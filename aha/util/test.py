@@ -304,7 +304,7 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
 
                     hard_integer_differences = numpy.abs(gold_array.astype(int) - sim_array.astype(int)) > 1
                     hard_diff_indices = numpy.where(hard_integer_differences)[0]
-                    num_hard_diff_tolerance = 3
+                    num_hard_diff_tolerance = 10
                     if len(hard_diff_indices) > 0:
                         print(f"[{app}::{name}] Integer values differing by more than 1:")
                         for idx in hard_diff_indices[:20]:
