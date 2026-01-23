@@ -40,6 +40,8 @@ def main():
     # Automatically create a command named after each submodule in our
     # `aha.util` module
     for importer, modname, ispkg in pkgutil.iter_modules(aha.util.__path__):
+        print("FOO...", modname)
+        if modname == 'regress_util': continue
         getattr(aha.util, modname).add_subparser(subparser)
 
     args, extra_args = parser.parse_known_args()
