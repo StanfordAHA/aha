@@ -459,6 +459,7 @@ class Tests:
                 "fp_matmul_ijk_crddrop",
                 "fp_matmul_ikj",
             ]
+# BOOKMARK build 12719 thu 1315
             glb_tests_RV = [
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
@@ -473,6 +474,7 @@ class Tests:
                 "tests/ucomp_RV",
                 "tests/sminmax_RV",
                 "tests/uminmax_RV",
+# BOOKMARK build 12719 thu 1415
                 "tests/sshift_RV",
                 "tests/ushift_RV",
                 "tests/conv_2_1_RV",
@@ -483,11 +485,13 @@ class Tests:
                 "tests/mem_slice_test_RV",
                 "tests/mem_transpose_test_RV",
                 "tests/mem_filter_test_RV",
+# BOOKMARK build 12719 thu 1515
                 "tests/fp_e8m0_quant_test_RV",
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
                 "apps/pointwise_custom_packing_RV_E64",
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+# BOOKMARK build 12719 thu 1600 (6 hours in)
                 "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
@@ -507,6 +511,7 @@ class Tests:
                 "apps/stable_softmax_pass2_fp_RV_E64_MB",
                 # "apps/stable_softmax_pass3_fp_RV",         # FIXME this one failed
                 "apps/scalar_avg_fp_RV",
+# BOOKMARK build 12719 thu 2000 (10 hours in)
                 "apps/layer_norm_pass1_fp_RV_E64_MB",
                 "apps/layer_norm_pass2_fp_RV_E64_MB",
                 "apps/gelu_pass2_fp_RV_E64_MB",
@@ -536,7 +541,7 @@ class Tests:
             voyager_cgra_tests_fp = [
 
                 # Average pooling layer
-                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+                # "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
 
                 # # Average pooling layer
                 # "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
