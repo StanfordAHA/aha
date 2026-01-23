@@ -14,6 +14,11 @@ import toml
 from aha.util.regress_tests.tests import Tests
 import copy
 
+def report_ongoing_failures(failed_tests):
+    if failed_tests:
+        print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
+        for ft in failed_tests: print("  ", ft)
+
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("config")
@@ -800,11 +805,15 @@ def test_hardcoded_dense_app(
 
 
 def dispatch(args, extra_args=None):
+  try:
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
     using_matrix_unit = args.using_matrix_unit
     mu_datawidth = args.mu_datawidth
     unroll = args.unroll
+
+    failed_tests = []
+    final_error = None
 
     # It's painful if we don't catch this up front! (E.g. missing vcs.)
     if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
@@ -1000,12 +1009,22 @@ def dispatch(args, extra_args=None):
             continue
 
         unparsed_name = test
-        t0, t1, t2, t3, t4, t5 = test_dense_app(
-            test, tgroup, width, height, args.env_parameters, extra_args,
-            using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth,
-            num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0
-        )
-        info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2, t3, t4, t5])
+
+        try:
+            t0, t1, t2, t3, t4, t5 = test_dense_app(
+                test, tgroup, width, height, args.env_parameters, extra_args,
+                using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth,
+                num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0
+            )
+            info.append([unparsed_name+tsuffix, t0+t1+t2, t0, t1, t2, t3, t4, t5])
+
+        except Exception as e:
+            print(f"--- FAILED TEST {unparsed_name}:\n{e}")
+            failed_tests += [unparsed_name]
+            final_error = e
+            info.append([unparsed_name+tsuffix+" FAIL"])
+
+        report_ongoing_failures(failed_tests)
 
     print(f"--- Processing app group hardcoded_dense_tests", flush=True)
     info.append(["APP GROUP hardcoded_dense_tests[]", 0])
@@ -1015,6 +1034,7 @@ def dispatch(args, extra_args=None):
                         using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth,
                         num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append([unparsed_name + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+        report_ongoing_failures(failed_tests)
 
     # Skip unnecessary garnet build if tests don't exist, duh.
     tests_exist = True if [
@@ -1036,6 +1056,7 @@ def dispatch(args, extra_args=None):
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
+        report_ongoing_failures(failed_tests)
 
         if no_zircon_sparse_tests:
             # See above for no_zircon_sparse_tests[]
@@ -1046,10 +1067,12 @@ def dispatch(args, extra_args=None):
                                        seed_flow, data_tile_pairs, kernel_name,
                                        opal_workaround=args.opal_workaround, unroll=unroll)
             info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
+            report_ongoing_failures(failed_tests)
 
             for test in no_zircon_sparse_tests:
                 t0, t1, t2, t3, t4, t5 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+                report_ongoing_failures(failed_tests)
 
         # For dense tests, we run glb_tests, glb_tests_fp, resnet_tests, and resnet_tests_fp
 
@@ -1067,6 +1090,7 @@ def dispatch(args, extra_args=None):
 
             t0, t1, t2, t3, t4, t5 = test_dense_app(test, tgroup, width, height, args.env_parameters, extra_args)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+            report_ongoing_failures(failed_tests)
 
     # Skip unnecessary garnet build if tests don't exist, duh.
     dense_only_tests_exist = True if glb_tests else False
@@ -1082,6 +1106,7 @@ def dispatch(args, extra_args=None):
 
         t = gen_garnet(width, height, dense_only=True)
         info.append(["garnet with dense only", t])
+        report_ongoing_failures(failed_tests)
 
         num_dense_only_glb_tests = 5
         for test_index, test in enumerate(glb_tests):
@@ -1089,6 +1114,7 @@ def dispatch(args, extra_args=None):
                 break
             t0, t1, t2, t3, t4, t5 = test_dense_app(test, width, height, args.env_parameters, extra_args, dense_only=True)
             info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+            report_ongoing_failures(failed_tests)
 
         for test in resnet_tests:
             # residual resnet test is not working with dense only mode
@@ -1096,9 +1122,21 @@ def dispatch(args, extra_args=None):
                 t0, t1, t2, t3, t4, t5 = test_dense_app("apps/resnet_output_stationary",
                                             width, height, args.env_parameters, extra_args, layer=test)
                 info.append([test + "_glb dense only", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+                report_ongoing_failures(failed_tests)
 
+  except Exception as e:
+      final_error = e
+
+  finally:
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
+
+    if failed_tests:
+        print(f"+++ FAILURES", flush=True)
+        for ft in failed_tests: print("  ", ft)
+
+    if final_error:
+        raise(final_error)
 
 
 def gather_tests(tags):
