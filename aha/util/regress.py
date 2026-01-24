@@ -11,7 +11,7 @@ from aha.util.regress_util import format_concat_tiles
 from aha.util.regress_util import test_sparse_app
 from aha.util.regress_util import test_dense_app
 from aha.util.regress_util import test_hardcoded_dense_app
-from aha.util.regress_util info
+from aha.util.regress_util import info
 
 global info
 
