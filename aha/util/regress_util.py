@@ -6,6 +6,11 @@ import shutil
 from aha.util.regress_tests.tests import Tests
 import copy
 
+global info  # HA!
+info = []
+
+
+
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     print("Command:",' '.join(command), flush=True)
     env = {**os.environ.copy(), **env}

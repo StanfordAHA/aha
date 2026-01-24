@@ -11,6 +11,9 @@ from aha.util.regress_util import format_concat_tiles
 from aha.util.regress_util import test_sparse_app
 from aha.util.regress_util import test_dense_app
 from aha.util.regress_util import test_hardcoded_dense_app
+from aha.util.regress_util info
+
+global info
 
 def report_ongoing_failures(failed_tests):
     if failed_tests:
@@ -62,7 +65,8 @@ def dispatch(args, extra_args=None):
 
     # For printing info at the end...
     global info  # HA!
-    info = []
+    # info = []  # DON'T DO THIS!!! Or else you lose your pointer to the One True Info in regress_util
+    info.clear()
 
     # For config definitions see regress_tests/tests.py
     imported_tests = Tests(args.config)
