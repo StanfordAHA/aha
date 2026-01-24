@@ -368,6 +368,7 @@ def dispatch(args, extra_args=None):
       final_error = e
 
   finally:
+    sys.stderr.flush()
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
 
