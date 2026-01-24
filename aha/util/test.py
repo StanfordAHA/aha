@@ -226,7 +226,10 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                             gold_output_path = f"{voyager_app_dir}/compare/gold_scale.txt"
                         elif output_file_name == "hw_psum1_lower_output":
                             psum_1_lower_output_path = os.environ.get("PSUM_1_LOWER_GOLD_PATH", "")
-                            gold_output_path = psum_1_lower_output_path
+                            if post_silicon_check:
+                                gold_output_path = f"{post_silicon_base_dir}{psum_1_lower_output_path}"
+                            else:
+                                gold_output_path = psum_1_lower_output_path
                         else:
                             raise ValueError(f"Unexpected voyager gold output file name: {output_file_name}")
 
