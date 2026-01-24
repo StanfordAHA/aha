@@ -219,7 +219,10 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         if output_file_name == "hw_output" or output_file_name == "hw_output_mxint8_act":
                             custom_gold_path = os.environ.get("CUSTOM_GOLD_PATH", "")
                             if custom_gold_path != "":
-                                gold_output_path = custom_gold_path
+                                if post_silicon_check:
+                                    gold_output_path = f"{post_silicon_base_dir}{custom_gold_path}"
+                                else:
+                                    gold_output_path = custom_gold_path
                             else:
                                 gold_output_path = f"{voyager_app_dir}/compare/gold_activation.txt"
                         elif output_file_name == "hw_output_scale" or output_file_name == "hw_scale_output" or output_file_name == "hw_scale_packed_output":
@@ -256,7 +259,10 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         custom_gold_path = os.environ.get("CUSTOM_GOLD_PATH", "")
                         if custom_gold_path != "":
                             # txt format gold file
-                            gold_output_path = custom_gold_path
+                            if post_silicon_check:
+                                gold_output_path = f"{post_silicon_base_dir}{custom_gold_path}"
+                            else:
+                                gold_output_path = custom_gold_path
                             assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                             with open(gold_output_path, "r") as gold_file:
                                 gold_array = []
