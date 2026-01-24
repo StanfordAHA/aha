@@ -1,10 +1,7 @@
 import sys, os
 from pathlib import Path
 import subprocess
-import glob
-import toml
 from aha.util.regress_tests.tests import Tests
-
 from aha.util.regress_util import gen_garnet
 from aha.util.regress_util import generate_sparse_bitstreams
 from aha.util.regress_util import format_concat_tiles
@@ -12,13 +9,14 @@ from aha.util.regress_util import test_sparse_app
 from aha.util.regress_util import test_dense_app
 from aha.util.regress_util import test_hardcoded_dense_app
 from aha.util.regress_util import info
-
 global info
 
 def report_ongoing_failures(failed_tests):
     if failed_tests:
         print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
         for ft in failed_tests: print("  ", ft)
+    else:
+        print(f"--- NO FAILED TESTS (YET)")
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
@@ -152,10 +150,12 @@ def dispatch(args, extra_args=None):
 
         test_dataset_runtime_dict = {}
 
+        import glob
         data_tile_pairs_lists = []
         for sparse_tile_pairs_list in args.sparse_tile_pairs_list:
             data_tile_pairs_lists.extend(glob.glob(sparse_tile_pairs_list))
 
+        import toml
         for data_tile_pairs_file in data_tile_pairs_lists:
             with open(data_tile_pairs_file, 'r') as f:
                 tile_pairs_dict = toml.load(f)
