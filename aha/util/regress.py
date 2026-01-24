@@ -1,26 +1,16 @@
+import sys, os
 from pathlib import Path
-import re
-import json
 import subprocess
-import sys
-import os
-from tabulate import tabulate
-import time
-import tempfile
 import glob
-from collections import defaultdict
-import shutil
 import toml
 from aha.util.regress_tests.tests import Tests
-from aha.util.regress_util import buildkite_call,\
-                                  gen_garnet,\
-                                  generate_sparse_bitstreams,\
-                                  format_concat_tiles,\
-                                  test_sparse_app,\
-                                  track_performance,\
-                                  test_dense_app,\
-                                  test_hardcoded_dense_app
-import copy
+
+from aha.util.regress_util import gen_garnet
+from aha.util.regress_util import generate_sparse_bitstreams
+from aha.util.regress_util import format_concat_tiles
+from aha.util.regress_util import test_sparse_app
+from aha.util.regress_util import test_dense_app
+from aha.util.regress_util import test_hardcoded_dense_app
 
 def report_ongoing_failures(failed_tests):
     if failed_tests:
@@ -368,6 +358,7 @@ def dispatch(args, extra_args=None):
       final_error = e
 
   finally:
+    from tabulate import tabulate
     sys.stderr.flush()
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
