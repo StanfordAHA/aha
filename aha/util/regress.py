@@ -1,23 +1,16 @@
+import sys, os
 from pathlib import Path
-import re
-import json
 import subprocess
-import sys
-import os
-from tabulate import tabulate
 import time
-import tempfile
-import glob
 from collections import defaultdict
-import shutil
-import toml
 from aha.util.regress_tests.tests import Tests
-import copy
 
 def report_ongoing_failures(failed_tests):
     if failed_tests:
         print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
         for ft in failed_tests: print("  ", ft)
+    else:
+        print(f"+++ NO FAILED TESTS (YET)")
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
@@ -35,11 +28,6 @@ def add_subparser(subparser):
     parser.add_argument("--mu-datawidth", default=16, type=int)
     parser.add_argument("--no-zircon", action="store_true")
     parser.set_defaults(dispatch=dispatch)
-
-
-def buildkite_filter(s):
-    return re.sub("^---", " ---", s, flags=re.MULTILINE)
-
 
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     print("Command:",' '.join(command), flush=True)
@@ -454,6 +442,7 @@ def test_dense_app(
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
         "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
     ]
+    import copy
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
 
     skip_cgra_map = test in skip_cgra_map_list
@@ -714,6 +703,7 @@ def test_hardcoded_dense_app(
         pass
 
     try:
+        import shutil
         print(f"copying hardcoded bin folder", flush=True)
         shutil.copytree(f"{app_path}/bin_hardcoded", f"{app_path}/bin")
     except:
@@ -918,10 +908,12 @@ def dispatch(args, extra_args=None):
 
         test_dataset_runtime_dict = {}
 
+        import glob
         data_tile_pairs_lists = []
         for sparse_tile_pairs_list in args.sparse_tile_pairs_list:
             data_tile_pairs_lists.extend(glob.glob(sparse_tile_pairs_list))
 
+        import toml
         for data_tile_pairs_file in data_tile_pairs_lists:
             with open(data_tile_pairs_file, 'r') as f:
                 tile_pairs_dict = toml.load(f)
@@ -1128,6 +1120,8 @@ def dispatch(args, extra_args=None):
       final_error = e
 
   finally:
+    from tabulate import tabulate
+    sys.stderr.flush()
     print(f"+++ TIMING INFO", flush=True)
     print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
 
