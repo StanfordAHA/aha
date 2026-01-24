@@ -252,14 +252,26 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                         assert ext == ".raw", f"Unexpected datafile ext for output: {datafile}"
                         custom_gold_path = os.environ.get("CUSTOM_GOLD_PATH", "")
                         if custom_gold_path != "":
+                            # txt format gold file
                             gold_output_path = custom_gold_path
+                            assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
+                            with open(gold_output_path, "r") as gold_file:
+                                gold_array = []
+                                for line in gold_file:
+                                    if line.strip():  # Check if the line is not empty
+                                        values = [int(value, 16) for value in line.split()]
+                                        gold_array.extend(values)
+                                gold_array = numpy.array(gold_array, dtype=numpy.uint16)
+                                gold_array = gold_array.flatten()
+
+                            golds_by_name[output_file_name] = gold_array
                         else:
                             gold_output_path = f"{app_bin_dir}/{datafile}"
-                        assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
-                        if packed_outputs:
-                            golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
-                        else:
-                            golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
+                            assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
+                            if packed_outputs:
+                                golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
+                            else:
+                                golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
 
                 for out in outputs:
                     datafile = out["datafile"]

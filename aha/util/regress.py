@@ -484,8 +484,6 @@ def test_dense_app(
     skip_cgra_pnr_list += [
         "bert-quantize_mx_default_3::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
         "bert-quantize_mx_default_4::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
-        "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB", # 128, 768
-        "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB", # 128, 768
         "bert-layer_norm_1::layer_norm_pass1_fp_bert_RV_E64_MB",
         "bert-layer_norm_1::layer_norm_pass2_fp_bert_post_proj_RV_E64_MB",
         # Channel slicing (unroll by 16)
@@ -756,19 +754,19 @@ def test_dense_app(
     time_test = time.time() - start
 
     # HACK: Custom hack for copying folders for chip testing
-    os.system(f"cp -a {app_path}/bin /aha/aha_src3")
+    os.system(f"cp -a {app_path}/bin /aha/aha_src4")
     if mu_test != "inactive":
-        os.system(f"rm -rf /aha/aha_src3/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src3/bin /aha/aha_src3/{mu_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src3")
-        os.system(f"rm -rf /aha/voyager_src3/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src3/{mu_test} /aha/voyager_src3/{mu_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src4/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src4/bin /aha/aha_src4/{mu_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src4")
+        os.system(f"rm -rf /aha/voyager_src4/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src4/{mu_test} /aha/voyager_src4/{mu_test},,,{orig_test}")
     elif voyager_cgra_test != "":
-        os.system(f"rm -rf /aha/aha_src3/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src3/bin /aha/aha_src3/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src3")
-        os.system(f"rm -rf /aha/voyager_src3/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src3/{voyager_cgra_test} /aha/voyager_src3/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src4/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src4/bin /aha/aha_src4/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src4")
+        os.system(f"rm -rf /aha/voyager_src4/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src4/{voyager_cgra_test} /aha/voyager_src4/{voyager_cgra_test},,,{orig_test}")
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
     return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
@@ -1087,9 +1085,10 @@ def dispatch(args, extra_args=None):
             ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
             ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
-            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
+
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
-            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:
+            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp,
+            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,]:
 
         if type(test) is tuple:
             tgroup,tsuffix = test

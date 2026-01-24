@@ -747,6 +747,14 @@ class Tests:
 
                 # # BERT
                 # "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+
+                # BERT layer norm layers
+                # "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
+                # "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
+                # # Channel slicing (unroll by 16)
+                # "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
+                # "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+
                 # "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
                 # "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
 
@@ -766,10 +774,10 @@ class Tests:
                 # "bert-quantize_mx_default_6::get_e8m0_scale_tree_gb_input_bert_shape2_RV_E64_MB", # 128, 128
 
                 # "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB", # 12, 128, 64
-                # "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB", # 12, 128, 64
+                "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB", # 128, 128
 
                 # BERT Softmax layers
                 # FIXME: The output mismatched for some reason here
@@ -777,12 +785,6 @@ class Tests:
                 # "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
                 # "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
 
-                # BERT layer norm layers
-                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
-                # Channel slicing (unroll by 16)
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
 
                 # "bert-layer_norm_1::layer_norm_pass1_fp_bert_RV_E64_MB",
                 # "bert-layer_norm_1::layer_norm_pass2_fp_bert_post_proj_RV_E64_MB",
