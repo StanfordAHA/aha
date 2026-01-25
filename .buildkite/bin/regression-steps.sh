@@ -178,7 +178,7 @@ else
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         echo executing \$REGRESS_METAHOOKS=$REGRESS_METAHOOKS
         ls -l \$REGRESS_METAHOOKS
-        cat \$REGRESS_METAHOOKS
+        grep Full \$REGRESS_METAHOOKS
         CONFIG="$CONFIG" \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:
@@ -215,6 +215,7 @@ exit
 #     # To test retry: FAIL first time through only
 #     # if [ "$$BUILDKITE_RETRY_COUNT" == "0" ]; then echo '--- FAIL b/c retry count is 0'; exit 13; fi
 # 
+# set -x
 #     # Submod PRs use DEV branch (usually "master")
 #     [ "$$AHA_SUBMOD_FLOW_COMMIT" ] && tbranch=$DEV_BRANCH || tbranch=$BUILDKITE_BRANCH
 #     remote=https://raw.githubusercontent.com/StanfordAHA/aha/$$tbranch
@@ -228,7 +229,9 @@ exit
 #         chmod +x $REGRESS_METAHOOKS
 #         curl $$remote/.buildkite/bin/regression-steps.sh -o .buildkite/bin/regression-steps.sh
 #         chmod +x .buildkite/bin/regression-steps.sh
+#         grep Full .buildkite/bin/regression-steps.sh
 #     fi
+# set +x
 # 
 #     # If docker image is gone, e.g. in case of retry maybe, we'll have to rebuild it
 #     (
@@ -268,12 +271,15 @@ exit
 #             find /var/lib/buildkite-agent/builds/DELETEME* -type d -mtime +7 -exec /bin/rm -rf {} \; || echo okay
 # 
 #             echo "--- Save repo things in common area" FIXME did we not just curl these in up above already qmqmqm
-#             set -x
+# set -x
 #             mkdir -p $$COMMON
 #             echo BUILDKITE_BUILD_CHECKOUT_PATH=$$BUILDKITE_BUILD_CHECKOUT_PATH=$BUILDKITE_BUILD_CHECKOUT_PATH
 #             echo COMMON=$$COMMON=$COMMON
 #             cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
-#             set +x
+#             ls -l $$COMMON || echo okay
+#             grep Full $$COMMON/regress-metahooks.sh || echo okay
+# set +x
+# 
 #             echo "--- DEBUG DOCKER TRASH"
 #             docker images; docker ps;
 # 
