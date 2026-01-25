@@ -1,7 +1,6 @@
 #!/bin/bash
 # export CONFIG=full  # Uncomment to test full regressions maybe
 
-
 # This is designed to be called from pipeline.yml
 set -x
 
@@ -280,7 +279,6 @@ exit
 #             ls -l $$COMMON || echo okay
 #             grep Full $$COMMON/regress-metahooks.sh || echo okay
 #     set +x
-# 
 #             echo "--- DEBUG DOCKER TRASH"
 #             docker images; docker ps;
 # 
