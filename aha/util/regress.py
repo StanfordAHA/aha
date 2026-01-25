@@ -535,7 +535,7 @@ def test_dense_app(
         "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB",
         "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB",
         "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB",
-+       "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB"
+       "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB"
     ]
 
     #------------------------------------------------------------------------
