@@ -254,26 +254,6 @@ class Tests:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             external_mu_tests_fp = [
                 # Conv3_1 strided conv
                 "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
@@ -382,6 +362,11 @@ class Tests:
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
+            behavioral_mu_tests_fp = [
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB", # This one takes like 1.5hr
+            ]
+
+
         elif testname == "pr_aha8":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -422,8 +407,7 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
             behavioral_mu_tests_fp = [
-                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",     # This one takes like an hour
             ]
 
         elif testname == "pr_aha9":
