@@ -143,7 +143,7 @@ elif [ "$1" == '--commands' ]; then
     DO_AR=True
 
     # We no longer use DO_PR mechanism, see DO_PR comment above.
-
+    echo "+++ FOOOOO"; set +x
     if [ "$CONFIG" == "pr_aha" ]; then
       # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
       # Note REGSTEP 0 uses config "fast" instead of e.g. "regress0"

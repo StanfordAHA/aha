@@ -175,6 +175,7 @@ else
       # env: { REGRESSION_STEP: $i } no longer used maybe
       command: |
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
+        echo executing \$REGRESS_METAHOOKS=$REGRESS_METAHOOKS
         CONFIG="$CONFIG" \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:

@@ -205,9 +205,75 @@ class Tests:
                 "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
             ]
+
+
+
+
+            glb_tests_fp_RV = [
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "apps/relu_layer_fp_RV",
+                "apps/relu_layer_multiout_fp_RV",
+                "apps/mat_vec_mul_fp_RV_E64_MB",
+                "apps/scalar_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+            ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         elif testname == "pr_aha3":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+
+
+
+
+
+            glb_tests_fp_RV = [
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
+                "apps/tanh_fp_RV_E64_MB",
+            ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             external_mu_tests_fp = [
                 # Conv3_1 strided conv
                 "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
@@ -320,13 +386,16 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = [
-                "tests/fp_arith_RV",
-                "tests/fp_comp_RV",
-                "apps/relu_layer_fp_RV",
-                "apps/relu_layer_multiout_fp_RV",
-                "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/scalar_reduction_fp_RV",
-                "apps/scalar_max_fp_RV",
+
+#                 "tests/fp_arith_RV",
+#                 "tests/fp_comp_RV",
+#                 "apps/relu_layer_fp_RV",
+#                 "apps/relu_layer_multiout_fp_RV",
+#                 "apps/mat_vec_mul_fp_RV_E64_MB",
+#                 "apps/scalar_reduction_fp_RV",
+#                 "apps/scalar_max_fp_RV",
+
+
                 "apps/layer_norm_pass1_fp_RV_E64_MB",
                 "apps/layer_norm_pass2_fp_RV_E64_MB",
                 "apps/layer_norm_pass3_fp_RV_E64_MB",
@@ -337,12 +406,12 @@ class Tests:
                 "apps/vector_reduction_fp_RV",
                 "apps/gelu_pass2_fp_RV_E64_MB",
                 "apps/add_gelu_pass2_fp_RV_E64_MB",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
-                "apps/tanh_fp_RV_E64_MB",
+#                 "apps/silu_pass1_fp_RV",
+#                 "apps/silu_pass2_fp_RV",
+#                 "apps/swiglu_pass2_fp_RV",
+#                 "apps/rope_pass1_fp_RV",
+#                 "apps/rope_pass2_fp_RV",
+#                 "apps/tanh_fp_RV_E64_MB",
             ]
             voyager_cgra_tests_fp = [
                 # Average pooling layer
