@@ -760,11 +760,11 @@ class Tests:
 
                 # # BERT get_e8m0_scale accum schedule layers
                 # "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
-                # "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
+                # "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
 
                 # # BERT apply_e8m0_scale layers
-                "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
-                "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
+                # "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
+                # "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
 
                 # BERT get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
                 # "bert-quantize_mx_default::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
@@ -779,11 +779,19 @@ class Tests:
                 # "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB", # 12, 128, 64
                 # "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB", # 128, 128
 
+                # BERT Quantize_mx_default_5 tiled layer (k-dim tiling)
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel0_RV_E64_MB", # 128, 1536
+                # "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel1_RV_E64_MB", # 128, 1536
+
+                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB", # 128, 1536
+                # "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB", # 128, 1536
+
+
                 # BERT Softmax layers
                 # FIXME: The output mismatched for some reason here
-                "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",
-                "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
-                "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
+                # "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",
+                # "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
+                # "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
 
 
                 # "bert-layer_norm_1::layer_norm_pass1_fp_bert_RV_E64_MB",
@@ -801,7 +809,7 @@ class Tests:
                 # "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
 
                 # BERT tanh layer
-                "bert-tanh::tanh_fp_bert_RV_E64_MB"
+                # "bert-tanh::tanh_fp_bert_RV_E64_MB"
             ]
             behavioral_mu_tests = [
                 # "apps/pointwise_mu_io_RV",

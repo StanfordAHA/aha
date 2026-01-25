@@ -501,7 +501,7 @@ def test_dense_app(
         "apps/maxpooling_dense_rv_fp_RV_E64_MB",
         "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
         "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
-        "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
+        "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
         "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
         "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
         "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
@@ -527,13 +527,15 @@ def test_dense_app(
         "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
         "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
         "apps/tanh_fp_RV_E64_MB",
-        "bert-tanh::tanh_fp_bert_RV_E64_MB"
+        "bert-tanh::tanh_fp_bert_RV_E64_MB",
         "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
         "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB",
         "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB",
         "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB",
         "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB",
         "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB",
+        "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB",
++       "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB"
     ]
 
     #------------------------------------------------------------------------
@@ -754,19 +756,19 @@ def test_dense_app(
     time_test = time.time() - start
 
     # HACK: Custom hack for copying folders for chip testing
-    os.system(f"cp -a {app_path}/bin /aha/aha_src6")
+    os.system(f"cp -a {app_path}/bin /aha/aha_src7")
     if mu_test != "inactive":
-        os.system(f"rm -rf /aha/aha_src6/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src6/bin /aha/aha_src6/{mu_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src6")
-        os.system(f"rm -rf /aha/voyager_src6/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src6/{mu_test} /aha/voyager_src6/{mu_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src7/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src7/bin /aha/aha_src7/{mu_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src7")
+        os.system(f"rm -rf /aha/voyager_src7/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src7/{mu_test} /aha/voyager_src7/{mu_test},,,{orig_test}")
     elif voyager_cgra_test != "":
-        os.system(f"rm -rf /aha/aha_src6/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src6/bin /aha/aha_src6/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src6")
-        os.system(f"rm -rf /aha/voyager_src6/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src6/{voyager_cgra_test} /aha/voyager_src6/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src7/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src7/bin /aha/aha_src7/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src7")
+        os.system(f"rm -rf /aha/voyager_src7/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src7/{voyager_cgra_test} /aha/voyager_src7/{voyager_cgra_test},,,{orig_test}")
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
     return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles

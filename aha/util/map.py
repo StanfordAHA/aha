@@ -287,6 +287,25 @@ def dispatch(args, extra_args=None):
                 env=env
             )
 
+            # Adjust gold scale if it exists
+            gold_scale_path = "/aha/voyager/gold_scale.txt"
+            if os.path.exists(gold_scale_path):
+                subprocess_call_log(
+                    cmd=[sys.executable,
+                            f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
+                            "--input", gold_scale_path,
+                            "--output", gold_scale_path,
+                            "--is-mx-scale",
+                            "--mx-block-size", str(env.get("MX_BLOCK_SIZE", "64"))
+                            ],
+                    cwd=args.aha_dir / "voyager",
+                    log=args.log,
+                    log_file_path=log_file_path,
+                    env=env
+                )
+
+
+
             # Move collateral to desired folders
             if is_mu_test:
                 subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])
