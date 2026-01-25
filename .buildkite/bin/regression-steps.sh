@@ -1,6 +1,7 @@
 #!/bin/bash
 # export CONFIG=full  # Uncomment to test full regressions maybe
 
+
 # This is designed to be called from pipeline.yml
 set -x
 
