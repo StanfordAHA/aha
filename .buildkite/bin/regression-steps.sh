@@ -1,5 +1,5 @@
 #!/bin/bash
-# export CONFIG=full  # Uncomment to test full regressions maybe
+export CONFIG=full  # Uncomment to test full regressions maybe
 
 # This is designed to be called from pipeline.yml
 set -x
@@ -174,8 +174,11 @@ else
       key: "regress$i"
       # env: { REGRESSION_STEP: $i } no longer used maybe
       command: |
+        set -x
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         echo executing \$REGRESS_METAHOOKS=$REGRESS_METAHOOKS
+        ls -l \$REGRESS_METAHOOKS
+        cat \$REGRESS_METAHOOKS
         CONFIG="$CONFIG" \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:
@@ -271,7 +274,6 @@ exit
 #             echo COMMON=$$COMMON=$COMMON
 #             cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
 #             set +x
-#            
 #             echo "--- DEBUG DOCKER TRASH"
 #             docker images; docker ps;
 # 
