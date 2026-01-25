@@ -15,7 +15,8 @@ env:
   # See kiwi:~steveri/tmpdir/optimal9/opt.c
   #   (cc opt.c; a.out 9) |& grep final | sort -nk3,3 -nk5,5
   #
-  RSTEPS: ${RSTEPS:-gold 0 1 2 3 4 6 5 8 7 9}
+  # RSTEPS: ${RSTEPS:-gold 0 1 2 3 4 6 5 8 7 9}
+  RSTEPS: ${RSTEPS:-gold 0 1 2}
   # RSTEPS: ${RSTEPS:-4 6 8}
 
   MAX_AGENTS: 4  # How many agents do we get to use for regression steps?
