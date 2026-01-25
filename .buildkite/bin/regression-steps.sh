@@ -264,9 +264,13 @@ exit
 #             echo "--- Cleanup old common areas"
 #             find /var/lib/buildkite-agent/builds/DELETEME* -type d -mtime +7 -exec /bin/rm -rf {} \; || echo okay
 # 
-#             echo "--- Save repo things in common area"
+#             echo "--- Save repo things in common area" FIXME did we not just curl these in up above already qmqmqm
+#             set -x
 #             mkdir -p $$COMMON
+#             echo BUILDKITE_BUILD_CHECKOUT_PATH=$$BUILDKITE_BUILD_CHECKOUT_PATH=$BUILDKITE_BUILD_CHECKOUT_PATH
+#             echo COMMON=$$COMMON=$COMMON
 #             cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
+#             set +x
 #            
 #             echo "--- DEBUG DOCKER TRASH"
 #             docker images; docker ps;
