@@ -536,13 +536,12 @@ class Tests:
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
                 "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
-            glb_tests_fp_RV = \
-                [ "tests/fp_pointwise_RV" ] +  # This is in 'fast' config but not aha1-9
-                glb_tests_fp_RV1 + 
-                glb_tests_fp_RV2 + 
-                glb_tests_fp_RV3 + 
-                glb_tests_fp_RV8 + 
-                glb_tests_fp_RV9
+            glb_tests_fp_RV = [ "tests/fp_pointwise_RV" ]  # This is in 'fast' config but not aha1-9
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV1
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV2
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV3
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV8
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV9
 
             # FIXME tests from here down are out of order; should be:
             #   behavioral_mu_tests*
