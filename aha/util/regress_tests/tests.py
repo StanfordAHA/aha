@@ -26,6 +26,41 @@ class Tests:
                  "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
                  "pr_aha", "full", "resnet", "mu", "BLANK"]
 
+    # RV1 group takes about about hour to run
+    glb_tests_fp_RV1 = [
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "apps/relu_layer_fp_RV",
+                "apps/relu_layer_multiout_fp_RV",
+                "apps/mat_vec_mul_fp_RV_E64_MB",
+                "apps/scalar_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+    ]
+    glb_tests_fp_RV2 = [
+                "apps/layer_norm_pass1_fp_RV_E64_MB",
+                "apps/layer_norm_pass2_fp_RV_E64_MB",
+                "apps/layer_norm_pass3_fp_RV_E64_MB",
+    ]
+    glb_tests_fp_RV3 = [
+                "apps/scalar_avg_fp_RV",
+                "apps/stable_softmax_pass1_fp_RV_E64_MB",
+                "apps/stable_softmax_pass2_fp_RV_E64_MB",
+                "apps/stable_softmax_pass3_fp_RV_E64_MB",
+                "apps/vector_reduction_fp_RV",
+    ]
+    glb_tests_fp_RV8 = [
+                "apps/gelu_pass2_fp_RV_E64_MB",
+                "apps/add_gelu_pass2_fp_RV_E64_MB",
+    ]
+    glb_tests_fp_RV9 = [
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
+                "apps/tanh_fp_RV_E64_MB",
+    ]
+
     def configs_template():
         # Defaults
         width, height = 28, 16  # default
@@ -162,6 +197,7 @@ class Tests:
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            # These take about an hour to run
             sparse_tests = [
                 # pr_aha1
                 "vec_elemmul",
@@ -180,6 +216,7 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
+            # THESE HAVE BEEN TURNED OFF see below
             voyager_cgra_tests_fp = [
                 # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
@@ -188,6 +225,7 @@ class Tests:
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
             ]
+            # THESE HAVE BEEN TURNED OFF see below
             external_mu_tests_fp = [
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
@@ -195,9 +233,14 @@ class Tests:
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
             ]
+            # These take about about hour to run
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV1
+
         elif testname == "pr_aha2":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+
+            # THESE HAVE BEEN TURNED OFF see below
             external_mu_tests_fp = [
                 # Conv2_x
                 "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
@@ -206,53 +249,13 @@ class Tests:
                 "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
             ]
 
-
-
-
-            glb_tests_fp_RV = [
-                "tests/fp_arith_RV",
-                "tests/fp_comp_RV",
-                "apps/relu_layer_fp_RV",
-                "apps/relu_layer_multiout_fp_RV",
-                "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/scalar_reduction_fp_RV",
-                "apps/scalar_max_fp_RV",
-            ]
-
-
-
-
-
-
-
-
-
-
-
-
-
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV2
 
         elif testname == "pr_aha3":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-
-
-
-
-            glb_tests_fp_RV = [
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
-                "apps/tanh_fp_RV_E64_MB",
-            ]
-
-
-
-
-
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV3
 
             external_mu_tests_fp = [
                 # Conv3_1 strided conv
@@ -370,34 +373,7 @@ class Tests:
         elif testname == "pr_aha8":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            glb_tests_fp_RV = [
-
-#                 "tests/fp_arith_RV",
-#                 "tests/fp_comp_RV",
-#                 "apps/relu_layer_fp_RV",
-#                 "apps/relu_layer_multiout_fp_RV",
-#                 "apps/mat_vec_mul_fp_RV_E64_MB",
-#                 "apps/scalar_reduction_fp_RV",
-#                 "apps/scalar_max_fp_RV",
-
-
-                "apps/layer_norm_pass1_fp_RV_E64_MB",
-                "apps/layer_norm_pass2_fp_RV_E64_MB",
-                "apps/layer_norm_pass3_fp_RV_E64_MB",
-                "apps/scalar_avg_fp_RV",
-                "apps/stable_softmax_pass1_fp_RV_E64_MB",
-                "apps/stable_softmax_pass2_fp_RV_E64_MB",
-                "apps/stable_softmax_pass3_fp_RV_E64_MB",
-                "apps/vector_reduction_fp_RV",
-                "apps/gelu_pass2_fp_RV_E64_MB",
-                "apps/add_gelu_pass2_fp_RV_E64_MB",
-#                 "apps/silu_pass1_fp_RV",
-#                 "apps/silu_pass2_fp_RV",
-#                 "apps/swiglu_pass2_fp_RV",
-#                 "apps/rope_pass1_fp_RV",
-#                 "apps/rope_pass2_fp_RV",
-#                 "apps/tanh_fp_RV_E64_MB",
-            ]
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV8
             voyager_cgra_tests_fp = [
                 # Average pooling layer
                 "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
@@ -425,6 +401,7 @@ class Tests:
                 "tests/bit8_unpack_test_RV",
                 "tests/fp_get_shared_exp_test_RV",
             ]
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV9
             external_mu_tests_fp = [
                 # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",

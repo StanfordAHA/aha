@@ -625,7 +625,7 @@ def test_dense_app(
 
     if skip_output_pipeline_regs:
         print(f"--- {testname} - SKIP OUTPUT PIPELINE REGS", flush=True)
-        info.append([f"--- {testname} - SKIP OUTPUT PIPELINE REGS", 0])
+        info.append([f"{testname} - SKIP OUTPUT PIPELINE REGS", 0])
         buildkite_args.append("--no-output-pipelining")
 
     buildkite_call(buildkite_args, env=env_vars)
