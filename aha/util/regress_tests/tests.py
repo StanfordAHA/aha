@@ -26,7 +26,7 @@ class Tests:
                  "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
                  "pr_aha", "full", "resnet", "mu", "BLANK"]
 
-    # RV1 group takes about about hour to run
+    # RV1 group takes about an hour to run
     glb_tests_fp_RV1 = [
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
@@ -36,17 +36,17 @@ class Tests:
                 "apps/scalar_reduction_fp_RV",
                 "apps/scalar_max_fp_RV",
     ]
-    glb_tests_fp_RV2 = [
-                "apps/layer_norm_pass1_fp_RV_E64_MB",
-                "apps/layer_norm_pass2_fp_RV_E64_MB",
-                "apps/layer_norm_pass3_fp_RV_E64_MB",
-    ]
     glb_tests_fp_RV3 = [
                 "apps/scalar_avg_fp_RV",
                 "apps/stable_softmax_pass1_fp_RV_E64_MB",
                 "apps/stable_softmax_pass2_fp_RV_E64_MB",
                 "apps/stable_softmax_pass3_fp_RV_E64_MB",
                 "apps/vector_reduction_fp_RV",
+    ]
+    glb_tests_fp_RV2 = [
+                "apps/layer_norm_pass1_fp_RV_E64_MB",
+                "apps/layer_norm_pass2_fp_RV_E64_MB",
+                "apps/layer_norm_pass3_fp_RV_E64_MB",
     ]
     glb_tests_fp_RV8 = [
                 "apps/gelu_pass2_fp_RV_E64_MB",
@@ -240,16 +240,26 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
+            # 1h40 for this group maybe (build 12755/aha2)
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV2
+
             # THESE HAVE BEEN TURNED OFF see below
             external_mu_tests_fp = [
+                # THESE HAVE BEEN TURNED OFF see below
                 # Conv2_x
                 "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
             ]
-
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV2
+            # 40 minutes for this group maybe (build 12755/aha4)
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",          # 5m
+                "apps/pointwise_mu_io_RV_E64_MB",       # 5m
+                "apps/mu2glb_path_balance_test_RV_E64", # 5m
+                "apps/abs_max_full_unroll_fp_RV",       # 5m
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",  # 1045s/20m
+            ]
 
         elif testname == "pr_aha3":
             width, height = 28, 16
@@ -273,6 +283,8 @@ class Tests:
         elif testname == "pr_aha4":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+
+            # 8400s/140m/2h20
             glb_tests_RV = [
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
@@ -280,14 +292,11 @@ class Tests:
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
+            # 2700s/45m
             behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",
-                "apps/pointwise_mu_io_RV_E64_MB",
-                "apps/mu2glb_path_balance_test_RV_E64",
-                "apps/abs_max_full_unroll_fp_RV",
-                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",  # 2700s/45m
             ]
+            # Resnet tests DISABLED see below
             external_mu_tests_fp = [
                 # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
                 "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
@@ -365,10 +374,10 @@ class Tests:
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
+            # This one takes like 1.5hr
             behavioral_mu_tests_fp = [
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB", # This one takes like 1.5hr
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
-
 
         elif testname == "pr_aha8":
             width, height = 28, 16
@@ -382,8 +391,9 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
+            # This one takes like an hour
             behavioral_mu_tests_fp = [
-                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",     # This one takes like an hour
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
 
         elif testname == "pr_aha9":
@@ -491,7 +501,6 @@ class Tests:
                 "fp_matmul_ijk_crddrop",
                 "fp_matmul_ikj",
             ]
-# BOOKMARK fri 212pm
             glb_tests_RV = [
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
@@ -527,32 +536,13 @@ class Tests:
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
                 "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
-            glb_tests_fp_RV = [
-                "apps/relu_layer_fp_RV",
-                "apps/relu_layer_multiout_fp_RV",
-                "apps/scalar_reduction_fp_RV",
-                "apps/vector_reduction_fp_RV",
-                "tests/fp_pointwise_RV",
-                "tests/fp_arith_RV",
-                "tests/fp_comp_RV",
-                "apps/scalar_max_fp_RV",
-              # "apps/stable_softmax_pass1_fp_RV_E64_MB",  # FIXME this one failed
-                "apps/stable_softmax_pass2_fp_RV_E64_MB",
-              # "apps/stable_softmax_pass3_fp_RV",         # FIXME this one failed
-                "apps/scalar_avg_fp_RV",
-                "apps/layer_norm_pass1_fp_RV_E64_MB",
-                "apps/layer_norm_pass2_fp_RV_E64_MB",
-                "apps/layer_norm_pass3_fp_RV_E64_MB",
-                "apps/gelu_pass2_fp_RV_E64_MB",
-                "apps/add_gelu_pass2_fp_RV_E64_MB",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
-                "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/tanh_fp_RV_E64_MB",
-            ]
+            glb_tests_fp_RV = \
+                [ "tests/fp_pointwise_RV" ] +  # This is in 'fast' config but not aha1-9
+                glb_tests_fp_RV1 + 
+                glb_tests_fp_RV2 + 
+                glb_tests_fp_RV3 + 
+                glb_tests_fp_RV8 + 
+                glb_tests_fp_RV9
 
             # FIXME tests from here down are out of order; should be:
             #   behavioral_mu_tests*

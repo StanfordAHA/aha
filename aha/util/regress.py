@@ -12,6 +12,7 @@ from aha.util.regress_util import info
 global info
 
 def report_ongoing_failures(failed_tests):
+    '''Keep track of which tests have failed already, if any'''
     if failed_tests:
         print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
         for ft in failed_tests: print("  ", ft)

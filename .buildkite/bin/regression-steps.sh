@@ -43,7 +43,7 @@ shift
 
 # "full" is a special case why not
 if [ "$CONFIG" == "full" ]; then
-    # Delete ALL steps, run full config as step "1" i.e. set $1="1"
+    # Delete ALL other steps; full regressions run standalone
     while [ "$1" ]; do shift; done
     next=1
 fi
