@@ -197,6 +197,7 @@ def dispatch(args, extra_args=None):
                     num_fabric_cols_removed=num_fabric_cols_removed,
                     mu_oc_0=mu_oc_0)
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+                report_ongoing_failures(failed_tests)
 
                 # remove the generated collateral for tiles that passed to avoid overrunning the disk
                 os.system(f"rm -rf /aha/garnet/SPARSE_TESTS/{test}*")
