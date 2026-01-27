@@ -50,8 +50,8 @@ class Tests:
     ]
     glb_tests_fp_RV7 = [
                 "apps/gelu_pass2_fp_RV_E64_MB",  # 1480s/25m
-    glb_tests_fp_RV8 = [
     ]
+    glb_tests_fp_RV8 = []
     glb_tests_fp_RV9 = [
                 "apps/add_gelu_pass2_fp_RV_E64_MB",  # 1530s/25m
                 "apps/silu_pass1_fp_RV",
