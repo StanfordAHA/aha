@@ -40,10 +40,8 @@ if [ "$1" == '--pre-command' ]; then
     echo "--- OIT PRE COMMAND HOOK BEGIN"
     echo "Check for valid docker image"
 
-    # In case of e.g. manual retry, original docker image may have been deleted already.
-    # This new code below gives us the opportunity to revive the dead image when needed.
-    if ! [ `docker images -q $IMAGE` ]; then
-        echo "OH NO cannot find docker image $IMAGE...I will rebuild it for you"
+    # Uh. Have to make sure we have the correct buildkite commit else
+    # e.g. might get wrong regression-steps.sh
 
         # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
         # E.g. pwd=/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow
@@ -55,13 +53,25 @@ if [ "$1" == '--pre-command' ]; then
             # (aha-flow steps is responsible for setting DEV_BRANCH)
             # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
             git checkout "$DEV_BRANCH" || echo no dev branch found, continuing with master
-
-            # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
-            # xxshellcheck source=/nobackup/steveri/github/aha/.buildkite/bin/update-pr-repo.sh
-            source "$bin/update-pr-repo.sh"
         else
             echo 'Aha push/PR uses pushed branch'
             git checkout "$BUILDKITE_COMMIT"
+        fi
+
+    # In case of e.g. manual retry, original docker image may have been deleted already.
+    # This new code below gives us the opportunity to revive the dead image when needed.
+    if ! [ `docker images -q $IMAGE` ]; then
+        echo "OH NO cannot find docker image $IMAGE...I will rebuild it for you"
+
+        # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
+        # E.g. pwd=/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow
+        git clean -ffxdq
+        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+
+        if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
+            # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
+            # xxshellcheck source=/nobackup/steveri/github/aha/.buildkite/bin/update-pr-repo.sh
+            source "$bin/update-pr-repo.sh"
         fi
 
         # Checkout and update correct aha branch and submodules
