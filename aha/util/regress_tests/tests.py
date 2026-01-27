@@ -48,11 +48,12 @@ class Tests:
                 "apps/layer_norm_pass2_fp_RV_E64_MB",
                 "apps/layer_norm_pass3_fp_RV_E64_MB",
     ]
+    glb_tests_fp_RV7 = [
+                "apps/gelu_pass2_fp_RV_E64_MB",  # 1480s/25m
     glb_tests_fp_RV8 = [
-                "apps/gelu_pass2_fp_RV_E64_MB",
-                "apps/add_gelu_pass2_fp_RV_E64_MB",
     ]
     glb_tests_fp_RV9 = [
+                "apps/add_gelu_pass2_fp_RV_E64_MB",  # 1530s/25m
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/swiglu_pass2_fp_RV",
@@ -361,6 +362,7 @@ class Tests:
         elif testname == "pr_aha7":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV7
             external_mu_tests_fp = [
                 # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
@@ -382,7 +384,11 @@ class Tests:
         elif testname == "pr_aha8":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+
+            # This is currently the empty set
             glb_tests_fp_RV = Tests.glb_tests_fp_RV8
+
+            # These have been DISABLED, see below
             voyager_cgra_tests_fp = [
                 # Average pooling layer
                 "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
@@ -391,6 +397,7 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_kernel0_RV_E64_MB",
                 "resnet18-linear::fully_connected_layer_fp_kernel1_RV_E64_MB",
             ]
+
             # This one takes like an hour
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
