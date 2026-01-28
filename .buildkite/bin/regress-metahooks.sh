@@ -4,9 +4,12 @@
 # These commands run OUTSIDE the docker container, that's why we use meta-hooks.
 
 # pipeline.yml is responsible for providing necessary env vars
-# including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+# including CONTAINER/IMAGE/TAG/CONFIG
 
-CONTAINER="deleteme-regress${REGRESSION_STEP}-${BUILDKITE_BUILD_NUMBER}"
+# Note CONFIG can be e.g. 'pr_aha1 --include-no-zircon-tests'
+configname=`echo "$CONFIG" | awk '{print $1}'`
+CONTAINER="deleteme-regress-${configname}-${BUILDKITE_BUILD_NUMBER}"
+
 echo "--- using CONTAINER='${CONTAINER}'"
 
 function container_setup {
@@ -32,10 +35,28 @@ function container_setup {
 if [ "$1" == '--pre-command' ]; then
 
     # This is designed to be invoked from pipeline.yml, which should provide
-    # necessary env vars including CONTAINER/IMAGE/TAG/CONFIG/REGRESSION_STEP
+    # necessary env vars including IMAGE/TAG/CONFIG
 
     echo "--- OIT PRE COMMAND HOOK BEGIN"
     echo "Check for valid docker image"
+
+    # Uh. Have to make sure we have the correct buildkite commit else
+    # e.g. might get wrong regression-steps.sh
+
+        # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
+        # E.g. pwd=/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow
+        git clean -ffxdq
+        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+
+        if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
+            echo 'Submod pull requests use master branch (sometimes overridden by DEV_BRANCH)'
+            # (aha-flow steps is responsible for setting DEV_BRANCH)
+            # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
+            git checkout "$DEV_BRANCH" || echo no dev branch found, continuing with master
+        else
+            echo 'Aha push/PR uses pushed branch'
+            git checkout "$BUILDKITE_COMMIT"
+        fi
 
     # In case of e.g. manual retry, original docker image may have been deleted already.
     # This new code below gives us the opportunity to revive the dead image when needed.
@@ -48,17 +69,9 @@ if [ "$1" == '--pre-command' ]; then
         bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
 
         if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
-            echo 'Submod pull requests use master branch (sometimes overridden by DEV_BRANCH)'
-            # (aha-flow steps is responsible for setting DEV_BRANCH)
-            # (https://buildkite.com/stanford-aha/aha-flow/settings/steps)
-            git checkout "$DEV_BRANCH" || echo no dev branch found, continuing with master
-
             # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
             # xxshellcheck source=/nobackup/steveri/github/aha/.buildkite/bin/update-pr-repo.sh
             source "$bin/update-pr-repo.sh"
-        else
-            echo 'Aha push/PR uses pushed branch'
-            git checkout "$BUILDKITE_COMMIT"
         fi
 
         # Checkout and update correct aha branch and submodules
@@ -129,11 +142,10 @@ elif [ "$1" == '--commands' ]; then
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
 
     # Install 'time' package (what? why?)
-    apt update
-    apt install time
+    apt update; apt install time
 
     echo    "--- PIP FREEZE"; pip freeze  # ??? okay? why? ???
-    echo    "+++ RUN REGRESSIONS"
+    echo    "+++ RUN REGRESSION $CONFIG"
     echo -n "Garnet version "; (cd garnet && git rev-parse --verify HEAD)
 
     # FIXME (below) this if-then-else jungle is awful; redo it!
@@ -152,13 +164,13 @@ elif [ "$1" == '--commands' ]; then
       fi
 
     else
-      echo "Trigger came from OTHER, use default and/or config='$CONFIG'"
-      # FIXME what is this and why is it here??? Pretty sure it's outdated/unnecessary :(
-      if [ "$REGSTEP" != 1 ]; then
-        echo "Full regressions only run as 'Regress 1'"
-        DO_AR=False
-      fi
+#       # FIXME what is this and why is it here??? Pretty sure it's outdated/unnecessary :(
+#       if [ "$REGSTEP" != 1 ]; then
+#         echo "Full regressions only run as 'Regress 1'"
+#         DO_AR=False
+#       fi
       CONFIG="$CONFIG --include-no-zircon-tests"
+      echo "Trigger came from OTHER, config='$CONFIG'"
     fi
 
     if [ "$DO_AR" == "True" ]; then
@@ -184,7 +196,6 @@ EOF
     # '-e' means 'set environment variable'
     docker exec \
            -e CONFIG="$CONFIG" \
-           -e REGSTEP="$REGRESSION_STEP" \
            "$CONTAINER" /bin/bash -c "$(cat tmp$$)" \
         || exit 13
     docker kill "$CONTAINER" || echo okay; rm -f tmp$$  # Cleanup on aisle FOO
