@@ -629,7 +629,6 @@ class Tests:
                 # "conv2_x_fp", # not yet supported by zircon
             ]
 
-            # 01/2026 FIXME/TODO This group appears to be broken, so I turned it off, see below
             voyager_cgra_tests_fp = [
                 # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
@@ -661,7 +660,6 @@ class Tests:
 
             ]
 
-            # 01/2026 FIXME/TODO This group appears to be broken, so I turned it off, see below
             external_mu_tests_fp = [
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
@@ -847,9 +845,6 @@ class Tests:
 
         else: pass
 
-        # 01/2026 FIXME/TODO These groups appear to be BROKEN so I am turning them off entirely for now :(
-        voyager_cgra_tests_fp = []
-        external_mu_tests_fp = []
 
         # Export everything named in template
         vdic = vars().copy()
