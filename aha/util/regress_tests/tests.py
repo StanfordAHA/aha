@@ -721,219 +721,211 @@ class Tests:
         elif testname == "mu":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            sparse_tests = [
-                # "vec_identity",
-            ]
+            sparse_tests = []
             glb_tests = []
             glb_tests_fp = []
             glb_tests_RV = []
-            glb_tests_fp_RV = [
-            ]
+            glb_tests_fp_RV = []
             resnet_tests = []
             voyager_cgra_tests_fp = [
-                # # Standalone quantize layers
-                # "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                # "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                # "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                # "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                # "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+                # ResNet-18 Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
 
-                # # Average pooling layer
-                # "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+                # ResNet-18 Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
 
-                # # Fully connected layer (K-DIM HOST TILING)
-                # "resnet18-linear::fully_connected_layer_fp_resnet18_kernel0_RV_E64_MB",
-                # "resnet18-linear::fully_connected_layer_fp_resnet18_kernel1_RV_E64_MB",
+                # ResNet-18 Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_resnet18_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_resnet18_kernel1_RV_E64_MB",
 
-                # # BERT
-                # "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+                # BERT permute layer
+                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
 
                 # BERT layer norm layers
-                # "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
-                # "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
-                # # Channel slicing (unroll by 16)
-                # "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
-                # "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
+                # Channel slicing (unroll by 16)
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
 
-                # "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
-                # "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
+                "bert-layer_norm_1::layer_norm_pass1_fp_bert_RV_E64_MB",
+                "bert-layer_norm_1::layer_norm_pass2_fp_bert_post_proj_RV_E64_MB",
+                # Channel slicing (unroll by 16)
+                "bert-layer_norm_1::layer_norm_pass3_fp_bert_post_proj_kernel0_RV_E64_MB",
+                "bert-layer_norm_1::layer_norm_pass3_fp_bert_post_proj_kernel1_RV_E64_MB",
 
-                # # BERT get_e8m0_scale accum schedule layers
-                # "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
-                # "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
+                # BERT GELU pass2 layers
+                "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
+                "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
 
-                # # BERT apply_e8m0_scale layers
-                # "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
-                # "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
+                # BERT get_e8m0_scale accum schedule layers
+                "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
+                "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
+
+                # BERT apply_e8m0_scale layers
+                "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
+                "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
 
                 # BERT get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
-                # "bert-quantize_mx_default::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_3::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_4::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_bert_shape1_RV_E64_MB", # 12, 128, 64
-                # "bert-quantize_mx_default_6::get_e8m0_scale_tree_gb_input_bert_shape2_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_3::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_4::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_bert_shape1_RV_E64_MB", # 12, 128, 64
+                "bert-quantize_mx_default_6::get_e8m0_scale_tree_gb_input_bert_shape2_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel0_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel1_RV_E64_MB", # 128, 1536, tiling
 
-                # "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB", # 128, 768
-                # "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB", # 12, 128, 64
-                # "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB", # 128, 128
-
-                # BERT Quantize_mx_default_5 tiled layer (k-dim tiling)
-                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel0_RV_E64_MB", # 128, 1536
-                # "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel1_RV_E64_MB", # 128, 1536
-
-                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB", # 128, 1536
-                # "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB", # 128, 1536
-
+                "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB", # 12, 128, 64
+                "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB", # 128, 1536, tiling
 
                 # BERT Softmax layers
-                # FIXME: The output mismatched for some reason here
-                # "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",
-                # "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
-                # "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
+                "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",
+                "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
+                "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
 
+                # BERT Pooling layer, using k-dim host tiling
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel0_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel1_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel2_RV_E64_MB",
 
-                # "bert-layer_norm_1::layer_norm_pass1_fp_bert_RV_E64_MB",
-                # "bert-layer_norm_1::layer_norm_pass2_fp_bert_post_proj_RV_E64_MB",
-                # Channel slicing (unroll by 16)
-                # "bert-layer_norm_1::layer_norm_pass3_fp_bert_post_proj_kernel0_RV_E64_MB",
-                # "bert-layer_norm_1::layer_norm_pass3_fp_bert_post_proj_kernel1_RV_E64_MB",
-
-                # # BERT Pooling layer
-                # "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel0_RV_E64_MB",
-                # "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel1_RV_E64_MB",
-                # "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel2_RV_E64_MB",
-
-                # # BERT Classifier layer
-                # "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
+                # BERT Classifier layer
+                "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
 
                 # BERT tanh layer
-                # "bert-tanh::tanh_fp_bert_RV_E64_MB"
+                "bert-tanh::tanh_fp_bert_RV_E64_MB"
+
+                # "fakegemm-quantize_default::zircon_quant_fp_fakegemm_RV_E64_MB",
             ]
             behavioral_mu_tests = [
-                # "apps/pointwise_mu_io_RV",
-                # "apps/pointwise_mu_io_RV_E64_MB",
-                # "apps/zircon_psum_reduction_fp_RV",
-                # "apps/zircon_scale_add_fp_RV"
+                "apps/pointwise_mu_io_RV",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/zircon_psum_reduction_fp_RV",
+                "apps/zircon_scale_add_fp_RV"
             ]
             external_mu_tests = [
                 # BERT Attention*Value Using inner reduction workaround
-                # "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
+                "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
             ]
             external_mu_tests_fp = [
-            #     # BERT
-            #     # Query, Key, Value projection layers
-            #     # All using gemm_reduction_tiling_workaround
-            #    "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
-            #    "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
-            #    "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
+               # BERT Query projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
+               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
+               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
 
-            #    # All using gemm_reduction_tiling_workaround
-            #    "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
-            #    "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel1_RV_E64_MB",
-            #    "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
+               # BERT Key projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
+               "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel1_RV_E64_MB",
+               "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
 
-            #    # All using gemm_reduction_tiling_workaround
-            #    "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
-            #    "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel1_RV_E64_MB",
-            #    "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel2_RV_E64_MB",
+               # BERT Value projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
+               "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel1_RV_E64_MB",
+               "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel2_RV_E64_MB",
 
-            #    # BERT masked self-attention head
-            #    "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
+               # BERT masked self-attention head
+               "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
 
-            #    # BERT post-attention projection:All using gemm_reduction_tiling_workaround
-            #    "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel0_RV_E64_MB",
-            #    "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
-            #    "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel2_RV_E64_MB",
+               # BERT post-attention projection:All using gemm_reduction_tiling_workaround
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel0_RV_E64_MB",
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel2_RV_E64_MB",
 
-            #     # BERT up projection layer + GELU: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
-                # "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel2_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel3_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel4_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
+               # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel2_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel3_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel4_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
 
-                # "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel8_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel9_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel10_RV_E64_MB",
-                # "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel8_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel9_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel10_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
 
-            #    # BERT down projection layer: All using gemm_reduction_tiling_workaround
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel2_RV_E64_MB",
+               # BERT down projection layer: All using gemm_reduction_tiling_workaround
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel2_RV_E64_MB",
 
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel3_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel4_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel5_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel3_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel4_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel5_RV_E64_MB",
 
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel6_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel7_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel8_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel6_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel7_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel8_RV_E64_MB",
 
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel9_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel10_RV_E64_MB",
-            #    "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel11_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel9_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel10_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel11_RV_E64_MB",
 
                 # RESNET18
-                # # Conv1 (im2col-based, X-DIM HOST TILING)
-                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-                # "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
+                # Conv1 (im2col-based, X-DIM HOST TILING)
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
 
-                # # Conv2_x
-                # "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                # "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
-                # "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
-                # "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
+                # Conv2_x
+                "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
 
-                # # Conv3_1 strided conv
-                # "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
+                # Conv3_1 strided conv
+                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
 
-                # # Conv3_1 pointwise conv
-                # "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
+                # Conv3_1 pointwise conv
+                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
 
-                # # Conv3_x
-                # "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
-                # "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
-                # "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
+                # Conv3_x
+                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
 
-                # # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
-                # "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
-                # "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
+                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
 
-                # # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
-                # "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
+                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
+                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
 
-                # # Conv4_x
-                # "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
-                # "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
-                # "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+                # Conv4_x
+                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
 
-                # # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
-                # "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
+                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
 
-                # # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
-                # "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
+                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
 
-                # # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
-                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                # "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
 
-                # "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                # "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
 
-                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
-                # "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
 

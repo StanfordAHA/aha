@@ -261,7 +261,7 @@ def dispatch(args, extra_args=None):
         if model == "resnet18" and layer == "submodule":
             subprocess.check_call(["mv", "/aha/voyager/gold_activation_submodule_1.txt", "/aha/voyager/gold_activation.txt"])
 
-        if model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh"):
+        if (model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh")) or (model == "fakegemm" and (layer == "linear_default_1")):
             subprocess_call_log(
                 cmd=[sys.executable,
                         f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",

@@ -2192,6 +2192,42 @@
             "VOYAGER_STANDALONE_CGRA_APP":"1"
         }
     },
+    "zircon_quant_fp_fakegemm":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=2 myunroll_E64=16 myunroll_E64_MB=32 out_img=58 n_oc=64",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=58 n_oc=64",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=58 n_oc=64",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "PACKED_OUTPUTS" :"1",
+            "SOFT_INTEGER_COMPARISON":"1",
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "VOYAGER_GOLD":"1"
+        }
+    },
     "zircon_quant_fp_post_conv2x":{
         "default":{
             "HALIDE_GEN_ARGS":"myunroll=2 myunroll_E64=16 myunroll_E64_MB=32 out_img=56 n_oc=64",
@@ -2358,6 +2394,39 @@
             "VOYAGER_GOLD":"1",
             "MANUAL_PATH_BALANCE_PLACER":"1",
             "POND_PATH_BALANCING":"1"
+        }
+    },
+    "zircon_dequant_fp_post_fakegemm":{
+        "default":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=58 n_oc=32",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1",
+            "DEQUANT_SCALE":"0.00006341934204101562"
+        },
+        "fastest":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=58 n_oc=32",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1",
+            "DEQUANT_SCALE":"0.00006341934204101562"
+        },
+        "sweep":{
+            "HALIDE_GEN_ARGS":"myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=58 n_oc=32",
+            "HL_TARGET":"host-x86-64",
+            "DISABLE_GP":"1",
+            "SWEEP_PNR_PLACER_EXP":"1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "PER_TENSOR_SCALING":"1",
+            "VOYAGER_GOLD":"1",
+            "DEQUANT_SCALE":"0.00006341934204101562"
         }
     },
     "zircon_dequant_fp_post_conv3_1":{
