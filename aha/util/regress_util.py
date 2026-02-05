@@ -562,7 +562,9 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "zircon_res_deq_ReLU_quant_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "add_gelu_pass1_mu_input_fp", layer_in=layer)
     elif tgroup == 'voyager_cgra_tests_fp':
+        test, layer = parse_layer_parametrized_test(test, "zircon_quant_fp")
         test, layer = parse_layer_parametrized_test(test, "avgpool_layer_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "fully_connected_layer_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "nop_2d", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "add_gelu_pass2_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "tanh_fp", layer_in=layer)
