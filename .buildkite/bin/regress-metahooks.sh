@@ -38,7 +38,6 @@ if [ "$1" == '--pre-command' ]; then
     # necessary env vars including IMAGE/TAG/CONFIG
 
     echo "--- OIT PRE COMMAND HOOK BEGIN"
-    echo "Check for valid docker image"
 
     # Uh. Have to make sure we have the correct buildkite commit else
     # e.g. might get wrong regression-steps.sh
@@ -60,13 +59,14 @@ if [ "$1" == '--pre-command' ]; then
 
     # In case of e.g. manual retry, original docker image may have been deleted already.
     # This new code below gives us the opportunity to revive the dead image when needed.
+    echo "Check for valid docker image"
     if ! [ `docker images -q $IMAGE` ]; then
         echo "OH NO cannot find docker image $IMAGE...I will rebuild it for you"
 
         # Should already be in valid BUILDKITE_BUILD_CHECKOUT_PATH with aha clone
         # E.g. pwd=/var/lib/buildkite-agent/builds/r7cad-docker-6/stanford-aha/aha-flow
-        git clean -ffxdq
-        bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin
+        ### git clean -ffxdq                                  # Dude we JUST DID THIS up above
+        ### bin=$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin # Dude we JUST DID THIS up above
 
         if [ "$AHA_SUBMOD_FLOW_COMMIT" ]; then
             # Make sure env var BUILDKITE_PULL_REQUEST_REPO is set correctly
