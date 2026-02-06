@@ -228,6 +228,7 @@ def dispatch(args, extra_args=None):
                 num_fabric_cols_removed=num_fabric_cols_removed,
                 mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+            report_ongoing_failures(failed_tests)
 
     for test in [
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
@@ -342,7 +343,6 @@ def dispatch(args, extra_args=None):
 
         t = gen_garnet(width, height, dense_only=True)
         info.append(["garnet with dense only", t])
-        report_ongoing_failures(failed_tests)
 
         num_dense_only_glb_tests = 5
         for test_index, test in enumerate(glb_tests):
