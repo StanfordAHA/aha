@@ -64,13 +64,11 @@ FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
 UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
 CONTAINER=
-
-# is_switch TRUE if arg is a switch e.g. '--zircon'
-function is_switch  { echo "$1" | egrep '^[-]' > /dev/null; }
+function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
 while [ $# -gt 0 ] ; do
     case "$1" in
         --show*)
-          if ! is_switch "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
+          if not_suite "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
 
         --run*)        RUN_SUITE=$2; shift ;;
         --*remove*)    FCR=$2;       shift ;;
@@ -89,6 +87,9 @@ while [ $# -gt 0 ] ; do
         --copy*) COPY_SCRIPT=True ;;
         --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
         --container) CONTAINER=$2; shift ;;
+
+        # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
+        --fp) echo 'WARNING "--fp" deprecated/unnecessary, stop using it'; ;;
 
         # If first arg is e.g. 8x8, that means we want to actually run a test e.g.
         # aha-test.sh 8x8 --removed 4 --mu 8 apps/pointwise
@@ -115,7 +116,7 @@ TESTS_PY=/aha/aha/util/regress_tests/tests.py
 test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
 
 ########################################################################
-# Ask 'tests.py' to show all possible suite (group) names e.g.
+# Parse 'tests.py' to find suite names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
 TEST_SUITES=$(python3 $TESTS_PY --exec "print(*Tests.configs_list)") || exit 13
 TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
