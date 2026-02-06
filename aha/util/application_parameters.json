@@ -2227,6 +2227,21 @@
             "GLOBAL_PE_TILE_OUTPUT_FIFO_BYPASS":"1"
         }
     },
+    "apps/maxpooling_dense_rv_mem_buf_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"in_img=58 n_ic=32 unroll=16 ksize=3 stride=2 in_img_fake=33 n_ic_fake=64 dummy_max_nop=0 dummy_max_nop_in=3",
+            "HL_TARGET":"host-x86-64-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
+            "HW_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "SKIP_RV_CLOCKWORK":"1",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
+        }
+    },
     "apps/scalar_reduction":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
@@ -2339,6 +2354,21 @@
             "POND_PATH_BALANCING":"1"
         }
     },
+    "apps/layer_norm_pass3_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=384 vec_height=128 glb_i=16",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
+            "WEIGHT_HOST_STENCIL_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "BIAS_HOST_STENCIL_POS":"8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11",
+            "HW_OUTPUT_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "VOYAGER_STANDALONE_CGRA_APP":"1"
+        }
+    },
     "apps/gelu_pass1_mu_input_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=3072 vec_height=64 mu_i=32 dummy_max_nop=1",
@@ -2355,6 +2385,23 @@
             "POND_PATH_BALANCING":"1"
         }
     },
+    "apps/add_gelu_pass1_mu_input_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=3072 vec_height=64 mu_i=32",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "MU_INPUT_HOST_STENCIL_POS":"12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27",
+            "INPUT_PSUM0_HOST_STENCIL_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "HW_ADD_GELU_UPPER_OUTPUT_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
+            "HW_PSUM1_LOWER_OUTPUT_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
+        }
+    },
     "apps/gelu_pass2_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"vec_width=1536 vec_height=64 glb_i=16",
@@ -2363,6 +2410,22 @@
             "PIPELINED":"0",
             "USE_GLB_BANK_CONFIG":"1",
             "INPUT_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "HW_OUTPUT_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
+            "VOYAGER_STANDALONE_CGRA_APP":"1",
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
+        }
+    },
+    "apps/add_gelu_pass2_fp":{
+        "default":{
+            "HALIDE_GEN_ARGS":"vec_width=1536 vec_height=64 glb_i=16",
+            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
+            "DISABLE_GP":"1",
+            "PIPELINED":"0",
+            "USE_GLB_BANK_CONFIG":"1",
+            "INPUT_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
+            "INPUT_PSUM0_LOWER_HOST_STENCIL_POS":"24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "HW_OUTPUT_POS":"16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
