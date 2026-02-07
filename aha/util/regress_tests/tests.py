@@ -493,14 +493,7 @@ class Tests:
                 "tests/fp_get_shared_exp_test_RV",
             ]
             glb_tests_fp_RV = Tests.glb_tests_fp_RV9
-            external_mu_tests_fp = [
-                # ResNet-18 Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-
+            voyager_cgra_tests_fp = [
                 # BERT permute layer
                 "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
 
@@ -514,6 +507,14 @@ class Tests:
                 # BERT get_e8m0_scale accum schedule layers
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
                 "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                # ResNet-18 Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
             ]
 
         # PR_AHA test suite for aha-repo push/pull;
