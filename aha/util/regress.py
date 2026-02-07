@@ -234,9 +234,10 @@ def dispatch(args, extra_args=None):
             ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
             ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
-            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
+
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
-            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:
+            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp,
+            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,]:
 
         if type(test) is tuple:
             tgroup,tsuffix = test
