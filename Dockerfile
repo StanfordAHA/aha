@@ -366,11 +366,20 @@ COPY ./aha /aha/aha
 #                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
 
 
-RUN apt-get install -y g++-11 && \
+RUN apt-get install -y gcc-10 g++-11 && \
    (update-alternatives --remove-all gcc || echo okay) && \
    (update-alternatives --remove-all g++ || echo okay) && \
-   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 \
-                        --slave   /usr/bin/g++ g++ /usr/bin/g++-11
+   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 && \
+   update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
+
+
+RUN \
+  add-apt-repository ppa:ubuntu-toolchain-r/test && \
+  apt update && apt install -y gcc-13 g++-13 && \
+  (update-alternatives --remove-all gcc || echo okay) && \
+  (update-alternatives --remove-all g++ || echo okay) && \
+  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
+                         --slave   /usr/bin/g++ g++ /usr/bin/g++-13
 
 
 WORKDIR /aha
