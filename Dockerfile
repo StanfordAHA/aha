@@ -360,10 +360,18 @@ COPY ./aha /aha/aha
 
 # Re-install gcc if it is missing
 # (Apparently github actions deletes gcc when it installs libc6, see above)
-RUN test -e /usr/bin/gcc || ( \
-   apt-get install -y gcc-9 g++-9 && \
-   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
-                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
+# RUN test -e /usr/bin/gcc || ( \
+#    apt-get install -y gcc-9 g++-9 && \
+#    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
+#                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
+
+
+RUN apt-get install -y gcc-10 g++-10 && \
+   (update-alternatives --remove-all gcc || echo okay) && \
+   (update-alternatives --remove-all g++ || echo okay) && \
+   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-10
+
 
 WORKDIR /aha
 RUN \
