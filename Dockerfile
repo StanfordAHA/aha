@@ -382,6 +382,17 @@ RUN \
                          --slave   /usr/bin/g++ g++ /usr/bin/g++-13
 
 
+RUN source bin/activate && pip install z3-solver
+
+RUN \
+   apt-get install -y gcc-9 g++-9 && \
+  (update-alternatives --remove-all gcc || echo okay) && \
+  (update-alternatives --remove-all g++ || echo okay) && \
+   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9
+
+
+
 WORKDIR /aha
 RUN \
   source bin/activate && \
