@@ -366,7 +366,7 @@ COPY ./aha /aha/aha
 #                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9 )
 
 
-RUN apt-get install -y gcc-11 g++-11 && \
+RUN apt-get install -y g++-11 && \
    (update-alternatives --remove-all gcc || echo okay) && \
    (update-alternatives --remove-all g++ || echo okay) && \
    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 \
