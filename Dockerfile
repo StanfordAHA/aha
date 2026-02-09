@@ -139,7 +139,19 @@ RUN --mount=type=secret,id=gtoken \
   : FINAL SIZE && \
       du -sh /aha
 
-# What breaks if no pono??
+# What breaks if smt-switch but not pono?
+
+# smt-switch
+WORKDIR /aha
+RUN \
+  git clone https://github.com/makaimann/smt-switch && \
+    cd smt-switch && \
+    ./configure.sh --prefix=local --static --smtlib-reader --bison-dir=../bison/bison-install --flex-dir=../flex/flex-install && \
+    cd build && \
+    make -j$(nproc) && \
+    make test && \
+    make install
+
 # # Pono
 # WORKDIR /aha
 # COPY ./pono /aha/pono
