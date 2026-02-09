@@ -300,8 +300,8 @@ exit
 #             dotgit=.git/modules/clockwork;          du -shx $$dotgit; /bin/rm -rf $$dotgit
 #             dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
 # 
-#             echo "--- (Re)create garnet Image NOCACHE"
-#             ~/bin/buildkite-docker-build --progress plain --no-cache . -t "$IMAGE"
+#             echo "--- (Re)create garnet Image"
+#             ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE"
 # 
 #             echo "--- Pruning Docker Images"
 #             yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true

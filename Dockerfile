@@ -89,14 +89,6 @@ SHELL ["/bin/bash", "--login", "-c"]
 WORKDIR /
 RUN mkdir -p /aha && cd /aha && python -m venv .
 
-#Docker build thing(s) to try:
-RUN echo "--- hello /dev/console" > /dev/console
-RUN /bin/bash -c 'echo "--- bash -c hello"  '
-RUN echo "--- hello /dev/stdout" > /dev/stdout
-RUN echo "--- hello /dev/stderr" > /dev/stderr
-
-
-
 # These packages seem stable/cacheable, put them near the BEGINNING
 WORKDIR /aha
 RUN source bin/activate && \
@@ -109,3 +101,322 @@ RUN source bin/activate && \
   pip install matplotlib && \
   echo DONE
 
+# Put the problem child here up front so that it can fail quickly :(
+
+# Voyager 1 - clone voyager
+
+# 'COPY voyager' below, plus restore-dotgit on startup, should take care of
+# the final checkout of correct voyager and its submodules (i hope!)
+
+# COPY ./.git/modules/voyager/HEAD /tmp/HEAD
+# Cannot COPY because .git/modules/voyager is in .dockerignore
+# RUN --mount=source=./.git/modules/voyager/HEAD,target=/tmp/HEAD ls -lr /tmp/HEAD && cat /tmp/HEAD
+#  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
+
+
+
+# Use token provided by docker-build `--secrets` to clone voyager
+RUN --mount=type=secret,id=gtoken \
+  cd /aha && \
+  git clone https://$(cat /run/secrets/gtoken)@github.com:/StanfordAHA/voyager.git voyager && \
+  cd /aha/voyager && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/voyager/ && \
+  ln -s /aha/.git/modules/voyager/ .git && \
+  : GIT LFS although maybe this does not really do anything && \
+      git lfs install && git lfs pull && \
+  : CLEANUP1 800 MB && \
+      echo "# cleanup: delete 800MB of git history; will be restored by bashrc/restore-dotgit" && \
+      du -sh /aha/.git && \
+      /bin/rm -rf /aha/.git/modules/voyager/ && \
+      du -sh /aha/.git && \
+  : CLEANUP2 600 MB && \
+      echo "--- DU.MODELS1" && \
+      echo "delete 600MB of models; user will have to reload them manually in container" && \
+      (du -sh /aha/voyager/models/* || echo okay) && \
+      /bin/rm -rf /aha/voyager/models/* && \
+      (du -sh /aha/voyager/models/* || echo okay) && \
+  : FINAL SIZE && \
+      du -sh /aha
+
+# What breaks if no pono??
+# # Pono
+# WORKDIR /aha
+# COPY ./pono /aha/pono
+# COPY ./aha/bin/setup-smt-switch.sh /aha/pono/contrib/
+# RUN mkdir -p /aha/contrib/pono-hack
+# ADD ./aha/bin/pono-hack /aha/pono/contrib/pono-hack
+# WORKDIR /aha/pono
+# # Note must pip install Cython *outside of* aha venv else get tp_print errors later :o
+# RUN \
+#      ls -l /aha/pono/contrib/pono-hack/ && \
+#  : SETUP && \
+#      pip install Cython==0.29 pytest toml scikit-build==0.13.0 && \
+#  : FLEX && \
+#      apt-get update && apt-get install -y flex && \
+#  : BISON && \
+#      echo "# Cannot use standard dist bison 3.5, must have 3.7 or better :(" && \
+#      ./contrib/setup-bison.sh                                     && \
+#      echo "# bison cleanup /aha/pono 77M => 48M"                  && \
+#      (cd /aha/pono/deps/bison; make clean; /bin/rm -rf src tests) && \
+#  : SMT-SWITCH && \
+#      ./contrib/pono-hack/pono-hack.sh --install && \
+#      ./contrib/setup-smt-switch.sh --python && \
+#      ./contrib/pono-hack/pono-hack.sh --uninstall && \
+#      :                                                 && \
+#      echo "# cleanup: 1.3GB smt-switch build tests"    && \
+#      /bin/rm -rf /aha/pono/deps/smt-switch/build/tests && \
+#      :                                                           && \
+#      echo "# cleanup: 700M smt-switch deps (cvc5,bitwuzla,btor)" && \
+#      /bin/rm -rf /aha/pono/deps/smt-switch/deps                  && \
+#      :                                                                 && \
+#      echo "# cleanup: 200M intermediate builds of cvc5,bitwuzla,btor"  && \
+#      /bin/rm -rf //aha/pono/deps/smt-switch/build/{cvc5,bitwuzla,btor} && \
+#  : BTOR2TOOLS && \
+#     ./contrib/setup-btor2tools.sh && \
+#   : PIP INSTALL && \
+#      cd /aha/pono && ./configure.sh --python && \
+#      cd /aha/pono/build && make -j4 && pip install -e ./python && \
+#      cd /aha && \
+#        source /aha/bin/activate && \
+#        pip install -e ./pono/deps/smt-switch/build/python && \
+#        pip install -e pono/build/python/
+
+# CoreIR
+WORKDIR /aha
+COPY ./coreir /aha/coreir
+WORKDIR /aha/coreir/build
+RUN cmake .. && make && make install && /bin/rm -rf src bin tests
+
+# Lake
+COPY ./BufferMapping /aha/BufferMapping
+WORKDIR /aha/BufferMapping/cfunc
+RUN export COREIR_DIR=/aha/coreir && make lib
+
+# mflowgen
+ENV GARNET_HOME=/aha/garnet
+ENV MFLOWGEN=/aha/mflowgen
+
+# Install torch (need big tmp folder)
+WORKDIR /aha
+RUN source /aha/bin/activate && \
+  export TMPDIR=/aha/tmp/torch_install && mkdir -p $TMPDIR && \
+  pip install --cache-dir=$TMPDIR --build=$TMPDIR torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+  echo "# Remove 700M tmp files created during install" && \
+  rm -rf $TMPDIR
+
+# clockwork
+COPY clockwork /aha/clockwork
+WORKDIR /aha/clockwork
+ENV COREIR_PATH=/aha/coreir
+ENV LAKE_PATH=/aha/lake
+RUN ./misc/install_deps_ahaflow.sh && \
+    source user_settings/aha_settings.sh && \
+    make all -j4 && \
+    source misc/copy_cgralib.sh && \
+    echo "Cleanup: 10M ntl, 440M barvinok, 390M dot-o files" && \
+      rm -rf ntl* && \
+      (cd /aha/clockwork/barvinok-0.41; make clean) && \
+      rm -rf /aha/clockwork/*.o /aha/clockwork/bin/*.o && \
+    echo DONE
+
+# Halide-install step, below, modified to delete 1G of clang when finished.
+# Clang will be restored by way of .bashrc (aha/bin/docker-bashrc).
+
+# Halide-to-Hardware - Step 32/65 ish - requires clang
+COPY ./Halide-to-Hardware /aha/Halide-to-Hardware
+WORKDIR /aha/Halide-to-Hardware
+RUN \
+  : CLANG-INSTALL && \
+    echo "Install 1G of clang/llvm" && \
+      url=http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz && \
+      wget -nv -O ~/clang7.tar.xz $url && \
+      tar -xvf ~/clang7.tar.xz --strip-components=1 -C /usr/ && \
+      rm -rf ~/clang7.tar.xz && \
+  : BUILD && \
+    echo "Build and test Halide compiler" && \
+      export COREIR_DIR=/aha/coreir && make -j2 && make distrib && \
+  : CLEANUP && \
+    echo "Cleanup: 200M lib, 400M gch, 200M distrib, 100M llvm" && \
+      rm -rf lib/* && \
+      rm -rf /aha/Halide-to-Hardware/include/Halide.h.gch/  && \
+      rm -rf /aha/Halide-to-Hardware/distrib/{bin,lib}      && \
+      rm -rf /aha/Halide-to-Hardware/bin/build/llvm_objects && \
+    echo "Cleanup: 1G clang in /usr, will be restored by bashrc" && \
+      rm -rf /usr/*/{*clang*,*llvm*,*LLVM*} && \
+  : DONE && \
+    echo DONE
+
+# 2GB maybe
+# Sam 1 - clone and set up sam
+COPY ./.git/modules/sam/HEAD /tmp/HEAD
+RUN cd /aha && git clone https://github.com/weiya711/sam.git && \
+  cd /aha/sam && \
+  mkdir -p /aha/.git/modules && \
+  mv .git/ /aha/.git/modules/sam/ && \
+  ln -s /aha/.git/modules/sam/ .git && \
+  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive
+
+# 10MB (COPY) + 210 MB (RUN) maybe
+# Sam 2 - build sam
+COPY ./sam /aha/sam
+RUN echo "--- ..Sam 2" && cd /aha/sam && make sam && \
+  source /aha/bin/activate && pip install scipy numpy pytest && pip install -e .
+
+# cgra_pnr
+COPY ./cgra_pnr /aha/cgra_pnr
+WORKDIR /aha/cgra_pnr
+RUN set -e && \
+    # thunder
+    mkdir -p thunder/build && \
+    cd thunder/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j placer && \
+    cd ../.. && \
+    \
+    # cyclone
+    mkdir -p cyclone/build && \
+    cd cyclone/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j router
+
+# Install Miniconda, needed by voyager
+ENV CONDA_DIR=/opt/conda
+RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
+    && bash miniconda.sh -b -p $CONDA_DIR \
+    && rm miniconda.sh \
+    && $CONDA_DIR/bin/conda clean -afy
+
+# Make conda globally available
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# # Voyager 0 - voyager misc
+# RUN echo "--- ..Voyager step 0"
+
+# Install additional dependencies for building C++ code
+RUN mkdir -p /usr/include/sys && \
+    curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
+
+RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
+RUN apt-get update && apt-get install -y linux-headers-generic
+
+RUN ln -s /usr/include/asm-generic/ /usr/include/asm
+
+# FIXME
+# Voyager 1 temporarily moved to beginning of file for debugging, see above
+# If we don't see git clone voyager errors before say, a month from now (Oct 16), can move it back maybe
+
+# Voyager 2 - setup voyager
+# Bring in local changes on top of base clone
+COPY ./voyager /aha/voyager
+
+# Cannot do 'git lfs' now that we have delete voyager git history
+# User will have to do this manually in the container when/if desired
+# 
+# bashrc is going to have to do this maybe, in the future...
+# RUN echo "--- ..Voyager step 2"
+# WORKDIR /aha/voyager
+# RUN git lfs install
+# RUN cd /aha/voyager && git lfs pull
+# RUN echo "--- DU.MODELS2" && (du -sh /aha/voyager/models/* || echo okay)
+
+# RUN cd /aha/voyager
+# RUN source /aha/bin/activate && conda env create -p .conda-env -f environment.yml && \
+#     export ORIGINAL_PATH="$PATH" && conda init && eval "$(conda shell.bash hook)" && \
+#     conda activate /aha/voyager/.conda-env && \
+#     cd /aha/voyager/quantized-training && pip install -r requirements.txt && pip install -e . && \
+#     cd /aha/voyager && pip install quantized-training && \
+#     source env.sh && \
+#     conda deactivate && export PATH="$ORIGINAL_PATH"
+
+# ------------------------------------------------------------------------------
+# Final pip installs: AHA Tools etc.
+
+# Note kratos is slow but stable; maybe it should be installed much earlier in dockerfile
+
+# For "aha deps install"; copy all the modules that not yet been copied
+COPY ./archipelago /aha/archipelago
+COPY ./ast_tools /aha/ast_tools
+COPY ./canal /aha/canal
+COPY ./cosa /aha/cosa
+COPY ./fault /aha/fault
+COPY ./garnet /aha/garnet
+COPY ./gemstone /aha/gemstone
+COPY ./hwtypes /aha/hwtypes
+COPY ./kratos /aha/kratos
+COPY ./lake /aha/lake
+COPY ./lassen /aha/lassen
+COPY ./magma /aha/magma
+COPY ./mantle /aha/mantle
+COPY ./MetaMapper /aha/MetaMapper
+COPY ./mflowgen /aha/mflowgen
+COPY ./peak /aha/peak
+COPY ./peak_generator /aha/peak_generator
+COPY ./pycoreir /aha/pycoreir
+COPY ./Lego_v0 /aha/Lego_v0
+
+# Install aha tools /aha/aha/
+COPY ./setup.py /aha/setup.py
+COPY ./aha /aha/aha
+
+# Need gcc-13 to install z3-solver, used by hwtypes
+RUN \
+  add-apt-repository ppa:ubuntu-toolchain-r/test && \
+  apt update && apt install -y gcc-13 g++-13 && \
+  (update-alternatives --remove-all gcc || echo okay) && \
+  (update-alternatives --remove-all g++ || echo okay) && \
+  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
+                         --slave   /usr/bin/g++ g++ /usr/bin/g++-13
+
+WORKDIR /aha
+RUN source bin/activate && pip install z3-solver
+
+# pythunder install breaks if use gcc-13 :(
+# So reset back to gcc-9 again
+RUN \
+   apt-get install -y gcc-9 g++-9 && \
+   (update-alternatives --remove-all gcc || echo okay) && \
+   (update-alternatives --remove-all g++ || echo okay) && \
+   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9
+
+RUN \
+  source bin/activate && \
+  echo "--- ..Final aha deps install" && \
+  pip install -e . && \
+  aha deps install
+
+# This should go as late in Docker file as possible; it brings
+# in EVERYTHING. Anything from here on down CANNOT BE CACHED.
+WORKDIR /aha
+COPY . /aha
+
+ENV OA_UNSUPPORTED_PLAT=linux_rhel60
+ENV USER=docker
+
+# Add startup instructions to existing /root/.bashrc
+# 1. Create a /root/.modules so as to avoid this warning on startup:
+#    "+(0):WARN:0: Directory '/root/.modules' not found"
+# 2. Tell user how to restore gch headers.
+#
+# Also: Final dotfile cleanup, just in case
+RUN \
+  echo "source /aha/aha/bin/docker-bashrc" >> /root/.bashrc && \
+  /bin/rm -rf /aha/.git/modules/{clockwork,Halide-to-Hardware,voyager} && \
+  echo DONE
+
+# Restore halide distrib files on every container startup
+ENTRYPOINT [ "/aha/aha/bin/restore-halide-distrib.sh" ]
+
+# Cleanup / image-size-reduction notes:
+#
+# - cannot delete `clockwork/barvinok` directory entirely because
+#   regression tests use e.g. `barvinok-0.41/isl/isl_ast_build_expr.h`
+#
+# - if you don't delete files in the same layer (RUN command) where
+#   they were created, you don't get any space savings in the image.
+#
+# - cannot do "make clean" in `/aha/pono/deps/smt-switch/build`,
+#   because it deletes `smt-switch/build/python`, which is where
+#   smt-switch is pip-installed :(
+#   This should probably be an issue or a FIXME in pono or something.

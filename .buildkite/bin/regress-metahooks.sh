@@ -78,8 +78,8 @@ if [ "$1" == '--pre-command' ]; then
         source "$bin/custom-checkout.sh"
         test -e .git/modules/sam/HEAD || echo OH NO HEAD not found
 
-        echo "--- (Re)creating garnet image $IMAGE  NOCACHE"
-        ~/bin/buildkite-docker-build --progress plain --no-cache . -t "$IMAGE"
+        echo "--- (Re)creating garnet image $IMAGE"
+        ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE"
     fi
 
     echo "--- OIT PRE COMMAND HOOK CONTINUES..."
