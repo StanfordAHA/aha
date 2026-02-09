@@ -89,6 +89,14 @@ SHELL ["/bin/bash", "--login", "-c"]
 WORKDIR /
 RUN mkdir -p /aha && cd /aha && python -m venv .
 
+#Docker build thing(s) to try:
+RUN echo "--- hello /dev/console" > /dev/console
+RUN /bin/bash -c 'echo "--- bash -c hello"  '
+RUN echo "--- hello /dev/stdout" > /dev/stdout
+RUN echo "--- hello /dev/stderr" > /dev/stderr
+
+
+
 # These packages seem stable/cacheable, put them near the BEGINNING
 WORKDIR /aha
 RUN source bin/activate && \
@@ -100,6 +108,8 @@ RUN source bin/activate && \
   pip install Pillow && \
   pip install matplotlib && \
   echo DONE
+
+RUN exit 13
 
 # Put the problem child here up front so that it can fail quickly :(
 
