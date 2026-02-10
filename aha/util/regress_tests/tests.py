@@ -377,12 +377,6 @@ class Tests:
                 "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
                 "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
             ]
-            external_mu_tests_fp = [
-                # Conv4_x
-                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
-            ]
         elif testname == "pr_aha6":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -398,6 +392,12 @@ class Tests:
                 # "conv2_x_fp" # not yet supported by zircon
             ]
             external_mu_tests_fp = [
+                # Conv4_x
+                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+            ]
+            external_mu_tests_fp += [
                # BERT Query projection: All using gemm_reduction_tiling_workaround
                "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
                "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
@@ -438,6 +438,19 @@ class Tests:
         elif testname == "pr_aha8":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+
+            glb_tests_RV = [
+                "tests/conv_2_1_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
+                "apps/gaussian_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+            ]
 
             # This is currently the empty set
             glb_tests_fp_RV = Tests.glb_tests_fp_RV8
@@ -480,18 +493,6 @@ class Tests:
         elif testname == "pr_aha9":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            glb_tests_RV = [
-                "tests/conv_2_1_RV",
-                "tests/fp_e8m0_quant_test_RV",
-                "apps/pointwise_RV",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_custom_packing_RV_E64",
-                "apps/gaussian_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
-            ]
             glb_tests_fp_RV = Tests.glb_tests_fp_RV9
             voyager_cgra_tests_fp = [
                 # BERT permute layer
