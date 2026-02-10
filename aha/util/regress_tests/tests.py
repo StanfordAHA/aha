@@ -206,7 +206,26 @@ class Tests:
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-
+            # These take about an hour to run
+            sparse_tests = [
+                # pr_aha1
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "mat_elemdiv",
+                "mat_mattransmul",
+                "fp_relu_matmul_ikj",
+                "matmul_ikj",
+                "matmul_jik",
+                "fp_relu_spmm_ijk_crddrop",
+                "fp_spmm_ijk_crddrop_locator",
+                "spmv_relu",
+                "masked_broadcast",
+                "mat_sddmm",
+                "tensor3_mttkrp",
+                "tensor3_ttv",
+            ]
+            # THESE HAVE BEEN TURNED OFF see below
             voyager_cgra_tests_fp = [
                 # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
@@ -215,6 +234,7 @@ class Tests:
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
             ]
+            # THESE HAVE BEEN TURNED OFF see below
             external_mu_tests_fp = [
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
@@ -245,6 +265,7 @@ class Tests:
                 "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
             ]
             external_mu_tests_fp = [
+                # THESE HAVE BEEN TURNED OFF see below
                 # Conv2_x
                 "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
@@ -288,26 +309,6 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            # These take about an hour to run
-            sparse_tests = [
-                # pr_aha1
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "mat_elemdiv",
-                "mat_mattransmul",
-                "fp_relu_matmul_ikj",
-                "matmul_ikj",
-                "matmul_jik",
-                "fp_relu_spmm_ijk_crddrop",
-                "fp_spmm_ijk_crddrop_locator",
-                "spmv_relu",
-                "masked_broadcast",
-                "mat_sddmm",
-                "tensor3_mttkrp",
-                "tensor3_ttv",
-            ]
-
             # 8400s/140m/2h20
             glb_tests_RV = [
                 "apps/maxpooling_dense_rv_fp_RV_E64_MB",
@@ -320,6 +321,7 @@ class Tests:
             behavioral_mu_tests = [
                 "apps/get_apply_e8m0_scale_fp_RV_E64_MB",  # 2700s/45m
             ]
+            # Resnet tests DISABLED see below
             external_mu_tests_fp = [
                 # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
                 "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
