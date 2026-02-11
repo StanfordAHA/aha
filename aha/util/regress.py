@@ -367,8 +367,13 @@ def dispatch(args, extra_args=None):
   finally:
     from tabulate import tabulate
     sys.stderr.flush()
+
     print(f"+++ TIMING INFO", flush=True)
-    print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
+    headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."]
+    print(tabulate(info, headers=headers, floatfmt=".0f"), flush=True)
+
+    print(f"+++ TIMING INFO (summary)", flush=True)
+    print_isummary(info)
 
     if failed_tests:
         print(f"+++ FAILURES", flush=True)
@@ -380,3 +385,105 @@ def dispatch(args, extra_args=None):
 
 def gather_tests(tags):
     pass
+
+def print_isummary(info):
+    '''
+    BEFORE: bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB/apply_e8m0_scale_single_IO_bert_quantize_mx_default - SKIP OUTPUT PIPELINE REGS    0
+    AFTER:  bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_def .. SKIP OUTREGS  0
+    '''
+    # Only need first two fields in each line of the list, i.e. step-name and total-time
+    # Convert secs => mins
+    i2 = [ [i[0], i[1]/60 ] for i in info ]
+
+    for line in i2:
+        # Shorten app names and info e.g.
+        # "foo bar bazzle SKIP OUTPUT PIPELINE REGS" => "foo bar b .. SKIP OUTREGS"
+
+        # split stepname into prefix and suffix e.g.
+        # step="app1 SKIP CGRA" => (pfx,sfx)=("app1 "," CGRA")
+        (pfx,sfx) = line[0].split("SKIP")
+
+        # abbreviate "OUTPUT PIPELINE REGS" => OUTREGS; restore "SKIP"
+        if "OUTPUT PIPELINE" in sfx: sfx = " OUTREGS"
+        sfx = "SKIP" + sfx
+
+        # Stepname length is outta control; truncate down to 120 chars, see what happens
+        pfx = pfx[0:80-len(sfx)]
+
+        line[0] = pfx + ' .. ' + sfx
+            
+        # Instead of 3644 seconds, report '1h44m'
+        hhmm = f'{line[1]//3600:.0f}h{line[1]%3600/60:02.0f}m'
+
+    print(f"+++ TIMING INFO (summary)", flush=True)
+    print(tabulate(info, headers=["step", "time"], colalign=['left','right']), flush=True)
+
+
+
+'''
+SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX
+SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX SANDBOX
+
+line = [1,66]
+hhmm = f'{line[1]//3600:.0f}:{line[1]//60:02.0f}'; hhmm
+hhmm = f'{line[1]//3600:.0f}h{line[1]//60:02.0f}m'; hhmm
+
+
+info = [['a', '3:33'],['bb','44:44']]; info
+
+
+headers=["step", "nmin"]
+print(tabulate(info, headers=headers, colalign=['left','right']), flush=True)
+
+
+print(tabulate(info, headers=headers, floatfmt=".0f", colalign=['left','right']), flush=True)
+
+
+
+
+info = [['foo bar SKIP to mylou',66,111]]
+
+#         if "SKIP OUTPUT" in line[0]:
+#     line[1] = int(line[1]/60)
+#     print(line)
+# 
+# headers=["step", "nmin"]
+
+
+# info = [['foo bar SKIP to mylou',66,111]]
+# print(tabulate(info, headers=headers, floatfmt=".0f"), flush=True)
+# 
+# i2 = [ [i[0], i[1]/60 ] for i in info ]; i2
+# line = i2[0]; line
+# 
+# (pfx,sfx) = line[0].split("SKIP"); pfx; sfx
+# sfx = "SKIP" + sfx; sfx
+# pfx = pfx[0:8-len(sfx)]; pfx
+# i2[0][0] = pfx + ' .. ' + sfx; i2
+# i2
+# 
+# print(tabulate(i2, headers=headers, floatfmt=".0f"), flush=True)  
+# 
+# 
+# for line in i2:
+#     line[1] = int(line[1]/60)
+#     print(line)
+# 
+# i2
+# 
+# i2 = [ [i[0],i[1] ] for i in info ]; 
+# i2 = [ [i[0],i[1]/60] for i in info ]; i2
+# i2
+# print(tabulate(i2, headers=headers, floatfmt=".0f"), flush=True)  
+# 
+# foo = "foo bar SKIP to mylou"
+# (pfx,sfx) = foo.split("SKIP")
+# pfx
+# sfx
+# >>> pfx
+# 'foo bar '
+# >>> sfx
+# ' to mylou'
+'''
+
+
