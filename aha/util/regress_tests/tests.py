@@ -206,46 +206,12 @@ class Tests:
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            # These take about an hour to run
-            sparse_tests = [
-                # pr_aha1
-                "vec_elemmul",
-                "mat_vecmul_ij",
-                "mat_elemadd_leakyrelu_exp",
-                "mat_elemdiv",
-                "mat_mattransmul",
-                "fp_relu_matmul_ikj",
-                "matmul_ikj",
-                "matmul_jik",
-                "fp_relu_spmm_ijk_crddrop",
-                "fp_spmm_ijk_crddrop_locator",
-                "spmv_relu",
-                "masked_broadcast",
-                "mat_sddmm",
-                "tensor3_mttkrp",
-                "tensor3_ttv",
-            ]
-            # THESE HAVE BEEN TURNED OFF see below
-            voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
-            ]
-            # THESE HAVE BEEN TURNED OFF see below
-            external_mu_tests_fp = [
-                # Conv1 (im2col-based, X-DIM HOST TILING)
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
 
-                # BERT down projection layer: All using gemm_reduction_tiling_workaround
-               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
-               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+            voyager_cgra_tests_fp = [
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel0_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel1_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB", # 128, 768
             ]
-            # These take about about hour to run
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV1
 
         elif testname == "pr_aha2":
             width, height = 28, 16
