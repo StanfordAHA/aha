@@ -41,6 +41,7 @@ def main():
     # `aha.util` module
     for importer, modname, ispkg in pkgutil.iter_modules(aha.util.__path__):
         if modname == 'regress_util': continue  # Skip helper modules!
+        if modname == 'regress_info': continue  # Skip helper modules!
         getattr(aha.util, modname).add_subparser(subparser)
 
     args, extra_args = parser.parse_known_args()
