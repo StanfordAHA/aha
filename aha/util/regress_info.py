@@ -33,7 +33,7 @@ test_info=[
  ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB_MU_ext",                                                           4254 ],
 ]
 
-sample_out = '
+sample_out = '''
   26 garnet (Zircon) with sparse and dense
 
 1h01 APP GROUP sparse_tests[]
@@ -54,7 +54,8 @@ sample_out = '
        21 resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB_MU_ext [SKIP MAP,PNR]
      1h58 resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB_MU_ext [SKIP MAP,PNR]
      1h10 resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB_MU_ext [SKIP MAP,PNR]
-'
+'''
+
 def eliminate_skips(info1):
     '''
     Delete SKIP lines and add their info to the first non-skip line after e.g.
