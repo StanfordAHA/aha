@@ -6,6 +6,8 @@ def summarize_and_print_info(info):
     # hline = length_of_longest_line * '-'
     hline = 120 * '_'
     print(hline)
+    print(" Time(hhmm)   App")
+    print("------------ --------------------------------------------------------------------------------")
     for line in info2: print(line)
     print(hline)
 
