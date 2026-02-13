@@ -268,7 +268,11 @@ def dispatch(args, extra_args=None):
             print(f"--- FAILED TEST {unparsed_name}:\n{e}")
             failed_tests += [unparsed_name]
             final_error = e
-            info.append([unparsed_name+tsuffix+" FAIL"])
+            # info.append([unparsed_name+tsuffix+" FAIL"])
+            info.append(["*** FAIL ***"])
+            info.append(["*** FAIL " + unparsed_name+tsuffix])
+            info.append(["*** FAIL ***"])
+
 
         report_ongoing_failures(failed_tests)
 
