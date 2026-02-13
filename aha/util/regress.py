@@ -375,6 +375,7 @@ def dispatch(args, extra_args=None):
     # Summary timing-table for steveri, to help with aha-regression rebalancing for per-checkin CI
     from aha.util.regress_info import summarize_and_print_info
     print(f"+++ TIMING INFO (summary)", flush=True)
+    print('foo1 ', info[1])
     summarize_and_print_info(info)
 
     if failed_tests:

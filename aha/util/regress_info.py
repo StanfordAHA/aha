@@ -1,4 +1,5 @@
 def summarize_and_print_info(info):
+    print('foo2 ', info[1])
     info1 = appgroups(info)
     info2 = eliminate_skips(info1)
     for line in info2: print(line)
@@ -124,7 +125,8 @@ def appgroups(info1):
     blankline = ['','','']
 
     # Easy to count group times if go through list in reverse order, yes?
-    for line1 in info1.reverse():
+    info1.reverse()
+    for line1 in info1:
         (name,time) = (line1[0],line1[1])
         if name.startswith("APP GROUP"):
             if not grouptotal: continue
@@ -140,7 +142,7 @@ def appgroups(info1):
         # add blank lines before each "APP GROUP" and garnet "NO Zircon" compilation
         if name.startswith("APP GROUP") or "No Zircon" in name:
             info2.append("")
-
-    return info2.reverse()
+    info2.reverse()
+    return info2
 
 # summarize_and_print_info(test_info)
