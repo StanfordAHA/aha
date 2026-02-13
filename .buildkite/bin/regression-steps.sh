@@ -301,7 +301,8 @@ exit
 #             dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
 # 
 #             echo "--- (Re)create garnet Image"
-#             ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE"
+#             # Turn every RUN command into a submenu header in buildkite log
+#             ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE" |& awk '/^#[^]]*\] RUN /{print "--- " $$0};{print}'
 # 
 #             echo "--- Pruning Docker Images"
 #             yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true
