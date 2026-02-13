@@ -1,5 +1,5 @@
 def summarize_and_print_info(info):
-    print('foo2 ', info[1])
+    if not info: return
     info1 = appgroups(info)
     info2 = eliminate_skips(info1)
     for line in info2: print(line)
@@ -127,27 +127,74 @@ def appgroups(info1):
     # Easy to count group times if go through list in reverse order, yes?
     info1.reverse()
     for line1 in info1:
-        print(f'foozy .{line1}.')
-        try:
-            (name,time) = (line1[0],line1[1])
-        except:
-            print("WARNING malformed info-table row '{line}'")
-            (name,time) = (line[0], 0)
-        if name.startswith("APP GROUP"):
+        # print(f'foozy .{line1}.')
+        (name,time) = ('',0)
+        for e in line1:  # This works even if "line" is scalar or 1-element list
+            if not name: name=e
+            elif not time: time=e
+
+        if name.startswith("APP GROUP") or name.startswith("garnet "):
             if not grouptotal: continue
             line2 = f'{hhmm(grouptotal)} {name}'
             grouptotal = 0
-        elif name.startswith("garnet "):
-            line2 = f'{hhmm(time)} {name}'
         else:
             line2 = f'     {hhmm(time)} {name}'  # Indent app name
             grouptotal += time
         info2.append(line2)
 
         # add blank lines before each "APP GROUP" and garnet "NO Zircon" compilation
-        if name.startswith("APP GROUP") or "No Zircon" in name:
+        if name.startswith("APP GROUP") or "NO Zircon" in name or "garnet with dense" in name:
             info2.append("")
     info2.reverse()
     return info2
+
+def test_info(info):
+    from random import randint
+    (t, t1, t2, t3, t4, t5) = 6*[randint(66,6666)]
+    tsuffix='_tsuffix'
+    def t0(): return randint(66,6666)
+    info.append(["garnet (Zircon) with sparse and dense", t])
+
+    info.append([f"APP GROUP sparse_tests[]", 0])
+    info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
+    for test in [ f'sparse-test-{i}' for i in [1,2,3] ]:
+        (t, t1, t2, t3, t4, t5) = 6*[randint(66,6666)]
+        info.append([test + "_glb", t0() + t1 + t2, t0(), t1, t2, t3, t4, t5])
+
+    for tgroup in ['group1','group2','group3']:
+        info.append([f"APP GROUP {tgroup}[]", 0])
+        tests = [ f'{tgroup}-test{i}' for i in [1,2,3] ] + [f'{tgroup}-buzzfail']
+        for unparsed_name in tests:
+            (t, t1, t2, t3, t4, t5) = 6*[randint(66,6666)]
+            if 'buzzfail' in unparsed_name:
+                # info.append([unparsed_name+tsuffix+" FAIL"])
+                info.append(["*** FAIL ***"])
+                info.append(["*** FAIL " + unparsed_name+tsuffix])
+                info.append(["*** FAIL ***"])
+            else:
+                info.append([unparsed_name+tsuffix, t0()+t1+t2, t0(), t1, t2, t3, t4, t5])
+
+    info.append(["APP GROUP hardcoded_dense_tests[]", 0])
+    info.append(["APP GROUP hardcoded_dense_tests2[]", 0])
+    info.append(["APP GROUP hardcoded_dense_tests3[]", 0])
+
+    info.append(["garnet (NO Zircon) with sparse and dense", t])
+    info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
+    for test in [ f'sparse-test-nz{i}' for i in [1,2,3] ]:
+        (t, t1, t2, t3, t4, t5) = 6*[randint(66,6666)]
+        info.append([test + "_glb", t0() + t1 + t2, t0(), t1, t2, t3, t4, t5])
+
+    for tgroup in ['group4','group5']:
+        info.append([f"APP GROUP {tgroup}[]", 0])
+        tests = [ f'{tgroup}-test{i}' for i in [randint(1,9)]]
+        for test in tests:
+            (t, t1, t2, t3, t4, t5) = 6*[randint(66,6666)]
+            info.append([test + "_glb", t0() + t1 + t2, t0(), t1, t2, t3, t4, t5])
+
+    info.append(["garnet with dense only", t])
+    tests = [ f'{tgroup}-test{i}' for i in [1,2]]
+    for test in tests:
+        (t, t1, t2, t3, t4, t5) = 6*[randint(66,6666)]
+        info.append([test + "_glb dense only", t0() + t1 + t2, t0(), t1, t2, t3, t4, t5])
 
 # summarize_and_print_info(test_info)
