@@ -271,7 +271,6 @@ def dispatch(args, extra_args=None):
             info.append(["*** FAIL " + unparsed_name+tsuffix])
             info.append(["*** FAIL ***"])
 
-
         report_ongoing_failures(failed_tests)
 
     print(f"--- Processing app group hardcoded_dense_tests", flush=True)

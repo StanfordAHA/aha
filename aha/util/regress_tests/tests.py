@@ -206,12 +206,46 @@ class Tests:
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-
-            voyager_cgra_tests_fp = [
-                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel0_RV_E64_MB", # 128, 1536, tiling
-                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel1_RV_E64_MB", # 128, 1536, tiling
-                "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB", # 128, 768
+            # These take about an hour to run
+            sparse_tests = [
+                # pr_aha1
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "mat_elemdiv",
+                "mat_mattransmul",
+                "fp_relu_matmul_ikj",
+                "matmul_ikj",
+                "matmul_jik",
+                "fp_relu_spmm_ijk_crddrop",
+                "fp_spmm_ijk_crddrop_locator",
+                "spmv_relu",
+                "masked_broadcast",
+                "mat_sddmm",
+                "tensor3_mttkrp",
+                "tensor3_ttv",
             ]
+            # THESE HAVE BEEN TURNED OFF see below
+            voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+            ]
+            # THESE HAVE BEEN TURNED OFF see below
+            external_mu_tests_fp = [
+                # Conv1 (im2col-based, X-DIM HOST TILING)
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+
+                # BERT down projection layer: All using gemm_reduction_tiling_workaround
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+            ]
+            # These take about about hour to run
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV1
 
         elif testname == "pr_aha2":
             width, height = 28, 16
@@ -343,6 +377,12 @@ class Tests:
                 "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
                 "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
             ]
+            external_mu_tests_fp = [
+                # Conv4_x
+                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+            ]
         elif testname == "pr_aha6":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -358,18 +398,6 @@ class Tests:
                 # "conv2_x_fp" # not yet supported by zircon
             ]
             external_mu_tests_fp = [
-                # Conv4_x
-                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
-                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
-
-                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND) (30m)
-                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
-
-                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND) (25m)
-                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
-            ]
-            external_mu_tests_fp += [
                # BERT Query projection: All using gemm_reduction_tiling_workaround
                "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
                "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
@@ -386,7 +414,13 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = Tests.glb_tests_fp_RV7
             external_mu_tests_fp = [
-                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND) (60m)
+                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
+
+                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
+
+                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
 
@@ -404,19 +438,6 @@ class Tests:
         elif testname == "pr_aha8":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-
-            glb_tests_RV = [
-                "tests/conv_2_1_RV",
-                "tests/fp_e8m0_quant_test_RV",
-                "apps/pointwise_RV",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_custom_packing_RV_E64",
-                "apps/gaussian_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
-            ]
 
             # This is currently the empty set
             glb_tests_fp_RV = Tests.glb_tests_fp_RV8
@@ -452,16 +473,6 @@ class Tests:
 
                 # BERT tanh layer
                 "bert-tanh::tanh_fp_bert_RV_E64_MB"
-
-                # BERT permute layer (20m)
-                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
-
-                # BERT layer norm layers (didn't run post-FFN layer norm layer) (60m)
-                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
-                # Channel slicing (unroll by 16) (40m)
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
             ]
 
             behavioral_mu_tests_fp = []
@@ -469,9 +480,31 @@ class Tests:
         elif testname == "pr_aha9":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
+            glb_tests_RV = [
+                "tests/conv_2_1_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
+                "apps/gaussian_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+            ]
             glb_tests_fp_RV = Tests.glb_tests_fp_RV9
             voyager_cgra_tests_fp = [
-                # BERT get_e8m0_scale accum schedule layers (50m)
+                # BERT permute layer
+                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+
+                # BERT layer norm layers (didn't run post-FFN layer norm layer)
+                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
+                # Channel slicing (unroll by 16)
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+
+                # BERT get_e8m0_scale accum schedule layers
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
                 "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
             ]
