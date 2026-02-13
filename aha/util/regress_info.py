@@ -2,7 +2,12 @@ def summarize_and_print_info(info):
     if not info: return
     info1 = appgroups(info)
     info2 = eliminate_skips(info1)
+    # length_of_longest_line = max( [len(e) for e in info2] )
+    # hline = length_of_longest_line * '-'
+    hline = 120 * '_'
+    print(hline)
     for line in info2: print(line)
+    print(hline)
 
 test_info=[
  ["garnet (Zircon) with sparse and dense",                                         1588 ],
@@ -118,7 +123,7 @@ def appgroups(info1):
         (nmin,nhrs) = (nsec//60,nsec//3600)
         if nmin < 60: hhmm = f'{nmin:.0f}'                      # "1"  "59"
         else:         hhmm = f'{nmin//60:.0f}h{nmin%60:02.0f}'  # "1h25"
-        return f'{hhmm:>4}'
+        return f'{hhmm:>6}'
 
     info2 = []       # Output table goes here
     grouptotal = 0
@@ -149,6 +154,8 @@ def appgroups(info1):
     return info2
 
 def test_info(info):
+    return  # Remove this line for debugging maybe
+
     from random import randint
     (t, t1, t2, t3, t4, t5) = 6*[randint(66,6666)]
     tsuffix='_tsuffix'
