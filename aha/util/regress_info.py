@@ -127,7 +127,12 @@ def appgroups(info1):
     # Easy to count group times if go through list in reverse order, yes?
     info1.reverse()
     for line1 in info1:
-        (name,time) = (line1[0],line1[1])
+        print(f'foozy .{line1}.')
+        try:
+            (name,time) = (line1[0],line1[1])
+        except:
+            print("WARNING malformed info-table row '{line}'")
+            (name,time) = (line[0], 0)
         if name.startswith("APP GROUP"):
             if not grouptotal: continue
             line2 = f'{hhmm(grouptotal)} {name}'
