@@ -260,6 +260,12 @@ exit
 #             h5=$(hostname | cut -b 1-5)  # "r8cad-docker" => "r8cad"
 #             buildkite-agent step update "label" " + DB($$h5)" --append
 # 
+#             # Remove docker pr-aha jobs older than one day
+#             echo "--- Clean up old docker jobs"
+#             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress-pr_aha/{print $NF}')
+#             test -z $$oldjobs || echo docker kill $$oldjobs
+#             test -z $$oldjobs || docker kill $$oldjobs
+# 
 #             # Remove docker images older than one day
 #             echo "--- Cleanup old docker images"
 #             docker image ls | awk '/(days|weeks|months) ago/ {print}' || echo okay
