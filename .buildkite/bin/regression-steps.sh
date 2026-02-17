@@ -264,8 +264,8 @@ exit
 #             echo "--- Clean up old docker jobs"
 #             set -x
 #             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress/{print $$NF}')
-#             test -z $$oldjobs || echo docker kill $$oldjobs
-#             test -z $$oldjobs || docker kill $$oldjobs
+#             test -z "$$oldjobs" || echo docker kill $$oldjobs
+#             test -z "$$oldjobs" || docker kill $$oldjobs || echo okay
 #             set +x
 # 
 #             # Remove aha-flow docker images older than one day
@@ -275,7 +275,8 @@ exit
 #             old_aha_ims=$(echo "$$aha_ims" | egrep 'days|weeks')
 #             echo "$$old_aha_ims"
 #             image_ids=$(echo "$$old_aha_ims" | awk '{print $$1}')
-#             test -z $$image_ids || docker rmi $$image_ids
+#             test -z "$$image_ids" || docker rmi $$image_ids || echo okay
+#             : Let the jobs settle; sleep 10
 #             set +x
 # 
 #             # Remove DELETEME* dirs older than one week
