@@ -262,14 +262,21 @@ exit
 # 
 #             # Remove docker pr-aha jobs older than one day
 #             echo "--- Clean up old docker jobs"
-#             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress-pr_aha/{print $NF}')
+#             set -x
+#             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress-pr_aha/{print $$NF}')
 #             test -z $$oldjobs || echo docker kill $$oldjobs
 #             test -z $$oldjobs || docker kill $$oldjobs
+#             set +x
 # 
-#             # Remove docker images older than one day
+#             # Remove aha-flow docker images older than one day
 #             echo "--- Cleanup old docker images"
-#             docker image ls | awk '/(days|weeks|months) ago/ {print}' || echo okay
-#             docker image ls | awk '/(days|weeks|months) ago/ {print $$3}' | xargs docker image rm || echo okay
+#             set -x
+#             aha_ims=$(docker image ls --filter=reference="garnet:aha-flow*" --format "{{.ID}} {{.Tag}} {{.CreatedSince}}")
+#             old_aha_ims=echo "$$aha_ims" | egrep 'days|weeks'
+#             echo "$$old_aha_ims"
+#             image_ids=$(echo "$$old_aha_ims" | awk '{print $$1}')
+#             test -z $$image_ids || docker rmi $$image_ids
+#             set +x
 # 
 #             # Remove DELETEME* dirs older than one week
 #             # FIXME pretty sure this is BROKEN. On TODO list: do this as crontab(s) instead
