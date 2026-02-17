@@ -263,7 +263,7 @@ exit
 #             # Remove docker pr-aha jobs older than one day
 #             echo "--- Clean up old docker jobs"
 #             set -x
-#             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress-pr_aha/{print $$NF}')
+#             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress/{print $$NF}')
 #             test -z $$oldjobs || echo docker kill $$oldjobs
 #             test -z $$oldjobs || docker kill $$oldjobs
 #             set +x
