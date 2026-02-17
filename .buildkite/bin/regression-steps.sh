@@ -273,7 +273,7 @@ exit
 #             echo "--- Cleanup old docker images"
 #             set -x
 #             aha_ims=$(docker image ls --filter=reference="garnet:aha-flow*" --format "{{.ID}} {{.Tag}} {{.CreatedSince}}")
-#             old_aha_ims=$(echo "$$aha_ims" | egrep 'days|weeks')
+#             old_aha_ims=$(echo "$$aha_ims" | egrep 'days|weeks' || true)
 #             echo "$$old_aha_ims"
 #             image_ids=$(echo "$$old_aha_ims" | awk '{print $$1}')
 #             test -z "$$image_ids" || docker rmi $$image_ids || echo okay
