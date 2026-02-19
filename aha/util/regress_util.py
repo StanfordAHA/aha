@@ -95,10 +95,11 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
 
 
 def generate_sparse_bitstreams(args,
-        sparse_tests, width, height, data_tile_pairs, kernel_name,
+        sparse_tests, data_tile_pairs, kernel_name,
         opal_workaround=False, unroll=1, using_matrix_unit=False, 
         num_fabric_cols_removed=0, mu_oc_0=32
 ):
+    (width,height) = (args.width,args.height)
     seed_flow = not args.non_seed_flow
     if len(sparse_tests) == 0:
         return 0

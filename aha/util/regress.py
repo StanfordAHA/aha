@@ -98,6 +98,8 @@ def dispatch(args, extra_args=None):
 #     E64_supported_tests = imported_tests.E64_supported_tests
 #     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
+    (args.width,args.height) = (width,height)
+
     # No zircon flag (generate default layout)
     if args.no_zircon:
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
@@ -174,7 +176,7 @@ def dispatch(args, extra_args=None):
             print(data_tile_pairs)
 
             t = generate_sparse_bitstreams(args.copy(),
-                sparse_tests, width, height, data_tile_pairs, kernel_name,
+                sparse_tests, data_tile_pairs, kernel_name,
                 opal_workaround=args.opal_workaround,
                 unroll=unroll,
                 using_matrix_unit=using_matrix_unit,
@@ -217,7 +219,7 @@ def dispatch(args, extra_args=None):
 
     elif sparse_tests:
         t = generate_sparse_bitstreams(args.copy(), 
-            sparse_tests, width, height, data_tile_pairs, kernel_name,
+            sparse_tests, data_tile_pairs, kernel_name,
             opal_workaround=args.opal_workaround,
             unroll=unroll,
             using_matrix_unit=using_matrix_unit,
@@ -312,7 +314,7 @@ def dispatch(args, extra_args=None):
             kernel_name = ""
             args2 = args.copy(); args2.seed_flow = True
             t = generate_sparse_bitstreams(args2,
-                                       no_zircon_sparse_tests, width, height,
+                                       no_zircon_sparse_tests,
                                        data_tile_pairs, kernel_name,
                                        opal_workaround=args.opal_workaround, unroll=unroll)
             info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
