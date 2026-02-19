@@ -105,6 +105,7 @@ def generate_sparse_bitstreams(args,
     kernel_name = args.kernel_name
     opal_workaround = args.opal_workaround
     unroll = args.unroll
+    using_matrix_unit=args.using_matrix_unit
     if len(sparse_tests) == 0:
         return 0
 

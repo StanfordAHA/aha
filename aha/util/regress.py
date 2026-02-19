@@ -104,6 +104,7 @@ def dispatch(args, extra_args=None):
     if args.no_zircon:
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         using_matrix_unit = False
+        args.using_matrix_unit = False
         num_fabric_cols_removed = 0
         mu_oc_0 = 0
 
@@ -180,7 +181,6 @@ def dispatch(args, extra_args=None):
             args2.kernel_name = kernel_name
             t = generate_sparse_bitstreams(args2,
                 sparse_tests,
-                using_matrix_unit=using_matrix_unit,
                 num_fabric_cols_removed=num_fabric_cols_removed,
                 mu_oc_0=mu_oc_0)
             info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
@@ -224,7 +224,6 @@ def dispatch(args, extra_args=None):
         args2.kernel_name = kernel_name
         t = generate_sparse_bitstreams(args2
             sparse_tests,
-            using_matrix_unit=using_matrix_unit,
             num_fabric_cols_removed=num_fabric_cols_removed,
             mu_oc_0=mu_oc_0)
         info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
