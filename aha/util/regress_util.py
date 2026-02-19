@@ -94,7 +94,12 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
     return time.time() - start
 
 
-def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name, opal_workaround=False, unroll=1, using_matrix_unit=False, num_fabric_cols_removed=0, mu_oc_0=32):
+def generate_sparse_bitstreams(args,
+        sparse_tests, width, height, data_tile_pairs, kernel_name,
+        opal_workaround=False, unroll=1, using_matrix_unit=False, 
+        num_fabric_cols_removed=0, mu_oc_0=32
+):
+    seed_flow = not args.non_seed_flow
     if len(sparse_tests) == 0:
         return 0
 
@@ -135,10 +140,10 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--use-non-split-fifos")
             build_tb_cmd.append("--mu_oc_0")
             build_tb_cmd.append(str(mu_oc_0))
-        buildkite_call(
-            build_tb_cmd,
-            env=env_vars,
-        )
+            buildkite_call(
+                build_tb_cmd,
+                env=env_vars,
+            )
     else:
         build_tb_cmd = [
             "python",
@@ -175,11 +180,11 @@ def generate_sparse_bitstreams(sparse_tests, width, height, seed_flow, data_tile
             build_tb_cmd.append("--use-non-split-fifos")
             build_tb_cmd.append("--mu_oc_0")
             build_tb_cmd.append(str(mu_oc_0))
-        buildkite_call(
-            build_tb_cmd,
-            env=env_vars,
-        )
-    time_map = time.time() - start
+            buildkite_call(
+                build_tb_cmd,
+                env=env_vars,
+            )
+            time_map = time.time() - start
     return time_map
 
 

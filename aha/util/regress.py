@@ -173,8 +173,8 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            t = generate_sparse_bitstreams(
-                sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+            t = generate_sparse_bitstreams(args.copy(),
+                sparse_tests, width, height, data_tile_pairs, kernel_name,
                 opal_workaround=args.opal_workaround,
                 unroll=unroll,
                 using_matrix_unit=using_matrix_unit,
@@ -216,8 +216,8 @@ def dispatch(args, extra_args=None):
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
 
     elif sparse_tests:
-        t = generate_sparse_bitstreams(
-            sparse_tests, width, height, seed_flow, data_tile_pairs, kernel_name,
+        t = generate_sparse_bitstreams(args.copy(), 
+            sparse_tests, width, height, data_tile_pairs, kernel_name,
             opal_workaround=args.opal_workaround,
             unroll=unroll,
             using_matrix_unit=using_matrix_unit,
@@ -236,15 +236,16 @@ def dispatch(args, extra_args=None):
                 mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
-    for test in [
-            ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
-            ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
-            ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
-            ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
-
-            ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
-            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp,
-            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,]:
+    dense_app_groups = [
+        ('glb_tests_RV',           '_glb'),           *glb_tests_RV,
+        ('glb_tests_fp_RV',        '_glb'),           *glb_tests_fp_RV,
+        ('behavioral_mu_tests',    '_MU_behavioral'), *behavioral_mu_tests,
+        ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
+        ('external_mu_tests',      '_MU_ext'),        *external_mu_tests,
+        ('external_mu_tests_fp',   '_MU_ext'),        *external_mu_tests_fp,
+        ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
+    ]
+    for test in dense_app_groups:
 
         if type(test) is tuple:
             tgroup,tsuffix = test
@@ -309,15 +310,17 @@ def dispatch(args, extra_args=None):
             # See above for no_zircon_sparse_tests[]
             data_tile_pairs = []
             kernel_name = ""
-            seed_flow = True
-            t = generate_sparse_bitstreams(no_zircon_sparse_tests, width, height,
-                                       seed_flow, data_tile_pairs, kernel_name,
+            args2 = args.copy(); args2.seed_flow = True
+            t = generate_sparse_bitstreams(args2,
+                                       no_zircon_sparse_tests, width, height,
+                                       data_tile_pairs, kernel_name,
                                        opal_workaround=args.opal_workaround, unroll=unroll)
             info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
             report_ongoing_failures(failed_tests)
 
             for test in no_zircon_sparse_tests:
-                t0, t1, t2, t3, t4, t5 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+                t0, t1, t2, t3, t4, t5 = test_sparse_app(
+                    test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
                 report_ongoing_failures(failed_tests)
 
