@@ -175,8 +175,11 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            t = generate_sparse_bitstreams(args.copy(),
-                sparse_tests, data_tile_pairs, kernel_name,
+            args2 = args.copy(); 
+            args2.data_tile_pairs = data_tile_pairs
+            args2.kernel_name = kernel_name
+            t = generate_sparse_bitstreams(args2,
+                sparse_tests,
                 opal_workaround=args.opal_workaround,
                 unroll=unroll,
                 using_matrix_unit=using_matrix_unit,
@@ -218,8 +221,11 @@ def dispatch(args, extra_args=None):
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
 
     elif sparse_tests:
-        t = generate_sparse_bitstreams(args.copy(), 
-            sparse_tests, data_tile_pairs, kernel_name,
+        args2 = args.copy(); 
+        args2.data_tile_pairs = data_tile_pairs
+        args2.kernel_name = kernel_name
+        t = generate_sparse_bitstreams(args2
+            sparse_tests,
             opal_workaround=args.opal_workaround,
             unroll=unroll,
             using_matrix_unit=using_matrix_unit,
@@ -312,10 +318,12 @@ def dispatch(args, extra_args=None):
             # See above for no_zircon_sparse_tests[]
             data_tile_pairs = []
             kernel_name = ""
-            args2 = args.copy(); args2.seed_flow = True
+            args2 = args.copy(); 
+            args2.data_tile_pairs = data_tile_pairs
+            args2.kernel_name = kernel_name
+            args2.seed_flow = True
             t = generate_sparse_bitstreams(args2,
                                        no_zircon_sparse_tests,
-                                       data_tile_pairs, kernel_name,
                                        opal_workaround=args.opal_workaround, unroll=unroll)
             info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
             report_ongoing_failures(failed_tests)
