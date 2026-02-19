@@ -99,6 +99,7 @@ def dispatch(args, extra_args=None):
 #     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
     (args.width,args.height) = (width,height)
+    args.cols_removed, args.mu_oc_0 = num_fabric_cols_removed, mu_oc_0
 
     # No zircon flag (generate default layout)
     if args.no_zircon:
@@ -107,6 +108,8 @@ def dispatch(args, extra_args=None):
         args.using_matrix_unit = False
         num_fabric_cols_removed = 0
         mu_oc_0 = 0
+        args.num_fabric_cols_removed = 0
+        args.mu_oc_0 = 0
 
     else:
         print(f"\033[92mINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.\033[0m")
@@ -179,10 +182,7 @@ def dispatch(args, extra_args=None):
             args2 = args.copy(); 
             args2.data_tile_pairs = data_tile_pairs
             args2.kernel_name = kernel_name
-            t = generate_sparse_bitstreams(args2,
-                sparse_tests,
-                num_fabric_cols_removed=num_fabric_cols_removed,
-                mu_oc_0=mu_oc_0)
+            t = generate_sparse_bitstreams(args2, sparse_tests)
             info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
             for test in sparse_tests:
@@ -222,10 +222,7 @@ def dispatch(args, extra_args=None):
         args2 = args.copy(); 
         args2.data_tile_pairs = data_tile_pairs
         args2.kernel_name = kernel_name
-        t = generate_sparse_bitstreams(args2
-            sparse_tests,
-            num_fabric_cols_removed=num_fabric_cols_removed,
-            mu_oc_0=mu_oc_0)
+        t = generate_sparse_bitstreams(args2, sparse_tests)
         info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
         for test in sparse_tests:

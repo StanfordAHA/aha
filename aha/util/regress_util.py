@@ -106,6 +106,9 @@ def generate_sparse_bitstreams(args,
     opal_workaround = args.opal_workaround
     unroll = args.unroll
     using_matrix_unit=args.using_matrix_unit
+    num_fabric_cols_removed=args.num_fabric_cols_removed
+    mu_oc_0=args.mu_oc_0
+
     if len(sparse_tests) == 0:
         return 0
 
