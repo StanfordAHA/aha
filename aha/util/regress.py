@@ -10,6 +10,7 @@ from aha.util.regress_util import test_dense_app
 from aha.util.regress_util import test_hardcoded_dense_app
 from aha.util.regress_util import info
 global info
+from copy import deepcopy
 
 def report_ongoing_failures(failed_tests):
     '''Keep track of which tests have failed already, if any'''
@@ -99,7 +100,7 @@ def dispatch(args, extra_args=None):
 #     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
     (args.width,args.height) = (width,height)
-    args.cols_removed, args.mu_oc_0 = num_fabric_cols_removed, mu_oc_0
+    args.num_fabric_cols_removed, args.mu_oc_0 = num_fabric_cols_removed, mu_oc_0
 
     # No zircon flag (generate default layout)
     if args.no_zircon:
@@ -179,7 +180,7 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            args2 = args.copy(); 
+            args2 = deepcopy(args)
             args2.data_tile_pairs = data_tile_pairs
             args2.kernel_name = kernel_name
             t = generate_sparse_bitstreams(args2, sparse_tests)
@@ -219,7 +220,7 @@ def dispatch(args, extra_args=None):
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
 
     elif sparse_tests:
-        args2 = args.copy(); 
+        args2 = deepcopy(args)
         args2.data_tile_pairs = data_tile_pairs
         args2.kernel_name = kernel_name
         t = generate_sparse_bitstreams(args2, sparse_tests)
@@ -310,7 +311,7 @@ def dispatch(args, extra_args=None):
             # See above for no_zircon_sparse_tests[]
             data_tile_pairs = []
             kernel_name = ""
-            args2 = args.copy(); 
+            args2 = deepcopy(args)
             args2.data_tile_pairs = data_tile_pairs
             args2.kernel_name = kernel_name
             args2.seed_flow = True

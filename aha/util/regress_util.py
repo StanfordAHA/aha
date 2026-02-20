@@ -94,23 +94,22 @@ def gen_garnet(width, height, dense_only=False, using_matrix_unit=False, mu_data
     return time.time() - start
 
 
-def generate_sparse_bitstreams(args,
-        sparse_tests,
-        unroll=1, using_matrix_unit=False, 
-        num_fabric_cols_removed=0, mu_oc_0=32
-):
-    (width,height) = (args.width,args.height)
-    seed_flow = not args.non_seed_flow
-    data_tile_pairs = args.data_tile_pairs
-    kernel_name = args.kernel_name
-    opal_workaround = args.opal_workaround
-    unroll = args.unroll
-    using_matrix_unit=args.using_matrix_unit
-    num_fabric_cols_removed=args.num_fabric_cols_removed
-    mu_oc_0=args.mu_oc_0
+def generate_sparse_bitstreams(args, sparse_tests):
 
+    # Early out if no tests to process
     if len(sparse_tests) == 0:
         return 0
+
+    seed_flow = not args.non_seed_flow
+    (width,height) = (args.width,args.height)
+
+    data_tile_pairs         = args.data_tile_pairs
+    kernel_name             = args.kernel_name
+    opal_workaround         = args.opal_workaround
+    unroll                  = args.unroll
+    using_matrix_unit       = args.using_matrix_unit
+    num_fabric_cols_removed = args.num_fabric_cols_removed
+    mu_oc_0                 = args.mu_oc_0
 
     print(f"--- mapping all tests", flush=True)
     start = time.time()
@@ -119,7 +118,7 @@ def generate_sparse_bitstreams(args,
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
-    if(seed_flow):
+    if (seed_flow):
         build_tb_cmd = [
             "python",
             "/aha/garnet/tests/test_memory_core/build_tb.py",
@@ -149,10 +148,10 @@ def generate_sparse_bitstreams(args,
             build_tb_cmd.append("--use-non-split-fifos")
             build_tb_cmd.append("--mu_oc_0")
             build_tb_cmd.append(str(mu_oc_0))
-            buildkite_call(
-                build_tb_cmd,
-                env=env_vars,
-            )
+        buildkite_call(
+            build_tb_cmd,
+            env=env_vars,
+        )
     else:
         build_tb_cmd = [
             "python",
@@ -189,11 +188,11 @@ def generate_sparse_bitstreams(args,
             build_tb_cmd.append("--use-non-split-fifos")
             build_tb_cmd.append("--mu_oc_0")
             build_tb_cmd.append(str(mu_oc_0))
-            buildkite_call(
-                build_tb_cmd,
-                env=env_vars,
-            )
-            time_map = time.time() - start
+        buildkite_call(
+            build_tb_cmd,
+            env=env_vars,
+        )
+    time_map = time.time() - start
     return time_map
 
 
