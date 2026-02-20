@@ -152,7 +152,7 @@ def dispatch(args, extra_args=None):
             *external_mu_tests_fp,
             *hardcoded_dense_tests
     ]:
-        t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
+        t = gen_garnet(args, dense_only=False, use_defaults=False)
         info.append(["garnet (Zircon) with sparse and dense", t])
 
     data_tile_pairs = []
@@ -305,7 +305,7 @@ def dispatch(args, extra_args=None):
             raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
-        t = gen_garnet(width, height, dense_only=False, using_matrix_unit=False, num_fabric_cols_removed=0)
+        t = gen_garnet(args, dense_only=False, use_defaults=True)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
         report_ongoing_failures(failed_tests)
 
@@ -357,7 +357,7 @@ def dispatch(args, extra_args=None):
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
-        t = gen_garnet(width, height, dense_only=True)
+        t = gen_garnet(args, dense_only=True)
         info.append(["garnet with dense only", t])
         report_ongoing_failures(failed_tests)
 
