@@ -37,18 +37,8 @@ def add_subparser(subparser):
     parser.add_argument("--no-zircon", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
-def dispatch(args, extra_args=None):
-  try:
-    seed_flow = not args.non_seed_flow
-    use_pipeline = args.use_pipeline
-    using_matrix_unit = args.using_matrix_unit
-    mu_datawidth = args.mu_datawidth
-    unroll = args.unroll
-
-    failed_tests = []
-    final_error = None
-
-    # It's painful if we don't catch this up front! (E.g. missing vcs.)
+def find_vcs_or_exit():
+    '''If there is no VCS, emit error and quit now, else it will fail later anyway'''
     if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
     else: TOOL = 'vcs'
     p = subprocess.run(
@@ -64,6 +54,20 @@ def dispatch(args, extra_args=None):
         print(f"    source /cad/modules/tcl/init/sh")
         print(f"    module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2")
         exit(p.returncode)
+
+def dispatch(args, extra_args=None):
+  find_vcs_or_exit()      # Make sure vcs is available, else err and exit
+
+  if True:  # I'm just doing this so the indents will match
+
+    seed_flow = not args.non_seed_flow
+    use_pipeline = args.use_pipeline
+    using_matrix_unit = args.using_matrix_unit
+    mu_datawidth = args.mu_datawidth
+    unroll = args.unroll
+
+    failed_tests = []
+    final_error = None
 
     imported_tests = None
 
@@ -95,9 +99,6 @@ def dispatch(args, extra_args=None):
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
     no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
-
-#     E64_supported_tests = imported_tests.E64_supported_tests
-#     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
     (args.width,args.height) = (width,height)
     args.num_fabric_cols_removed, args.mu_oc_0 = num_fabric_cols_removed, mu_oc_0
@@ -135,6 +136,7 @@ def dispatch(args, extra_args=None):
         assert imported_tests.external_mu_tests == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests from the test list."
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
 
+  try:
     print(f"--- Running regression: {args.config}", flush=True)
 
     # Skip 20 minutes of gen_garnet if no tests exist for it!!!
