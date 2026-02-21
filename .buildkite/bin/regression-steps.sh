@@ -260,10 +260,24 @@ exit
 #             h5=$(hostname | cut -b 1-5)  # "r8cad-docker" => "r8cad"
 #             buildkite-agent step update "label" " + DB($$h5)" --append
 # 
-#             # Remove docker images older than one day
+#             # Remove docker pr-aha jobs older than one day
+#             echo "--- Clean up old docker jobs"
+#             set -x
+#             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress/{print $$NF}')
+#             test -z "$$oldjobs" || echo docker kill $$oldjobs
+#             test -z "$$oldjobs" || docker kill $$oldjobs || echo okay
+#             : Let the jobs settle && sleep 10
+#             set +x
+# 
+#             # Remove aha-flow docker images older than one day
 #             echo "--- Cleanup old docker images"
-#             docker image ls | awk '/(days|weeks|months) ago/ {print}' || echo okay
-#             docker image ls | awk '/(days|weeks|months) ago/ {print $$3}' | xargs docker image rm || echo okay
+#             set -x
+#             aha_ims=$(docker image ls --filter=reference="garnet:aha-flow*" --format "{{.ID}} {{.Tag}} {{.CreatedSince}}")
+#             old_aha_ims=$(echo "$$aha_ims" | egrep 'days|weeks' || true)
+#             echo "$$old_aha_ims"
+#             image_ids=$(echo "$$old_aha_ims" | awk '{print $$1}')
+#             test -z "$$image_ids" || docker rmi $$image_ids || echo okay
+#             set +x
 # 
 #             # Remove DELETEME* dirs older than one week
 #             # FIXME pretty sure this is BROKEN. On TODO list: do this as crontab(s) instead
@@ -301,7 +315,8 @@ exit
 #             dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
 # 
 #             echo "--- (Re)create garnet Image"
-#             ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE"
+#             # Turn every RUN command into a submenu header in buildkite log
+#             ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE" |& awk '/^#[^]]*\] RUN /{print "--- " substr($$0,1,80)};{print}'
 # 
 #             echo "--- Pruning Docker Images"
 #             yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true

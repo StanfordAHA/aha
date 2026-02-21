@@ -58,6 +58,10 @@ def dispatch(args, extra_args=None):
     )
     if p.returncode:
         print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
+        print(f"Maybe do this:")
+        print(f"    source /aha/bin/activate")
+        print(f"    source /cad/modules/tcl/init/sh")
+        print(f"    module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2")
         exit(p.returncode)
 
     imported_tests = None
@@ -66,6 +70,9 @@ def dispatch(args, extra_args=None):
     global info  # HA!
     # info = []  # DON'T DO THIS!!! Or else you lose your pointer to the One True Info in regress_util
     info.clear()
+
+    from aha.util.regress_info import test_info
+    test_info(info)
 
     # For config definitions see regress_tests/tests.py
     imported_tests = Tests(args.config)
@@ -259,7 +266,10 @@ def dispatch(args, extra_args=None):
             print(f"--- FAILED TEST {unparsed_name}:\n{e}")
             failed_tests += [unparsed_name]
             final_error = e
-            info.append([unparsed_name+tsuffix+" FAIL"])
+            # info.append([unparsed_name+tsuffix+" FAIL"])
+            info.append(["*** FAIL ***"])
+            info.append(["*** FAIL " + unparsed_name+tsuffix])
+            info.append(["*** FAIL ***"])
 
         report_ongoing_failures(failed_tests)
 
@@ -362,13 +372,22 @@ def dispatch(args, extra_args=None):
                 report_ongoing_failures(failed_tests)
 
   except Exception as e:
-      final_error = e
+      final_error = e  # Save for later
+      import traceback
+      print(traceback.format_exc())  # Report the error and continue below
 
   finally:
     from tabulate import tabulate
     sys.stderr.flush()
+
     print(f"+++ TIMING INFO", flush=True)
-    print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
+    headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."]
+    print(tabulate(info, headers=headers, floatfmt=".0f"), flush=True)
+
+    # Summary timing-table for steveri, to help with aha-regression rebalancing for per-checkin CI
+    from aha.util.regress_info import summarize_and_print_info
+    print(f"+++ TIMING INFO (summary)", flush=True)
+    summarize_and_print_info(info)
 
     if failed_tests:
         print(f"+++ FAILURES", flush=True)
