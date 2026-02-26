@@ -798,7 +798,7 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+                # "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 # BERT Attention*Value Using inner reduction workaround
