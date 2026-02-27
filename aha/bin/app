@@ -47,7 +47,6 @@ HELP="
     $bn --show-suite fast --zircon
     $bn --show-suite fast --no-zircon
     $bn --show-suite full
-    $bn --show-suite resnet
     $bn --show-suite all
     $bn --show -b HEAD~5
     $bn --show aha19
