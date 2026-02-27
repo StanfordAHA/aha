@@ -84,6 +84,8 @@ while [ $# -gt 0 ] ; do
         --*remove*)    FCR=$2;       shift ;;
         --mu*)         MU=$2;        shift ;;
 
+        --get*)        break ;;
+
         --list*)      LIST_SUITES=notnull ;;
         --no*zircon)  ZIRCON=' --no-zircon' ;;
         --zircon)     ZIRCON=               ;;
@@ -120,6 +122,30 @@ done
 
 # echo "remaining args = '$@'"
 
+function get_apps {
+    # Fetch all apps in tests.py for aha repo branch '$1' and list them per-config
+    # Combine all pr_aha config apps into a single group "aha19"
+    # E.g. "get_apps origin/master~1" or "get_apps c3392a"
+
+    branch=$1
+    echo "Fetching apps from branch '$branch'" > /dev/stderr
+    
+    # Get names of "essential" configs, i.e.
+    # leave off pr_aha1..pr_aha19 as they are redundant with 'aha19' etc.
+    # Expect a line like: "ESSENTIAL SUITES: fast full resnet mu aha19"
+    configs=$($0 --list-suites -b $branch | grep ESSENTIAL | sed 's/.*: //')
+
+    for config in $configs; do
+        prefix=$(printf "%-6s " $config)
+        echo "  $(basename $0) -b $branch --show $config" > /dev/stderr
+        apps=$($0 -b $branch --show $config | grep . | sed "s/  */ /g")
+        echo "$apps" | sed "s/^/$prefix/"
+    done
+    echo "" > /dev/stderr
+}
+# Can test function by doing e.g. "app --getapps master"
+expr "$1" : '^--get' > /dev/null && get_apps $2 && exit
+
 ################################################################################
 # This block implements 'app --show-suite aha19' (show contents of pr_aha1-9)
 
@@ -153,6 +179,7 @@ if test -z $BRANCH; then
     cp $repo/$tests_py ${local_tests_py}
 else
     (cd $repo; git show $BRANCH:$tests_py > ${local_tests_py})
+    # echo BRANCH $(cd $repo; git rev-parse $BRANCH)
 fi
 
 ########################################################################
