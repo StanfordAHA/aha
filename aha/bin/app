@@ -48,6 +48,7 @@ HELP="
     $bn --show-suite resnet
     $bn --show-suite all
     $bn --show -b HEAD~5
+    $bn --show aha19
 
 "
 if [ "$1" == "--help" ]; then echo "$HELP"; exit; fi
@@ -173,6 +174,24 @@ TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
 if [ "$LIST_SUITES" ]; then
     echo AVAILABLE REGRESSION SUITES:
     echo "$TEST_SUITES all" | xargs printf "  $bn --show-suite %s\n" | sed 's/,//'
+    echo "  app --show-suite aha19  # List all apps pr_aha1 through pr_aha9"
+    echo ""
+
+    # ------------------------------------------------------------------------
+    # Reject redundant configs and list only the essential ones
+    # e.g. "ESSENTIAL CONFIGS: fast full resnet mu aha19"
+
+    # Helper functions
+    function ser { fmt -w 1; }  # serialize a list of words, one per line
+    function des { tr '\n' ' ' | xargs; }  # deserialize
+
+    # Filter
+    # Don't need configs pr_aha*, they are included in 'aha19'
+    # Similarly, don't want configs "BLANK" or "ALL"
+    function filter { egrep -v 'pr_aha*|BLANK|all'; }
+
+    echo -n "ESSENTIAL SUITES: "
+    echo "$TEST_SUITES aha19" | ser | filter | des
     exit
 fi
 ########################################################################
