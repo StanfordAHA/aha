@@ -5,6 +5,7 @@
 #   --update /local/garnet /aha/garnet  # Update docker repo from local
 #   --copy          # Copy working script to docker as /aha/aha/bin/app
 #   --container C   # Use existing container "C" to run the app
+#   --get_apps <br> # Get list of apps for branch <br> e.g. "app --get_apps master
 
 # To test: see bottom of file, below
 
