@@ -19,6 +19,7 @@ HELP="
     $bn --show-suite <suite>   # Show contents of specified suite
     $bn --run-suite <suite>    # RUN the specified suite
     $bn --show                 # Same as '--show-suite all'
+    $bn --show -b <branch/sha>    # Show apps for given branch/sha
     $bn --show aha19              # Show all apps found in config pr_aha1-9
 
   OPTIONAL FLAGS
@@ -45,6 +46,7 @@ HELP="
     $bn --show-suite full
     $bn --show-suite resnet
     $bn --show-suite all
+    $bn --show -b HEAD~5
 
 "
 if [ "$1" == "--help" ]; then echo "$HELP"; exit; fi
@@ -65,11 +67,16 @@ FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
 UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
 CONTAINER=
+BRANCH=
 function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
 while [ $# -gt 0 ] ; do
     case "$1" in
         --show*)
           if not_suite "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
+
+        -b)            BRANCH=$2;    shift ;;
+        --branch)      BRANCH=$2;    shift ;;
+        --sha)         BRANCH=$2;    shift ;;
 
         --run*)        RUN_SUITE=$2; shift ;;
         --*remove*)    FCR=$2;       shift ;;
@@ -129,14 +136,27 @@ if [ "$SUITE" == "aha19" ]; then
 fi
 
 ########################################################################
-# Find file tests.py
-TESTS_PY=/aha/aha/util/regress_tests/tests.py
-test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
+# Find file tests.py and copy to /tmp
+tests_py=aha/util/regress_tests/tests.py
+local_tests_py=/tmp/tests.py
+
+if test -e /aha/$tests_py; then
+    repo=/aha
+else
+    repo=/nobackup/steveri/github/aha
+fi
+
+# I.e. if <branch> requested, use tests.py from <branch>
+if test -z $BRANCH; then
+    cp $repo/$tests_py ${local_tests_py}
+else
+    (cd $repo; git show $BRANCH:$tests_py > ${local_tests_py})
+fi
 
 ########################################################################
 # Parse 'tests.py' to find suite names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
-TEST_SUITES=$(python3 $TESTS_PY --exec "print(*Tests.configs_list)") || exit 13
+TEST_SUITES=$(python3 $local_tests_py --exec "print(*Tests.configs_list)") || exit 13
 TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
 [ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n$TEST_SUITES\n\n"
 
@@ -166,8 +186,9 @@ fi
 
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
-suites=`python3 $TESTS_PY --exec "Tests.show_configs()"` || exit 13
+suites=`python3 $local_tests_py --exec "Tests.show_configs()"` || exit 13
 [ "$DBG" ] && echo "$suites"
+rm $local_tests_py
 
 ########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
