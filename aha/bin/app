@@ -19,6 +19,7 @@ HELP="
     $bn --show-suite <suite>   # Show contents of specified suite
     $bn --run-suite <suite>    # RUN the specified suite
     $bn --show                 # Same as '--show-suite all'
+    $bn --show aha19              # Show all apps found in config pr_aha1-9
 
   OPTIONAL FLAGS
     --vcs          # Use vcs for RTL simulation (requires vcs license) [DEFAULT]
@@ -109,6 +110,23 @@ done
 [ "$WAVEFORM" ] && printf "\nINFO env var WAVEFORM=='$WAVEFORM'\n"
 
 # echo "remaining args = '$@'"
+
+################################################################################
+# This block implements 'app --show-suite aha19' (show contents of pr_aha1-9)
+
+# Generously allow multiple aliases for pr_aha19 e.g. aha19, 19, pr-aha1-9, aha, pr-aha, ..
+egrep 'aha$'        <<< "$SUITE" > /dev/null && SUITE='aha19'
+egrep '(pr)*.*1.*9' <<< "$SUITE" > /dev/null && SUITE='aha19'
+
+# If $SUITE is nonzero, that means we are doing 'app --show-suite'
+if [ "$SUITE" == "aha19" ]; then
+    [ "$BRANCH" ] && b="-b $BRANCH" || b=
+    for i in {1..9}; do 
+        unset APP_SECRET
+        $0 --show-suite pr_aha$i $b | sed 's/  */ /g'
+    done
+    exit
+fi
 
 ########################################################################
 # Find file tests.py
