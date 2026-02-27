@@ -22,6 +22,7 @@ HELP="
     $bn --show                 # Same as '--show-suite all'
     $bn --show -b <branch/sha>    # Show apps for given branch/sha
     $bn --show aha19              # Show all apps found in config pr_aha1-9
+    $bn --compare <br1> <br2>     # Compare app list for two branches
 
   OPTIONAL FLAGS
     --vcs          # Use vcs for RTL simulation (requires vcs license) [DEFAULT]
@@ -39,6 +40,7 @@ HELP="
     $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
     $bn 8x8 tests/fp_pointwise --waveform
     $bn --verilator 8x8 apps/pointwise
+    $bn --compare master c3392a
 
   QUICK REFERENCE:
     $bn --list-suites
@@ -49,6 +51,7 @@ HELP="
     $bn --show-suite all
     $bn --show -b HEAD~5
     $bn --show aha19
+    $bn --compare HEAD master~1
 
 "
 if [ "$1" == "--help" ]; then echo "$HELP"; exit; fi
@@ -85,6 +88,7 @@ while [ $# -gt 0 ] ; do
         --mu*)         MU=$2;        shift ;;
 
         --get*)        break ;;
+        --compare)     break ;;
 
         --list*)      LIST_SUITES=notnull ;;
         --no*zircon)  ZIRCON=' --no-zircon' ;;
@@ -122,6 +126,9 @@ done
 
 # echo "remaining args = '$@'"
 
+########################################################################
+# app --compare <branch/sha> <branch/sha>
+
 function get_apps {
     # Fetch all apps in tests.py for aha repo branch '$1' and list them per-config
     # Combine all pr_aha config apps into a single group "aha19"
@@ -145,6 +152,68 @@ function get_apps {
 }
 # Can test function by doing e.g. "app --getapps master"
 expr "$1" : '^--get' > /dev/null && get_apps $2 && exit
+
+function compare {
+    # Compare the app list for two given repo branches e.g.
+    # compare origin/master~1 origin/master
+    #     In 'origin/master~1' but not in 'origin/master':
+    #     < full   app 28x16 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB" --removed 12 --mu 32
+    b1=$1; b2=$2
+
+    # First check both branches for validity
+    err=()
+    for branch in $b1 $b2; do
+        if ! git rev-parse $branch >& /dev/null; then
+            err+=("***ERROR cannot find aha repo branch/sha '$branch'")
+        fi
+    done
+    if [ "$err" ]; then
+        for e in "${err[@]}"; do echo $e; done; exit 13
+    fi
+
+    # Make a different temp file for each branch's list of apps
+    tmpfiles=()
+    for branch in $b1 $b2; do
+
+        # Use sed script to remove slashes in branch name; bad news if branch is e.g. 'origin/master'
+        tmp=/tmp/applist-$$---$(echo $branch | sed 's|/|.SLASH.|')
+        tmpfiles+=($tmp) # Build a list of (two) tmpfiles
+        /bin/rm -f $tmp  # Delete file if already exists for some reason
+
+        # Fetch apps to temp file(s)
+        get_apps $branch >> $tmp
+        # echo "" > /dev/stderr
+    done
+
+    # Compare the two temp files...
+    function hline { seq -s= 100 | sed 's/[0-9]//g'; }
+    t1=${tmpfiles[0]}; t2=${tmpfiles[1]}
+    t1_diffs=$(diff <(sort $t1) <(sort $t2) | egrep \<)
+    t2_diffs=$(diff <(sort $t1) <(sort $t2) | egrep \>)
+
+    # ...and print the final results!
+    if [ "$t1_diffs" ]; then
+        hline  # ========================================================================
+        echo "In '$b1' but not in '$b2':"
+        echo "$t1_diffs"
+        echo ""
+    fi
+    if [ "$t2_diffs" ]; then
+        hline  # ========================================================================
+        echo "In '$b2' but not in '$b1':"
+        echo "$t2_diffs"
+        echo ""
+    fi
+
+    # Clean up
+    /bin/rm -f /tmp/applist-[0-9]*
+}
+
+if [ "$1" == "--compare" ]; then
+    shift; b1=$1; b2=$2
+    compare $b1 $b2
+    exit
+fi
 
 ################################################################################
 # This block implements 'app --show-suite aha19' (show contents of pr_aha1-9)
