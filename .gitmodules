@@ -103,3 +103,7 @@
 	path = voyager
 	url = https://github.com/StanfordAHA/voyager.git
     branch = zircon
+[submodule "strait"]
+	path = strait
+	url = https://github.com/yuchen-mei/strait.git
+	branch = master
