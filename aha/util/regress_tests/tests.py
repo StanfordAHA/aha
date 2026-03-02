@@ -249,6 +249,12 @@ class Tests:
             # These take about about hour to run
             glb_tests_fp_RV = Tests.glb_tests_fp_RV1
 
+            # Run dense ML tests
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
+            ]
+
         elif testname == "pr_aha2":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -918,6 +924,12 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+            ]
+
+            # Run dense ML tests
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
             ]
 
             # For sparse tests, we cherry pick some representative tests to run
