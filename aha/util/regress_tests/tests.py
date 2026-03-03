@@ -927,6 +927,16 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
+            # Turn off everything up until hardcoded tests
+            sparse_tests = []
+            glb_tests_RV = []
+            glb_tests_fp_RV = []
+            behavioral_mu_tests = []
+            behavioral_mu_tests_fp = []
+            external_mu_tests = []
+            external_mu_tests_fp = []
+            voyager_cgra_tests_fp = []
+
         elif testname == "resnet":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
