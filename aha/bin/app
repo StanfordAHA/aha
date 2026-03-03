@@ -20,8 +20,8 @@ HELP="
     $bn --show-suite <suite>   # Show contents of specified suite
     $bn --run-suite <suite>    # RUN the specified suite
     $bn --show                 # Same as '--show-suite all'
-    $bn --show -b <branch/sha>    # Show apps for given branch/sha
     $bn --show aha19              # Show all apps found in config pr_aha1-9
+    $bn --show -b <branch/sha>    # Show apps for given branch/sha
     $bn --compare <br1> <br2>     # Compare app list for two branches
 
   OPTIONAL FLAGS
@@ -143,8 +143,9 @@ function get_apps {
 
     for config in $configs; do
         prefix=$(printf "%-6s " $config)
-        echo "  $(basename $0) -b $branch --show $config" > /dev/stderr
+        printf    "  $(basename $0) -b $branch --show %-9s " $config... > /dev/stderr
         apps=$($0 -b $branch --show $config | grep . | sed "s/  */ /g")
+        printf "%3d apps\n" $(grep . <<< "$apps" | wc -l) > /dev/stderr
         echo "$apps" | sed "s/^/$prefix/"
     done
     echo "" > /dev/stderr
@@ -181,6 +182,7 @@ function compare {
 
         # Fetch apps to temp file(s)
         get_apps $branch >> $tmp
+        # echo "  Total $(grep . $tmp | wc -l) apps in 
         # echo "" > /dev/stderr
     done
 
@@ -191,6 +193,9 @@ function compare {
     t2_diffs=$(diff <(sort $t1) <(sort $t2) | egrep \>)
 
     # ...and print the final results!
+    echo "Comparing $b1 vs. $b2..."
+    [ "$t1_diffs$t2_diffs" ] || echo "NO DIFFS"
+
     if [ "$t1_diffs" ]; then
         hline  # ========================================================================
         echo "In '$b1' but not in '$b2':"
