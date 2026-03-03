@@ -108,6 +108,11 @@ def _voyager_compile_full_model(
     Run voyager-compiler (PyTorch -> protobuf) for the given model.
     Creates a dedicated Python 3.10+ venv under strait_path so regression can stay on Python 3.8.
     """
+    # Create a strictly isolated environment
+    sanitized_env = os.environ.copy()
+    sanitized_env.pop("VIRTUAL_ENV", None)  # Prevent parent venv inheritance
+    sanitized_env.pop("PYTHONPATH", None)   # CRITICAL: Stop Python 3.8 packages from leaking into 3.13
+
     voyager_compiler_venv = os.path.join(strait_path, ".voyager-compiler-venv")
     voyager_python = os.path.join(voyager_compiler_venv, "bin", "python")
 
@@ -141,10 +146,8 @@ def _voyager_compile_full_model(
 
         print(f"[INFO] Creating voyager-compiler venv at {voyager_compiler_venv} with {candidate}...", flush=True)
 
-        # Pass an isolated environment when creating a nested venv
-        env = os.environ.copy()
-        env.pop("VIRTUAL_ENV", None)
-        subprocess.check_call([candidate, "-m", "venv", voyager_compiler_venv], env=env)
+        # Use the sanitized env when creating the nested venv
+        subprocess.check_call([candidate, "-m", "venv", voyager_compiler_venv], env=sanitized_env)
 
         voyager_python = os.path.join(voyager_compiler_venv, "bin", "python")
 
@@ -156,12 +159,14 @@ def _voyager_compile_full_model(
             [voyager_python, "-m", "pip", "show", "voyager-compiler"],
             check=True,
             capture_output=True,
+            env=sanitized_env,
         )
     except subprocess.CalledProcessError:
         if os.path.isdir(voyager_compiler_install_path):
             print(f"[INFO] Installing voyager-compiler from {voyager_compiler_install_path}...", flush=True)
             subprocess.check_call(
                 [voyager_python, "-m", "pip", "install", voyager_compiler_install_path],
+                env=sanitized_env,
             )
         else:
             raise RuntimeError(
@@ -197,7 +202,8 @@ def _voyager_compile_full_model(
         cmd.extend(["--unit_test_op", model])
 
     try:
-        subprocess.check_call(cmd, cwd=strait_path)
+        # Pass the sanitized environment to the final compilation step
+        subprocess.check_call(cmd, cwd=strait_path, env=sanitized_env)
     except subprocess.CalledProcessError as e:
         print(
             f"\033[91mERROR: Voyager full-model compile failed: {e}\033[0m",
