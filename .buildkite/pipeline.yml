@@ -3,7 +3,8 @@ agents: { docker: true }
 
 env:
   # Default config is "pr_aha"
-  CONFIG: ${CONFIG:-pr_aha}
+  CONFIG: "full"
+  # CONFIG: ${CONFIG:-pr_aha}
 
   # Analysis indicates that, given these times for the nine regressions
   # { 165,98,113,124,155,147,159,135,142 }  (from build 12226)
