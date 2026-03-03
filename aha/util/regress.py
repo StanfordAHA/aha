@@ -19,6 +19,11 @@ def report_ongoing_failures(failed_tests):
     else:
         print(f"--- NO FAILED TESTS (YET)")
 
+    global info  # right?
+    print(f"+++ INTERMEDIATE TIMING INFO (summary)", flush=True)
+    summarize_and_print_info(info)
+
+
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
     parser.add_argument("config")
