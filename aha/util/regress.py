@@ -8,7 +8,9 @@ from aha.util.regress_util import format_concat_tiles
 from aha.util.regress_util import test_sparse_app
 from aha.util.regress_util import test_dense_app
 from aha.util.regress_util import test_hardcoded_dense_app
-from aha.util.regress_util import info
+
+from aha.util.regress_info import summarize_and_print_info
+from aha.util.regress_util import info  # FIXME huh maybe info should be in regress_info and not regress_util
 global info
 
 def report_ongoing_failures(failed_tests):
@@ -390,7 +392,6 @@ def dispatch(args, extra_args=None):
     print(tabulate(info, headers=headers, floatfmt=".0f"), flush=True)
 
     # Summary timing-table for steveri, to help with aha-regression rebalancing for per-checkin CI
-    from aha.util.regress_info import summarize_and_print_info
     print(f"+++ TIMING INFO (summary)", flush=True)
     summarize_and_print_info(info)
 
