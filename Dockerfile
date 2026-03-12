@@ -283,10 +283,6 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 RUN mkdir -p /usr/include/sys && \
     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
 
-RUN \
-    apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev && \
-    apt-get update && apt-get install -y linux-headers-generic && \
-    ln -s /usr/include/asm-generic/ /usr/include/asm
 
 # FIXME
 # Voyager 1 temporarily moved to beginning of file for debugging, see above
@@ -345,7 +341,6 @@ COPY ./Lego_v0 /aha/Lego_v0
 COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
 
-WORKDIR /aha
 # Need z3-solver b/c hwtypes :(
 
 
@@ -358,7 +353,15 @@ RUN : z3 solver && \
     (update-alternatives --remove-all g++ || echo okay) && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-13 && \
-    source bin/activate && pip install z3-solver && \
+    type gcc && type cmake && gcc --version && cmake --version; \
+    \
+        : Install z3-solver from scratch && \
+        cd /aha && source bin/activate && pip install z3-solver && \
+    \
+    : This installs necessary updates for libstdc++.so.6 maybe, needed by z3 maybe; \
+    apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev && \
+    apt-get update && apt-get install -y linux-headers-generic && \
+    ln -s /usr/include/asm-generic/ /usr/include/asm && \
     \
     : pythunder install breaks during final 'aha deps install' if use gcc-13; \
     : So reset back to gcc-9 again; \
