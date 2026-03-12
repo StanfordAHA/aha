@@ -19,8 +19,8 @@
 FROM docker.io/ubuntu:20.04
 LABEL description="garnet"
 
+# Prevents e.g. "Please select geographic area" during "apt-git install build-essential"
 ENV DEBIAN_FRONTEND=noninteractive
-# ARG GITHUB_TOKEN
 
 # 1GB maybe
 RUN apt-get update && \
@@ -87,11 +87,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 # Create an aha directory and prep a python environment.
 # Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
-RUN mkdir -p /aha && cd /aha && python -m venv .
-
-# These packages seem stable/cacheable, put them near the BEGINNING
-WORKDIR /aha
-RUN source bin/activate && \
+RUN mkdir -p /aha && cd /aha && python -m venv . && source bin/activate && \
   pip install urllib3==1.26.15 && \
   pip install wheel six && \
   pip install systemrdl-compiler peakrdl-html && \
@@ -102,19 +98,9 @@ RUN source bin/activate && \
   pip install protobuf && \
   echo DONE
 
+
 # Put the problem child here up front so that it can fail quickly :(
-
 # Voyager 1 - clone voyager
-
-# 'COPY voyager' below, plus restore-dotgit on startup, should take care of
-# the final checkout of correct voyager and its submodules (i hope!)
-
-# COPY ./.git/modules/voyager/HEAD /tmp/HEAD
-# Cannot COPY because .git/modules/voyager is in .dockerignore
-# RUN --mount=source=./.git/modules/voyager/HEAD,target=/tmp/HEAD ls -lr /tmp/HEAD && cat /tmp/HEAD
-#  git checkout `cat /tmp/HEAD` && git submodule update --init --recursive && \
-
-
 
 # Use token provided by docker-build `--secrets` to clone voyager
 RUN --mount=type=secret,id=gtoken \
@@ -297,10 +283,10 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 RUN mkdir -p /usr/include/sys && \
     curl -o /usr/include/sys/cdefs.h https://raw.githubusercontent.com/lattera/glibc/2.31/include/sys/cdefs.h
 
-RUN apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev
-RUN apt-get update && apt-get install -y linux-headers-generic
-
-RUN ln -s /usr/include/asm-generic/ /usr/include/asm
+RUN \
+    apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev && \
+    apt-get update && apt-get install -y linux-headers-generic && \
+    ln -s /usr/include/asm-generic/ /usr/include/asm
 
 # FIXME
 # Voyager 1 temporarily moved to beginning of file for debugging, see above
@@ -359,30 +345,34 @@ COPY ./Lego_v0 /aha/Lego_v0
 COPY ./setup.py /aha/setup.py
 COPY ./aha /aha/aha
 
-# Need gcc-13 to install z3-solver, used by hwtypes
-RUN \
-  add-apt-repository ppa:ubuntu-toolchain-r/test && \
-  apt update && apt install -y gcc-13 g++-13 && \
-  (update-alternatives --remove-all gcc || echo okay) && \
-  (update-alternatives --remove-all g++ || echo okay) && \
-  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
-                         --slave   /usr/bin/g++ g++ /usr/bin/g++-13
-
 WORKDIR /aha
-RUN source bin/activate && pip install z3-solver
+# Need z3-solver b/c hwtypes :(
 
-# pythunder install breaks if use gcc-13 :(
-# So reset back to gcc-9 again
-RUN \
-   apt-get install -y gcc-9 g++-9 && \
-   (update-alternatives --remove-all gcc || echo okay) && \
-   (update-alternatives --remove-all g++ || echo okay) && \
-   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
-                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9
 
-RUN \
-  source bin/activate && \
-  echo "--- ..Final aha deps install" && \
+# Install z3 solver, this is kind of a mess isnt it
+RUN : z3 solver && \
+    : Need gcc-13 to install and run z3-solver, used by hwtypes && \
+    add-apt-repository ppa:ubuntu-toolchain-r/test && \
+    apt update && apt install -y gcc-13 g++-13 && \
+    (update-alternatives --remove-all gcc || echo okay) && \
+    (update-alternatives --remove-all g++ || echo okay) && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-13 && \
+    source bin/activate && pip install z3-solver && \
+    \
+    : pythunder install breaks during final 'aha deps install' if use gcc-13; \
+    : So reset back to gcc-9 again; \
+    apt-get install -y gcc-9 g++-9 && \
+    (update-alternatives --remove-all gcc || echo okay) && \
+    (update-alternatives --remove-all g++ || echo okay) && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9 \
+    || exit 13; \
+    echo z3-solver DONE
+
+RUN : Final aha deps install && \
+  cd /aha && source bin/activate && \
+  type gcc && type cmake && gcc --version && cmake --version && z3 --version; \
   pip install -e . && \
   aha deps install
 
