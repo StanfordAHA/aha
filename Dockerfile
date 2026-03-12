@@ -343,9 +343,14 @@ COPY ./aha /aha/aha
 
 # Need z3-solver b/c hwtypes :(
 
+# Find and copy cached z3-solver wheel collateral if available.
+# Including known file (setup.py) prevents COPY error when/if cache file don't exist
+COPY ./setup.py z3_solver-4.16.0.0-py3-none-linux_x86_64.whl* /tmp/
+COPY ./setup.py libz3.so*  /tmp
 
 # Install z3 solver, this is kind of a mess isnt it
-RUN : z3 solver && \
+# FIXME can remove cachebuster in future cleanups
+RUN : z3 solver && echo temp-cachebuster && \
     : Need gcc-13 to install and run z3-solver, used by hwtypes && \
     add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt update && apt install -y gcc-13 g++-13 && \
@@ -355,8 +360,16 @@ RUN : z3 solver && \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-13 && \
     type gcc && type cmake && gcc --version && cmake --version; \
     \
+    if test -e /tmp/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl; then \
+        : Use cached collateral if available, saving 20m && \
+        source /aha/bin/activate && \
+        pip install /tmp/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl && \
+        mv /tmp/libz3.so /aha/lib/python3.8/site-packages/z3/lib/; \
+    else \
         : Install z3-solver from scratch && \
-        cd /aha && source bin/activate && pip install z3-solver && \
+        cd /aha && source bin/activate && \
+        pip install z3-solver; \
+    fi && \
     \
     : This installs necessary updates for libstdc++.so.6 maybe, needed by z3 maybe; \
     apt-get install -y libc6-dev-amd64 || apt-get install -y libc6-dev && \
