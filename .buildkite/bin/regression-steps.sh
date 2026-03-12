@@ -262,12 +262,10 @@ exit
 # 
 #             # Remove docker pr-aha jobs older than one day
 #             echo "--- Clean up old docker jobs"
-#             set -x
 #             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress/{print $$NF}')
 #             test -z "$$oldjobs" || echo docker kill $$oldjobs
 #             test -z "$$oldjobs" || docker kill $$oldjobs || echo okay
 #             : Let the jobs settle && sleep 10
-#             set +x
 # 
 #             # Remove aha-flow docker images older than one day
 #             echo "--- Cleanup old docker images"
