@@ -44,6 +44,16 @@ def add_subparser(subparser):
     parser.set_defaults(dispatch=dispatch)
 
 def dispatch(args, extra_args=None):
+
+  # Accomodations for e.g. "--group sparse_tests" or "--groups glb_tests,resnet_tests"
+  # Sets e.g. group_filter=["glb_tests","resnet_tests"]
+  group_filter = []
+  if (extra_args):
+      group_index = 0
+      if '--group'  in extra_args: group_index = extra_args.index('--group')+1
+      if '--groups' in extra_args: group_index = extra_args.index('--groups')+1
+      if group_index: group_filter = extra_args[group_index].split(',')
+
   try:
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
