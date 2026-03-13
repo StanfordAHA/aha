@@ -43,30 +43,34 @@ def add_subparser(subparser):
     parser.add_argument("--no-zircon", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
-def dispatch(args, extra_args=None):
+def set_group_filter(extra_args):
+    '''
+    Accomodations for e.g. "--group sparse_tests" or "--groups glb_tests,resnet_tests"
+    Returns e.g. ["glb_tests","resnet_tests"]
+    '''
+    if not extra_args: return []
+    else:
+        group_index = 0
+        if '--group'  in extra_args: group_index = extra_args.index('--group')+1
+        if '--groups' in extra_args: group_index = extra_args.index('--groups')+1
+        return extra_args[group_index].split(',')
 
-  # Accomodations for e.g. "--group sparse_tests" or "--groups glb_tests,resnet_tests"
-  # Sets e.g. group_filter=["glb_tests","resnet_tests"]
-  group_filter = []
-  if (extra_args):
-      group_index = 0
-      if '--group'  in extra_args: group_index = extra_args.index('--group')+1
-      if '--groups' in extra_args: group_index = extra_args.index('--groups')+1
-      if group_index: group_filter = extra_args[group_index].split(',')
+def dispatch(args, extra_args=None):
+  group_filter = set_group_filter(extra_args)
+  seed_flow = not args.non_seed_flow
+  use_pipeline = args.use_pipeline
+  using_matrix_unit = args.using_matrix_unit
+  mu_datawidth = args.mu_datawidth
+  unroll = args.unroll
+
+  failed_tests = []
+  final_error = None
+
+  # It's painful if we don't catch this up front! (E.g. missing vcs.)
+  if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
+  else: TOOL = 'vcs'
 
   try:
-    seed_flow = not args.non_seed_flow
-    use_pipeline = args.use_pipeline
-    using_matrix_unit = args.using_matrix_unit
-    mu_datawidth = args.mu_datawidth
-    unroll = args.unroll
-
-    failed_tests = []
-    final_error = None
-
-    # It's painful if we don't catch this up front! (E.g. missing vcs.)
-    if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
-    else: TOOL = 'vcs'
     p = subprocess.run(
         f'set -x; command -v {TOOL}',
         shell=True,
