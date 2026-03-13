@@ -50,21 +50,27 @@ def set_group_filter(extra_args):
     '''
     if not extra_args: return []
     else:
-        group_index = 0
-        if '--group'  in extra_args: group_index = extra_args.index('--group')+1
-        if '--groups' in extra_args: group_index = extra_args.index('--groups')+1
-        return extra_args[group_index].split(',')
+        key_index = None
+        for key in ['--group','--groups']:
+            if key in extra_args: key_index = extra_args.index(key)
+        if key_index == None:
+            return []
+        else:
+            return extra_args[key_index+1].split(',')
 
 def clear_unwanted_groups(tests_dict, wanted_groups):
     'Clear all {tests_dict} groups that are not in [wanted_groups]'
+    print("--- WANTED_GROUPS= ", wanted_groups)
     if not wanted_groups: return
     for key,value in tests_dict.items():
         if key in wanted_groups: continue
+        print("--- DELETING GROUP ", key)
         if isinstance(value,list): tests_dict[key] = []
     # import json; print("AFTER groupfilter:\n", json.dumps(tests_dict, indent=4))
 
 def dispatch(args, extra_args=None):
   group_filter = set_group_filter(extra_args)
+  print("--- GROUP FILTER: ", group_filter)
   seed_flow = not args.non_seed_flow
   use_pipeline = args.use_pipeline
   using_matrix_unit = args.using_matrix_unit
