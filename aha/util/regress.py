@@ -55,6 +55,15 @@ def set_group_filter(extra_args):
         if '--groups' in extra_args: group_index = extra_args.index('--groups')+1
         return extra_args[group_index].split(',')
 
+def clear_unwanted_groups(tests_dict, wanted_groups):
+    'Clear all {tests_dict} groups that are not in [wanted_groups]'
+    if not wanted_groups: return
+    for key,value in tests_dict.items():
+        if key in wanted_groups: continue
+        if 'E64' in key: continue  # Preserve 'E64_supported_tests', 'E64_MB_supported_tests'
+        if isinstance(value,list): tests_dict[key] = []
+    # import json; print("AFTER groupfilter:\n", json.dumps(tests_dict, indent=4))
+
 def dispatch(args, extra_args=None):
   group_filter = set_group_filter(extra_args)
   seed_flow = not args.non_seed_flow
@@ -97,6 +106,9 @@ def dispatch(args, extra_args=None):
 
     # For config definitions see regress_tests/tests.py
     imported_tests = Tests(args.config)
+
+    # Delete all groups except those listed in group_filter
+    clear_unwanted_groups(imported_tests.__dict__, group_filter)
 
     # Unpack imported_tests into convenient handles
     width, height = imported_tests.width, imported_tests.height
