@@ -60,7 +60,6 @@ def clear_unwanted_groups(tests_dict, wanted_groups):
     if not wanted_groups: return
     for key,value in tests_dict.items():
         if key in wanted_groups: continue
-        if 'E64' in key: continue  # Preserve 'E64_supported_tests', 'E64_MB_supported_tests'
         if isinstance(value,list): tests_dict[key] = []
     # import json; print("AFTER groupfilter:\n", json.dumps(tests_dict, indent=4))
 
