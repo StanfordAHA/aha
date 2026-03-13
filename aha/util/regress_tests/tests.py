@@ -1168,6 +1168,7 @@ class Tests:
             dense_ml_models = []
             dense_ml_unit_tests = [
                 "pointwise",
+                "swish",
             ]
 
         # BLANK can be used to return default height, width, and blank test lists

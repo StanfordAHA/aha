@@ -3,6 +3,7 @@ import subprocess
 import time
 from collections import defaultdict
 import shutil
+import json
 from aha.util.regress_tests.tests import Tests
 import copy
 
@@ -754,9 +755,9 @@ def test_dense_ml_model(
 
     print(f"--- BEGIN test_dense_ml_model {model}", flush=True)
 
-    # ===============================
+    # ======================================
     # Run voyager and strait compilations.
-    # ===============================
+    # ======================================
     print(f"--- Running voyager+strait compilation of full model {model}...", flush=True)
     strait_cmd = [
         "aha",
@@ -785,6 +786,47 @@ def test_dense_ml_model(
     from aha.util.strait import _strait_kernel_fp_output_map
     kernel_fp_map = _strait_kernel_fp_output_map(model, gemm_datatype, strait_path)
 
+    # Read is_first_pass / is_last_pass from each kernel's scheduled_ops.json to handle decomposed ops
+    pass_metadata = {}  # kernel_name -> {is_first_pass, is_last_pass, app_name}
+    for kernel_name in kernel_names:
+        scheduled_ops_path = os.path.join(coreir_dir, kernel_name, "scheduled_ops.json")
+        is_first_pass = 1
+        is_last_pass = 1
+        if os.path.isfile(scheduled_ops_path):
+            with open(scheduled_ops_path) as f:
+                scheduled_ops = json.load(f)
+            if scheduled_ops:
+                first_output = next(iter(scheduled_ops[0].get("outputs", {}).values()), {})
+                is_first_pass = first_output.get("is_first_pass", 1)
+                is_last_pass = first_output.get("is_last_pass", 1)
+        pass_metadata[kernel_name] = {
+            "is_first_pass": is_first_pass,
+            "is_last_pass": is_last_pass,
+            "app_name": f"apps/{model}_{gemm_datatype}_{kernel_name}",
+        }
+
+    # Group kernels into op groups (consecutive passes of the same decomposed op)
+    kernel_groups = []
+    current_group = []
+    for kernel_name in kernel_names:
+        meta = pass_metadata[kernel_name]
+        if meta["is_first_pass"] == 1 and meta["is_last_pass"] == 1:
+            if current_group:
+                kernel_groups.append(current_group)
+                current_group = []
+            kernel_groups.append([kernel_name])
+        elif meta["is_first_pass"] == 1 and meta["is_last_pass"] == 0:
+            if current_group:
+                kernel_groups.append(current_group)
+            current_group = [kernel_name]
+        else:  # is_first_pass == 0
+            current_group.append(kernel_name)
+            if meta["is_last_pass"] == 1:
+                kernel_groups.append(current_group)
+                current_group = []
+    if current_group:
+        kernel_groups.append(current_group)
+
     # Define environment variables and parameters for CGRA backend.
     env_parameters = str(env_parameters)
     use_daemon = ["--daemon", "auto"] if (extra_args and "--daemon" in extra_args and "auto" in extra_args) else []
@@ -804,6 +846,9 @@ def test_dense_ml_model(
         "MU_OC_0": str(mu_oc_0),
         "MU_DATAWIDTH": str(mu_datawidth),
         "ADD_MU_INPUT_BUBBLES": "1",
+        # Always use E64 MB with IO-level mode control
+        "E64_MODE_ON": "1",
+        "E64_MULTI_BANK_MODE_ON": "1",
     }
     print(f"\033[92mINFO: test_dense_ml_model always uses dense ready-valid and exhaustive pipelining\033[0m")
 
@@ -827,9 +872,12 @@ def test_dense_ml_model(
         if f.endswith(".json")
     ) if os.path.isdir(strait_headers_dir) else []
 
+    # ==============================================
+    # Create symlinks and run PnR for all kernels.
+    # ==============================================
     for kernel_name in kernel_names:
         kernel_dir = os.path.abspath(os.path.join(coreir_dir, kernel_name))
-        app_name = f"apps/{model}_{gemm_datatype}_{kernel_name}"
+        app_name = pass_metadata[kernel_name]["app_name"]
         app_dir = os.path.join(aha_halide_benchmarks_path, app_name)
         bin_link = os.path.join(app_dir, "bin")
         os.makedirs(app_dir, exist_ok=True)
@@ -843,9 +891,6 @@ def test_dense_ml_model(
         except OSError as e:
             raise RuntimeError(f"[ERROR] Failed to create symlink for {kernel_name}: {e}")
 
-        # ===============================
-        # Run pnr and test for all kernels.
-        # ===============================
         print(f"--- {app_name} - pnr and pipelining", flush=True)
         buildkite_call([
             "aha", "pnr", app_name,
@@ -854,14 +899,20 @@ def test_dense_ml_model(
             "--env-parameters", env_parameters,
         ] + pnr_mu_extra_args + use_daemon, env=env_vars)
 
-        print(f"--- {app_name} - glb testing", flush=True)
-        test_cmd = ["aha", "test", app_name]
-        if kernel_fp_map.get(kernel_name, False):
+    # =============================================================================
+    # Run RTL simulation testing grouped by op decomposition.
+    # Decomposed multi-pass ops run as one aha test invocation so that
+    # GLB state written by pass N is available to pass N+1 in the same sim session.
+    # =============================================================================
+    for group in kernel_groups:
+        app_names = [pass_metadata[k]["app_name"] for k in group]
+        print(f"--- {app_names} - glb testing", flush=True)
+        print(app_names)
+        test_cmd = ["aha", "test"] + app_names
+        # Use fp comparison mode determined by the last pass of the op group
+        if kernel_fp_map.get(group[-1], False):
             test_cmd.append("--dense-fp")
         buildkite_call(test_cmd, env=env_vars)
-
-        print(f"--- Removed link {app_dir}", flush=True)
-        shutil.rmtree(app_dir, ignore_errors=True)
 
 def test_hardcoded_dense_app(
         test, width, height, env_parameters, extra_args,
