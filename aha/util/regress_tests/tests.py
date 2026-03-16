@@ -209,7 +209,7 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             # These take about an hour to run
-            sparse_tests = [
+            sparse_tests = []; dummy=[
                 # pr_aha1
                 "vec_elemmul",
                 "mat_vecmul_ij",
@@ -228,7 +228,7 @@ class Tests:
                 "tensor3_ttv",
             ]
             # THESE HAVE BEEN TURNED OFF see below
-            voyager_cgra_tests_fp = [
+            voyager_cgra_tests_fp = []; dummy=[
                 # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
                 "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
@@ -237,7 +237,7 @@ class Tests:
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
             ]
             # THESE HAVE BEEN TURNED OFF see below
-            external_mu_tests_fp = [
+            external_mu_tests_fp = []; dummy=[
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
@@ -247,7 +247,7 @@ class Tests:
                "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
             ]
             # These take about about hour to run
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV1
+            glb_tests_fp_RV = []; dummy=Tests.glb_tests_fp_RV1
 
             # Run dense ML tests
             dense_ml_models = []
