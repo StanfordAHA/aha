@@ -253,15 +253,7 @@ def dispatch(args, extra_args=None):
                     attention_scale_value = f.readline().strip()
                     env['ATTN_SCALE'] = attention_scale_value
 
-        # For conv1, we want the gold-check to be done using submodule_1's gold
-        # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module
-        if model == "resnet18" and layer == "submodule_1":
-            subprocess.check_call(["mv", "/aha/voyager/gold_activation.txt", "/aha/voyager/gold_activation_submodule_1.txt"])
-
-        if model == "resnet18" and layer == "submodule":
-            subprocess.check_call(["mv", "/aha/voyager/gold_activation_submodule_1.txt", "/aha/voyager/gold_activation.txt"])
-
-        if (model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh")) or (model == "fakegemm" and (layer == "linear_default_1")):
+        if (model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh")) or (model == "fakegemm" and (layer == "linear_default_1")) or (model == "resnet18" and layer == "submodule"):
             subprocess_call_log(
                 cmd=[sys.executable,
                         f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",
