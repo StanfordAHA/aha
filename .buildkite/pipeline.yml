@@ -46,8 +46,7 @@ steps:
   # UPLOAD
   command: |
         set -x && pwd && git rev-parse HEAD 
-        git clean -ffxdq
-        git checkout $$BUILDKITE_COMMIT
+        git clean -ffxdq && git checkout master && git pull && git checkout $$BUILDKITE_COMMIT
         buildkite-agent pipeline upload .buildkite/weekly.yml --replace
 
 - wait: { continue_on_failure: true }
