@@ -538,6 +538,7 @@ if test -n "$SUBGROUPS"; then
     echo aha regress $RUN_SUITE --group $SUBGROUPS
     aha regress $RUN_SUITE --group $SUBGROUPS
     exit
+fi
 
 # No subgroups, so continue on as before
 echo TOOL=$SIM aha regress "$config"$ZIRCON --include-no-zircon-tests
