@@ -39,21 +39,14 @@ steps:
       pre-checkout: |
         set -x && pwd && echo DONE
 
-#         aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH
-#         set -x
-#         /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
-#         git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
-#         git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
-
-#         git clean -ffxdq && git checkout master && git pull && git checkout $$BUILDKITE_COMMIT
-
-
   # UPLOAD
+  # Uh oh.
+  # pwd=r8cad-docker-3 BUT BUILDKITE_BUILD_CHECKOUT_PATH=khaki-2 :( :(
   command: |
-        set -x && pwd && echo $BUILDKITE_BUILD_CHECKOUT_PATH
-        aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH
-        /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
-        git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
+        set -x && pwd
+        aha_clone=$(pwd)
+        cd .. && /bin/rm -rf $$aha_clone
+        git clone https://github.com/StanfordAHA/aha $$aha_clone && cd $$aha_clone
         git pull && git checkout $$BUILDKITE_COMMIT
         buildkite-agent pipeline upload .buildkite/weekly.yml --replace
 
