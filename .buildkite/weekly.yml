@@ -1,0 +1,50 @@
+# Initial version of this file was generated with extensive help from
+# .buildkite/bin/weekly-regressions.sh
+
+agents: { docker: true }
+steps:
+    - label: sparse_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full sparse_tests
+      wait: ~
+    - label: glb_tests_RV
+      command: aha/bin/app --update . /aha/aha --subgroup full glb_tests_RV
+      wait: ~
+    - label: glb_tests_fp_RV
+      command: aha/bin/app --update . /aha/aha --subgroup full glb_tests_fp_RV
+      wait: ~
+    - label: glb_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full glb_tests
+      wait: ~
+    - label: glb_tests_fp
+      command: aha/bin/app --update . /aha/aha --subgroup full glb_tests_fp
+      wait: ~
+    - label: resnet_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full resnet_tests
+      wait: ~
+    - label: resnet_tests_fp
+      command: aha/bin/app --update . /aha/aha --subgroup full resnet_tests_fp
+      wait: ~
+    - label: voyager_cgra_tests_fp
+      command: aha/bin/app --update . /aha/aha --subgroup full voyager_cgra_tests_fp
+      wait: ~
+    - label: behavioral_mu_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full behavioral_mu_tests
+      wait: ~
+    - label: behavioral_mu_tests_fp
+      command: aha/bin/app --update . /aha/aha --subgroup full behavioral_mu_tests_fp
+      wait: ~
+    - label: external_mu_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full external_mu_tests
+      wait: ~
+    - label: external_mu_tests_fp
+      command: aha/bin/app --update . /aha/aha --subgroup full external_mu_tests_fp
+      wait: ~
+    - label: hardcoded_dense_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full hardcoded_dense_tests
+      wait: ~
+    - label: dense_ml_unit_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full dense_ml_unit_tests
+      wait: ~
+    - label: no_zircon_sparse_tests
+      command: aha/bin/app --update . /aha/aha --subgroup full no_zircon_sparse_tests
+      wait: ~

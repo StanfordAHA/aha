@@ -3,7 +3,8 @@ agents: { docker: true }
 
 env:
   # Default config is "pr_aha"
-  CONFIG: ${CONFIG:-pr_aha}
+  # CONFIG: ${CONFIG:-pr_aha}
+  CONFIG: full
 
   # Analysis indicates that, given these times for the nine regressions
   # { 165,98,113,124,155,147,159,135,142 }  (from build 12226)
@@ -28,7 +29,12 @@ env:
 
 steps:
 
+- label: "Pre-Launch"
+  if: "build.environment.CONFIG" == "full"
+  command: buildkite-agent pipeline upload .buildkite/weekly.yml
+
 - label: "Launch"
+  if: "build.environment.CONFIG" != "full"
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
