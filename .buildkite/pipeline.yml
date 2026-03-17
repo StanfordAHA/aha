@@ -45,7 +45,7 @@ steps:
         git checkout $$BUILDKITE_COMMIT
         set +x
   # UPLOAD
-  command: set -x && pwd && buildkite-agent pipeline upload .buildkite/weekly.yml
+  command: set -x && pwd && buildkite-agent pipeline upload .buildkite/weekly.yml --replace
 
 - wait: { continue_on_failure: true }
 
