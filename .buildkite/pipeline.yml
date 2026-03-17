@@ -37,11 +37,13 @@ steps:
   - uber-workflow/run-without-clone:
   - improbable-eng/metahook:
       pre-checkout: |
-        aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH
-        set -x
-        /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
-        git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
-        git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
+        set -x && pwd && echo DONE
+
+#         aha_clone=$BUILDKITE_BUILD_CHECKOUT_PATH
+#         set -x
+#         /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
+#         git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
+#         git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
 
   # UPLOAD
   command: |
@@ -49,7 +51,7 @@ steps:
         git clean -ffxdq && git checkout master && git pull && git checkout $$BUILDKITE_COMMIT
         buildkite-agent pipeline upload .buildkite/weekly.yml --replace
 
-- wait: { continue_on_failure: true }
+- wait: ~
 
 - label: "Launch"
   if: build.env("CONFIG") != "full"
