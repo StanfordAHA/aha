@@ -3,20 +3,28 @@
 
 agents: { docker: true }
 env:    { APP: "aha/bin/app --update . /aha/aha --subgroup full" }
+
+definitions:
+  # CLONE aha repo but DO NOT initialize submodules
+  plugins: &CLONE
+   - uber-workflow/run-without-clone:
+   - improbable-eng/metahook:
+       pre-checkout: pwd
+
 steps: [
-  {label: sparse_tests,             command: $APP sparse_tests},            {wait: ~},
-  {label: glb_tests_RV,             command: $APP glb_tests_RV},            {wait: ~},
-  {label: glb_tests_fp_RV,          command: $APP glb_tests_fp_RV},         {wait: ~},
-  {label: glb_tests,                command: $APP glb_tests},               {wait: ~},
-  {label: glb_tests_fp,             command: $APP glb_tests_fp},            {wait: ~},
-  {label: resnet_tests,             command: $APP resnet_tests},            {wait: ~},
-  {label: resnet_tests_fp,          command: $APP resnet_tests_fp},         {wait: ~},
-  {label: voyager_cgra_tests_fp,    command: $APP voyager_cgra_tests_fp},   {wait: ~},
-  {label: behavioral_mu_tests,      command: $APP behavioral_mu_tests},     {wait: ~},
-  {label: behavioral_mu_tests_fp,   command: $APP behavioral_mu_tests_fp},  {wait: ~},
-  {label: external_mu_tests,        command: $APP external_mu_tests},       {wait: ~},
-  {label: external_mu_tests_fp,     command: $APP external_mu_tests_fp},    {wait: ~},
-  {label: hardcoded_dense_tests,    command: $APP hardcoded_dense_tests},   {wait: ~},
-  {label: dense_ml_unit_tests,      command: $APP dense_ml_unit_tests},     {wait: ~},
-  {label: no_zircon_sparse_tests,   command: $APP no_zircon_sparse_tests},  {wait: ~},
+  {plugins: *CLONE, label: sparse_tests,             command: $APP sparse_tests},            {wait: ~},
+  {plugins: *CLONE, label: glb_tests_RV,             command: $APP glb_tests_RV},            {wait: ~},
+  {plugins: *CLONE, label: glb_tests_fp_RV,          command: $APP glb_tests_fp_RV},         {wait: ~},
+  {plugins: *CLONE, label: glb_tests,                command: $APP glb_tests},               {wait: ~},
+  {plugins: *CLONE, label: glb_tests_fp,             command: $APP glb_tests_fp},            {wait: ~},
+  {plugins: *CLONE, label: resnet_tests,             command: $APP resnet_tests},            {wait: ~},
+  {plugins: *CLONE, label: resnet_tests_fp,          command: $APP resnet_tests_fp},         {wait: ~},
+  {plugins: *CLONE, label: voyager_cgra_tests_fp,    command: $APP voyager_cgra_tests_fp},   {wait: ~},
+  {plugins: *CLONE, label: behavioral_mu_tests,      command: $APP behavioral_mu_tests},     {wait: ~},
+  {plugins: *CLONE, label: behavioral_mu_tests_fp,   command: $APP behavioral_mu_tests_fp},  {wait: ~},
+  {plugins: *CLONE, label: external_mu_tests,        command: $APP external_mu_tests},       {wait: ~},
+  {plugins: *CLONE, label: external_mu_tests_fp,     command: $APP external_mu_tests_fp},    {wait: ~},
+  {plugins: *CLONE, label: hardcoded_dense_tests,    command: $APP hardcoded_dense_tests},   {wait: ~},
+  {plugins: *CLONE, label: dense_ml_unit_tests,      command: $APP dense_ml_unit_tests},     {wait: ~},
+  {plugins: *CLONE, label: no_zircon_sparse_tests,   command: $APP no_zircon_sparse_tests},  {wait: ~},
 ]
