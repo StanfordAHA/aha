@@ -31,6 +31,7 @@ steps:
 
 - label: "Pre-Launch"
   if: build.env("CONFIG") == "full"
+
   # CLONE aha repo but DO NOT initialize submodules
   plugins:
   - uber-workflow/run-without-clone:
@@ -41,14 +42,13 @@ steps:
         /bin/rm -rf $$aha_clone; mkdir -p $$aha_clone
         git clone https://github.com/StanfordAHA/aha $$aha_clone; cd $$aha_clone;
         git remote set-url origin https://github.com/StanfordAHA/aha     # Why?
-        git clean -ffxdq
-        git checkout $$BUILDKITE_COMMIT
-        set +x
 
   # UPLOAD
-  command: set -x && pwd && git rev-parse HEAD && buildkite-agent pipeline upload .buildkite/weekly.yml --replace
-
-
+  command: |
+        set -x && pwd && git rev-parse HEAD 
+        git clean -ffxdq
+        git checkout $$BUILDKITE_COMMIT
+        buildkite-agent pipeline upload .buildkite/weekly.yml --replace
 
 - wait: { continue_on_failure: true }
 
