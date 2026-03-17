@@ -28,7 +28,7 @@ function where_this_script_lives {
 script_home=`where_this_script_lives`
 echo $script_home
 
-AHA=$(cd ../../; pwd); echo $AHA
+AHA=$(cd $script_home/../../; pwd); echo $AHA
 app=$AHA/aha/bin/app; ls -l $app
 printf '\n\n'
 
@@ -40,21 +40,26 @@ printf '\n\n'
 
 # Generate a yaml file for the groups I guess
 printf '========================================================================\n'
+
+# HEADER
+cat <<EOF
+# Initial version of this file was generated with extensive help from
+# .buildkite/bin/weekly-regressions.sh
+
+agents: { docker: true }
+env:    { APP: "aha/bin/app --update . /aha/aha --subgroup full" }
+steps: [
+EOF
+
+# STEPS
+#   {label: sparse_tests,             command: $APP sparse_tests},            {wait},
+#   {label: glb_tests_RV,             command: $APP glb_tests_RV},            {wait},
+#   ...
+#   {label: no_zircon_sparse_tests,   command: $APP no_zircon_sparse_tests},  {wait},
+
 for group in $groups; do
-printf "    - label: $group\n"
-printf "      command: aha/bin/app --update . /aha/aha --subgroup full $group\n"
-printf "      wait: ~\n"
+    printf '  {label: %-25s command: $APP %-25s {wait},\n' "$group," "$group},"
 done
-# 
-# 
-# 
-# # Generate buildkite steps
-# TEMPLATE='
-#     - label: "GROUP"
-#       command: aha/bin/app --update . /aha/aha --subgroup full GROUP
-# '
-# exit
 
-
-# Hey let's do '--gen' first that looks like fun
-
+# TRAILER
+echo "]"
