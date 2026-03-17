@@ -47,6 +47,8 @@ steps:
   # UPLOAD
   command: set -x && pwd && buildkite-agent pipeline upload .buildkite/weekly.yml
 
+- wait: { continue_on_failure: true }
+
 - label: "Launch"
   if: build.env("CONFIG") != "full"
   plugins:

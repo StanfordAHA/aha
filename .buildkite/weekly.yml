@@ -1,50 +1,63 @@
 # Initial version of this file was generated with extensive help from
 # .buildkite/bin/weekly-regressions.sh
 
-agents: { docker: true }
+agents: { docker: true , bocker: boo}
+env:    { APP: "aha/bin/app --update . /aha/aha --subgroup full" }
+# steppo: [
+#   { label: sparse_tests , command: aha/bin/app --update . /aha/aha --subgroup full sparse_tests },
+#   { wait: ~}
+# ]
+
+# steppo: { command: aha/bin/app --update }
+# steppy: [ biz: { foo: bar, baz: bumble } ]
+# stepit: [ { '1' : '2' }, { '3' : '4' } ]
+# steppa: [ 'foo', 'bar', 'bax' ]
+#  steppb: [ { foo: bar, baz: bumble } ]
+
+
 steps:
     - label: sparse_tests
       command: aha/bin/app --update . /aha/aha --subgroup full sparse_tests
-      wait: ~
+    - wait: ~
     - label: glb_tests_RV
       command: aha/bin/app --update . /aha/aha --subgroup full glb_tests_RV
-      wait: ~
+    - wait: ~
     - label: glb_tests_fp_RV
       command: aha/bin/app --update . /aha/aha --subgroup full glb_tests_fp_RV
-      wait: ~
+    - wait: ~
     - label: glb_tests
       command: aha/bin/app --update . /aha/aha --subgroup full glb_tests
-      wait: ~
+    - wait: ~
     - label: glb_tests_fp
       command: aha/bin/app --update . /aha/aha --subgroup full glb_tests_fp
-      wait: ~
+    - wait: ~
     - label: resnet_tests
       command: aha/bin/app --update . /aha/aha --subgroup full resnet_tests
-      wait: ~
+    - wait: ~
     - label: resnet_tests_fp
       command: aha/bin/app --update . /aha/aha --subgroup full resnet_tests_fp
-      wait: ~
+    - wait: ~
     - label: voyager_cgra_tests_fp
       command: aha/bin/app --update . /aha/aha --subgroup full voyager_cgra_tests_fp
-      wait: ~
+    - wait: ~
     - label: behavioral_mu_tests
       command: aha/bin/app --update . /aha/aha --subgroup full behavioral_mu_tests
-      wait: ~
+    - wait: ~
     - label: behavioral_mu_tests_fp
       command: aha/bin/app --update . /aha/aha --subgroup full behavioral_mu_tests_fp
-      wait: ~
+    - wait: ~
     - label: external_mu_tests
       command: aha/bin/app --update . /aha/aha --subgroup full external_mu_tests
-      wait: ~
+    - wait: ~
     - label: external_mu_tests_fp
       command: aha/bin/app --update . /aha/aha --subgroup full external_mu_tests_fp
-      wait: ~
+    - wait: ~
     - label: hardcoded_dense_tests
       command: aha/bin/app --update . /aha/aha --subgroup full hardcoded_dense_tests
-      wait: ~
+    - wait: ~
     - label: dense_ml_unit_tests
       command: aha/bin/app --update . /aha/aha --subgroup full dense_ml_unit_tests
-      wait: ~
+    - wait: ~
     - label: no_zircon_sparse_tests
       command: aha/bin/app --update . /aha/aha --subgroup full no_zircon_sparse_tests
-      wait: ~
+    - wait: ~
