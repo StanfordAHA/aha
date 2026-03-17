@@ -30,11 +30,11 @@ env:
 steps:
 
 - label: "Pre-Launch"
-  if: "build.environment.CONFIG" == "full"
+  if: build.environment.CONFIG == "full"
   command: buildkite-agent pipeline upload .buildkite/weekly.yml
 
 - label: "Launch"
-  if: "build.environment.CONFIG" != "full"
+  if: build.environment.CONFIG != "full"
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
