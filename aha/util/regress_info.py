@@ -1,4 +1,5 @@
 def summarize_and_print_info(info):
+    'Print a readable summary of the info table. Try not to swizzle it!'
     if not info: return
     info1 = appgroups(info)
     info2 = eliminate_skips(info1)
@@ -11,6 +12,7 @@ def summarize_and_print_info(info):
     for line in info2: print(line)
     print(hline)
 
+# This is an example input table
 test_info=[
  ["garnet (Zircon) with sparse and dense",                                         1588 ],
  ["APP GROUP sparse_tests[]",                                                         0 ],
@@ -41,6 +43,7 @@ test_info=[
  ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB_MU_ext",                                                           4254 ],
 ]
 
+# This is an example of what summarize_and_print_info() prints to stdout
 sample_out = '''
   26 garnet (Zircon) with sparse and dense
 

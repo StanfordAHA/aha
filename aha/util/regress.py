@@ -69,6 +69,8 @@ def clear_unwanted_groups(tests_dict, wanted_groups):
     # import json; print("AFTER groupfilter:\n", json.dumps(tests_dict, indent=4))
 
 def dispatch(args, extra_args=None):
+
+  # Keep code out of try/except block if at all possible...
   group_filter = set_group_filter(extra_args)
   print("--- GROUP FILTER: ", group_filter)
   seed_flow = not args.non_seed_flow
