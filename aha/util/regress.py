@@ -64,7 +64,7 @@ def clear_unwanted_groups(tests_dict, wanted_groups):
     if not wanted_groups: return
     for key,value in tests_dict.items():
         if key in wanted_groups: continue
-        print("--- DELETING GROUP ", key)
+        print("DELETING GROUP ", key)
         if isinstance(value,list): tests_dict[key] = []
     # import json; print("AFTER groupfilter:\n", json.dumps(tests_dict, indent=4))
 
