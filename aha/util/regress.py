@@ -22,7 +22,6 @@ def report_ongoing_failures(failed_tests):
     else:
         print(f"--- NO FAILED TESTS (YET)")
 
-    global info  # right?
     print(f"+++ INTERMEDIATE TIMING INFO (summary)", flush=True)
     summarize_and_print_info(info)
 

@@ -1,7 +1,7 @@
 def summarize_and_print_info(info):
     'Print a readable summary of the info table. Try not to swizzle it!'
     if not info: return
-    info1 = appgroups(info)
+    info1 = appgroups(info.copy())  # NO SWIZZO!
     info2 = eliminate_skips(info1)
     # length_of_longest_line = max( [len(e) for e in info2] )
     # hline = length_of_longest_line * '-'
