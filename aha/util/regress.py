@@ -58,7 +58,7 @@ def find_vcs_or_exit():
 
 def dispatch(args, extra_args=None):
   find_vcs_or_exit()      # Make sure vcs is available, else err and exit
-  try:
+  if True:  # Reduce try-except block range w/o changing indent (for now)
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
     using_matrix_unit = args.using_matrix_unit
@@ -103,6 +103,8 @@ def dispatch(args, extra_args=None):
 
     (args.width,args.height) = (width,height)
     args.num_fabric_cols_removed, args.mu_oc_0 = num_fabric_cols_removed, mu_oc_0
+#     E64_supported_tests = imported_tests.E64_supported_tests
+#     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
     # No zircon flag (generate default layout)
     if args.no_zircon:
