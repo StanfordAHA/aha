@@ -39,16 +39,16 @@ def add_subparser(subparser):
     parser.set_defaults(dispatch=dispatch)
 
 def find_vcs_or_exit():
-    '''If there is no VCS, emit error and quit now, else it will fail later anyway'''
-    if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
-    else: TOOL = 'vcs'
-    p = subprocess.run(
+  '''If there is no VCS, emit error and quit now, else it will fail later anyway'''
+  if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
+  else: TOOL = 'vcs'
+  p = subprocess.run(
         f'set -x; command -v {TOOL}',
         shell=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
-    )
-    if p.returncode:
+  )
+  if p.returncode:
         print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
         print(f"Maybe do this:")
         print(f"    source /aha/bin/activate")
@@ -58,9 +58,7 @@ def find_vcs_or_exit():
 
 def dispatch(args, extra_args=None):
   find_vcs_or_exit()      # Make sure vcs is available, else err and exit
-
-  if True:  # I'm just doing this so the indents will match
-
+  try:
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
     using_matrix_unit = args.using_matrix_unit
