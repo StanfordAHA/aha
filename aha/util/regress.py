@@ -408,6 +408,7 @@ def dispatch(args, extra_args=None):
       final_error = e  # Save for later
       import traceback
       print(traceback.format_exc())  # Report the error and continue below
+      exit(13)
 
   finally:
     from tabulate import tabulate
