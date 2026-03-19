@@ -99,6 +99,7 @@ RUN source bin/activate && \
   pip install importlib_resources && \
   pip install Pillow && \
   pip install matplotlib && \
+  pip install protobuf && \
   echo DONE
 
 # Put the problem child here up front so that it can fail quickly :(

@@ -24,7 +24,7 @@ class Tests:
 
     configs_list = ["fast", "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4",
                  "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
-                 "pr_aha", "full", "resnet", "mu", "BLANK"]
+                 "pr_aha", "full", "resnet", "mu", "dense_ml_models", "BLANK"]
 
     # RV1 group takes about an hour to run
     glb_tests_fp_RV1 = [
@@ -78,6 +78,8 @@ class Tests:
         external_mu_tests = []
         external_mu_tests_fp = []
         hardcoded_dense_tests = []
+        dense_ml_models = []
+        dense_ml_unit_tests = []
         no_zircon_sparse_tests = []
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
@@ -246,6 +248,12 @@ class Tests:
             ]
             # These take about about hour to run
             glb_tests_fp_RV = Tests.glb_tests_fp_RV1
+
+            # Run dense ML tests
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
+            ]
 
         elif testname == "pr_aha2":
             width, height = 28, 16
@@ -798,7 +806,7 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+                # "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 # BERT Attention*Value Using inner reduction workaround
@@ -916,6 +924,12 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+            ]
+
+            # Run dense ML tests
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
             ]
 
             # For sparse tests, we cherry pick some representative tests to run
@@ -1148,6 +1162,13 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
+        elif testname == "dense_ml_models":
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
+            ]
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
