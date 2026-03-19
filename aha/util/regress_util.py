@@ -130,7 +130,7 @@ def generate_sparse_bitstreams(args, sparse_tests):
     start = time.time()
     all_sam_graphs = [f"/aha/sam/compiler/sam-outputs/onyx-dot/{testname}.gv" for testname in sparse_tests]
 
-    if (seed_flow):
+    if(seed_flow):
         build_tb_cmd = [
             "python",
             "/aha/garnet/tests/test_memory_core/build_tb.py",

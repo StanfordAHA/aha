@@ -38,26 +38,7 @@ def add_subparser(subparser):
     parser.add_argument("--no-zircon", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
-def find_vcs_or_exit():
-  '''If there is no VCS, emit error and quit now, else it will fail later anyway'''
-  if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
-  else: TOOL = 'vcs'
-  p = subprocess.run(
-        f'set -x; command -v {TOOL}',
-        shell=True,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
-  )
-  if p.returncode:
-        print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
-        print(f"Maybe do this:")
-        print(f"    source /aha/bin/activate")
-        print(f"    source /cad/modules/tcl/init/sh")
-        print(f"    module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2")
-        exit(p.returncode)
-
 def dispatch(args, extra_args=None):
-  find_vcs_or_exit()      # Make sure vcs is available, else err and exit
   if True:  # Reduce try-except block range w/o changing indent (for now)
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
@@ -67,6 +48,23 @@ def dispatch(args, extra_args=None):
 
     failed_tests = []
     final_error = None
+
+    # It's painful if we don't catch this up front! (E.g. missing vcs.)
+    if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
+    else: TOOL = 'vcs'
+    p = subprocess.run(
+        f'set -x; command -v {TOOL}',
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+    )
+    if p.returncode:
+        print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
+        print(f"Maybe do this:")
+        print(f"    source /aha/bin/activate")
+        print(f"    source /cad/modules/tcl/init/sh")
+        print(f"    module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2")
+        exit(p.returncode)
 
     imported_tests = None
 
@@ -273,14 +271,14 @@ def dispatch(args, extra_args=None):
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
     dense_app_groups = [
-        ('glb_tests_RV',           '_glb'),           *glb_tests_RV,
-        ('glb_tests_fp_RV',        '_glb'),           *glb_tests_fp_RV,
-        ('behavioral_mu_tests',    '_MU_behavioral'), *behavioral_mu_tests,
-        ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
-        ('external_mu_tests',      '_MU_ext'),        *external_mu_tests,
-        ('external_mu_tests_fp',   '_MU_ext'),        *external_mu_tests_fp,
-        ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
-    ]
+            ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
+            ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
+            ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
+            ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
+
+            ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
+            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp,
+            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,]:
     for test in dense_app_groups:
 
         if type(test) is tuple:
