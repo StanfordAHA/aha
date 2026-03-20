@@ -88,7 +88,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 COPY ./setup.py libz3.so*  /tmp/
 RUN : WHERE IS LIBZ3 && \
-    test -e /tmp/libz3.so.no-ignore && mv /tmp/libz3.so.no-ignore /tmp/libz3 && \
+    test -e /tmp/libz3.so.no-ignore && mv /tmp/libz3.so.no-ignore /tmp/libz3.so && \
     ls -l /tmp && test -e /tmp/libz3.so || exit 13; \
 
 
@@ -362,7 +362,6 @@ COPY ./setup.py libz3.so*  /tmp/
 # FIXME can remove cachebuster in future cleanups
 RUN : z3 solver && echo temp-cachebuster && \
     : Need gcc-13 to install and run z3-solver, used by hwtypes && \
-    ls -l /tmp && test -e /tmp/libz3.so || exit 13; \
     add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt update && apt install -y gcc-13 g++-13 && \
     (update-alternatives --remove-all gcc || echo okay) && \
@@ -371,7 +370,6 @@ RUN : z3 solver && echo temp-cachebuster && \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-13 && \
     type gcc && type cmake && gcc --version && cmake --version; \
     \
-    ls -l /tmp && test -e /tmp/libz3.so || exit 13; \
     if test -e /tmp/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl; then \
         : Use cached collateral if available, saving 20m && \
         source /aha/bin/activate && \
