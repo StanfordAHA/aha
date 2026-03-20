@@ -362,7 +362,13 @@ def dispatch(args, extra_args=None):
                 layer_path_balance_json = os.path.join(layer_path_balance_folder, "path_balancing.json")
                 assert os.path.exists(layer_path_balance_json), f"ERROR: path_balancing.json not found in {layer_path_balance_folder}."
             else:
-                layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
+                non_uniform_slicing = "NON_UNIFORM_SLICING" in env and env["NON_UNIFORM_SLICING"] == "1"
+                if non_uniform_slicing:
+                    # Try naming convention with slice idx first
+                    slice_idx = int(env.get("NON_UNIFORM_SLICE_IDX", 1))
+                    layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_slice_{slice_idx}_path_balancing.json")
+                else:
+                    layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
 
                 path_balance_json_exists = False
 
