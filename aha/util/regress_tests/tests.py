@@ -249,12 +249,11 @@ class Tests:
             # These take about about hour to run
             glb_tests_fp_RV = Tests.glb_tests_fp_RV1
 
-# FIXME can restore this block when/if pointwise gets fixed
-#             # Run dense ML tests
-#             dense_ml_models = []
-#             dense_ml_unit_tests = [
-#                 "pointwise",
-#             ]
+            # Run dense ML tests
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
+            ]
 
         elif testname == "pr_aha2":
             width, height = 28, 16
