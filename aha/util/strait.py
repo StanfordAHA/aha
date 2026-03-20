@@ -1,4 +1,3 @@
-2.2.6
 from pathlib import Path
 import os
 import shutil
