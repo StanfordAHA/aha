@@ -85,15 +85,6 @@ RUN apt-get update && \
 SHELL ["/bin/bash", "--login", "-c"]
 
 
-
-COPY ./setup.py libz3.so*  /tmp/
-RUN : WHERE IS LIBZ3 && \
-    test -e /tmp/libz3.so.no-ignore && mv /tmp/libz3.so.no-ignore /tmp/libz3.so && \
-    ls -l /tmp && test -e /tmp/libz3.so || exit 13; \
-
-
-
-
 # Create an aha directory and prep a python environment.
 # Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
