@@ -319,7 +319,7 @@ exit
 # 
 #             echo cp /nobackup/zircon/libz3.so .
 #             cp /nobackup/zircon/libz3.so . || echo okay
-#             ls -l *z3* libz3.so . || echo okay
+#             ls -l *z3* || echo okay
 # 
 #             echo "--- (Re)create garnet Image"
 #             # Turn every RUN command into a submenu header in buildkite log
