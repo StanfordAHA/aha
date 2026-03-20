@@ -88,6 +88,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 COPY ./setup.py libz3.so*  /tmp/
 RUN : WHERE IS LIBZ3 && \
+    test -e /tmp/libz3.so.no-ignore && mv /tmp/libz3.so.no-ignore /tmp/libz3 && \
     ls -l /tmp && test -e /tmp/libz3.so || exit 13; \
 
 
@@ -375,7 +376,7 @@ RUN : z3 solver && echo temp-cachebuster && \
         : Use cached collateral if available, saving 20m && \
         source /aha/bin/activate && \
         pip install /tmp/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl && \
-        mv /tmp/libz3.so /aha/lib/python3.8/site-packages/z3/lib/ || exit 13; \
+        mv /tmp/libz3.so* /aha/lib/python3.8/site-packages/z3/lib/libz3.so || exit 13; \
     else \
         : Install z3-solver from scratch && \
         cd /aha && source bin/activate && \

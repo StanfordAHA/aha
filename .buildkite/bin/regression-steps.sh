@@ -318,7 +318,7 @@ exit
 #             cp /nobackup/zircon/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl . || echo okay
 # 
 #             echo cp /nobackup/zircon/libz3.so .
-#             cp /nobackup/zircon/libz3.so . || echo okay
+#             cp /nobackup/zircon/libz3.so ./libz3.so.no-ignore || echo okay
 #             ls -l *z3* || echo okay
 # 
 #             echo "--- (Re)create garnet Image"
