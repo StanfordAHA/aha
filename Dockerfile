@@ -84,6 +84,7 @@ RUN apt-get update && \
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
+
 # Create an aha directory and prep a python environment.
 # Don't copy aha repo (yet) else cannot cache subsequent layers...
 WORKDIR /
@@ -346,7 +347,7 @@ COPY ./aha /aha/aha
 # Find and copy cached z3-solver wheel collateral if available.
 # Including known file (setup.py) prevents COPY error when/if cache file don't exist
 COPY ./setup.py z3_solver-4.16.0.0-py3-none-linux_x86_64.whl* /tmp/
-COPY ./setup.py libz3.so*  /tmp
+COPY ./setup.py libz3.so*  /tmp/
 
 # Install z3 solver, this is kind of a mess isnt it
 # FIXME can remove cachebuster in future cleanups
@@ -364,11 +365,11 @@ RUN : z3 solver && echo temp-cachebuster && \
         : Use cached collateral if available, saving 20m && \
         source /aha/bin/activate && \
         pip install /tmp/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl && \
-        mv /tmp/libz3.so /aha/lib/python3.8/site-packages/z3/lib/; \
+        mv /tmp/libz3.so* /aha/lib/python3.8/site-packages/z3/lib/libz3.so || exit 13; \
     else \
         : Install z3-solver from scratch && \
         cd /aha && source bin/activate && \
-        pip install z3-solver; \
+        pip install z3-solver || exit 13; \
     fi && \
     \
     : This installs necessary updates for libstdc++.so.6 maybe, needed by z3 maybe; \

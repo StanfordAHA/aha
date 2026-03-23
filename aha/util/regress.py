@@ -19,6 +19,7 @@ def report_ongoing_failures(failed_tests):
     if failed_tests:
         print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
         for ft in failed_tests: print("  ", ft)
+        exit(13)
     else:
         print(f"--- NO FAILED TESTS (YET)")
 
@@ -446,6 +447,7 @@ def dispatch(args, extra_args=None):
       final_error = e  # Save for later
       import traceback
       print(traceback.format_exc())  # Report the error and continue below
+      exit(13)
 
   finally:
     from tabulate import tabulate
