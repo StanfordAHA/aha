@@ -262,12 +262,10 @@ exit
 # 
 #             # Remove docker pr-aha jobs older than one day
 #             echo "--- Clean up old docker jobs"
-#             set -x
 #             oldjobs=$(docker ps | awk '/(days|weeks) .* deleteme-regress/{print $$NF}')
 #             test -z "$$oldjobs" || echo docker kill $$oldjobs
 #             test -z "$$oldjobs" || docker kill $$oldjobs || echo okay
 #             : Let the jobs settle && sleep 10
-#             set +x
 # 
 #             # Remove aha-flow docker images older than one day
 #             echo "--- Cleanup old docker images"
@@ -314,9 +312,19 @@ exit
 #             dotgit=.git/modules/clockwork;          du -shx $$dotgit; /bin/rm -rf $$dotgit
 #             dotgit=.git/modules/Halide-to-Hardware; du -shx $$dotgit; /bin/rm -rf $$dotgit
 # 
+#             # Use cached solver wheel, saves at least 20 min of docker build time maybe
+#             echo "--- Install z3 solver wheel from /nobackup"
+#             echo cp /nobackup/zircon/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl .
+#             cp /nobackup/zircon/z3_solver-4.16.0.0-py3-none-linux_x86_64.whl . || echo okay
+# 
+#             echo cp /nobackup/zircon/libz3.so .
+#             cp /nobackup/zircon/libz3.so ./libz3.so.no-ignore || echo okay
+#             ls -l *z3* || echo okay
+# 
 #             echo "--- (Re)create garnet Image"
 #             # Turn every RUN command into a submenu header in buildkite log
 #             ~/bin/buildkite-docker-build --progress plain . -t "$IMAGE" |& awk '/^#[^]]*\] RUN /{print "--- " substr($$0,1,80)};{print}'
+#             /bin/rm -f libz3.so z3_solver-4.16.0.0-py3-none-linux_x86_64.whl
 # 
 #             echo "--- Pruning Docker Images"
 #             yes | docker image prune -a --filter "until=6h" --filter=label='description=garnet' || true

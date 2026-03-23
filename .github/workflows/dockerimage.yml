@@ -1,16 +1,19 @@
 name: Docker Image CI
 
+# Publish a "latest" garnet image *but only on successful PR merge.*
+# And also every week at midnight between Sat/Sun because tradition I guess.
+
 on:
-  push:
-    branches-ignore: 
-      - dependabot/**
-      - '*-patch-*'
-      - dev/**
+  pull_request:
+    types:
+      - closed
   schedule:
+    # Sunday morning, eleven minutes after midnight?
     - cron: '0 11 * * 0'
 
 jobs:
-  build:
+  build_on_pr_merge:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
