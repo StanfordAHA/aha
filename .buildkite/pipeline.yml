@@ -4,6 +4,8 @@ agents: { docker: true }
 env:
   # Default config is "pr_aha"
   # CONFIG: ${CONFIG:-pr_aha}
+
+  # Temporary hack for testing full regressions
   CONFIG: full
 
   # Analysis indicates that, given these times for the nine regressions
@@ -29,6 +31,7 @@ env:
 
 steps:
 
+# New 'Pre-Launch' step lets us swap `weekly.yml` in place of normal aha9 regressions
 - label: "Pre-Launch"
   if: build.env("CONFIG") == "full"
 
@@ -40,8 +43,9 @@ steps:
         set -x && pwd && echo DONE
 
   # UPLOAD
-  # Uh oh.
-  # pwd=r8cad-docker-3 BUT BUILDKITE_BUILD_CHECKOUT_PATH=khaki-2 :( :(
+  #   (Note cannot use BUILDKITE_BUILD_CHECKOUT_PATH for clone checkout b/c it is unreliable
+  #   ... e.g. might be set in $COMMON in a previous step by a different agent resulting
+  #   in e.g. pwd below contains "r8cad-docker-3" while BUILDKITE_BUILD_CHECKOUT_PATH has "khaki-2")
   command: |
         set -x && pwd
         aha_clone=$(pwd)
