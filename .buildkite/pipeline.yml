@@ -31,11 +31,11 @@ env:
 
 steps:
 
-# New 'Pre-Launch' step lets us swap `weekly.yml` in place of normal aha9 regressions
-- label: "Pre-Launch"
+# Weekly "full" config uses this launch step, loads `weekly.yml` instead of normal aha9 regressions
+- label: "Launch Weekly Run"
   if: build.env("CONFIG") == "full"
 
-  # CLONE aha repo but DO NOT initialize submodules
+  # "Run-without-clone" lets us (later) manually clone aha repo WITHOUT initializing submodules
   plugins:
   - uber-workflow/run-without-clone:
   - improbable-eng/metahook:
