@@ -1,9 +1,9 @@
-# Initial version of this file was generated with extensive help from
-# .buildkite/bin/generate-weekly-pipeline.sh
+# Initial version of this file was generated with extensive help from .buildkite/bin/generate-weekly-pipeline.sh
 
 agents: { docker: true }
 env:    { APP: "aha/bin/app --update . /aha/aha --subgroup full" }
 
+# Define repeatable CLONE and WAIT objects for use in steps
 definitions:
   # CLONE aha repo but DO NOT initialize submodules
   plugins: &CLONE
@@ -14,7 +14,6 @@ definitions:
     continue_on_failure:
       true
   
-
 steps: [
   {plugins: *CLONE, label: sparse_tests,             command: $APP sparse_tests},            {wait: *WAIT},
   {plugins: *CLONE, label: glb_tests_RV,             command: $APP glb_tests_RV},            {wait: *WAIT},
