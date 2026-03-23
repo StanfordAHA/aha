@@ -4,6 +4,7 @@ import time
 from collections import defaultdict
 import shutil
 import json
+import re
 from aha.util.regress_tests.tests import Tests
 import copy
 
@@ -774,10 +775,16 @@ def test_dense_ml_model(
     coreir_dir = os.path.join(strait_path, "_generated_coreirs", model, gemm_datatype)
     if not os.path.isdir(coreir_dir):
         raise RuntimeError(f"[ERROR] Strait coreir directory not found: {coreir_dir}")
+    # Sort kernel names so numeric parts are ordered numerically (e.g. kernel2 < kernel10),
+    # rather than lexicographically (where "kernel10" < "kernel2").
+    def _natural_sort_key(s):
+        return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', s)]
+
     kernel_names = sorted(
-        n for n in os.listdir(coreir_dir)
-        if os.path.isdir(os.path.join(coreir_dir, n))
-        and os.path.isfile(os.path.join(coreir_dir, n, "design_top.json"))
+        (n for n in os.listdir(coreir_dir)
+         if os.path.isdir(os.path.join(coreir_dir, n))
+         and os.path.isfile(os.path.join(coreir_dir, n, "design_top.json"))),
+        key=_natural_sort_key,
     )
     if not kernel_names:
         raise RuntimeError(f"[ERROR] No strait kernels found under {coreir_dir}")
@@ -849,6 +856,9 @@ def test_dense_ml_model(
         # Always use E64 MB with IO-level mode control
         "E64_MODE_ON": "1",
         "E64_MULTI_BANK_MODE_ON": "1",
+        # Skip GLB DMA stride adjustment for easier configuration (use relative stride rather than absolute stride)
+        "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
+        "VOYAGER_STANDALONE_CGRA_APP": "1",
     }
     print(f"\033[92mINFO: test_dense_ml_model always uses dense ready-valid and exhaustive pipelining\033[0m")
 
