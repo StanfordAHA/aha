@@ -108,9 +108,6 @@ def dispatch(args, extra_args=None):
     # info = []  # DON'T DO THIS!!! Or else you lose your pointer to the One True Info in regress_util
     info.clear()
 
-    from aha.util.regress_info import test_info
-    test_info(info)
-
     # For config definitions see regress_tests/tests.py
     imported_tests = Tests(args.config)
 
