@@ -1,5 +1,5 @@
 # Initial version of this file was generated with extensive help from
-# .buildkite/bin/weekly-regressions.sh
+# .buildkite/bin/generate-weekly-pipeline.sh
 
 agents: { docker: true }
 env:    { APP: "aha/bin/app --update . /aha/aha --subgroup full" }
