@@ -16,7 +16,7 @@ definitions:
   
 # 03/2026 moved failing groups 'dense_ml_unit_tests,voyager_cgra_tests_fp' to front of list
 steps: [
-  # These failed last time so I'm putting them up front now.
+  # These failed recently so I'm putting them up front now.
   {plugins: *CLONE, label: dense_ml_unit_tests,      command: $APP dense_ml_unit_tests},     {wait: *WAIT},
   {plugins: *CLONE, label: voyager_cgra_tests_fp,    command: $APP voyager_cgra_tests_fp},   {wait: *WAIT},
 
