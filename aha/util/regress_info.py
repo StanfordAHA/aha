@@ -1,3 +1,30 @@
+# Turns timing-table input into a readable summary table, e.g.
+# 
+#     example_input=[
+#         ["garnet (Zircon) with sparse and dense",                     1588 ],
+#         ["APP GROUP sparse_tests[]",                                     0 ],
+#         ["gen_sparse_bitstreams",                                     3018 ],
+#         ["vec_elemmul_glb",                                            143 ],
+#         ["APP GROUP glb_tests_RV[]",                                     0 ],
+#         ["APP GROUP glb_tests_fp_RV[]",                                  0 ],
+#         ["resnet18-quantize_default_1::zircon_quant_fp_post_conv2",   2630 ],
+#         ["resnet18-quantize_default_3::zircon_quant_fp_post_conv2x",  1363 ],
+#         ["resnet18-quantize_default_15::zircon_quant_fp_post_conv5x", 1260 ],
+#         ["APP GROUP external_mu_tests[]",                                0 ],
+#     ]
+#     example_output = '''
+#         0h26 garnet (Zircon) with sparse and dense
+# 
+#         1h01 APP GROUP sparse_tests[]
+#              0h50 gen_sparse_bitstreams
+#              0h02 vec_elemmul_glb
+# 
+#         1h27 APP GROUP voyager_cgra_tests_fp[]
+#              0h43 resnet18-quantize_default_1::zircon_quant_fp_post_conv2x
+#              0h22 resnet18-quantize_default_3::zircon_quant_fp_post_conv2x
+#              0h21 resnet18-quantize_default_15::zircon_quant_fp_post_conv5x
+#     '''
+
 def summarize_and_print_info(info):
     'Print a readable summary of the info table. Try not to swizzle it!'
     if not info: return
@@ -11,61 +38,6 @@ def summarize_and_print_info(info):
     print("------------ --------------------------------------------------------------------------------")
     for line in info2: print(line)
     print(hline)
-
-# This is an example input table
-test_info=[
- ["garnet (Zircon) with sparse and dense",                                         1588 ],
- ["APP GROUP sparse_tests[]",                                                         0 ],
- ["gen_sparse_bitstreams",                                                         3018 ],
- ["vec_elemmul_glb",                                                                143 ],
- ["mat_vecmul_ij_glb",                                                              135 ],
- ["mat_sddmm_glb",                                                                  135 ],
- ["tensor3_mttkrp_glb",                                                             139 ],
- ["tensor3_ttv_glb",                                                                135 ],
- ["APP GROUP glb_tests_RV[]",                                                         0 ],
- ["APP GROUP glb_tests_fp_RV[]",                                                      0 ],
- ["APP GROUP behavioral_mu_tests[]",                                                  0 ],
- ["APP GROUP voyager_cgra_tests_fp[]",                                                0 ],
- ["resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB_voyager_standalone_cgra",    2630 ],
- ["resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB_voyager_standalone_cgra",    1363 ],
- ["resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB_voyager_standalone_cgra",   1260 ],
- ["APP GROUP external_mu_tests[]",                                    0 ],
- ["APP GROUP external_mu_tests_fp[]",                                 0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB_MU_ext",                                                           2972 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel1 - SKIP CGRA MAP",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel1 - SKIP CGRA PNR",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB_MU_ext",                                                           1277 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel2 - SKIP CGRA MAP",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel2 - SKIP CGRA PNR",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB_MU_ext",                                                           7128 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel3 - SKIP CGRA MAP",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel3 - SKIP CGRA PNR",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB_MU_ext",                                                           4254 ],
-]
-
-# This is an example of what summarize_and_print_info() prints to stdout
-sample_out = '''
-  26 garnet (Zircon) with sparse and dense
-
-1h01 APP GROUP sparse_tests[]
-       50 gen_sparse_bitstreams
-        2 vec_elemmul_glb
-        2 mat_vecmul_ij_glb
-        2 mat_sddmm_glb
-        2 tensor3_mttkrp_glb
-        2 tensor3_ttv_glb
-
-1h27 APP GROUP voyager_cgra_tests_fp[]
-       43 resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB_voyager_standalone_cgra
-       22 resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB_voyager_standalone_cgra
-       21 resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB_voyager_standalone_cgra
-
-4h20 APP GROUP external_mu_tests_fp[]
-       49 resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB_MU_ext
-       21 resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB_MU_ext [SKIP MAP,PNR]
-     1h58 resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB_MU_ext [SKIP MAP,PNR]
-     1h10 resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB_MU_ext [SKIP MAP,PNR]
-'''
 
 def eliminate_skips(info1):
     '''
