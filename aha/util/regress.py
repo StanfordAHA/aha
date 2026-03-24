@@ -71,21 +71,22 @@ def clear_unwanted_groups(tests_dict, wanted_groups):
 def dispatch(args, extra_args=None):
 
   # Keep code out of try/except block if at all possible...
-  group_filter = set_group_filter(extra_args)
-  seed_flow = not args.non_seed_flow
-  use_pipeline = args.use_pipeline
-  using_matrix_unit = args.using_matrix_unit
-  mu_datawidth = args.mu_datawidth
-  unroll = args.unroll
+  # Maintain indentation to minimize PR change lines
+  if True:
 
-  failed_tests = []
-  final_error = None
+    group_filter = set_group_filter(extra_args)
+    seed_flow = not args.non_seed_flow
+    use_pipeline = args.use_pipeline
+    using_matrix_unit = args.using_matrix_unit
+    mu_datawidth = args.mu_datawidth
+    unroll = args.unroll
 
-  # It's painful if we don't catch this up front! (E.g. missing vcs.)
-  if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
-  else: TOOL = 'vcs'
+    failed_tests = []
+    final_error = None
 
-  try:
+    # It's painful if we don't catch this up front! (E.g. missing vcs.)
+    if "TOOL" in os.environ: TOOL = os.environ["TOOL"].lower()
+    else: TOOL = 'vcs'
     p = subprocess.run(
         f'set -x; command -v {TOOL}',
         shell=True,
@@ -168,6 +169,7 @@ def dispatch(args, extra_args=None):
 
     print(f"--- Running regression: {args.config} {group_filter}", flush=True)
 
+  try:
     # Skip 20 minutes of gen_garnet if no tests exist for it!!!
     zircon_tests_exist = False
     if [
