@@ -15,6 +15,7 @@ definitions:
       true
   
 # 03/2026 moved failing groups 'dense_ml_unit_tests,voyager_cgra_tests_fp' to front of list
+# Feel free to change the order depending on your needs!
 steps: [
   # These failed recently so I'm putting them up front now.
   {plugins: *CLONE, label: dense_ml_unit_tests,      command: $APP dense_ml_unit_tests},     {wait: *WAIT},

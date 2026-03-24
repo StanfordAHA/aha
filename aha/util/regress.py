@@ -72,7 +72,6 @@ def dispatch(args, extra_args=None):
 
   # Keep code out of try/except block if at all possible...
   group_filter = set_group_filter(extra_args)
-  print("--- GROUP FILTER: ", group_filter)
   seed_flow = not args.non_seed_flow
   use_pipeline = args.use_pipeline
   using_matrix_unit = args.using_matrix_unit
@@ -167,7 +166,7 @@ def dispatch(args, extra_args=None):
         assert imported_tests.external_mu_tests == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests from the test list."
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
 
-    print(f"--- Running regression: {args.config}", flush=True)
+    print(f"--- Running regression: {args.config} {group_filter}", flush=True)
 
     # Skip 20 minutes of gen_garnet if no tests exist for it!!!
     zircon_tests_exist = False
@@ -304,6 +303,7 @@ def dispatch(args, extra_args=None):
                 num_fabric_cols_removed=num_fabric_cols_removed,
                 mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+            report_ongoing_failures(failed_tests)
 
     for test in [
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
