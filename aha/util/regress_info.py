@@ -97,11 +97,9 @@ def appgroups(info1):
     '''
     def hhmm(nsec):
         'Turn nsec into hhmm e.g. hhmm(3600)="1h00" or hhmm(120)="0h02" '
-        (nmin,nhrs) = (nsec//60,nsec//3600)
-        if False: hhmm = f'{nmin:.0f}'                      # "1"  "59"
-        else:         hhmm = f'{nmin//60:.0f}h{nmin%60:02.0f}'  # "1h25"
-        return f'{hhmm:>6}'
-
+        nmin = nsec//60                           # E.g. 5111//60 = 85
+        hhmm = f'{nmin//60:.0f}h{nmin%60:02.0f}'  # E.g. 85 => "1h25"
+        return f'{hhmm:>6}'                       # E.g. "  1h25"
 
     info2 = []   # Output table goes here
     (grouptotal,ngroupapps) = (0,0)
