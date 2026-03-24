@@ -84,8 +84,9 @@ class Tests:
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
+        return vars().copy()
 
-        E64_supported_tests = [
+    E64_supported_tests = [
             "apps/pointwise",
             "apps/pointwise_mu_io",
             "conv5_x",
@@ -128,8 +129,8 @@ class Tests:
             "apps/mu2glb_path_balance_test",
             "apps/zircon_scale_add_fp",
             "apps/nop_2d",
-        ]
-        E64_MB_supported_tests = [
+    ]
+    E64_MB_supported_tests = [
             "apps/pointwise",
             "apps/pointwise_mu_io",
             "apps/pointwise_custom_place_multibank",
@@ -170,8 +171,7 @@ class Tests:
             "apps/mu2glb_path_balance_test",
             "apps/zircon_scale_add_fp",
             "apps/nop_2d",
-        ]
-        return vars().copy()
+    ]
 
     def __init__(self, testname="BLANK", zircon=True):
         self.__dict__.update(Tests.configs_template())

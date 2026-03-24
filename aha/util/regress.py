@@ -9,7 +9,9 @@ from aha.util.regress_util import test_sparse_app
 from aha.util.regress_util import test_dense_app
 from aha.util.regress_util import test_dense_ml_model
 from aha.util.regress_util import test_hardcoded_dense_app
-from aha.util.regress_util import info
+
+from aha.util.regress_info import summarize_and_print_info
+from aha.util.regress_util import info  # FIXME huh maybe info should be in regress_info and not regress_util
 global info
 
 def report_ongoing_failures(failed_tests):
@@ -20,6 +22,9 @@ def report_ongoing_failures(failed_tests):
         exit(13)
     else:
         print(f"--- NO FAILED TESTS (YET)")
+
+    print(f"+++ INTERMEDIATE TIMING INFO (summary)", flush=True)
+    summarize_and_print_info(info)
 
 def add_subparser(subparser):
     parser = subparser.add_parser(Path(__file__).stem, add_help=False)
@@ -38,8 +43,38 @@ def add_subparser(subparser):
     parser.add_argument("--no-zircon", action="store_true")
     parser.set_defaults(dispatch=dispatch)
 
+def set_group_filter(extra_args):
+    '''
+    Accomodations for e.g. "--group sparse_tests" or "--groups glb_tests,resnet_tests"
+    Returns e.g. ["glb_tests","resnet_tests"]
+    '''
+    if not extra_args: return []
+    else:
+        key_index = None
+        for key in ['--group','--groups']:
+            if key in extra_args: key_index = extra_args.index(key)
+        if key_index == None:
+            return []
+        else:
+            return extra_args[key_index+1].split(',')
+
+def clear_unwanted_groups(tests_dict, wanted_groups):
+    'Clear all {tests_dict} groups that are not in [wanted_groups]'
+    print("--- WANTED_GROUPS= ", wanted_groups)
+    if not wanted_groups: return
+    for key,value in tests_dict.items():
+        if key in wanted_groups: continue
+        print("DELETING GROUP ", key)
+        if isinstance(value,list): tests_dict[key] = []
+    # import json; print("AFTER groupfilter:\n", json.dumps(tests_dict, indent=4))
+
 def dispatch(args, extra_args=None):
-  try:
+
+  # Keep code out of try/except block if at all possible...
+  # Maintain indentation to minimize PR change lines
+  if True:
+
+    group_filter = set_group_filter(extra_args)
     seed_flow = not args.non_seed_flow
     use_pipeline = args.use_pipeline
     using_matrix_unit = args.using_matrix_unit
@@ -73,11 +108,11 @@ def dispatch(args, extra_args=None):
     # info = []  # DON'T DO THIS!!! Or else you lose your pointer to the One True Info in regress_util
     info.clear()
 
-    from aha.util.regress_info import test_info
-    test_info(info)
-
     # For config definitions see regress_tests/tests.py
     imported_tests = Tests(args.config)
+
+    # Delete all groups except those listed in group_filter
+    clear_unwanted_groups(imported_tests.__dict__, group_filter)
 
     # Unpack imported_tests into convenient handles
     width, height = imported_tests.width, imported_tests.height
@@ -132,8 +167,9 @@ def dispatch(args, extra_args=None):
         assert imported_tests.external_mu_tests == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests from the test list."
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
 
-    print(f"--- Running regression: {args.config}", flush=True)
+    print(f"--- Running regression: {args.config} {group_filter}", flush=True)
 
+  try:
     # Skip 20 minutes of gen_garnet if no tests exist for it!!!
     zircon_tests_exist = False
     if [
@@ -269,6 +305,7 @@ def dispatch(args, extra_args=None):
                 num_fabric_cols_removed=num_fabric_cols_removed,
                 mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
+            report_ongoing_failures(failed_tests)
 
     for test in [
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
@@ -420,7 +457,6 @@ def dispatch(args, extra_args=None):
     print(tabulate(info, headers=headers, floatfmt=".0f"), flush=True)
 
     # Summary timing-table for steveri, to help with aha-regression rebalancing for per-checkin CI
-    from aha.util.regress_info import summarize_and_print_info
     print(f"+++ TIMING INFO (summary)", flush=True)
     summarize_and_print_info(info)
 

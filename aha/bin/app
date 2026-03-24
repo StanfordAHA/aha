@@ -6,6 +6,7 @@
 #   --copy          # Copy working script to docker as /aha/aha/bin/app
 #   --container C   # Use existing container "C" to run the app
 #   --get_apps <br> # Get list of apps for branch <br> e.g. "app --get_apps master
+#   --subgroup <config> <groups>  # E.g. app --subgroup fast sparse_tests
 
 # To test: see bottom of file, below
 
@@ -102,6 +103,7 @@ while [ $# -gt 0 ] ; do
         --copy*) COPY_SCRIPT=True ;;
         --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
         --container) CONTAINER=$2; shift ;;
+        --subgroup*)  RUN_SUITE=$2; SUBGROUPS=$3; shift 2 ;;
 
         # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
         --fp) echo 'WARNING "--fp" deprecated/unnecessary, stop using it'; ;;
@@ -436,7 +438,7 @@ if ! [ "$IN_DOCKER" ]; then
     fi
 
     # Run script in container now
-    echo "Run '$bn ${app_flags[@]}' in container"
+    echo "Run '$bn ${app_flags[@]}' in container '$container'"
     docker exec $container /aha/aha/bin/$bn "${app_flags[@]}" || exit 13
     exit
 fi
@@ -531,6 +533,14 @@ fi
 ########################################################################
 # Finally: run it!!
 
+# Early out for subgroups, i.e. if subgroup requested, run that subgroup and exit immediately
+if test -n "$SUBGROUPS"; then
+    echo aha regress $RUN_SUITE --group $SUBGROUPS
+    aha regress $RUN_SUITE --group $SUBGROUPS
+    exit
+fi
+
+# No subgroups requested, so continue on as before
 echo TOOL=$SIM aha regress "$config"$ZIRCON --include-no-zircon-tests
 TOOL=$SIM aha regress "$config"$ZIRCON --include-no-zircon-tests || exit 13
 
