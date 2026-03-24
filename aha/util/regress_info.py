@@ -102,7 +102,7 @@ def appgroups(info1):
         return f'{hhmm:>6}'                       # E.g. "  1h25"
 
     info2 = []   # Output table goes here
-    (grouptotal,ngroupapps) = (0,0)
+    (grouptotal,n_apps) = (0,0)
     blankline = ['','','']
 
     # Easy to count group times if go through list in reverse order, yes?
@@ -115,20 +115,19 @@ def appgroups(info1):
             elif not time: time=e
 
         if name.startswith("APP GROUP") or name.startswith("garnet "):
-            if not ngroupapps: continue  # Skip groups that ran 0 apps
+            if not n_apps: continue  # Skip groups that ran 0 apps
             line2 = f'{hhmm(grouptotal)} {name}'
-            (grouptotal,ngroupapps) = (0,0)
+            (grouptotal,n_apps) = (0,0)
         else:
             line2 = f'     {hhmm(time)} {name}'  # Indent app name
             grouptotal += time
-            ngroupapps += 1
+            n_apps += 1
         info2.append(line2)
 
         # add blank lines before each "APP GROUP" and garnet "NO Zircon" compilation
         if name.startswith("APP GROUP") or "NO Zircon" in name or "garnet with dense" in name:
             info2.append("")
     info2.reverse()
-    print("FOOO",info2,"------------------")
     return info2
 
 ##############################################################################
@@ -170,19 +169,19 @@ if DO_TEST2:
  ["APP GROUP glb_tests_fp_RV[]",                                                      0 ],
  ["APP GROUP behavioral_mu_tests[]",                                                  0 ],
  ["APP GROUP voyager_cgra_tests_fp[]",                                                0 ],
- ["resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB_voyager_standalone_cgra",    2630 ],
- ["resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB_voyager_standalone_cgra",    1363 ],
- ["resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB_voyager_standalone_cgra",   1260 ],
- ["APP GROUP external_mu_tests[]",                                    0 ],
- ["APP GROUP external_mu_tests_fp[]",                                 0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB_MU_ext",                                                           2972 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel1 - SKIP CGRA MAP",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel1 - SKIP CGRA PNR",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB_MU_ext",                                                           1277 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel2 - SKIP CGRA MAP",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel2 - SKIP CGRA PNR",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB_MU_ext",                                                           7128 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel3 - SKIP CGRA MAP",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB/zircon_dequantize_relu_fp_post_conv1_kernel3 - SKIP CGRA PNR",        0 ],
- ["resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB_MU_ext",                                                           4254 ],
+ ["resnet18-quantize_default_1::zqfp_conv2x_RV_E64_MB_voyager_standalone_cgra",    2630 ],
+ ["resnet18-quantize_default_3::zqfp_conv2x_RV_E64_MB_voyager_standalone_cgra",    1363 ],
+ ["resnet18-quantize_default_15::zqfp_conv5x_RV_E64_MB_voyager_standalone_cgra",   1260 ],
+ ["APP GROUP external_mu_tests[]", 0 ],
+ ["APP GROUP external_mu_tests_fp[]",                                                    0 ],
+ ["resnet18-submodule -> zdrfpc1_kernel0_RV_E64_MB_MU_ext",                           2972 ],
+ ["resnet18-submodule -> zdrfpc1_kernel1_RV_E64_MB/zdrfpc1_kernel1 - SKIP CGRA MAP",     0 ],
+ ["resnet18-submodule -> zdrfpc1_kernel1_RV_E64_MB/zdrfpc1_kernel1 - SKIP CGRA PNR",     0 ],
+ ["resnet18-submodule -> zdrfpc1_kernel1_RV_E64_MB_MU_ext",                           1277 ],
+ ["resnet18-submodule -> zdrfpc1_kernel2_RV_E64_MB/zdrfpc1_kernel2 - SKIP CGRA MAP",     0 ],
+ ["resnet18-submodule -> zdrfpc1_kernel2_RV_E64_MB/zdrfpc1_kernel2 - SKIP CGRA PNR",     0 ],
+ ["resnet18-submodule -> zdrfpc1_kernel2_RV_E64_MB_MU_ext",                           7128 ],
+ ["resnet18-submodule -> zdrfpc1_kernel3_RV_E64_MB/zdrfpc1_kernel3 - SKIP CGRA MAP",     0 ],
+ ["resnet18-submodule -> zdrfpc1_kernel3_RV_E64_MB/zdrfpc1_kernel3 - SKIP CGRA PNR",     0 ],
+ ["resnet18-submodule -> zdrfpc1_kernel3_RV_E64_MB_MU_ext",                           4254 ],
 ])
