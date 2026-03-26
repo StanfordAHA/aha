@@ -4553,7 +4553,7 @@
     },
     "apps/add_gelu_pass1_mu_input_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"vec_width=3072 vec_height=64 mu_i=32",
+            "HALIDE_GEN_ARGS":"vec_width=3072 vec_height=64 mu_i=32 swish_beta=1.702",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"0",
@@ -4585,7 +4585,7 @@
     },
     "apps/add_gelu_pass2_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"vec_width=1536 vec_height=64 glb_i=16",
+            "HALIDE_GEN_ARGS":"vec_width=1536 vec_height=64 glb_i=16 swish_beta=1.702",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"0",
