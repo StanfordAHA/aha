@@ -4313,7 +4313,7 @@
     },
     "apps/stable_softmax_pass3_fp":{
         "default":{
-            "HALIDE_GEN_ARGS":"vec_width=128 vec_height=128 glb_i=32 tree_stages=5 vec_width_fake=2048 vec_height_fake=4",
+            "HALIDE_GEN_ARGS":"vec_width=512 vec_height=512 glb_i=32 tree_stages=5 vec_width_fake=2048 vec_height_fake=4",
             "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
             "DISABLE_GP":"1",
             "PIPELINED":"0",
@@ -4321,7 +4321,9 @@
             "INPUT_HOST_STENCIL_POS":"20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "HW_OUTPUT_POS":"12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "VOYAGER_STANDALONE_CGRA_APP":"1",
-            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1"
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT":"1",
+            "MANUAL_PATH_BALANCE_PLACER":"1",
+            "POND_PATH_BALANCING":"1"
         }
     },
     "stable_softmax_pass3_fp_bert":{
