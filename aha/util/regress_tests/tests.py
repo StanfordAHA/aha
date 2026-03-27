@@ -47,6 +47,7 @@ class Tests:
                 "apps/layer_norm_pass1_fp_RV_E64_MB",
                 "apps/layer_norm_pass2_fp_RV_E64_MB",
                 "apps/layer_norm_pass3_fp_RV_E64_MB",
+                "apps/rms_norm_pass1_fp_RV_E64_MB",
     ]
     glb_tests_fp_RV7 = [
                 "apps/gelu_pass2_fp_RV_E64_MB",  # 1480s/25m
@@ -108,6 +109,7 @@ class Tests:
             "apps/layer_norm_pass1_fp",
             "apps/layer_norm_pass2_fp",
             "apps/layer_norm_pass3_fp",
+            "apps/rms_norm_pass1_fp",
             "apps/gelu_pass1_mu_input_fp",
             "apps/gelu_pass2_fp",
             "apps/add_gelu_pass1_mu_input_fp",
@@ -145,6 +147,7 @@ class Tests:
             "apps/layer_norm_pass1_fp",
             "apps/layer_norm_pass2_fp",
             "apps/layer_norm_pass3_fp",
+            "apps/rms_norm_pass1_fp",
             "apps/gelu_pass1_mu_input_fp",
             "apps/gelu_pass2_fp",
             "apps/add_gelu_pass1_mu_input_fp",
