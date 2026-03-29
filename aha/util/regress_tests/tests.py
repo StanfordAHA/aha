@@ -488,7 +488,7 @@ class Tests:
                 "bert-tanh::tanh_fp_bert_RV_E64_MB",
 
                 # BERT permute layer (20m)
-                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+                "bert-permute_3::nop_2d_mha_concat_bert_RV_E64_MB",
 
                 # BERT layer norm layers (didn't run post-FFN layer norm layer) (60m)
                 "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
@@ -733,7 +733,7 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_resnet18_kernel1_RV_E64_MB",
 
                  # BERT permute layer
-                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+                "bert-permute_3::nop_2d_mha_concat_bert_RV_E64_MB",
 
                 # BERT layer norm layers (didn't run post-FFN layer norm layer)
                 "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
@@ -951,7 +951,9 @@ class Tests:
             glb_tests = []
             glb_tests_fp = []
             glb_tests_RV = []
-            glb_tests_fp_RV = []
+            glb_tests_fp_RV = [
+                # "apps/stable_softmax_pass3_fp_RV_E64_MB",
+            ]
             resnet_tests = []
             voyager_cgra_tests_fp = [
                 # # ResNet-18 Standalone quantize layers
@@ -969,7 +971,7 @@ class Tests:
                 # "resnet18-linear::fully_connected_layer_fp_resnet18_kernel1_RV_E64_MB",
 
                 # # BERT permute layer
-                # "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+                # "bert-permute_3::nop_2d_mha_concat_bert_RV_E64_MB",
 
                 # # BERT layer norm layers (didn't run post-FFN layer norm layer)
                 # "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
@@ -1021,7 +1023,38 @@ class Tests:
                 # "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
 
                 # # BERT tanh layer
-                # "bert-tanh::tanh_fp_bert_RV_E64_MB"
+                # "bert-tanh::tanh_fp_bert_RV_E64_MB",
+
+                # LLaMA permute layer
+                # "llama_prefill-transpose_4::nop_2d_mha_concat_llama_prefill_RV_E64_MB",
+
+                # LLaMA prefill get_e8m0_scale accum schedule layers
+                # "llama_prefill-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_llama_prefill_RV_E64_MB",
+                # "llama_prefill-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_llama_prefill_post_transpose_RV_E64_MB",
+
+                # LLaMA Prefill apply_e8m0_scale layers
+                # "llama_prefill-quantize_default::apply_e8m0_scale_multi_IOs_llama_prefill_RV_E64_MB",
+                # "llama_prefill-quantize_default_1::apply_e8m0_scale_multi_IOs_llama_prefill_post_transpose_RV_E64_MB",
+
+
+                # LLaMA Prefill get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
+                # "llama_prefill-quantize_mx_default::get_e8m0_scale_tree_gb_input_llama_prefill_shape0_RV_E64_MB", # 512, 2048 DONE
+                # "llama_prefill-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_llama_prefill_shape1_RV_E64_MB", # 32, 512, 64
+                # "llama_prefill-quantize_mx_default_7::get_e8m0_scale_tree_gb_input_llama_prefill_shape2_RV_E64_MB", # 512, 512
+                # "llama_prefill-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_llama_prefill_shape3_RV_E64_MB", # 512, 8192
+
+                # "llama_prefill-quantize_mx_default::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_RV_E64_MB", # 512, 2048
+                # "llama_prefill-quantize_mx_default_1::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_1_RV_E64_MB", # 32, 512, 64
+                # "llama_prefill-quantize_mx_default_7::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_7_RV_E64_MB", # 512, 512
+                # "llama_prefill-quantize_mx_default_5::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_5_RV_E64_MB", # 512, 8192
+
+
+                # LLaMA Prefill Softmax layers
+                "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
+                "llama_prefill-softmax_1::stable_softmax_pass2_fp_llama_prefill_RV_E64_MB",
+                # "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB"
+
+
 
                 # # "fakegemm-quantize_default::zircon_quant_fp_fakegemm_RV_E64_MB",
             ]
@@ -1089,15 +1122,14 @@ class Tests:
             # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel7_125_RV_E64_MB",
 
             # Run 1 time on k dimension
-            # TODO: When running these, need to change the directory to the psum intermediate gold. Also need to change the path to path_balancing.json
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_nop_post_llama_prefill_final_output_projection_kernel0_1_RV_E64_MB",
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel1_1_RV_E64_MB",
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel2_1_RV_E64_MB",
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel3_1_RV_E64_MB",
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel4_1_RV_E64_MB",
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel5_1_RV_E64_MB",
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel6_1_RV_E64_MB",
-            "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel7_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_nop_post_llama_prefill_final_output_projection_kernel0_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel1_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel2_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel3_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel4_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel5_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel6_1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel7_1_RV_E64_MB",
 
 
 

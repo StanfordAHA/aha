@@ -596,6 +596,13 @@ def test_dense_app(
         "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB",
         "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB",
         "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB",
+        "llama_prefill-quantize_mx_default::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_RV_E64_MB", # 512, 2048
+        "llama_prefill-quantize_mx_default_1::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_1_RV_E64_MB", # 32, 512, 64
+        "llama_prefill-quantize_mx_default_7::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_7_RV_E64_MB", # 512, 512
+        "llama_prefill-quantize_mx_default_5::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_5_RV_E64_MB", # 512, 8192
+        # "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
+        # "llama_prefill-softmax_1::stable_softmax_pass2_fp_llama_prefill_RV_E64_MB",
+        "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB",
     ]
 
     #------------------------------------------------------------------------
