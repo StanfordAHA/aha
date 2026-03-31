@@ -1070,8 +1070,8 @@ class Tests:
 
 
                 # LLaMA Prefill Softmax layers
-                "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
-                "llama_prefill-softmax_1::stable_softmax_pass2_fp_llama_prefill_RV_E64_MB",
+                # "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
+                # "llama_prefill-softmax_1::stable_softmax_pass2_fp_llama_prefill_RV_E64_MB",
                 # "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB"
 
 
@@ -1128,7 +1128,10 @@ class Tests:
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel4_RV_E64_MB",
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel5_RV_E64_MB",
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel6_RV_E64_MB",
+
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB",
+            "llama_prefill-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB", # SiLU
+            # "llama_prefill-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_llama_prefill_up_projection_kernel8_RV_E64_MB", # SiLU
 
             # LLaMA prefill, final output projection
             # Run 125 times on k dimension
