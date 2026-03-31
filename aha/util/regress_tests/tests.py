@@ -56,32 +56,194 @@ class Tests:
     #   "mu"      bunch of "external_mu_tests", mostly resnet18
     #
     #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
+
+    # UNUSED
+    configs_list = ["fast", "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4",
+                 "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
+                 "pr_aha", "full", "resnet", "mu", "dense_ml_models", "BLANK"]
+
     configs = {}
 
-    # Default groups and values
-    template = {
-        # CGRA width and height
-        'width' : 28,
-        'height' : 16,  # default
+    # RV1 group takes about an hour to run
+    glb_tests_fp_RV1 = [
+                "tests/fp_arith_RV",
+                "tests/fp_comp_RV",
+                "apps/relu_layer_fp_RV",
+                "apps/relu_layer_multiout_fp_RV",
+                "apps/mat_vec_mul_fp_RV_E64_MB",
+                "apps/scalar_reduction_fp_RV",
+                "apps/scalar_max_fp_RV",
+    ]
+    glb_tests_fp_RV3 = [
+                "apps/scalar_avg_fp_RV",
+                "apps/stable_softmax_pass1_fp_RV_E64_MB",
+                "apps/stable_softmax_pass2_fp_RV_E64_MB",
+                "apps/stable_softmax_pass3_fp_RV_E64_MB",
+                "apps/vector_reduction_fp_RV",
+    ]
+    glb_tests_fp_RV2 = [
+                "apps/layer_norm_pass1_fp_RV_E64_MB",
+                "apps/layer_norm_pass2_fp_RV_E64_MB",
+                "apps/layer_norm_pass3_fp_RV_E64_MB",
+    ]
+    glb_tests_fp_RV7 = [
+                "apps/gelu_pass2_fp_RV_E64_MB",  # 1480s/25m
+    ]
+    glb_tests_fp_RV8 = []
+    glb_tests_fp_RV9 = [
+                "apps/add_gelu_pass2_fp_RV_E64_MB",  # 1530s/25m
+                "apps/silu_pass1_fp_RV",
+                "apps/silu_pass2_fp_RV",
+                "apps/swiglu_pass2_fp_RV",
+                "apps/rope_pass1_fp_RV",
+                "apps/rope_pass2_fp_RV",
+                "apps/tanh_fp_RV_E64_MB",
+    ]
 
-        # Zircon specific parms; 'regress.py --no-zircon' ignores these
-        'cols_removed' : 12,
-        'mu_oc_0' : 32,
+    # Default groups and values
+    def configs_template():
+        # Defaults
+        width, height = 28, 16  # Default CGRA width and height
 
         # App groups
-        'sparse_tests' : [],
-        'glb_tests' : [],
-        'glb_tests_fp' : [],
-        'glb_tests_RV' : [],
-        'glb_tests_fp_RV' : [],
-        'resnet_tests' : [],
-        'resnet_tests_fp' : [],
-        'behavioral_mu_tests' : [],
-        'external_mu_tests' : [],
-        'external_mu_tests_fp' : [],
-        'hardcoded_dense_tests' : [],
-        'no_zircon_sparse_tests' : [],
-    }    
+        sparse_tests = []
+        glb_tests_RV = []
+        glb_tests_fp_RV = []
+        glb_tests = []
+        glb_tests_fp = []
+        resnet_tests = []
+        resnet_tests_fp = []
+        voyager_cgra_tests_fp = []
+        behavioral_mu_tests = []
+        behavioral_mu_tests_fp = []
+        external_mu_tests = []
+        external_mu_tests_fp = []
+        hardcoded_dense_tests = []
+        dense_ml_models = []
+        dense_ml_unit_tests = []
+        no_zircon_sparse_tests = []
+
+        # Zircon specific parms; 'regress.py --no-zircon' ignores these
+        cols_removed, mu_oc_0 = 12, 32
+
+        E64_supported_tests = [
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "conv5_x",
+            "apps/avgpool_layer_fp",
+            "apps/mat_vec_mul_fp",
+            "apps/maxpooling_dense_rv_fp",
+            "apps/maxpooling_dense_rv_mem_buf_fp",
+            "apps/fully_connected_layer_fp",
+            "apps/pointwise_custom_packing",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_tree_mu_input",
+            "apps/get_e8m0_scale_tree_gb_input",
+            "apps/get_e8m0_scale_accum_gb_input",
+            "apps/apply_e8m0_scale_single_IO",
+            "apps/apply_e8m0_scale_multi_IOs",
+            "apps/get_apply_e8m0_scale_fp",
+            "apps/stable_softmax_pass1_fp",
+            "apps/stable_softmax_pass2_fp",
+            "apps/stable_softmax_pass3_fp",
+            "apps/layer_norm_pass1_fp",
+            "apps/layer_norm_pass2_fp",
+            "apps/layer_norm_pass3_fp",
+            "apps/gelu_pass1_mu_input_fp",
+            "apps/gelu_pass2_fp",
+            "apps/add_gelu_pass1_mu_input_fp",
+            "apps/add_gelu_pass2_fp",
+            "apps/tanh_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp",
+            "apps/zircon_dequantize_relu_fp",
+            "apps/zircon_dequant_fp",
+            "apps/zircon_deq_ResReLU_quant_fp",
+            "apps/zircon_deq_q_relu_fp",
+            "apps/zircon_deq_ResReLU_fp",
+            "apps/zircon_res_deq_ReLU_quant_fp",
+            "apps/zircon_quant_fp",
+            "apps/zircon_2d_nop",
+            "apps/zircon_2d_psum_reduction_fp",
+            "apps/mu2glb_path_balance_test",
+            "apps/zircon_scale_add_fp",
+            "apps/nop_2d",
+        ]
+        E64_MB_supported_tests = [
+            "apps/pointwise",
+            "apps/pointwise_mu_io",
+            "apps/pointwise_custom_place_multibank",
+            "apps/get_e8m0_scale_tree_mu_input",
+            "apps/get_e8m0_scale_tree_gb_input",
+            "apps/get_e8m0_scale_accum_gb_input",
+            "apps/apply_e8m0_scale_single_IO",
+            "apps/apply_e8m0_scale_multi_IOs",
+            "apps/get_apply_e8m0_scale_fp",
+            "apps/stable_softmax_pass1_fp",
+            "apps/stable_softmax_pass2_fp",
+            "apps/stable_softmax_pass3_fp",
+            "apps/layer_norm_pass1_fp",
+            "apps/layer_norm_pass2_fp",
+            "apps/layer_norm_pass3_fp",
+            "apps/gelu_pass1_mu_input_fp",
+            "apps/gelu_pass2_fp",
+            "apps/add_gelu_pass1_mu_input_fp",
+            "apps/add_gelu_pass2_fp",
+            "apps/tanh_fp",
+            "apps/avgpool_layer_fp",
+            "apps/mat_vec_mul_fp",
+            "apps/maxpooling_dense_rv_fp",
+            "apps/maxpooling_dense_rv_mem_buf_fp",
+            "apps/fully_connected_layer_fp",
+            "apps/zircon_residual_relu_fp",
+            "apps/zircon_nop",
+            "apps/zircon_psum_reduction_fp",
+            "apps/zircon_dequantize_relu_fp",
+            "apps/zircon_dequant_fp",
+            "apps/zircon_deq_ResReLU_quant_fp",
+            "apps/zircon_deq_q_relu_fp",
+            "apps/zircon_deq_ResReLU_fp",
+            "apps/zircon_res_deq_ReLU_quant_fp",
+            "apps/zircon_quant_fp",
+            "apps/zircon_2d_nop",
+            "apps/zircon_2d_psum_reduction_fp",
+            "apps/mu2glb_path_balance_test",
+            "apps/zircon_scale_add_fp",
+            "apps/nop_2d",
+        ]
+        return vars().copy()
+
+    template = configs_template()
+
+    # ------------------------------------------------------------------------
+    # List of tests that can run with E64 mode
+    # ------------------------------------------------------------------------
+    E64_supported_tests = [
+        "apps/pointwise",
+        "apps/pointwise_mu_io",
+        "conv5_x",
+        "apps/avgpool_layer_fp",
+        "apps/pointwise_custom_packing",
+        "apps/pointwise_custom_place_multibank",
+        "apps/get_e8m0_scale_test_fp",
+        "apps/zircon_residual_relu_fp",
+        "apps/zircon_nop",
+        "apps/zircon_psum_reduction_fp",
+        "apps/zircon_dequantize_relu_fp"
+    ]
+
+    # List of tests that can run with E64 multi_bank mode,
+    E64_MB_supported_tests = [
+        "apps/pointwise",
+        "apps/pointwise_mu_io",
+        "apps/pointwise_custom_place_multibank",
+        "apps/get_e8m0_scale_test_fp",
+        "apps/zircon_residual_relu_fp",
+        "apps/zircon_nop",
+        "apps/zircon_psum_reduction_fp",
+        "apps/zircon_dequantize_relu_fp"
+    ]
 
     # ------------------------------------------------------------------------------
     # BLANK config can be used to return default height, width, test group names etc.
@@ -368,35 +530,6 @@ class Tests:
         configs['pr_aha9'],
     )
 
-    # ------------------------------------------------------------------------
-    # List of tests that can run with E64 mode
-    # ------------------------------------------------------------------------
-    E64_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "conv5_x",
-        "apps/avgpool_layer_fp",
-        "apps/pointwise_custom_packing",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
-    ]
-
-    # List of tests that can run with E64 multi_bank mode,
-    E64_MB_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
-    ]
-
     # -----------------------------------------------------------------------------------
     # skip_cgra_map: These tests skip CGRA mapping and pnr to save time.  We assume that
     # the collateral was generated by a prior test. This means certain tests must be run
@@ -419,6 +552,8 @@ class Tests:
     # Methods begin here
     # ------------------------------------------------------------------------------------
     def __init__(self, config="BLANK", zircon=True):
+        self.__dict__.update(Tests.configs_template())
+        # self.__dict__.update(Tests.template)  # same same I think
 
         # Preserve backward compatibility
         if config in ["daily", "pr", "pr_submod"]:
@@ -439,11 +574,14 @@ class Tests:
             print(f'\n***ERROR Cannot find config "{config}"')
             exit(13)
 
-        # Populate missing return values with template defaults
-        sdic = self.__dict__
-        for key in Tests.template:
-            if key not in sdic: sdic[key] = Tests.template[key]
+        # Export everything named in template
+        vdic = vars().copy()
+        for key in Tests.configs_template():
+            if key in vdic:
+                self.__dict__[key] = vdic[key]
 
+
+        return
 
 
     def prefix_lines(lines, prefix):
