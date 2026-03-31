@@ -7,6 +7,7 @@ from aha.util.regress_util import generate_sparse_bitstreams
 from aha.util.regress_util import format_concat_tiles
 from aha.util.regress_util import test_sparse_app
 from aha.util.regress_util import test_dense_app
+from aha.util.regress_util import test_dense_ml_model
 from aha.util.regress_util import test_hardcoded_dense_app
 from aha.util.regress_util import info
 global info
@@ -16,6 +17,7 @@ def report_ongoing_failures(failed_tests):
     if failed_tests:
         print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
         for ft in failed_tests: print("  ", ft)
+        exit(13)
     else:
         print(f"--- NO FAILED TESTS (YET)")
 
@@ -93,6 +95,8 @@ def dispatch(args, extra_args=None):
     external_mu_tests = imported_tests.external_mu_tests
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
+    dense_ml_models = imported_tests.dense_ml_models
+    dense_ml_unit_tests = imported_tests.dense_ml_unit_tests
     no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
 
 #     E64_supported_tests = imported_tests.E64_supported_tests
@@ -141,10 +145,40 @@ def dispatch(args, extra_args=None):
             *behavioral_mu_tests_fp,
             *external_mu_tests,
             *external_mu_tests_fp,
-            *hardcoded_dense_tests
+            *hardcoded_dense_tests,
+            *dense_ml_models,
+            *dense_ml_unit_tests,
     ]:
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append(["garnet (Zircon) with sparse and dense", t])
+
+    # Run dense_ml_models and dense_ml_unit_tests first (e.g. pr_aha1 pointwise)
+    print(f"--- Processing app group dense_ml_models", flush=True)
+    info.append(["APP GROUP dense_ml_models[]", 0])
+    info.append(["APP GROUP dense_ml_unit_tests[]", 0])
+    for model in dense_ml_models + dense_ml_unit_tests:
+        try:
+            if model in dense_ml_unit_tests:
+                is_unit_test = True
+            else:
+                is_unit_test = False
+
+            # TODO: Add timing info for test_dense_ml_model.
+            test_dense_ml_model(
+                model, width, height, args.env_parameters, extra_args,
+                mu_datawidth=mu_datawidth,
+                num_fabric_cols_removed=num_fabric_cols_removed,
+                mu_oc_0=mu_oc_0,
+                is_unit_test=is_unit_test,
+            )
+            info.append([model + "_voyager_full_model", 0, 0, 0, 0, 0, 0, 0])
+        except Exception as e:
+            print(f"--- FAILED DENSE ML MODEL {model}:\n{e}")
+            failed_tests += [model]
+            final_error = e
+            info.append(["*** FAIL ***"])
+            info.append(["*** FAIL " + model + "_voyager_full_model"])
+            info.append(["*** FAIL ***"])
 
     data_tile_pairs = []
     kernel_name = ""
@@ -375,6 +409,7 @@ def dispatch(args, extra_args=None):
       final_error = e  # Save for later
       import traceback
       print(traceback.format_exc())  # Report the error and continue below
+      exit(13)
 
   finally:
     from tabulate import tabulate

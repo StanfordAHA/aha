@@ -554,6 +554,8 @@ def test_dense_app(
         "apps/stable_softmax_pass3_fp_RV_E64_MB",
         "apps/layer_norm_pass1_fp_RV_E64_MB",
         "apps/layer_norm_pass2_fp_RV_E64_MB",
+        "apps/rms_norm_pass1_fp_RV_E64_MB",
+        "apps/rms_norm_pass2_fp_RV_E64_MB",
         "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
         "apps/gelu_pass2_fp_RV_E64_MB",
         "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
@@ -820,6 +822,126 @@ def test_dense_app(
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
     return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
 
+
+def test_dense_ml_model(
+    model, width, height, env_parameters, extra_args,
+    mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32,
+    is_unit_test=False, gemm_datatype="int8"):
+
+    # Define strait paths and aha halide benchmarks path.
+    strait_path = "/aha/strait"
+    aha_halide_benchmarks_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks"
+
+    print(f"--- BEGIN test_dense_ml_model {model}", flush=True)
+
+    # ===============================
+    # Run voyager and strait compilations.
+    # ===============================
+    print(f"--- Running voyager+strait compilation of full model {model}...", flush=True)
+    strait_cmd = [
+        "aha",
+        "strait",
+        model,
+        "--gemm-datatype",
+        gemm_datatype,
+    ]
+    if is_unit_test:
+        strait_cmd.append("--unit-test")
+    buildkite_call(strait_cmd)
+
+    # Get all kernels for CGRA backend.
+    coreir_dir = os.path.join(strait_path, "_generated_coreirs", model, gemm_datatype)
+    if not os.path.isdir(coreir_dir):
+        raise RuntimeError(f"[ERROR] Strait coreir directory not found: {coreir_dir}")
+    kernel_names = sorted(
+        n for n in os.listdir(coreir_dir)
+        if os.path.isdir(os.path.join(coreir_dir, n))
+        and os.path.isfile(os.path.join(coreir_dir, n, "design_top.json"))
+    )
+    if not kernel_names:
+        raise RuntimeError(f"[ERROR] No strait kernels found under {coreir_dir}")
+
+    # Decide which kernels should use dense-fp comparison in aha test
+    from aha.util.strait import _strait_kernel_fp_output_map
+    kernel_fp_map = _strait_kernel_fp_output_map(model, gemm_datatype, strait_path)
+
+    # Define environment variables and parameters for CGRA backend.
+    env_parameters = str(env_parameters)
+    use_daemon = ["--daemon", "auto"] if (extra_args and "--daemon" in extra_args and "auto" in extra_args) else []
+    env_vars = {
+        # Use dense ready-valid and exhaustive pipelining.
+        "DENSE_READY_VALID": "1",
+        "EXHAUSTIVE_PIPE": "1",
+        "PIPELINED": "0",
+        "MATCH_BRANCH_DELAY": "0",
+        # Use matrix unit env vars.
+        "INCLUDE_E64_HW": "1",
+        "INCLUDE_MULTI_BANK_HW": "1",
+        "NUM_FABRIC_COLS_REMOVED": str(num_fabric_cols_removed),
+        "WEST_IN_IO_SIDES": "1" if num_fabric_cols_removed == 0 else "0",
+        "USING_MATRIX_UNIT": "1",
+        "INCLUDE_MU_GLB_HW": "1",
+        "MU_OC_0": str(mu_oc_0),
+        "MU_DATAWIDTH": str(mu_datawidth),
+        "ADD_MU_INPUT_BUBBLES": "1",
+    }
+    print(f"\033[92mINFO: test_dense_ml_model always uses dense ready-valid and exhaustive pipelining\033[0m")
+
+    pnr_mu_extra_args = [
+        "--using-matrix-unit",
+        "--mu-datawidth", str(mu_datawidth),
+        "--give-north-io-sbs",
+        "--num-fabric-cols-removed", str(num_fabric_cols_removed),
+        "--mu-oc-0", str(mu_oc_0),
+        "--include-E64-hw",
+        "--include-multi-bank-hw",
+        "--include-mu-glb-hw",
+        "--use-non-split-fifos",
+        "--pipeline-mu2cgra",
+    ]
+
+    # Create symlinks for each kernel from strait to halide benchmarks paths for reusing existing aha pnr and test flows.
+    strait_headers_dir = os.path.join(strait_path, "coreir_backend", "utils", "headers")
+    header_jsons = sorted(
+        f for f in os.listdir(strait_headers_dir)
+        if f.endswith(".json")
+    ) if os.path.isdir(strait_headers_dir) else []
+
+    for kernel_name in kernel_names:
+        kernel_dir = os.path.abspath(os.path.join(coreir_dir, kernel_name))
+        app_name = f"apps/{model}_{gemm_datatype}_{kernel_name}"
+        app_dir = os.path.join(aha_halide_benchmarks_path, app_name)
+        bin_link = os.path.join(app_dir, "bin")
+        os.makedirs(app_dir, exist_ok=True)
+        try:
+            if not os.path.lexists(bin_link):
+                os.symlink(kernel_dir, bin_link)
+            for h in header_jsons:
+                dest = os.path.join(bin_link, h)
+                if not os.path.lexists(dest):
+                    os.symlink(os.path.join(strait_headers_dir, h), dest)
+        except OSError as e:
+            raise RuntimeError(f"[ERROR] Failed to create symlink for {kernel_name}: {e}")
+
+        # ===============================
+        # Run pnr and test for all kernels.
+        # ===============================
+        print(f"--- {app_name} - pnr and pipelining", flush=True)
+        buildkite_call([
+            "aha", "pnr", app_name,
+            "--width", str(width),
+            "--height", str(height),
+            "--env-parameters", env_parameters,
+        ] + pnr_mu_extra_args + use_daemon, env=env_vars)
+
+        print(f"--- {app_name} - glb testing", flush=True)
+        test_cmd = ["aha", "test", app_name]
+        if kernel_fp_map.get(kernel_name, False):
+            test_cmd.append("--dense-fp")
+        buildkite_call(test_cmd, env=env_vars)
+
+        print(f"--- Removed link {app_dir}", flush=True)
+        shutil.rmtree(app_dir, ignore_errors=True)
 
 def test_hardcoded_dense_app(
         test, width, height, env_parameters, extra_args,
