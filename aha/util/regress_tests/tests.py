@@ -228,7 +228,6 @@ class Tests:
             config = "pr_aha"
         return config
 
-
     # FAST test suite should complete in just a minute or two
     def config_fast():
             width, height = 8, 8,
@@ -657,6 +656,406 @@ class Tests:
             return vars().copy()
     configs['pr_aha'] = configs_aha()
 
+    # FULL test is used by scheduled weekly aha regressions
+    def config_full():
+
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            sparse_tests = [
+                "vec_elemadd",
+                "vec_elemmul",
+                "vec_identity",
+                "vec_scalar_mul",
+                "mat_vecmul_ij",
+                "mat_elemadd",
+                "mat_elemadd_relu",
+                "mat_elemadd_leakyrelu_exp",
+                "mat_elemadd3",
+                "mat_elemmul",
+                "mat_elemdiv",
+                "mat_identity",
+                "mat_mattransmul",
+                "matmul_ijk",
+                "matmul_ijk_crddrop",
+                "matmul_ikj",
+                "matmul_jik",
+                "spmm_ijk_crddrop",
+                "spmv",
+                "spmv_relu",
+                "masked_broadcast",
+                "trans_masked_broadcast",
+                "mat_dn2sp",
+                "mat_sp2dn",
+                # Turned off until SUB ordering fixed in mapping
+                # 'mat_residual',
+                "mat_sddmm",
+                "mat_mask_tri",
+                "mat_vecmul_iter",
+                "tensor3_elemadd",
+                "tensor3_elemmul",
+                "tensor3_identity",
+                "tensor3_innerprod",
+                "tensor3_mttkrp",
+                "tensor3_mttkrp_unfused1",
+                "tensor3_mttkrp_unfused2",
+                "tensor3_ttm",
+                "tensor3_ttv",
+                "fp_relu_matmul_ijk_crddrop",
+                "fp_relu_matmul_ikj",
+                "fp_spmm_ijk_crddrop",
+                "fp_spmm_ijk_crddrop_locator",
+                "fp_spmm_ikj",
+                "fp_relu_spmm_ijk_crddrop",
+                "fp_relu_spmm_ikj",
+                "fp_matmul_ijk_crddrop",
+                "fp_matmul_ikj",
+            ]
+            glb_tests_RV = [
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+              # "tests/rom_RV",   # FIXME this one Failed
+                "tests/arith_RV",
+                "tests/absolute_RV",
+                "tests/boolean_ops_RV",
+                "tests/equal_RV",
+                "tests/ternary_RV",
+                "tests/scomp_RV",
+                "tests/ucomp_RV",
+                "tests/sminmax_RV",
+                "tests/uminmax_RV",
+                "tests/sshift_RV",
+                "tests/ushift_RV",
+                "tests/conv_2_1_RV",
+                "tests/conv_3_3_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+                "tests/mem_slice_test_RV",
+                "tests/mem_transpose_test_RV",
+                "tests/mem_filter_test_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/gaussian_RV",
+                "apps/brighten_and_blur_RV",
+                "apps/pointwise_custom_packing_RV_E64",
+                "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
+                "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
+                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
+            ]
+            glb_tests_fp_RV = [ "tests/fp_pointwise_RV" ]  # This is in 'fast' config but not aha1-9
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV1
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV2
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV3
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV8
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV9
+
+            # FIXME tests from here down are out of order; should be:
+            #   behavioral_mu_tests*
+            #   voyager_cgra_tests_fp
+            #   external_mu_tests*
+            #   hardcoded_dense_tests
+            #   no_zircon_sparse_tests
+            #   glb_tests*
+            #   resnet_tests*
+
+            hardcoded_dense_tests = [
+                "apps/unsharp_RV",
+                # TODO: Tests below are planned but not yet supported
+                # "apps/depthwise_conv" # down on Zircon
+            ]
+            # Tests below are non-zircon and won't run by default
+            glb_tests = [
+                "apps/maxpooling",
+                "apps/pointwise",
+                "tests/rom",
+                "tests/arith",
+                "tests/absolute",
+                "tests/boolean_ops",
+                "tests/equal",
+                "tests/ternary",
+                "tests/scomp",
+                "tests/ucomp",
+                "tests/sminmax",
+                "tests/uminmax",
+                "tests/sshift",
+                "tests/ushift",
+                "tests/conv_1_2",
+                "tests/conv_2_1",
+                "tests/conv_3_3",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
+                "apps/gaussian",
+                "apps/brighten_and_blur",
+                "apps/cascade",
+                "apps/harris",
+                "apps/resnet_layer_gen",
+                "apps/unsharp",
+                "apps/harris_color",
+                "apps/camera_pipeline_2x2",
+                "apps/matrix_multiplication",
+            ]
+            glb_tests_fp = [
+                "apps/maxpooling_fp",
+                "apps/relu_layer_fp",
+                "tests/fp_pointwise",
+                "tests/fp_arith",
+                "tests/fp_comp",
+                "tests/fp_conv_7_7",
+                "apps/matrix_multiplication_fp",
+                # TODO: Tests below are planned but not yet supported
+                # "apps/mcunet_in_sequential_0_fp", # not yet supported by zircon
+                # "apps/depthwise_conv_stream_fp", # not yet supported by zircon
+            ]
+
+            # FIXME would it be better here to do e.g.
+            # resnet_tests = Tests('resnet').resnet_tests ?
+
+            resnet_tests = [
+                "conv1",
+                "conv2_x",
+                "conv5_x",
+            ]
+            resnet_tests_fp = [
+                "sequential_0_fp",
+                "InvRes1_pw_fp",
+                "InvRes2_pw_exp_fp",
+                "InvRes2_pw_sq_fp",
+                "InvRes3_pw_exp_fp",
+                "InvRes3_pw_sq_residual_fp",
+                # TODO: Tests below are planned but not yet supported
+                # "conv2_x_fp", # not yet supported by zircon
+            ]
+
+            voyager_cgra_tests_fp = [
+                # ResNet-18 Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # ResNet-18 Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # ResNet-18 Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_resnet18_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_resnet18_kernel1_RV_E64_MB",
+
+                 # BERT permute layer
+                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+
+                # BERT layer norm layers (didn't run post-FFN layer norm layer)
+                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
+                # Channel slicing (unroll by 16)
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+
+                # BERT GELU pass2 layers
+                "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
+                "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
+
+                # BERT get_e8m0_scale accum schedule layers
+                "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
+                "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
+
+                # BERT apply_e8m0_scale layers
+                "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
+                "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
+
+                # BERT get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
+                "bert-quantize_mx_default::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_3::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_4::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_bert_shape1_RV_E64_MB", # 12, 128, 64
+                "bert-quantize_mx_default_6::get_e8m0_scale_tree_gb_input_bert_shape2_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel0_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel1_RV_E64_MB", # 128, 1536, tiling
+
+                "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_3::apply_e8m0_scale_single_IO_bert_quantize_mx_default_3_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_4::apply_e8m0_scale_single_IO_bert_quantize_mx_default_4_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB", # 12, 128, 64
+                "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB", # 128, 1536, tiling
+
+                # BERT Softmax layers
+                "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",
+                "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
+                "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
+
+                # BERT Pooling layer, using k-dim host tiling
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel0_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel1_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel2_RV_E64_MB",
+
+                # BERT Classifier layer
+                "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
+
+                # BERT tanh layer
+                "bert-tanh::tanh_fp_bert_RV_E64_MB"
+
+            ]
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",
+                "apps/pointwise_mu_io_RV_E64_MB",
+                "apps/mu2glb_path_balance_test_RV_E64",
+                "apps/abs_max_full_unroll_fp_RV",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
+            ]
+            behavioral_mu_tests_fp = [
+                "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
+                # "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+            ]
+            external_mu_tests = [
+                # BERT Attention*Value Using inner reduction workaround
+                "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
+            ]
+
+            external_mu_tests_fp = [
+               # BERT Query projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
+               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
+               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
+
+               # BERT Key projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
+               "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel1_RV_E64_MB",
+               "bert-submodule -> zircon_2d_psum_reduction_fp_post_bert_key_projection_kernel2_RV_E64_MB",
+
+               # BERT Value projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
+               "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel1_RV_E64_MB",
+               "bert-submodule_1 -> zircon_2d_psum_reduction_fp_post_bert_value_projection_kernel2_RV_E64_MB",
+
+               # BERT masked self-attention head
+               "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
+
+               # BERT post-attention projection:All using gemm_reduction_tiling_workaround
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel0_RV_E64_MB",
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel2_RV_E64_MB",
+
+               # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel2_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel3_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel4_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
+
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel8_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel9_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel10_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
+
+               # BERT down projection layer: All using gemm_reduction_tiling_workaround
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel2_RV_E64_MB",
+
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel3_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel4_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel5_RV_E64_MB",
+
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel6_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel7_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel8_RV_E64_MB",
+
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel9_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel10_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel11_RV_E64_MB",
+
+                # RESNET18
+                # Conv1 (im2col-based, X-DIM HOST TILING)
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
+
+                # Conv2_x
+                "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
+
+                # Conv3_1 strided conv
+                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
+
+                # Conv3_1 pointwise conv
+                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
+
+                # Conv3_x
+                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
+
+                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
+                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+
+                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
+                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
+
+                # Conv4_x
+                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+
+                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
+
+                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
+
+                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel2_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
+            ]
+
+            # Run dense ML tests [full]
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
+            ]
+
+            # For sparse tests, we cherry pick some representative tests to run [full]
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
+
+    configs['full'] = configs_full()
+
+
+
+
+
+
+
+
     # ------------------------------------------------------------------------
     # mu
     # ------------------------------------------------------------------------
@@ -883,231 +1282,6 @@ class Tests:
                 # rval += (fmt % (config_name, group, app, d["app_parms"]))
 
     # Removed PR_SUBMOD tests as redundant with existing pr_aha
-
-    # FULL test is used by scheduled weekly aha regressions
-    configs['full'] = {
-        "width": 28,
-        "height": 16,
-        "mu_oc_0": 32,
-        "cols_removed": 12,
-    # full
-        "behavioral_mu_tests": [
-            "apps/pointwise_mu_io_RV_E64",
-            "apps/pointwise_mu_io_RV_E64_MB",
-            "apps/abs_max_full_unroll_fp_RV",
-            "apps/get_e8m0_scale_test_fp_RV_E64_MB",
-            "apps/get_apply_e8m0_scale_fp_RV"
-        ],
-    # full
-        "external_mu_tests": [
-            "resnet18-conv2d_mx_default_6 -> zircon_nop_post_conv3_x_RV_E64_MB",
-            "resnet18-conv2d_mx_default_11 -> zircon_nop_post_conv4_x_RV_E64_MB",
-            "fakeconv2d-conv2d_mx_default -> zircon_nop_post_fakeconv2d_RV_E64_MB",
-            "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel0_RV_E64_MB",
-            "resnet18-conv2d_mx_default_16 -> zircon_nop_post_conv5_x_kernel1_RV_E64_MB"
-        ],
-    # full
-        "external_mu_tests_fp": [
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel2_RV_E64_MB",
-            "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel3_RV_E64_MB",
-            "resnet18-submodule_3 -> zircon_residual_relu_fp_post_conv2_x_RV_E64_MB",
-            "resnet18-submodule_7 -> zircon_residual_relu_fp_post_conv3_x_RV_E64_MB",
-            "resnet18-submodule_11 -> zircon_residual_relu_fp_post_conv4_x_inner_reduction_workaround_RV_E64_MB",
-            "resnet18-submodule_15 -> zircon_residual_relu_fp_post_conv5_x_inner_reduction_workaround_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel2_RV_E64_MB",
-            "resnet18-submodule_17 -> zircon_residual_relu_fp_post_conv5_x_kernel3_RV_E64_MB"
-        ],
-    # full
-        "glb_tests": [
-            "apps/maxpooling",
-            "apps/pointwise",
-            "tests/rom",
-            "tests/arith",
-            "tests/absolute",
-            "tests/boolean_ops",
-            "tests/equal",
-            "tests/ternary",
-            "tests/scomp",
-            "tests/ucomp",
-            "tests/sminmax",
-            "tests/uminmax",
-            "tests/sshift",
-            "tests/ushift",
-            "tests/conv_1_2",
-            "tests/conv_2_1",
-            "tests/conv_3_3",
-            "tests/bit8_packing_test",
-            "tests/bit8_unpack_test",
-            "tests/fp_get_shared_exp_test",
-            "tests/fp_e8m0_quant_test",
-            "apps/gaussian",
-            "apps/brighten_and_blur",
-            "apps/cascade",
-            "apps/harris",
-            "apps/resnet_layer_gen",
-            "apps/unsharp",
-            "apps/harris_color",
-            "apps/camera_pipeline_2x2",
-            "apps/matrix_multiplication"
-        ],
-    # full
-        "glb_tests_RV": [
-            "apps/pointwise_RV",
-            "apps/pointwise_RV_E64",
-            "apps/pointwise_RV_E64_MB",
-            "tests/rom_RV",
-            "tests/arith_RV",
-            "tests/absolute_RV",
-            "tests/boolean_ops_RV",
-            "tests/equal_RV",
-            "tests/ternary_RV",
-            "tests/scomp_RV",
-            "tests/ucomp_RV",
-            "tests/sminmax_RV",
-            "tests/uminmax_RV",
-            "tests/sshift_RV",
-            "tests/ushift_RV",
-            "tests/conv_2_1_RV",
-            "tests/conv_3_3_RV",
-            "tests/bit8_packing_test_RV",
-            "tests/bit8_unpack_test_RV",
-            "tests/fp_get_shared_exp_test_RV",
-            "tests/mem_slice_test_RV",
-            "tests/mem_transpose_test_RV",
-            "tests/mem_filter_test_RV",
-            "tests/fp_e8m0_quant_test_RV",
-            "apps/gaussian_RV",
-            "apps/brighten_and_blur_RV",
-            "apps/pointwise_custom_packing_RV_E64"
-        ],
-    # full
-        "glb_tests_fp": [
-            "apps/maxpooling_fp",
-            "apps/relu_layer_fp",
-            "tests/fp_pointwise",
-            "tests/fp_arith",
-            "tests/fp_comp",
-            "tests/fp_conv_7_7",
-            "apps/matrix_multiplication_fp",
-            "apps/scalar_max_fp",
-            "apps/stable_softmax_pass2_fp",
-            "apps/stable_softmax_pass3_fp",
-            "apps/scalar_avg_fp",
-            "apps/layer_norm_pass2_fp",
-            "apps/layer_norm_pass3_fp",
-            "apps/gelu_pass1_fp",
-            "apps/gelu_pass2_fp",
-            "apps/silu_pass1_fp",
-            "apps/silu_pass2_fp",
-            "apps/swiglu_pass2_fp",
-            "apps/rope_pass1_fp",
-            "apps/rope_pass2_fp"
-        ],
-    # full
-        "glb_tests_fp_RV": [
-            "apps/relu_layer_fp_RV",
-            "apps/relu_layer_multiout_fp_RV",
-            "apps/scalar_reduction_fp_RV",
-            "apps/vector_reduction_fp_RV",
-            "tests/fp_pointwise_RV",
-            "tests/fp_arith_RV",
-            "tests/fp_comp_RV",
-            "apps/scalar_max_fp_RV",
-            "apps/stable_softmax_pass2_fp_RV",
-            "apps/stable_softmax_pass3_fp_RV",
-            "apps/scalar_avg_fp_RV",
-            "apps/layer_norm_pass2_fp_RV",
-            "apps/layer_norm_pass3_fp_RV",
-            "apps/gelu_pass1_fp_RV",
-            "apps/gelu_pass2_fp_RV",
-            "apps/silu_pass1_fp_RV",
-            "apps/silu_pass2_fp_RV",
-            "apps/swiglu_pass2_fp_RV",
-            "apps/rope_pass1_fp_RV",
-            "apps/rope_pass2_fp_RV",
-            "apps/avgpool_layer_fp_RV_E64",
-            "apps/mat_vec_mul_fp_RV"
-        ],
-    # full
-        "hardcoded_dense_tests": [
-            "apps/unsharp_RV"
-        ],
-    # full
-        "no_zircon_sparse_tests": [
-            "vec_elemmul",
-            "mat_vecmul_ij",
-            "mat_elemadd_leakyrelu_exp",
-            "matmul_ikj",
-            "tensor3_mttkrp"
-        ],
-    # full
-        "resnet_tests": [
-            "conv1",
-            "conv2_x",
-            "conv5_x"
-        ],
-    # full
-        "resnet_tests_fp": [
-            "sequential_0_fp",
-            "InvRes1_pw_fp",
-            "InvRes2_pw_exp_fp",
-            "InvRes2_pw_sq_fp",
-            "InvRes3_pw_exp_fp",
-            "InvRes3_pw_sq_residual_fp"
-        ],
-    # full
-        "sparse_tests": [
-            "vec_elemadd",
-            "vec_elemmul",
-            "vec_identity",
-            "vec_scalar_mul",
-            "mat_vecmul_ij",
-            "mat_elemadd",
-            "mat_elemadd_relu",
-            "mat_elemadd_leakyrelu_exp",
-            "mat_elemadd3",
-            "mat_elemmul",
-            "mat_elemdiv",
-            "mat_identity",
-            "mat_mattransmul",
-            "matmul_ijk",
-            "matmul_ijk_crddrop",
-            "matmul_ikj",
-            "matmul_jik",
-            "spmm_ijk_crddrop",
-            "spmv",
-            "spmv_relu",
-            "masked_broadcast",
-            "trans_masked_broadcast",
-            "mat_dn2sp",
-            "mat_sp2dn",
-            "mat_sddmm",
-            "mat_mask_tri",
-            "mat_vecmul_iter",
-            "tensor3_elemadd",
-            "tensor3_elemmul",
-            "tensor3_identity",
-            "tensor3_innerprod",
-            "tensor3_mttkrp",
-            "tensor3_mttkrp_unfused1",
-            "tensor3_mttkrp_unfused2",
-            "tensor3_ttm",
-            "tensor3_ttv",
-            "fp_relu_matmul_ijk_crddrop",
-            "fp_relu_matmul_ikj",
-            "fp_spmm_ijk_crddrop",
-            "fp_spmm_ijk_crddrop_locator",
-            "fp_spmm_ikj",
-            "fp_relu_spmm_ijk_crddrop",
-            "fp_relu_spmm_ikj",
-            "fp_matmul_ijk_crddrop",
-            "fp_matmul_ikj"
-        ],
-    }
 
 # Every time someone tries to import this class, it triggers this
 # quick check to make sure that no configs have redundant apps
