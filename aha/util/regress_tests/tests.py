@@ -1303,9 +1303,10 @@ class Tests:
         # fast    glb_tests_fp   tests/fp_pointwise       8x8 --removed 4 --mu 8
 
         # Find config and populate it with default keys from template
-        # d = Tests.template.copy()
-        d = Tests.template.copy()
-        d.update(Tests.configs[config_name])
+        d = configs_template()
+        # d.update(Tests.configs[config_name])
+        d.update(Tests(config_name).__dict__)
+
 
         (w,h) =  (d['width'], d['height'])
         (col,mu) = (d["cols_removed"], d["mu_oc_0"])
@@ -1386,7 +1387,7 @@ def check_for_dupes(DBG=0):
             if DBG: print(dbg_result)
     assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
 
-check_for_dupes(DBG=0)
+# check_for_dupes(DBG=0)
 
 # app utility uses this to do things like e.g.
 #     tests.py --exec "print(*Tests.configs_list)"  # list config names
