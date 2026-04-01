@@ -22,8 +22,15 @@ defining the `fast` config tests and setup, e.g.
 
 ### Testing tests.py:
 
+TODO rewrite this section touse "apps" utility instead etc.
+
+
+
+
+<!-- NO! see above
 Instead of pytest (for now), can use testconfigs.py to verify tests.py directly.  This should work equally well from kiwi or docker or wherever. `testconfigs` basically exercises many of the features of tests.py, e.g. correctly listing the various configs "full", "pr_aha1", "fast", etc. and correctly interpreting json or yaml
 command-line configs.
 ```
     python3 testconfigs.py |& less
 ```
+-->
