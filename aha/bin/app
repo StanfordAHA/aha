@@ -5,6 +5,7 @@
 #   --update /local/garnet /aha/garnet  # Update docker repo from local
 #   --copy          # Copy working script to docker as /aha/aha/bin/app
 #   --container C   # Use existing container "C" to run the app
+#   --get_apps <br> # Get list of apps for branch <br> e.g. "app --get_apps master
 
 # To test: see bottom of file, below
 
@@ -19,6 +20,9 @@ HELP="
     $bn --show-suite <suite>   # Show contents of specified suite
     $bn --run-suite <suite>    # RUN the specified suite
     $bn --show                 # Same as '--show-suite all'
+    $bn --show aha19              # Show all apps found in config pr_aha1-9
+    $bn --show -b <branch/sha>    # Show apps for given branch/sha
+    $bn --compare <br1> <br2>     # Compare app list for two branches
 
   OPTIONAL FLAGS
     --vcs          # Use vcs for RTL simulation (requires vcs license) [DEFAULT]
@@ -36,14 +40,17 @@ HELP="
     $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
     $bn 8x8 tests/fp_pointwise --waveform
     $bn --verilator 8x8 apps/pointwise
+    $bn --compare master c3392a
 
   QUICK REFERENCE:
     $bn --list-suites
     $bn --show-suite fast --zircon
     $bn --show-suite fast --no-zircon
     $bn --show-suite full
-    $bn --show-suite resnet
     $bn --show-suite all
+    $bn --show -b HEAD~5
+    $bn --show aha19
+    $bn --compare HEAD master~1
 
 "
 if [ "$1" == "--help" ]; then echo "$HELP"; exit; fi
@@ -64,15 +71,23 @@ FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
 UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
 CONTAINER=
+BRANCH=
 function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
 while [ $# -gt 0 ] ; do
     case "$1" in
         --show*)
           if not_suite "$2"; then SUITE='all'; else SUITE="$2"; shift; fi ;;
 
+        -b)            BRANCH=$2;    shift ;;
+        --branch)      BRANCH=$2;    shift ;;
+        --sha)         BRANCH=$2;    shift ;;
+
         --run*)        RUN_SUITE=$2; shift ;;
         --*remove*)    FCR=$2;       shift ;;
         --mu*)         MU=$2;        shift ;;
+
+        --get*)        break ;;
+        --compare)     break ;;
 
         --list*)      LIST_SUITES=notnull ;;
         --no*zircon)  ZIRCON=' --no-zircon' ;;
@@ -111,14 +126,139 @@ done
 # echo "remaining args = '$@'"
 
 ########################################################################
-# Find file tests.py
-TESTS_PY=/aha/aha/util/regress_tests/tests.py
-test -e $TESTS_PY || TESTS_PY=/nobackup/steveri/github$TESTS_PY
+# app --compare <branch/sha> <branch/sha>
+
+function get_apps {
+    # Fetch all apps in tests.py for aha repo branch '$1' and list them per-config
+    # Combine all pr_aha config apps into a single group "aha19"
+    # E.g. "get_apps origin/master~1" or "get_apps c3392a"
+
+    branch=$1
+    echo "Fetching apps from branch '$branch'" > /dev/stderr
+    
+    # Get names of "essential" configs, i.e.
+    # leave off pr_aha1..pr_aha19 as they are redundant with 'aha19' etc.
+    # Expect a line like: "ESSENTIAL SUITES: fast full resnet mu aha19"
+    configs=$($0 --list-suites -b $branch | grep ESSENTIAL | sed 's/.*: //')
+
+    for config in $configs; do
+        prefix=$(printf "%-6s " $config)
+        printf    "  $(basename $0) -b $branch --show %-9s " $config... > /dev/stderr
+        apps=$($0 -b $branch --show $config | grep . | sed "s/  */ /g")
+        printf "%3d apps\n" $(grep . <<< "$apps" | wc -l) > /dev/stderr
+        echo "$apps" | sed "s/^/$prefix/"
+    done
+    echo "" > /dev/stderr
+}
+# Can test function by doing e.g. "app --getapps master"
+expr "$1" : '^--get' > /dev/null && get_apps $2 && exit
+
+function compare {
+    # Compare the app list for two given repo branches e.g.
+    # compare origin/master~1 origin/master
+    #     In 'origin/master~1' but not in 'origin/master':
+    #     < full   app 28x16 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB" --removed 12 --mu 32
+    b1=$1; b2=$2
+
+    # First check both branches for validity
+    err=()
+    for branch in $b1 $b2; do
+        if ! git rev-parse $branch >& /dev/null; then
+            err+=("***ERROR cannot find aha repo branch/sha '$branch'")
+        fi
+    done
+    if [ "$err" ]; then
+        for e in "${err[@]}"; do echo $e; done; exit 13
+    fi
+
+    # Make a different temp file for each branch's list of apps
+    tmpfiles=()
+    for branch in $b1 $b2; do
+
+        # Use sed script to remove slashes in branch name; bad news if branch is e.g. 'origin/master'
+        tmp=/tmp/applist-$$---$(echo $branch | sed 's|/|.SLASH.|')
+        tmpfiles+=($tmp) # Build a list of (two) tmpfiles
+        /bin/rm -f $tmp  # Delete file if already exists for some reason
+
+        # Fetch apps to temp file(s)
+        get_apps $branch >> $tmp
+        # echo "  Total $(grep . $tmp | wc -l) apps in 
+        # echo "" > /dev/stderr
+    done
+
+    # Compare the two temp files...
+    function hline { seq -s= 100 | sed 's/[0-9]//g'; }
+    t1=${tmpfiles[0]}; t2=${tmpfiles[1]}
+    t1_diffs=$(diff <(sort $t1) <(sort $t2) | egrep \<)
+    t2_diffs=$(diff <(sort $t1) <(sort $t2) | egrep \>)
+
+    # ...and print the final results!
+    echo "Comparing $b1 vs. $b2..."
+    [ "$t1_diffs$t2_diffs" ] || echo "NO DIFFS"
+
+    if [ "$t1_diffs" ]; then
+        hline  # ========================================================================
+        echo "In '$b1' but not in '$b2':"
+        echo "$t1_diffs"
+        echo ""
+    fi
+    if [ "$t2_diffs" ]; then
+        hline  # ========================================================================
+        echo "In '$b2' but not in '$b1':"
+        echo "$t2_diffs"
+        echo ""
+    fi
+
+    # Clean up
+    /bin/rm -f /tmp/applist-[0-9]*
+}
+
+if [ "$1" == "--compare" ]; then
+    shift; b1=$1; b2=$2
+    compare $b1 $b2
+    exit
+fi
+
+################################################################################
+# This block implements 'app --show-suite aha19' (show contents of pr_aha1-9)
+
+# Generously allow multiple aliases for pr_aha19 e.g. aha19, 19, pr-aha1-9, aha, pr-aha, ..
+egrep 'aha$'        <<< "$SUITE" > /dev/null && SUITE='aha19'
+egrep '(pr)*.*1.*9' <<< "$SUITE" > /dev/null && SUITE='aha19'
+
+# If $SUITE is nonzero, that means we are doing 'app --show-suite'
+if [ "$SUITE" == "aha19" ]; then
+    [ "$BRANCH" ] && b="-b $BRANCH" || b=
+    for i in {1..9}; do 
+        unset APP_SECRET
+        $0 --show-suite pr_aha$i $b | sed 's/  */ /g'
+    done
+    exit
+fi
+
+########################################################################
+# Find file tests.py and copy to /tmp
+tests_py=aha/util/regress_tests/tests.py
+local_tests_py=/tmp/tests.py
+
+if test -e /aha/$tests_py; then
+    repo=/aha
+else
+    repo=/nobackup/steveri/github/aha
+fi
+
+# I.e. if <branch> requested, use tests.py from <branch>
+if test -z $BRANCH; then
+    cp $repo/$tests_py ${local_tests_py}
+else
+    (cd $repo; git show $BRANCH:$tests_py > ${local_tests_py})
+    # echo BRANCH $(cd $repo; git rev-parse $BRANCH)
+fi
 
 ########################################################################
 # Parse 'tests.py' to find suite names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
-TEST_SUITES=$(python3 $TESTS_PY --exec "print(*Tests.configs_list)") || exit 13
+TEST_SUITES=$(python3 $local_tests_py --exec "print(*Tests.configs_list)") || exit 13
 TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
 [ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n$TEST_SUITES\n\n"
 
@@ -134,6 +274,24 @@ TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
 if [ "$LIST_SUITES" ]; then
     echo AVAILABLE REGRESSION SUITES:
     echo "$TEST_SUITES all" | xargs printf "  $bn --show-suite %s\n" | sed 's/,//'
+    echo "  app --show-suite aha19  # List all apps pr_aha1 through pr_aha9"
+    echo ""
+
+    # ------------------------------------------------------------------------
+    # Reject redundant configs and list only the essential ones
+    # e.g. "ESSENTIAL CONFIGS: fast full resnet mu aha19"
+
+    # Helper functions
+    function ser { fmt -w 1; }  # serialize a list of words, one per line
+    function des { tr '\n' ' ' | xargs; }  # deserialize
+
+    # Filter
+    # Don't need configs pr_aha*, they are included in 'aha19'
+    # Similarly, don't want configs "BLANK" or "ALL"
+    function filter { egrep -v 'pr_aha*|BLANK|all'; }
+
+    echo -n "ESSENTIAL SUITES: "
+    echo "$TEST_SUITES aha19" | ser | filter | des
     exit
 fi
 ########################################################################
@@ -148,8 +306,9 @@ fi
 
 # Need python 3.3 or better for importlib.util
 test -e /aha && source /aha/bin/activate
-suites=`python3 $TESTS_PY --exec "Tests.show_configs()"` || exit 13
+suites=`python3 $local_tests_py --exec "Tests.show_configs()"` || exit 13
 [ "$DBG" ] && echo "$suites"
+rm $local_tests_py
 
 ########################################################################
 # FILTER function to tabulate output w/o changing arg spacing (also hline)
@@ -193,7 +352,7 @@ if [ "$SUITE" ]; then
         [ "$DBG" ] && hline 72
 
         # Note $ZIRCON is either "" or " --no-zircon"
-        (echo "$suites" | egrep ^"$s" | awk -F, '{
+        (echo "$suites" | egrep "^$s," | awk -F, '{
           suite=$1; group=$2; app=$3; size=$4; $1=$2=$3=$4="";
           gsub(/^ */, "", $0); parms = $0
           printf("'$bn' %s \"%s\" %s\n", size, app, parms ZIRCON)

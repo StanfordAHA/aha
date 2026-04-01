@@ -7,6 +7,7 @@ from aha.util.regress_util import generate_sparse_bitstreams
 from aha.util.regress_util import format_concat_tiles
 from aha.util.regress_util import test_sparse_app
 from aha.util.regress_util import test_dense_app
+from aha.util.regress_util import test_dense_ml_model
 from aha.util.regress_util import test_hardcoded_dense_app
 from aha.util.regress_util import info
 global info
@@ -16,6 +17,7 @@ def report_ongoing_failures(failed_tests):
     if failed_tests:
         print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
         for ft in failed_tests: print("  ", ft)
+        exit(13)
     else:
         print(f"--- NO FAILED TESTS (YET)")
 
@@ -58,6 +60,10 @@ def dispatch(args, extra_args=None):
     )
     if p.returncode:
         print(f"\n***ERROR Cannot find verilog simulator '{TOOL}'")
+        print(f"Maybe do this:")
+        print(f"    source /aha/bin/activate")
+        print(f"    source /cad/modules/tcl/init/sh")
+        print(f"    module load base incisive xcelium/19.03.003 vcs/T-2022.06-SP2")
         exit(p.returncode)
 
     imported_tests = None
@@ -66,6 +72,9 @@ def dispatch(args, extra_args=None):
     global info  # HA!
     # info = []  # DON'T DO THIS!!! Or else you lose your pointer to the One True Info in regress_util
     info.clear()
+
+    from aha.util.regress_info import test_info
+    test_info(info)
 
     # For config definitions see regress_tests/tests.py
     imported_tests = Tests(args.config)
@@ -86,6 +95,8 @@ def dispatch(args, extra_args=None):
     external_mu_tests = imported_tests.external_mu_tests
     external_mu_tests_fp = imported_tests.external_mu_tests_fp
     hardcoded_dense_tests = imported_tests.hardcoded_dense_tests
+    dense_ml_models = imported_tests.dense_ml_models
+    dense_ml_unit_tests = imported_tests.dense_ml_unit_tests
     no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
 
 #     E64_supported_tests = imported_tests.E64_supported_tests
@@ -134,10 +145,40 @@ def dispatch(args, extra_args=None):
             *behavioral_mu_tests_fp,
             *external_mu_tests,
             *external_mu_tests_fp,
-            *hardcoded_dense_tests
+            *hardcoded_dense_tests,
+            *dense_ml_models,
+            *dense_ml_unit_tests,
     ]:
         t = gen_garnet(width, height, dense_only=False, using_matrix_unit=using_matrix_unit, mu_datawidth=mu_datawidth, num_fabric_cols_removed=num_fabric_cols_removed, mu_oc_0=mu_oc_0)
         info.append(["garnet (Zircon) with sparse and dense", t])
+
+    # Run dense_ml_models and dense_ml_unit_tests first (e.g. pr_aha1 pointwise)
+    print(f"--- Processing app group dense_ml_models", flush=True)
+    info.append(["APP GROUP dense_ml_models[]", 0])
+    info.append(["APP GROUP dense_ml_unit_tests[]", 0])
+    for model in dense_ml_models + dense_ml_unit_tests:
+        try:
+            if model in dense_ml_unit_tests:
+                is_unit_test = True
+            else:
+                is_unit_test = False
+
+            # TODO: Add timing info for test_dense_ml_model.
+            test_dense_ml_model(
+                model, width, height, args.env_parameters, extra_args,
+                mu_datawidth=mu_datawidth,
+                num_fabric_cols_removed=num_fabric_cols_removed,
+                mu_oc_0=mu_oc_0,
+                is_unit_test=is_unit_test,
+            )
+            info.append([model + "_voyager_full_model", 0, 0, 0, 0, 0, 0, 0])
+        except Exception as e:
+            print(f"--- FAILED DENSE ML MODEL {model}:\n{e}")
+            failed_tests += [model]
+            final_error = e
+            info.append(["*** FAIL ***"])
+            info.append(["*** FAIL " + model + "_voyager_full_model"])
+            info.append(["*** FAIL ***"])
 
     data_tile_pairs = []
     kernel_name = ""
@@ -234,9 +275,10 @@ def dispatch(args, extra_args=None):
             ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
             ('behavioral_mu_tests_fp', '_MU_behavioral'), *behavioral_mu_tests_fp,
-            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,
+
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
-            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp]:
+            ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp,
+            ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,]:
 
         if type(test) is tuple:
             tgroup,tsuffix = test
@@ -258,7 +300,10 @@ def dispatch(args, extra_args=None):
             print(f"--- FAILED TEST {unparsed_name}:\n{e}")
             failed_tests += [unparsed_name]
             final_error = e
-            info.append([unparsed_name+tsuffix+" FAIL"])
+            # info.append([unparsed_name+tsuffix+" FAIL"])
+            info.append(["*** FAIL ***"])
+            info.append(["*** FAIL " + unparsed_name+tsuffix])
+            info.append(["*** FAIL ***"])
 
         report_ongoing_failures(failed_tests)
 
@@ -360,13 +405,23 @@ def dispatch(args, extra_args=None):
                 report_ongoing_failures(failed_tests)
 
   except Exception as e:
-      final_error = e
+      final_error = e  # Save for later
+      import traceback
+      print(traceback.format_exc())  # Report the error and continue below
+      exit(13)
 
   finally:
     from tabulate import tabulate
     sys.stderr.flush()
+
     print(f"+++ TIMING INFO", flush=True)
-    print(tabulate(info, headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."], floatfmt=".0f"), flush=True)
+    headers=["step", "total", "compile", "map", "test", "active app cyc.", "config cyc.", "wdata cyc."]
+    print(tabulate(info, headers=headers, floatfmt=".0f"), flush=True)
+
+    # Summary timing-table for steveri, to help with aha-regression rebalancing for per-checkin CI
+    from aha.util.regress_info import summarize_and_print_info
+    print(f"+++ TIMING INFO (summary)", flush=True)
+    summarize_and_print_info(info)
 
     if failed_tests:
         print(f"+++ FAILURES", flush=True)

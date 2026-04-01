@@ -490,6 +490,17 @@ class Tests:
                "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
             ]
             behavioral_mu_tests_fp = []
+
+               # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
+
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
+            ]
+            behavioral_mu_tests_fp = []
             return vars().copy()
     configs['pr_aha7'] = configs_aha7()
 
