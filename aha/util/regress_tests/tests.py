@@ -1236,9 +1236,7 @@ class Tests:
     # Real methods begin here
     # ------------------------------------------------------------------------------------
     def __init__(self, config="BLANK", zircon=True):
-
-        self.__dict__.update(configs_template())
-        # self.__dict__.update(Tests.template)  # same same I think
+        self.__dict__.update(Tests.template)
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
         if config in ["daily", "pr", "pr_submod"]:
