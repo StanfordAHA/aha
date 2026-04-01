@@ -216,39 +216,17 @@ class Tests:
 
     template = configs_template()
 
-    # ------------------------------------------------------------------------
-    # List of tests that can run with E64 mode
-    # ------------------------------------------------------------------------
-    E64_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "conv5_x",
-        "apps/avgpool_layer_fp",
-        "apps/pointwise_custom_packing",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
-    ]
-
-    # List of tests that can run with E64 multi_bank mode,
-    E64_MB_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
-    ]
-
     # ------------------------------------------------------------------------------
     # BLANK config can be used to return default height, width, test group names etc.
     # ------------------------------------------------------------------------------
     configs['BLANK'] = {}
+
+    def process_config_aliases(testname, config):
+        # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
+        if testname in ["daily", "pr", "pr_submod"]:
+            print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead')
+            config = "pr_aha"
+        return config
 
     if True:  # Preserves indentation vs. prev version
         # FAST test suite should complete in just a minute or two
@@ -558,10 +536,7 @@ class Tests:
         self.__dict__.update(Tests.configs_template())
         # self.__dict__.update(Tests.template)  # same same I think
 
-        # Preserve backward compatibility
-        if config in ["daily", "pr", "pr_submod"]:
-            print(f'WARNING "{config}" config no longer exists, using "pr_aha" instead')
-            config = "pr_aha"
+        config = process_config_aliases(config, config)  # ["daily", "pr", "pr_submod"] => "pr_aha"
 
         # Create the requested config
         if config in Tests.configs:
@@ -586,6 +561,35 @@ class Tests:
 
         return
 
+
+    # ------------------------------------------------------------------------
+    # List of tests that can run with E64 mode
+    # ------------------------------------------------------------------------
+    E64_supported_tests = [
+        "apps/pointwise",
+        "apps/pointwise_mu_io",
+        "conv5_x",
+        "apps/avgpool_layer_fp",
+        "apps/pointwise_custom_packing",
+        "apps/pointwise_custom_place_multibank",
+        "apps/get_e8m0_scale_test_fp",
+        "apps/zircon_residual_relu_fp",
+        "apps/zircon_nop",
+        "apps/zircon_psum_reduction_fp",
+        "apps/zircon_dequantize_relu_fp"
+    ]
+
+    # List of tests that can run with E64 multi_bank mode,
+    E64_MB_supported_tests = [
+        "apps/pointwise",
+        "apps/pointwise_mu_io",
+        "apps/pointwise_custom_place_multibank",
+        "apps/get_e8m0_scale_test_fp",
+        "apps/zircon_residual_relu_fp",
+        "apps/zircon_nop",
+        "apps/zircon_psum_reduction_fp",
+        "apps/zircon_dequantize_relu_fp"
+    ]
 
     def prefix_lines(lines, prefix):
         'Attach the indicated prefix to each line in "lines"'
