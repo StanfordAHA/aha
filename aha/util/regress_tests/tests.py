@@ -228,9 +228,9 @@ class Tests:
             config = "pr_aha"
         return config
 
-    if True:  # Preserves indentation vs. prev version
-        # FAST test suite should complete in just a minute or two
-        def config_fast():
+
+    # FAST test suite should complete in just a minute or two
+    def config_fast():
             width, height = 8, 8,
             cols_removed, mu_oc_0 = 4, 8  # Ignored if --no-zircon is set
             sparse_tests = [
@@ -251,8 +251,411 @@ class Tests:
                 "tests/fp_pointwise",
             ]
             return vars().copy()
-
     configs['fast'] = configs_fast()
+
+    # ------------------------------------------------------------------------
+    # Test-suite subgroups for aha regressions
+    # ------------------------------------------------------------------------
+    # - defining w multiple subgroups helps w aha regression load balancing
+    # - also helpful are comments with approximate test runtime
+    # - times are taken from aha-flow build 12226 unless otherwise noted
+
+    # ------------------------------------------------------------------------
+    # pr_aha1
+    # ------------------------------------------------------------------------
+    def configs_aha1():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            # These take about an hour to run
+            sparse_tests = [
+                # pr_aha1
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "mat_elemdiv",
+                "mat_mattransmul",
+                "fp_relu_matmul_ikj",
+                "matmul_ikj",
+                "matmul_jik",
+                "fp_relu_spmm_ijk_crddrop",
+                "fp_spmm_ijk_crddrop_locator",
+                "spmv_relu",
+                "masked_broadcast",
+                "mat_sddmm",
+                "tensor3_mttkrp",
+                "tensor3_ttv",
+            ]
+            # THESE HAVE BEEN TURNED OFF see below
+            voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+            ]
+            # THESE HAVE BEEN TURNED OFF see below
+            external_mu_tests_fp = [
+                # Conv1 (im2col-based, X-DIM HOST TILING)
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+
+                # BERT down projection layer: All using gemm_reduction_tiling_workaround
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
+               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+            ]
+            # These take about about hour to run
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV1
+
+            # Run dense ML tests
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "pointwise",
+            ]
+            return vars().copy()
+    configs['pr_aha1'] = configs_aha1()
+
+    # ------------------------------------------------------------------------
+    # pr_aha2
+    # ------------------------------------------------------------------------
+    def configs_aha2():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+
+            # 1h40 for this group maybe (build 12755/aha2)
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV2
+
+            voyager_cgra_tests_fp = [
+                # BERT GELU pass2 layers
+                "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
+                "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
+            ]
+
+            external_mu_tests = [
+                # BERT Attention*Value Using inner reduction workaround
+                "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                # THESE HAVE BEEN TURNED OFF see below
+                # Conv2_x
+                "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
+                "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
+            ]
+            # 40 minutes for this group maybe (build 12755/aha4)
+            behavioral_mu_tests = [
+                "apps/pointwise_mu_io_RV_E64",          # 5m
+                "apps/pointwise_mu_io_RV_E64_MB",       # 5m
+                "apps/mu2glb_path_balance_test_RV_E64", # 5m
+                "apps/abs_max_full_unroll_fp_RV",       # 5m
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",  # 1045s/20m
+            ]
+            return vars().copy()
+    configs['pr_aha2'] = configs_aha2()
+
+    # ------------------------------------------------------------------------
+    # pr_aha3
+    # ------------------------------------------------------------------------
+    def configs_aha3():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV3
+
+            voyager_cgra_tests_fp = [
+                # BERT apply_e8m0_scale layers
+                "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
+                "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                # Conv3_1 strided conv
+                "resnet18-submodule_6 -> zircon_deq_q_relu_fp_post_conv3_1_RV_E64_MB",
+
+                # Conv3_1 pointwise conv
+                "resnet18-submodule_7 -> zircon_dequant_fp_post_conv3_1_RV_E64_MB",
+
+                # Conv3_x
+                "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
+                "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
+            ]
+            return vars().copy()
+    configs['pr_aha3'] = configs_aha3()
+
+    # ------------------------------------------------------------------------
+    # pr_aha4
+    # ------------------------------------------------------------------------
+    def configs_aha4():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+
+            # 8400s/140m/2h20
+            glb_tests_RV = [
+                "apps/maxpooling_dense_rv_fp_RV_E64_MB",
+                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
+                "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
+                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
+            ]
+            # 2700s/45m
+            behavioral_mu_tests = [
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",  # 2700s/45m
+            ]
+            # Resnet tests DISABLED see below
+            external_mu_tests_fp = [
+                # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
+                "resnet18-submodule_11 -> zircon_nop_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+                "resnet18-submodule_11 -> zircon_res_deq_ReLU_quant_fp_tiled_outer_reduction_workaround_post_conv4_1_RV_E64_MB",
+
+                # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
+                "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
+
+               # BERT masked self-attention head
+               "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
+
+               # BERT post-attention projection:All using gemm_reduction_tiling_workaround
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel0_RV_E64_MB",
+               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
+
+            ]
+            hardcoded_dense_tests = [
+                "apps/unsharp_RV",
+            ]
+            return vars().copy()
+    configs['pr_aha4'] = configs_aha4()
+
+    # ------------------------------------------------------------------------
+    # pr_aha5
+    # ------------------------------------------------------------------------
+    def configs_aha5():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            # For sparse tests, we cherry pick some representative tests to run
+            no_zircon_sparse_tests = [
+                "vec_elemmul",
+                "mat_vecmul_ij",
+                "mat_elemadd_leakyrelu_exp",
+                "matmul_ikj",
+                "tensor3_mttkrp",
+            ]
+            # Tests below are non-zircon and won't run by default
+            glb_tests = [
+                "apps/pointwise",
+                "apps/maxpooling",
+                "tests/bit8_packing_test",
+                "tests/bit8_unpack_test",
+                "tests/fp_get_shared_exp_test",
+                "tests/fp_e8m0_quant_test",
+                "apps/camera_pipeline_2x2",
+                "apps/gaussian",
+                "apps/harris_color",
+                "apps/unsharp",
+            ]
+            glb_tests_fp = [
+                "tests/fp_arith",
+                "tests/fp_comp",
+                "apps/matrix_multiplication_fp",
+                "apps/relu_layer_fp",
+            ]
+            voyager_cgra_tests_fp = [
+                # BERT Softmax layers
+                "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",
+                "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
+                "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
+            ]
+            return vars().copy()
+    configs['pr_aha5'] = configs_aha5()
+
+    # ------------------------------------------------------------------------
+    # pr_aha6
+    # ------------------------------------------------------------------------
+    def configs_aha6():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            glb_tests_RV = [
+                "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
+            ]
+            resnet_tests = [
+                "conv1",
+                "conv2_x",
+                "conv5_x",
+            ]
+            resnet_tests_fp = [
+                # "conv2_x_fp" # not yet supported by zircon
+            ]
+            external_mu_tests_fp = [
+                # Conv4_x
+                "resnet18-submodule_13 -> zircon_deq_ResReLU_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
+                "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
+
+                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND) (30m)
+                "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
+
+                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND) (25m)
+                "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
+            ]
+            external_mu_tests_fp += [
+               # BERT Query projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
+               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
+               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
+
+               # BERT Key projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
+
+               # BERT Value projection: All using gemm_reduction_tiling_workaround
+               "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
+            ]
+            return vars().copy()
+     configs['pr_aha6'] = configs_aha6()
+
+    # ------------------------------------------------------------------------
+    # pr_aha7
+    # ------------------------------------------------------------------------
+    def configs_aha7():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV7
+            external_mu_tests_fp = [
+                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND) (60m)
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+
+               # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
+
+               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
+               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
+               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
+            ]
+            behavioral_mu_tests_fp = []
+            return vars().copy()
+    configs['pr_aha7'] = configs_aha7()
+
+    # ------------------------------------------------------------------------
+    # pr_aha8
+    # ------------------------------------------------------------------------
+    def configs_aha8():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+
+            glb_tests_RV = [
+                "tests/conv_2_1_RV",
+                "tests/fp_e8m0_quant_test_RV",
+                "apps/pointwise_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+                "apps/pointwise_custom_packing_RV_E64",
+                "apps/gaussian_RV",
+                "tests/bit8_packing_test_RV",
+                "tests/bit8_unpack_test_RV",
+                "tests/fp_get_shared_exp_test_RV",
+            ]
+
+            # This is currently the empty set
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV8
+
+            voyager_cgra_tests_fp = [
+                # ResNet-18 Average pooling layer
+                "resnet18-adaptive_avg_pool2d_default_1::avgpool_layer_fp_RV_E64_MB",
+
+                # ResNet-18 Fully connected layer (K-DIM HOST TILING)
+                "resnet18-linear::fully_connected_layer_fp_resnet18_kernel0_RV_E64_MB",
+                "resnet18-linear::fully_connected_layer_fp_resnet18_kernel1_RV_E64_MB",
+
+                # BERT get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
+                "bert-quantize_mx_default::get_e8m0_scale_tree_gb_input_bert_shape0_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_bert_shape1_RV_E64_MB", # 12, 128, 64
+                "bert-quantize_mx_default_6::get_e8m0_scale_tree_gb_input_bert_shape2_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel0_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_bert_shape3_kernel1_RV_E64_MB", # 128, 1536, tiling
+
+                "bert-quantize_mx_default::apply_e8m0_scale_single_IO_bert_quantize_mx_default_RV_E64_MB", # 128, 768
+                "bert-quantize_mx_default_1::apply_e8m0_scale_single_IO_bert_quantize_mx_default_1_RV_E64_MB", # 12, 128, 64
+                "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB", # 128, 128
+                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB", # 128, 1536, tiling
+                "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB", # 128, 1536, tiling
+
+                # BERT Pooling layer, using k-dim host tiling
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel0_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel1_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel2_RV_E64_MB",
+
+                # BERT Classifier layer
+                "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
+
+                # BERT tanh layer
+                "bert-tanh::tanh_fp_bert_RV_E64_MB",
+
+                # BERT permute layer (20m)
+                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+
+                # BERT layer norm layers (didn't run post-FFN layer norm layer) (60m)
+                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
+                # Channel slicing (unroll by 16) (40m)
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+            ]
+
+            behavioral_mu_tests_fp = []
+            return vars().copy()
+    configs['pr_aha8'] = configs_aha8()
+
+    # ------------------------------------------------------------------------
+    # pr_aha9
+    # ------------------------------------------------------------------------
+    def configs_aha9():
+            width, height = 28, 16
+            cols_removed, mu_oc_0 = 12, 32
+            glb_tests_fp_RV = Tests.glb_tests_fp_RV9
+            voyager_cgra_tests_fp = [
+                # BERT get_e8m0_scale accum schedule layers (50m)
+                "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
+                "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                # ResNet-18 Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_19 -> zircon_deq_q_relu_fp_post_conv5_x_kernel1_RV_E64_MB",
+
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
+            ]
+            return vars().copy()
+    configs['pr_aha9'] = configs_aha9()
+
+
+    # ------------------------------------------------------------------------
+    # pr_aha
+    # ------------------------------------------------------------------------
+    
+    def configs_aha():
+            def merge_tests(s1, s2):
+                for key in s2:
+                    if type(s2[key]) is list:
+                        s1[key] = list(dict.fromkeys(s1[key] + s2[key]))  # Removes dupes AND preserves list order
+                    else:
+                        # Non-lists (e.g. width, height) should be same for both sets
+                        assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
+
+            pr_aha = Tests('pr_aha1').__dict__
+            merge_tests(pr_aha, Tests('pr_aha2').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha3').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha4').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha5').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha6').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha7').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha8').__dict__)
+            merge_tests(pr_aha, Tests('pr_aha9').__dict__)
+            self.__dict__.update(pr_aha)
+            # print(f"{self.resnet_tests=}", flush=True)
+            return vars().copy()
+    configs['pr_aha'] = configs_aha()
 
     # ------------------------------------------------------------------------
     # mu
@@ -339,177 +742,6 @@ class Tests:
             "conv5_x",
         ]
     }
-
-    # ------------------------------------------------------------------------
-    # Test-suite subgroups for aha regressions
-    # ------------------------------------------------------------------------
-    # - defining w multiple subgroups helps w aha regression load balancing
-    # - also helpful are comments with approximate test runtime
-    # - times are taken from aha-flow build 12226 unless otherwise noted
-
-    # ------------------------------------------------------------------------
-    # pr_aha1
-    # ------------------------------------------------------------------------
-    configs['pr_aha1'] = combine(
-        '''
-          sparse_tests:        # 54m build 12226
-            - vec_elemmul
-            - mat_vecmul_ij
-            - mat_elemadd_leakyrelu_exp
-            - mat_elemdiv
-            - mat_mattransmul
-            - fp_relu_matmul_ikj
-            - matmul_ikj
-            - matmul_jik
-            - fp_relu_spmm_ijk_crddrop
-            - fp_spmm_ijk_crddrop_locator
-            - spmv_relu
-            - masked_broadcast
-            - mat_sddmm
-            - tensor3_mttkrp
-            - tensor3_ttv
-        ''',
-        resnet18_submod17
-    )
-    # ------------------------------------------------------------------------
-    # pr_aha2
-    # ------------------------------------------------------------------------
-    configs['pr_aha2'] = combine(
-        resnet18_submod3,  # 80m
-    )
-    # ------------------------------------------------------------------------
-    # pr_aha3
-    # ------------------------------------------------------------------------
-    configs['pr_aha3'] = combine(
-        resnet18_submod7,   # 52m
-        resnet18_submod11,  # 38m
-    )
-    # ------------------------------------------------------------------------
-    # pr_aha4
-    # ------------------------------------------------------------------------
-    configs['pr_aha4'] = combine(
-        '''glb_tests_RV:  # 56m build 12226
-            - tests/conv_2_1_RV
-            - tests/fp_e8m0_quant_test_RV
-            - apps/pointwise_RV
-            - apps/pointwise_RV_E64
-            - apps/pointwise_RV_E64_MB
-            - apps/pointwise_custom_packing_RV_E64
-            - apps/gaussian_RV
-            - tests/bit8_packing_test_RV
-            - tests/bit8_unpack_test_RV
-            - tests/fp_get_shared_exp_test_RV''',
-
-        '''behavioral_mu_tests:  # 42m build 12226
-            - apps/pointwise_mu_io_RV_E64
-            - apps/pointwise_mu_io_RV_E64_MB
-            - apps/abs_max_full_unroll_fp_RV
-            - apps/get_e8m0_scale_test_fp_RV_E64_MB
-            - apps/get_apply_e8m0_scale_fp_RV''',
-
-        '''hardcoded_dense_tests:  # 8m build 12226
-            - apps/unsharp_RV''',
-    )
-    # ------------------------------------------------------------------------
-    # pr_aha5
-    # ------------------------------------------------------------------------
-    configs['pr_aha5'] = combine(
-        '''no_zircon_sparse_tests:  # 19m build 12226
-              - vec_elemmul
-              - mat_vecmul_ij
-              - mat_elemadd_leakyrelu_exp
-              - matmul_ikj
-              - tensor3_mttkrp''',
-
-        '''glb_tests:  # 85m build 12226
-            - apps/pointwise
-            - apps/maxpooling
-            - tests/bit8_packing_test
-            - tests/bit8_unpack_test
-            - tests/fp_get_shared_exp_test
-            - tests/fp_e8m0_quant_test
-            - apps/camera_pipeline_2x2
-            - apps/gaussian
-            - apps/harris_color
-            - apps/unsharp''',
-
-        '''glb_tests_fp:  # 29m build 12226
-            - tests/fp_arith
-            - tests/fp_comp
-            - apps/matrix_multiplication_fp
-            - apps/relu_layer_fp
-            - apps/scalar_max_fp
-            - apps/scalar_avg_fp'''
-    )
-    # ------------------------------------------------------------------------
-    # pr_aha6
-    # ------------------------------------------------------------------------
-    configs['pr_aha6'] = combine(
-        '''resnet_tests:  # 126m build 12226
-            - conv1
-            - conv2_x
-            - conv5_x
-    ''')
-    #, '''resnet_tests_fp:  # 0m build 12226 - not yet supported by zircon
-    #             - conv2_x_fp'''
-
-    # ------------------------------------------------------------------------
-    # pr_aha7
-    # ------------------------------------------------------------------------
-    configs['pr_aha7'] = combine(
-        resnet18_conv2d6,     # 46m
-        resnet18_conv2d11,    # 28m
-        resnet18_conv2dfake,  # 22m
-        resnet18_conv2d16,    # 44m
-    )
-    # ------------------------------------------------------------------------
-    # pr_aha8
-    # ------------------------------------------------------------------------
-    configs['pr_aha8'] = yaml.safe_load(
-        '''glb_tests_fp_RV:  # 28m build 12226
-              - tests/fp_arith_RV
-              - tests/fp_comp_RV
-              - apps/relu_layer_fp_RV
-              - apps/relu_layer_multiout_fp_RV
-              - apps/avgpool_layer_fp_RV_E64
-              - apps/mat_vec_mul_fp_RV
-              - apps/scalar_reduction_fp_RV
-              - apps/scalar_max_fp_RV
-              - apps/layer_norm_pass2_fp_RV
-              - apps/layer_norm_pass3_fp_RV
-              - apps/scalar_avg_fp_RV
-              - apps/stable_softmax_pass2_fp_RV
-              - apps/stable_softmax_pass3_fp_RV
-              - apps/vector_reduction_fp_RV
-              - apps/gelu_pass1_fp_RV
-              - apps/gelu_pass2_fp_RV
-              - apps/silu_pass1_fp_RV
-              - apps/silu_pass2_fp_RV
-              - apps/swiglu_pass2_fp_RV
-              - apps/rope_pass1_fp_RV
-              - apps/rope_pass2_fp_RV
-        ''')
-    # ------------------------------------------------------------------------
-    # pr_aha9
-    # ------------------------------------------------------------------------
-    configs['pr_aha9'] = combine(
-        resnet18_zdqr,      # 82m build 12226
-        resnet18_submod15,  # 28m build 12226
-    )
-    # ------------------------------------------------------------------------
-    # pr_aha
-    # ------------------------------------------------------------------------
-    configs['pr_aha'] = combine(
-        configs['pr_aha1'].copy(),  # First dict becomes an alias if already exists!!
-        configs['pr_aha2'],
-        configs['pr_aha3'],
-        configs['pr_aha4'],
-        configs['pr_aha5'],
-        configs['pr_aha6'],
-        configs['pr_aha7'],
-        configs['pr_aha8'],
-        configs['pr_aha9'],
-    )
 
     # -----------------------------------------------------------------------------------
     # skip_cgra_map: These tests skip CGRA mapping and pnr to save time.  We assume that
