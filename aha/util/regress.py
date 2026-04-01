@@ -387,6 +387,7 @@ def dispatch(args, extra_args=None):
 
         t = gen_garnet(width, height, dense_only=True)
         info.append(["garnet with dense only", t])
+        report_ongoing_failures(failed_tests)
 
         num_dense_only_glb_tests = 5
         for test_index, test in enumerate(glb_tests):
