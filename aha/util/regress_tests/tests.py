@@ -4,7 +4,7 @@ run('python3 -m pip install pyyaml', shell=True, stdout = DEVNULL, stderr = DEVN
 import json, yaml
 
 ########################################################################
-if True:
+if True:  # (preserves indentation vs. prev version)
 
     # Valid configs as of Oct 2025:
     #   "fast"    quick and dirty ten-minute test of basic apps
@@ -987,7 +987,6 @@ if True:
                 "tensor3_mttkrp",
             ]
             return vars().copy()
-
     configs['full'] = configs_full()
 
     def configs_resnet():
@@ -1307,7 +1306,6 @@ class Tests:
         # d.update(Tests.configs[config_name])
         d.update(Tests(config_name).__dict__)
 
-
         (w,h) =  (d['width'], d['height'])
         (col,mu) = (d["cols_removed"], d["mu_oc_0"])
 
@@ -1330,39 +1328,6 @@ class Tests:
 
     def show_configs(zircon=True):
         for c in Tests.configs_list: Tests.show_config(c)
-
-    # Removed PR_SUBMOD tests as redundant with existing pr_aha
-
-    # ------------------------------------------------------------------------
-    # List of tests that can run with E64 mode
-    # ------------------------------------------------------------------------
-    E64_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "conv5_x",
-        "apps/avgpool_layer_fp",
-        "apps/pointwise_custom_packing",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
-    ]
-
-    # List of tests that can run with E64 multi_bank mode,
-    E64_MB_supported_tests = [
-        "apps/pointwise",
-        "apps/pointwise_mu_io",
-        "apps/pointwise_custom_place_multibank",
-        "apps/get_e8m0_scale_test_fp",
-        "apps/zircon_residual_relu_fp",
-        "apps/zircon_nop",
-        "apps/zircon_psum_reduction_fp",
-        "apps/zircon_dequantize_relu_fp"
-    ]
-
-
 
 # Every time someone tries to import this class, it triggers this quick
 # to make sure that no configs have redundant apps e.g. if someone accidentally
@@ -1387,7 +1352,7 @@ def check_for_dupes(DBG=0):
             if DBG: print(dbg_result)
     assert not errors, 'Found duplicate apps, see ERROR messages above\n\n' + errors
 
-# check_for_dupes(DBG=0)
+check_for_dupes(DBG=0)
 
 # app utility uses this to do things like e.g.
 #     tests.py --exec "print(*Tests.configs_list)"  # list config names
