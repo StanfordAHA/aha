@@ -250,28 +250,31 @@ class Tests:
     # ------------------------------------------------------------------------------
     configs['BLANK'] = {}
 
-    # ------------------------------------------------------------------------
-    # fast (should just take a couple of minutes)
-    # ------------------------------------------------------------------------
-    configs['fast'] = combine('''
-        width: 8
-        height: 8
-        cols_removed: 4  # Ignored if --no-zircon is set
-        mu_oc_0: 8       # Ignored if --no-zircon is set
-        sparse_tests:
-            - vec_identity
-        glb_tests_RV:
-            - tests/conv_2_1_RV
-            - apps/pointwise_RV_E64
-            - apps/pointwise_RV_E64_MB
-        glb_tests_fp_RV:
-            - tests/fp_pointwise_RV
-        glb_tests:
-            - apps/pointwise
-        glb_tests_fp:
-            - tests/fp_pointwise
-        '''
-    )
+    if True:  # Preserves indentation vs. prev version
+        # FAST test suite should complete in just a minute or two
+        def config_fast():
+            width, height = 8, 8,
+            cols_removed, mu_oc_0 = 4, 8  # Ignored if --no-zircon is set
+            sparse_tests = [
+                "vec_identity"
+            ]
+            glb_tests_RV = [
+                "tests/conv_2_1_RV",
+                "apps/pointwise_RV_E64",
+                "apps/pointwise_RV_E64_MB",
+            ]
+            glb_tests_fp_RV = [
+                "tests/fp_pointwise_RV",
+            ]
+            glb_tests = [
+                "apps/pointwise",
+            ]
+            glb_tests_fp = [
+                "tests/fp_pointwise",
+            ]
+            return vars().copy()
+
+    configs['fast'] = configs_fast()
 
     # ------------------------------------------------------------------------
     # mu
