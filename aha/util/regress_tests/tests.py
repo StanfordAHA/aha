@@ -4,7 +4,7 @@ run('python3 -m pip install pyyaml', shell=True, stdout = DEVNULL, stderr = DEVN
 import json, yaml
 
 ########################################################################
-class Tests:
+if True:
 
     # Valid configs as of Oct 2025:
     #   "fast"    quick and dirty ten-minute test of basic apps
@@ -21,11 +21,6 @@ class Tests:
     #   "mu"      bunch of "external_mu_tests", mostly resnet18
     #
     #   "BLANK"   returns empty set of all test groups, useful for initializing a new group
-
-    # UNUSED
-    configs_list = ["fast", "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4",
-                 "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
-                 "pr_aha", "full", "resnet", "mu", "dense_ml_models", "BLANK"]
 
     configs = {}
 
@@ -68,7 +63,7 @@ class Tests:
     # Default groups and values
     def configs_template():
         # Defaults
-        width, height = 28, 16  # Default CGRA width and height
+        width, height = 28, 16  # default
 
         # App groups
         sparse_tests = []
@@ -179,8 +174,6 @@ class Tests:
         ]
         return vars().copy()
 
-    template = configs_template()
-
     # ------------------------------------------------------------------------------
     # BLANK config can be used to return default height, width, test group names etc.
     # ------------------------------------------------------------------------------
@@ -262,7 +255,7 @@ class Tests:
                "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
             ]
             # These take about about hour to run
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV1
+            glb_tests_fp_RV = glb_tests_fp_RV1
 
             # Run dense ML tests
             dense_ml_models = []
@@ -280,7 +273,7 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
 
             # 1h40 for this group maybe (build 12755/aha2)
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV2
+            glb_tests_fp_RV = glb_tests_fp_RV2
 
             voyager_cgra_tests_fp = [
                 # BERT GELU pass2 layers
@@ -318,7 +311,7 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV3
+            glb_tests_fp_RV = glb_tests_fp_RV3
 
             voyager_cgra_tests_fp = [
                 # BERT apply_e8m0_scale layers
@@ -466,7 +459,7 @@ class Tests:
                "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
             ]
             return vars().copy()
-     configs['pr_aha6'] = configs_aha6()
+    configs['pr_aha6'] = configs_aha6()
 
     # ------------------------------------------------------------------------
     # pr_aha7
@@ -474,22 +467,11 @@ class Tests:
     def configs_aha7():
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV7
+            glb_tests_fp_RV = glb_tests_fp_RV7
             external_mu_tests_fp = [
                 # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND) (60m)
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-
-               # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
-               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
-               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
-               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
-
-               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
-               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
-               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
-            ]
-            behavioral_mu_tests_fp = []
 
                # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
                "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
@@ -525,7 +507,7 @@ class Tests:
             ]
 
             # This is currently the empty set
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV8
+            glb_tests_fp_RV = glb_tests_fp_RV8
 
             voyager_cgra_tests_fp = [
                 # ResNet-18 Average pooling layer
@@ -580,7 +562,7 @@ class Tests:
     def configs_aha9():
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            glb_tests_fp_RV = Tests.glb_tests_fp_RV9
+            glb_tests_fp_RV = glb_tests_fp_RV9
             voyager_cgra_tests_fp = [
                 # BERT get_e8m0_scale accum schedule layers (50m)
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
@@ -601,7 +583,6 @@ class Tests:
     # ------------------------------------------------------------------------
     # pr_aha
     # ------------------------------------------------------------------------
-    
     def configs_aha():
             def merge_tests(s1, s2):
                 for key in s2:
@@ -610,19 +591,9 @@ class Tests:
                     else:
                         # Non-lists (e.g. width, height) should be same for both sets
                         assert s1[key] == s2[key], f'Found different values for "{key}" among pr_aha1,2,3'
-
-            pr_aha = Tests('pr_aha1').__dict__
-            merge_tests(pr_aha, Tests('pr_aha2').__dict__)
-            merge_tests(pr_aha, Tests('pr_aha3').__dict__)
-            merge_tests(pr_aha, Tests('pr_aha4').__dict__)
-            merge_tests(pr_aha, Tests('pr_aha5').__dict__)
-            merge_tests(pr_aha, Tests('pr_aha6').__dict__)
-            merge_tests(pr_aha, Tests('pr_aha7').__dict__)
-            merge_tests(pr_aha, Tests('pr_aha8').__dict__)
-            merge_tests(pr_aha, Tests('pr_aha9').__dict__)
-            self.__dict__.update(pr_aha)
-            # print(f"{self.resnet_tests=}", flush=True)
-            return vars().copy()
+            pr_aha = configs_template()
+            for i in '123456789': merge_tests(pr_aha, configs[f'pr_aha{i}'])
+            return pr_aha
     configs['pr_aha'] = configs_aha()
 
     # FULL test is used by scheduled weekly aha regressions
@@ -715,11 +686,11 @@ class Tests:
                 "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
             glb_tests_fp_RV = [ "tests/fp_pointwise_RV" ]  # This is in 'fast' config but not aha1-9
-            glb_tests_fp_RV += Tests.glb_tests_fp_RV1
-            glb_tests_fp_RV += Tests.glb_tests_fp_RV2
-            glb_tests_fp_RV += Tests.glb_tests_fp_RV3
-            glb_tests_fp_RV += Tests.glb_tests_fp_RV8
-            glb_tests_fp_RV += Tests.glb_tests_fp_RV9
+            glb_tests_fp_RV += glb_tests_fp_RV1
+            glb_tests_fp_RV += glb_tests_fp_RV2
+            glb_tests_fp_RV += glb_tests_fp_RV3
+            glb_tests_fp_RV += glb_tests_fp_RV8
+            glb_tests_fp_RV += glb_tests_fp_RV9
 
             # FIXME tests from here down are out of order; should be:
             #   behavioral_mu_tests*
@@ -1001,13 +972,13 @@ class Tests:
                 "resnet18-submodule_20 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel3_RV_E64_MB",
             ]
 
-            # Run dense ML tests [full]
+            # Run dense ML tests
             dense_ml_models = []
             dense_ml_unit_tests = [
                 "pointwise",
             ]
 
-            # For sparse tests, we cherry pick some representative tests to run [full]
+            # For sparse tests, we cherry pick some representative tests to run
             no_zircon_sparse_tests = [
                 "vec_elemmul",
                 "mat_vecmul_ij",
@@ -1254,11 +1225,19 @@ class Tests:
             return vars().copy()
     configs['dense_ml_models'] = configs_dense_ml_models()
 
+########################################################################
+class Tests:
+    # Local handles for backwards compatibility mostly
+    configs_list = list(configs.keys())
+    template = configs_template()
+    configs = configs
+
     # ------------------------------------------------------------------------------------
     # Real methods begin here
     # ------------------------------------------------------------------------------------
     def __init__(self, config="BLANK", zircon=True):
-        self.__dict__.update(Tests.configs_template())
+
+        self.__dict__.update(configs_template())
         # self.__dict__.update(Tests.template)  # same same I think
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
@@ -1267,8 +1246,8 @@ class Tests:
             config = "pr_aha"
 
         # Create the requested config
-        if config in Tests.configs:
-            self.__dict__.update(Tests.configs[config])
+        if config in configs:
+            self.__dict__.update(configs[config])
 
         elif self.detect_and_process_json(config):
             pass
@@ -1282,7 +1261,7 @@ class Tests:
 
         # Export everything named in template
         vdic = vars().copy()
-        for key in Tests.configs_template():
+        for key in configs_template():
             if key in vdic:
                 self.__dict__[key] = vdic[key]
 
@@ -1298,8 +1277,7 @@ class Tests:
         '''if "config" is a parsable json string, add it to selfdict and return True'''
         try:    config_dict = json.loads(config)
         except: return False
-        errmsg = f'\n***ERROR Unknown config or malformed json string "{config}"\n\n'
-        assert type(config_dict) == dict, errmsg
+        assert type(config_dict) == dict, f'\n***ERROR Unknown config or malformed json string "{config}"\n\n'
         print(f"Found json string:\n{Tests.prefix_lines(config, '    ')}\n")
         self.__dict__.update(config_dict)
         return True
@@ -1315,7 +1293,7 @@ class Tests:
         print(f"Found yaml string:\n{Tests.prefix_lines(config, '    ')}\n")
         self.__dict__.update(config_dict)
         return True
-    
+
     # Support function for app util
     def show_config(config_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_config('fast'):
@@ -1327,6 +1305,7 @@ class Tests:
         # fast    glb_tests_fp   tests/fp_pointwise       8x8 --removed 4 --mu 8
 
         # Find config and populate it with default keys from template
+        # d = Tests.template.copy()
         d = Tests.template.copy()
         d.update(Tests.configs[config_name])
 
