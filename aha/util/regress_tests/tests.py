@@ -270,8 +270,8 @@ class Tests:
 
             voyager_cgra_tests_fp = [
                 # BERT GELU pass2 layers
-                "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
-                "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
+                "bert-gelu::add_gelu_pass2_fp_bert_kernel0_RV_E64_MB",
+                "bert-gelu::add_gelu_pass2_fp_bert_kernel1_RV_E64_MB",
             ]
 
             external_mu_tests = [
@@ -757,8 +757,8 @@ class Tests:
                 "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
 
                 # BERT GELU pass2 layers
-                "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
-                "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
+                "bert-gelu::add_gelu_pass2_fp_bert_kernel0_RV_E64_MB",
+                "bert-gelu::add_gelu_pass2_fp_bert_kernel1_RV_E64_MB",
 
                 # BERT get_e8m0_scale accum schedule layers
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
@@ -1001,8 +1001,8 @@ class Tests:
                 # "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
 
                 # # BERT GELU pass2 layers
-                # "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
-                # "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
+                # "bert-gelu::add_gelu_pass2_fp_bert_kernel0_RV_E64_MB",
+                # "bert-gelu::add_gelu_pass2_fp_bert_kernel1_RV_E64_MB",
 
                 # # BERT get_e8m0_scale accum schedule layers
                 # "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
@@ -1075,6 +1075,10 @@ class Tests:
                 # "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB"
 
 
+                # LLaMA Prefill SiLU
+                "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
+
+
 
                 # # "fakegemm-quantize_default::zircon_quant_fp_fakegemm_RV_E64_MB",
             ]
@@ -1130,8 +1134,7 @@ class Tests:
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel6_RV_E64_MB",
 
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB",
-            "llama_prefill-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB", # SiLU
-            # "llama_prefill-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_llama_prefill_up_projection_kernel8_RV_E64_MB", # SiLU
+            # "llama_prefill-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB", # SiLU
 
             # LLaMA prefill, final output projection
             # Run 125 times on k dimension

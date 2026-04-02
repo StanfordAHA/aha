@@ -253,48 +253,48 @@ def dispatch(args, extra_args=None):
                     attention_scale_value = f.readline().strip()
                     env['ATTN_SCALE'] = attention_scale_value
 
-        if (model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh")) or (model == "fakegemm" and (layer == "linear_default_1")) or (model == "resnet18" and layer == "submodule"):
-            subprocess_call_log(
-                cmd=[sys.executable,
-                        f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",
-                        "--model", model,
-                        "--layer", layer,
-                        ],
-                cwd=args.aha_dir / "voyager",
-                log=args.log,
-                log_file_path=log_file_path,
-                env=env
-            )
+        # if (model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh")) or (model == "fakegemm" and (layer == "linear_default_1")) or (model == "resnet18" and layer == "submodule") or (model == "llama_prefill" and (layer == "linear_mx_default_4" or layer == "silu")):
+        #     subprocess_call_log(
+        #         cmd=[sys.executable,
+        #                 f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",
+        #                 "--model", model,
+        #                 "--layer", layer,
+        #                 ],
+        #         cwd=args.aha_dir / "voyager",
+        #         log=args.log,
+        #         log_file_path=log_file_path,
+        #         env=env
+        #     )
 
-        if not args.voyager_gold_model_only:
-            subprocess_call_log(
-                cmd=[sys.executable,
-                        f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
-                        "--input", f"/aha/voyager/gold_activation.txt",
-                        "--output", f"/aha/voyager/gold_activation.txt"
-                        ],
-                cwd=args.aha_dir / "voyager",
-                log=args.log,
-                log_file_path=log_file_path,
-                env=env
-            )
+        # if not args.voyager_gold_model_only:
+        #     subprocess_call_log(
+        #         cmd=[sys.executable,
+        #                 f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
+        #                 "--input", f"/aha/voyager/gold_activation.txt",
+        #                 "--output", f"/aha/voyager/gold_activation.txt"
+        #                 ],
+        #         cwd=args.aha_dir / "voyager",
+        #         log=args.log,
+        #         log_file_path=log_file_path,
+        #         env=env
+        #     )
 
-            # Adjust gold scale if it exists
-            gold_scale_path = "/aha/voyager/gold_scale.txt"
-            if os.path.exists(gold_scale_path):
-                subprocess_call_log(
-                    cmd=[sys.executable,
-                            f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
-                            "--input", gold_scale_path,
-                            "--output", gold_scale_path,
-                            "--is-mx-scale",
-                            "--mx-block-size", str(env.get("MX_BLOCK_SIZE", "64"))
-                            ],
-                    cwd=args.aha_dir / "voyager",
-                    log=args.log,
-                    log_file_path=log_file_path,
-                    env=env
-                )
+            # # Adjust gold scale if it exists
+            # gold_scale_path = "/aha/voyager/gold_scale.txt"
+            # if os.path.exists(gold_scale_path):
+            #     subprocess_call_log(
+            #         cmd=[sys.executable,
+            #                 f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
+            #                 "--input", gold_scale_path,
+            #                 "--output", gold_scale_path,
+            #                 "--is-mx-scale",
+            #                 "--mx-block-size", str(env.get("MX_BLOCK_SIZE", "64"))
+            #                 ],
+            #         cwd=args.aha_dir / "voyager",
+            #         log=args.log,
+            #         log_file_path=log_file_path,
+            #         env=env
+            #     )
 
 
 
@@ -358,7 +358,7 @@ def dispatch(args, extra_args=None):
             layer_path_balance_folder = f"{app_dir}/path_balancing_configs"
             assert os.path.exists(layer_path_balance_folder), f"ERROR: path_balancing_configs folder does not exist in {app_dir}, cannot copy path_balance.json"
 
-            if mu_test is None or mu_test == "":
+            if not(is_voyager_app):
                 layer_path_balance_json = os.path.join(layer_path_balance_folder, "path_balancing.json")
                 assert os.path.exists(layer_path_balance_json), f"ERROR: path_balancing.json not found in {layer_path_balance_folder}."
             else:
