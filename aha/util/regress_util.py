@@ -606,6 +606,10 @@ def test_dense_app(
         # "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
         # "llama_prefill-softmax_1::stable_softmax_pass2_fp_llama_prefill_RV_E64_MB",
         "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB",
+        "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
+        "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
+        "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+
     ]
 
     #------------------------------------------------------------------------
@@ -665,6 +669,8 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass2_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass3_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "rms_norm_pass1_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "rms_norm_pass2_fp", layer_in=layer)
 
 
 
@@ -835,6 +841,7 @@ def test_dense_app(
         os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src_latest")
         os.system(f"rm -rf /aha/voyager_src_latest/{voyager_cgra_test},,,{orig_test}")
         os.system(f"mv /aha/voyager_src_latest/{voyager_cgra_test} /aha/voyager_src_latest/{voyager_cgra_test},,,{orig_test}")
+
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
     return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
