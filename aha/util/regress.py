@@ -11,7 +11,6 @@ from aha.util.regress_util import test_dense_ml_model
 from aha.util.regress_util import test_hardcoded_dense_app
 from aha.util.regress_util import info
 global info
-from copy import deepcopy
 
 def report_ongoing_failures(failed_tests):
     '''Keep track of which tests have failed already, if any'''
@@ -134,8 +133,8 @@ def dispatch(args, extra_args=None):
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
 
     (args.width,args.height) = (width,height)
+    (args.using_matrix_unit) = (using_matrix_unit)
     (args.num_fabric_cols_removed, args.mu_oc_0) = (num_fabric_cols_removed, mu_oc_0)
-    args.using_matrix_unit = using_matrix_unit
 
   try:
     print(f"--- Running regression: {args.config}", flush=True)
@@ -155,7 +154,7 @@ def dispatch(args, extra_args=None):
             *dense_ml_models,
             *dense_ml_unit_tests,
     ]:
-        t = gen_garnet(args, dense_only=False, use_defaults=False)
+        t = gen_garnet(width, height, dense_only=False, args=args)
         info.append(["garnet (Zircon) with sparse and dense", t])
 
     # Run dense_ml_models and dense_ml_unit_tests first (e.g. pr_aha1 pointwise)
@@ -264,7 +263,7 @@ def dispatch(args, extra_args=None):
                 mu_oc_0=mu_oc_0)
             info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
 
-    dense_app_groups = [
+    for test in [
             ('glb_tests_RV',        '_glb'),           *glb_tests_RV,
             ('glb_tests_fp_RV',     '_glb'),           *glb_tests_fp_RV,
             ('behavioral_mu_tests', '_MU_behavioral'), *behavioral_mu_tests,
@@ -273,7 +272,6 @@ def dispatch(args, extra_args=None):
             ('external_mu_tests',   '_MU_ext'),        *external_mu_tests,
             ('external_mu_tests_fp','_MU_ext'),        *external_mu_tests_fp,
             ('voyager_cgra_tests_fp','_voyager_standalone_cgra'), *voyager_cgra_tests_fp,]:
-    for test in dense_app_groups:
 
         if type(test) is tuple:
             tgroup,tsuffix = test
@@ -330,7 +328,7 @@ def dispatch(args, extra_args=None):
             raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
-        t = gen_garnet(args, dense_only=False, use_defaults=True)
+        t = gen_garnet(width, height, dense_only=False, args=None)
         info.append(["garnet (NO Zircon) with sparse and dense", t])
         report_ongoing_failures(failed_tests)
 
@@ -343,8 +341,7 @@ def dispatch(args, extra_args=None):
             report_ongoing_failures(failed_tests)
 
             for test in no_zircon_sparse_tests:
-                t0, t1, t2, t3, t4, t5 = test_sparse_app(
-                    test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
+                t0, t1, t2, t3, t4, t5 = test_sparse_app(test, seed_flow, data_tile_pairs, opal_workaround=args.opal_workaround)
                 info.append([test + "_glb", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
                 report_ongoing_failures(failed_tests)
 
@@ -378,7 +375,7 @@ def dispatch(args, extra_args=None):
         if os.WEXITSTATUS(exit_status) != 0:
             raise RuntimeError(f"Command 'rm -f /aha/garnet/garnet.v' returned non-zero exit status {os.WEXITSTATUS(exit_status)}.")
 
-        t = gen_garnet(args, dense_only=True)
+        t = gen_garnet(width, height, dense_only=True, args=None)
         info.append(["garnet with dense only", t])
         report_ongoing_failures(failed_tests)
 

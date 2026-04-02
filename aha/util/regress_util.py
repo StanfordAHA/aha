@@ -52,18 +52,17 @@ def buildkite_call(command, env={}, return_output=False, out_file=None):
                 raise
 
 
-def gen_garnet(args, dense_only=False, use_defaults=True):    # using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
-    width, height = args.width, args.height
-    if use_defaults:
-         using_matrix_unit = False
-         mu_datawidth = 16
-         num_fabric_cols_removed = 0
-         mu_oc_0 = 32
+def gen_garnet(width, height, dense_only=False, args=None):
+    if args:
+        using_matrix_unit       = args.using_matrix_unit
+        mu_datawidth            = args.mu_datawidth
+        num_fabric_cols_removed = args.num_fabric_cols_removed
+        mu_oc_0                 = args.mu_oc_0
     else:
-         using_matrix_unit       = args.using_matrix_unit
-         mu_datawidth            = args.mu_datawidth
-         num_fabric_cols_removed = args.num_fabric_cols_removed
-         mu_oc_0                 = args.mu_oc_0
+        using_matrix_unit       = False
+        mu_datawidth            = 16
+        num_fabric_cols_removed = 0
+        mu_oc_0                 = 32
 
     print("--- Generating Garnet", flush=True)
     start = time.time()
