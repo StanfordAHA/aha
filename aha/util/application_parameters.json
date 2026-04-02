@@ -2663,6 +2663,7 @@
         "OUTPUT_TENSOR_X_DIM_TILING":"1",
         "NON_UNIFORM_SLICING":"1",
         "NON_UNIFORM_SLICE_IDX":"1",
+        "USE_PSUM_WORKAROUND_GOLD":"1",
         "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/llama_prefill-linear_mx_default_7_slice_1_gold"
     },
     "psum_mode":{
@@ -2718,6 +2719,7 @@
         "POND_PATH_BALANCING":"1",
         "NON_UNIFORM_SLICING":"1",
         "NON_UNIFORM_SLICE_IDX":"1",
+        "USE_PSUM_WORKAROUND_GOLD":"1",
         "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/llama_prefill-linear_mx_default_7_slice_1_gold"
     }
     },
@@ -2747,6 +2749,7 @@
         "POND_PATH_BALANCING":"1",
         "NON_UNIFORM_SLICING":"1",
         "NON_UNIFORM_SLICE_IDX":"1",
+        "USE_PSUM_WORKAROUND_GOLD":"1",
         "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/llama_prefill-linear_mx_default_7_slice_1_gold"
     }
     },
@@ -2776,6 +2779,7 @@
         "POND_PATH_BALANCING":"1",
         "NON_UNIFORM_SLICING":"1",
         "NON_UNIFORM_SLICE_IDX":"1",
+        "USE_PSUM_WORKAROUND_GOLD":"1",
         "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/llama_prefill-linear_mx_default_7_slice_1_gold"
     }
     },
@@ -2805,6 +2809,7 @@
         "POND_PATH_BALANCING":"1",
         "NON_UNIFORM_SLICING":"1",
         "NON_UNIFORM_SLICE_IDX":"1",
+        "USE_PSUM_WORKAROUND_GOLD":"1",
         "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/llama_prefill-linear_mx_default_7_slice_1_gold"
     }
     },
@@ -2834,6 +2839,7 @@
         "POND_PATH_BALANCING":"1",
         "NON_UNIFORM_SLICING":"1",
         "NON_UNIFORM_SLICE_IDX":"1",
+        "USE_PSUM_WORKAROUND_GOLD":"1",
         "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/llama_prefill-linear_mx_default_7_slice_1_gold"
     }
     },
@@ -2863,6 +2869,7 @@
         "POND_PATH_BALANCING":"1",
         "NON_UNIFORM_SLICING":"1",
         "NON_UNIFORM_SLICE_IDX":"1",
+        "USE_PSUM_WORKAROUND_GOLD":"1",
         "PSUM_GOLD_PATH":"/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/llama_prefill-linear_mx_default_7_slice_1_gold"
     }
     },
