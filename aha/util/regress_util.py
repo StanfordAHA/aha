@@ -561,6 +561,7 @@ def test_dense_app(
         "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
         "apps/add_gelu_pass2_fp_RV_E64_MB",
         "apps/tanh_fp_RV_E64_MB",
+        "apps/rope_fp_RV_E64_MB",
         "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
         "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
         "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
