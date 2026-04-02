@@ -18,6 +18,7 @@ def report_ongoing_failures(failed_tests):
     if failed_tests:
         print(f"+++ {len(failed_tests)} FAILED TESTS SO FAR")
         for ft in failed_tests: print("  ", ft)
+        exit(13)
     else:
         print(f"--- NO FAILED TESTS (YET)")
 
