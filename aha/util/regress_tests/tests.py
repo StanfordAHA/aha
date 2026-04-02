@@ -62,6 +62,7 @@ class Tests:
                 "apps/rope_pass1_fp_RV",
                 "apps/rope_pass2_fp_RV",
                 "apps/tanh_fp_RV_E64_MB",
+                "apps/rope_fp_RV_E64_MB",
     ]
 
     def configs_template():
@@ -117,6 +118,7 @@ class Tests:
             "apps/add_gelu_pass1_mu_input_fp",
             "apps/add_gelu_pass2_fp",
             "apps/tanh_fp",
+            "apps/rope_fp",
             "apps/zircon_residual_relu_fp",
             "apps/zircon_nop",
             "apps/zircon_psum_reduction_fp",
@@ -156,6 +158,7 @@ class Tests:
             "apps/add_gelu_pass1_mu_input_fp",
             "apps/add_gelu_pass2_fp",
             "apps/tanh_fp",
+            "apps/rope_fp",
             "apps/avgpool_layer_fp",
             "apps/mat_vec_mul_fp",
             "apps/maxpooling_dense_rv_fp",
