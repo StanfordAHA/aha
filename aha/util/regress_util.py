@@ -106,17 +106,14 @@ def gen_garnet(args, dense_only=False, use_defaults=True):    # using_matrix_uni
     return time.time() - start
 
 
-def generate_sparse_bitstreams(args, sparse_tests):
+def generate_sparse_bitstreams(args, seed_flow, data_tile_pairs, kernel_name, sparse_tests):
 
     # Early out if no tests to process
     if len(sparse_tests) == 0:
         return 0
 
-    seed_flow = not args.non_seed_flow
     (width,height) = (args.width,args.height)
 
-    data_tile_pairs         = args.data_tile_pairs
-    kernel_name             = args.kernel_name
     opal_workaround         = args.opal_workaround
     unroll                  = args.unroll
     using_matrix_unit       = args.using_matrix_unit

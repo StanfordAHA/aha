@@ -100,8 +100,6 @@ def dispatch(args, extra_args=None):
     dense_ml_unit_tests = imported_tests.dense_ml_unit_tests
     no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
 
-    (args.width,args.height) = (width,height)
-    args.num_fabric_cols_removed, args.mu_oc_0 = num_fabric_cols_removed, mu_oc_0
 #     E64_supported_tests = imported_tests.E64_supported_tests
 #     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
 
@@ -109,11 +107,8 @@ def dispatch(args, extra_args=None):
     if args.no_zircon:
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
         using_matrix_unit = False
-        args.using_matrix_unit = False
         num_fabric_cols_removed = 0
         mu_oc_0 = 0
-        args.num_fabric_cols_removed = 0
-        args.mu_oc_0 = 0
 
     else:
         print(f"\033[92mINFO: Using a ZIRCON layout with {num_fabric_cols_removed} fabric columns removed.\033[0m")
@@ -137,6 +132,10 @@ def dispatch(args, extra_args=None):
             os.environ["BEHAVIORAL_MATRIX_UNIT"] = "1"
         assert imported_tests.external_mu_tests == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests from the test list."
         assert imported_tests.external_mu_tests_fp == [], "ERROR: External matrix unit tests are not supported for CGRA widths less than the ZIRCON tapeout width. Please remove external_mu_tests_fp from the test list."
+
+    (args.width,args.height) = (width,height)
+    (args.num_fabric_cols_removed, args.mu_oc_0) = (num_fabric_cols_removed, mu_oc_0)
+    args.using_matrix_unit = using_matrix_unit
 
   try:
     print(f"--- Running regression: {args.config}", flush=True)
@@ -214,10 +213,7 @@ def dispatch(args, extra_args=None):
             print("HERE ARE THE DATA TILE PAIRS!")
             print(data_tile_pairs)
 
-            args2 = deepcopy(args)
-            args2.data_tile_pairs = data_tile_pairs
-            args2.kernel_name = kernel_name
-            t = generate_sparse_bitstreams(args2, sparse_tests)
+            t = generate_sparse_bitstreams(args, seed_flow, data_tile_pairs, kernel_name, sparse_tests)
             info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
             for test in sparse_tests:
@@ -254,10 +250,7 @@ def dispatch(args, extra_args=None):
                     perf_out_file.write(f"{testname}        {dataset}        {time_value}\n")
 
     elif sparse_tests:
-        args2 = deepcopy(args)
-        args2.data_tile_pairs = data_tile_pairs
-        args2.kernel_name = kernel_name
-        t = generate_sparse_bitstreams(args2, sparse_tests)
+        t = generate_sparse_bitstreams(args, seed_flow, data_tile_pairs, kernel_name, sparse_tests)
         info.append(["gen_sparse_bitstreams", t, 0, t, 0])  # Count this as "map" time
 
         for test in sparse_tests:
@@ -345,11 +338,7 @@ def dispatch(args, extra_args=None):
             # See above for no_zircon_sparse_tests[]
             data_tile_pairs = []
             kernel_name = ""
-            args2 = deepcopy(args)
-            args2.data_tile_pairs = data_tile_pairs
-            args2.kernel_name = kernel_name
-            args2.seed_flow = True
-            t = generate_sparse_bitstreams(args2, no_zircon_sparse_tests)
+            t = generate_sparse_bitstreams(args, seed_flow, data_tile_pairs, kernel_name, no_zircon_sparse_tests)
             info.append(["gen_sparse_bitstreams_nz", t, 0, t, 0])  # Count this as "map" time
             report_ongoing_failures(failed_tests)
 
