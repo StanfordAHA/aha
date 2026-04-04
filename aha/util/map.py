@@ -197,7 +197,14 @@ def dispatch(args, extra_args=None):
         os.environ["CODEGEN_DIR"] = "test/compiler"
 
         # Run voyager compiler for the specified layer
-        voyager_run_layer(model, layer)
+        hardcoded_tensor_metadata = env.get("HARDCODED_TENSOR_METADATA", "0") == "1"
+        if hardcoded_tensor_metadata:
+            print(f"\033[93mWARNING: Using hardcoded tensor metadata for {layer} of {model} instead of running voyager compiler, as per settings in application_parameters.json.\033[0m")
+            hardcoded_tensor_metadata_path = f"{args.aha_dir}/voyager/hardcoded_tensor_metadata/{model}-{layer}_tensor_metadata.json"
+            assert os.path.exists(hardcoded_tensor_metadata_path), f"ERROR: {hardcoded_tensor_metadata_path} not found, cannot use hardcoded tensor metadata for {layer} of {model}"
+            shutil.copyfile(hardcoded_tensor_metadata_path, "/aha/voyager/tensor_metadata.json")
+        else:
+            voyager_run_layer(model, layer)
 
         if not args.voyager_gold_model_only:
             # Parse the dnnLayer tensors and write them to tensor_files directory

@@ -134,6 +134,7 @@ class Tests:
             "apps/mu2glb_path_balance_test",
             "apps/zircon_scale_add_fp",
             "apps/nop_2d",
+            "apps/elemwise_mul_fp",
         ]
         E64_MB_supported_tests = [
             "apps/pointwise",
@@ -179,6 +180,7 @@ class Tests:
             "apps/mu2glb_path_balance_test",
             "apps/zircon_scale_add_fp",
             "apps/nop_2d",
+            "apps/elemwise_mul_fp",
         ]
         return vars().copy()
 
@@ -1086,6 +1088,9 @@ class Tests:
 
                 "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
                 "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+                # LLaMA Prefill Swish Mul
+                # "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel0_RV_E64_MB",
+                "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel1_RV_E64_MB",
 
 
 
@@ -1135,7 +1140,7 @@ class Tests:
 
             # LLaMA Prefill, up projection
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_nop_post_llama_prefill_up_projection_kernel0_RV_E64_MB",
-            # "llama_prefill-linear_mx_:default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel1_RV_E64_MB",
+            # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel1_RV_E64_MB",
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel2_RV_E64_MB",
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel3_RV_E64_MB",
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel4_RV_E64_MB",
@@ -1144,6 +1149,16 @@ class Tests:
 
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB",
             # "llama_prefill-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB", # SiLU
+
+            # "llama_prefill-submodule_40 -> zircon_2d_nop_post_llama_prefill_up_projection_mul_path_kernel0_RV_E64_MB",
+            # "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel1_RV_E64_MB",
+            # "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel2_RV_E64_MB",
+            # "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel3_RV_E64_MB",
+            # "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel4_RV_E64_MB",
+            # "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel5_RV_E64_MB",
+            # "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel6_RV_E64_MB",
+            # "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel7_RV_E64_MB",
+
 
             # LLaMA prefill, final output projection
             # Run 125 times on k dimension

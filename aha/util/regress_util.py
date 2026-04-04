@@ -530,6 +530,14 @@ def test_dense_app(
         "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel6_1_RV_E64_MB",
         "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel7_1_RV_E64_MB",
 
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel7_RV_E64_MB",
+
+
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
 
@@ -672,6 +680,7 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass3_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass2_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "elemwise_mul_fp", layer_in=layer)
 
 
 
@@ -829,19 +838,19 @@ def test_dense_app(
     time_test = time.time() - start
 
     # HACK: Custom hack for copying folders for chip testing
-    os.system(f"cp -a {app_path}/bin /aha/aha_src_latest")
+    os.system(f"cp -a {app_path}/bin /aha/aha_src_latest_3")
     if mu_test != "inactive":
-        os.system(f"rm -rf /aha/aha_src_latest/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src_latest/bin /aha/aha_src_latest/{mu_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src_latest")
-        os.system(f"rm -rf /aha/voyager_src_latest/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src_latest/{mu_test} /aha/voyager_src_latest/{mu_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src_latest_3/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src_latest_3/bin /aha/aha_src_latest_3/{mu_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src_latest_3")
+        os.system(f"rm -rf /aha/voyager_src_latest_3/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src_latest_3/{mu_test} /aha/voyager_src_latest_3/{mu_test},,,{orig_test}")
     elif voyager_cgra_test != "":
-        os.system(f"rm -rf /aha/aha_src_latest/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src_latest/bin /aha/aha_src_latest/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src_latest")
-        os.system(f"rm -rf /aha/voyager_src_latest/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src_latest/{voyager_cgra_test} /aha/voyager_src_latest/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src_latest_3/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src_latest_3/bin /aha/aha_src_latest_3/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src_latest_3")
+        os.system(f"rm -rf /aha/voyager_src_latest_3/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src_latest_3/{voyager_cgra_test} /aha/voyager_src_latest_3/{voyager_cgra_test},,,{orig_test}")
 
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
