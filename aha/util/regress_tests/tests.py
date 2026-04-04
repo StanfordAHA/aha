@@ -1085,7 +1085,7 @@ class Tests:
                 # "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
 
                 "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
-                # "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+                "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
 
 
 
