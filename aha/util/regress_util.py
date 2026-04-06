@@ -681,6 +681,7 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass2_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "elemwise_mul_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "rope_fp", layer_in=layer)
 
 
 
@@ -838,19 +839,19 @@ def test_dense_app(
     time_test = time.time() - start
 
     # HACK: Custom hack for copying folders for chip testing
-    os.system(f"cp -a {app_path}/bin /aha/aha_src_latest_3")
+    os.system(f"cp -a {app_path}/bin /aha/aha_src_latest_4")
     if mu_test != "inactive":
-        os.system(f"rm -rf /aha/aha_src_latest_3/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src_latest_3/bin /aha/aha_src_latest_3/{mu_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src_latest_3")
-        os.system(f"rm -rf /aha/voyager_src_latest_3/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src_latest_3/{mu_test} /aha/voyager_src_latest_3/{mu_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src_latest_4/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src_latest_4/bin /aha/aha_src_latest_4/{mu_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src_latest_4")
+        os.system(f"rm -rf /aha/voyager_src_latest_4/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src_latest_4/{mu_test} /aha/voyager_src_latest_4/{mu_test},,,{orig_test}")
     elif voyager_cgra_test != "":
-        os.system(f"rm -rf /aha/aha_src_latest_3/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src_latest_3/bin /aha/aha_src_latest_3/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src_latest_3")
-        os.system(f"rm -rf /aha/voyager_src_latest_3/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src_latest_3/{voyager_cgra_test} /aha/voyager_src_latest_3/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src_latest_4/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src_latest_4/bin /aha/aha_src_latest_4/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src_latest_4")
+        os.system(f"rm -rf /aha/voyager_src_latest_4/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src_latest_4/{voyager_cgra_test} /aha/voyager_src_latest_4/{voyager_cgra_test},,,{orig_test}")
 
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
