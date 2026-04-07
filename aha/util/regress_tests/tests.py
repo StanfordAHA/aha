@@ -1090,11 +1090,15 @@ class Tests:
                 # "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
                 # LLaMA Prefill Swish Mul
                 # "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel0_RV_E64_MB",
-                "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel1_RV_E64_MB",
+                # "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel1_RV_E64_MB",
+
+                # LLaMA Prefill Query RoPE
+                # "llama_prefill-submodule_4::rope_fp_llama_prefill_query_kernel0_RV_E64_MB",
+                # "llama_prefill-submodule_4::rope_fp_llama_prefill_query_kernel1_RV_E64_MB",
 
                 # LLaMA Prefill Key RoPE
-                # "llama_prefill-submodule_4::rope_fp_llama_prefill_key_kernel0_RV_E64_MB",
-                # "llama_prefill-submodule_4::rope_fp_llama_prefill_key_kernel1_RV_E64_MB",
+                "llama_prefill-submodule_4::rope_fp_llama_prefill_key_kernel0_RV_E64_MB",
+                "llama_prefill-submodule_4::rope_fp_llama_prefill_key_kernel1_RV_E64_MB",
 
 
 
