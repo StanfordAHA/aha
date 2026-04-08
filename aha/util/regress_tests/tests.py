@@ -1011,7 +1011,7 @@ class Tests:
 
                 # # BERT get_e8m0_scale accum schedule layers
                 # "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
-                "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
+                # "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
 
                 # # BERT apply_e8m0_scale layers
                 # "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
@@ -1138,23 +1138,41 @@ class Tests:
             #    "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel6_RV_E64_MB",
             #    "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel7_RV_E64_MB",
 
-            # LLaMA Prefill, K/V projectiion
-            # "llama_prefill-submodule_1 -> zircon_2d_nop_post_llama_prefill_kv_projection_kernel0_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel1_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel2_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel3_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel4_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel5_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel6_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel7_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel8_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel9_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel10_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel11_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel12_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel13_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel14_RV_E64_MB",
-            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel15_RV_E64_MB",
+            # LLaMA Prefill, Key projectiion
+            # "llama_prefill-submodule_1 -> zircon_2d_nop_post_llama_prefill_key_projection_kernel0_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel1_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel2_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel3_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel4_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel5_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel6_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel7_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel8_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel9_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel10_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel11_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel12_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel13_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel14_RV_E64_MB",
+            # "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel15_RV_E64_MB",
+
+            # LLaMA Prefill, Value projectiion
+            "llama_prefill-submodule_2 -> zircon_2d_nop_post_llama_prefill_value_projection_kernel0_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel1_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel2_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel3_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel4_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel5_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel6_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel7_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel8_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel9_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel10_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel11_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel12_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel13_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel14_RV_E64_MB",
+            "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel15_RV_E64_MB",
 
             # LLaMA Prefill, up projection
             # "llama_prefill-linear_mx_default_4 -> zircon_2d_nop_post_llama_prefill_up_projection_kernel0_RV_E64_MB",

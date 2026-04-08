@@ -462,20 +462,20 @@ def test_dense_app(
         "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel6_RV_E64_MB",
         "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel7_RV_E64_MB",
 
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel2_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel3_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel4_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel5_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel6_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel7_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel8_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel9_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel10_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel11_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel12_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel13_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel14_RV_E64_MB",
-        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_kv_projection_kernel15_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel7_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel8_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel9_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel10_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel11_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel12_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel13_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel14_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel15_RV_E64_MB",
 
         "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel2_RV_E64_MB",
         "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel3_RV_E64_MB",
@@ -544,6 +544,22 @@ def test_dense_app(
         "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel5_RV_E64_MB",
         "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel6_RV_E64_MB",
         "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel7_RV_E64_MB",
+
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel1_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel7_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel8_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel9_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel10_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel11_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel12_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel13_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel14_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel15_RV_E64_MB",
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
 
@@ -845,19 +861,19 @@ def test_dense_app(
     time_test = time.time() - start
 
     # HACK: Custom hack for copying folders for chip testing
-    os.system(f"cp -a {app_path}/bin /aha/aha_src_latest_6")
+    os.system(f"cp -a {app_path}/bin /aha/aha_src_latest_7")
     if mu_test != "inactive":
-        os.system(f"rm -rf /aha/aha_src_latest_6/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src_latest_6/bin /aha/aha_src_latest_6/{mu_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src_latest_6")
-        os.system(f"rm -rf /aha/voyager_src_latest_6/{mu_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src_latest_6/{mu_test} /aha/voyager_src_latest_6/{mu_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src_latest_7/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src_latest_7/bin /aha/aha_src_latest_7/{mu_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{mu_test} /aha/voyager_src_latest_7")
+        os.system(f"rm -rf /aha/voyager_src_latest_7/{mu_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src_latest_7/{mu_test} /aha/voyager_src_latest_7/{mu_test},,,{orig_test}")
     elif voyager_cgra_test != "":
-        os.system(f"rm -rf /aha/aha_src_latest_6/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/aha_src_latest_6/bin /aha/aha_src_latest_6/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src_latest_6")
-        os.system(f"rm -rf /aha/voyager_src_latest_6/{voyager_cgra_test},,,{orig_test}")
-        os.system(f"mv /aha/voyager_src_latest_6/{voyager_cgra_test} /aha/voyager_src_latest_6/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"rm -rf /aha/aha_src_latest_7/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/aha_src_latest_7/bin /aha/aha_src_latest_7/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"cp -a {voyager_collateral_path}/{voyager_cgra_test} /aha/voyager_src_latest_7")
+        os.system(f"rm -rf /aha/voyager_src_latest_7/{voyager_cgra_test},,,{orig_test}")
+        os.system(f"mv /aha/voyager_src_latest_7/{voyager_cgra_test} /aha/voyager_src_latest_7/{voyager_cgra_test},,,{orig_test}")
 
 
     active_app_cycles, total_config_cycles, total_write_data_cycles = track_performance()
