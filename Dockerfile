@@ -4,4 +4,4 @@ LABEL description="garnet"
 # Switch shell to bash
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN mkdir -p /aha && cd /aha && python -m venv . && source bin/activate
+RUN mkdir -p /aha && cd /aha && echo echo actifoo > bin/activate

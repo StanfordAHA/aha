@@ -172,14 +172,14 @@ else
     - label: "$label"
       # agents: { hostname: khaki }  # Can uncomment for debugging etc.
       key: "regress$i"
-      # env: { REGRESSION_STEP: $i } no longer used maybe
+      env: { CONFIG: $CONFIG }
       command: |
         set -x
         .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         echo executing \$REGRESS_METAHOOKS=$REGRESS_METAHOOKS
         ls -l \$REGRESS_METAHOOKS
         grep Full \$REGRESS_METAHOOKS
-        CONFIG="$CONFIG" \$REGRESS_METAHOOKS --commands
+        \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
