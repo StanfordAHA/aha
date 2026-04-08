@@ -162,6 +162,7 @@ else
     fi
 
     echo "--- regression-steps has set CONFIG='$CONFIG'"
+    TOPCONFIG="$CONFIG"
     
     # Launch next step
     # Each new step uploads only after previous step has started running.
@@ -175,7 +176,7 @@ else
       env: { CONFIG: $CONFIG }
       command: |
         set -x
-        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
+        CONFIG=$TOPCONFIG .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         echo executing \$REGRESS_METAHOOKS=$REGRESS_METAHOOKS
         ls -l \$REGRESS_METAHOOKS
         grep Full \$REGRESS_METAHOOKS
