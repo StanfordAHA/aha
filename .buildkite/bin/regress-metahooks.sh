@@ -194,6 +194,7 @@ elif [ "$1" == '--commands' ]; then
 EOF
     # Now execute the above script, which was copied to tmp$$
     # '-e' means 'set environment variable'
+    echo false > tmp$$
     docker exec \
            -e CONFIG="$CONFIG" \
            "$CONTAINER" /bin/bash -c "$(cat tmp$$)" \
