@@ -162,7 +162,6 @@ else
     fi
 
     echo "--- regression-steps has set CONFIG='$CONFIG'"
-    TOPCONFIG="$CONFIG"
     
     # Launch next step
     # Each new step uploads only after previous step has started running.
@@ -173,14 +172,14 @@ else
     - label: "$label"
       # agents: { hostname: khaki }  # Can uncomment for debugging etc.
       key: "regress$i"
-      env: { CONFIG: $CONFIG }
+      # env: { REGRESSION_STEP: $i } no longer used maybe
       command: |
         set -x
-        CONFIG=$TOPCONFIG .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
+        .buildkite/bin/regression-steps.sh ARGS  # Chain to next step
         echo executing \$REGRESS_METAHOOKS=$REGRESS_METAHOOKS
         ls -l \$REGRESS_METAHOOKS
         grep Full \$REGRESS_METAHOOKS
-        \$REGRESS_METAHOOKS --commands
+        CONFIG="$CONFIG" \$REGRESS_METAHOOKS --commands
       plugins:
         - uber-workflow/run-without-clone:
         - improbable-eng/metahook:
@@ -188,9 +187,9 @@ else
                 RSTEP=$i  # Never used? Right???
                 \$BUILD_DOCKER
                 cd .
-                \$REGRESS_METAHOOKS --pre-command
+                CONFIG="$CONFIG" \$REGRESS_METAHOOKS --pre-command
             pre-exit: |
-                \$REGRESS_METAHOOKS --pre-exit
+                CONFIG="$CONFIG" \$REGRESS_METAHOOKS --pre-exit
 EOF
 
     [ "$MAX_AGENTS" ] || MAX_AGENTS=4
