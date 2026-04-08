@@ -198,9 +198,11 @@ EOF
     docker exec \
            -e CONFIG="$CONFIG" \
            "$CONTAINER" /bin/bash -c "$(cat tmp$$)" \
-        || exit 13
-    docker kill "$CONTAINER" || echo okay; rm -f tmp$$  # Cleanup on aisle FOO
+        && result=PASS || result=FAIL
+    docker kill "$CONTAINER" && echo Killed "$CONTAINER" || echo okay
+    rm -f tmp$$  # Cleanup on aisle tmp
     echo "--- END regress-metahooks.sh --commands"
+    if test "$result" == "FAIL"; then exit 13; fi
 
 elif [ "$1" == '--pre-exit' ]; then
 
