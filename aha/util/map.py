@@ -338,6 +338,14 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path
             )
 
+        # Generate lake collateral JSON so clockwork uses actual hardware
+        # parameters instead of the hardcoded defaults in options.h.
+        from aha.util.generate_lake_collateral import generate_collateral
+        collateral_path = str(app_dir / "bin" / "lake_collateral_mem.json")
+        generate_collateral(collateral_path)
+        env["LAKE_COLLATERAL_JSON_MEM"] = collateral_path
+        print(f"[aha map] Lake collateral written to {collateral_path}")
+
         if run_sim:
             subprocess_call_log(
                 cmd=["make", "-C", str(app_dir), "test-mem"],

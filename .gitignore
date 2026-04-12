@@ -1,0 +1,7 @@
+*.eggs*
+*lib*
+*whl*
+*__pycache*
+*egg*
+*bin*
+*share*
