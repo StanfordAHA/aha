@@ -22,6 +22,7 @@ def add_subparser(subparser):
     parser.add_argument("--skip-cgra-map", action="store_true", help="Skips CGRA mapping for the application. Assumes mapping collateral has previously been generated.")
     parser.add_argument("--voyager-gold-model-only", action="store_true", help="Only run voyager for the purpose of generating gold data.")
     parser.add_argument("--skip-env-vars", action="store_true", help="Skips loading environmental variables from application_parameters.json")
+    parser.add_argument("--collateral", type=str, help="Path to a lake collateral JSON file to use for clockwork compilation instead of generating the default ONYX collateral")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -338,13 +339,17 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path
             )
 
-        # Generate lake collateral JSON so clockwork uses actual hardware
+        # Set lake collateral JSON so clockwork uses actual hardware
         # parameters instead of the hardcoded defaults in options.h.
-        from aha.util.generate_lake_collateral import generate_collateral
-        collateral_path = str(app_dir / "bin" / "lake_collateral_mem.json")
-        generate_collateral(collateral_path)
+        if hasattr(args, 'collateral') and args.collateral:
+            collateral_path = os.path.realpath(args.collateral)
+            print(f"[aha map] Using provided collateral: {collateral_path}")
+        else:
+            from aha.util.generate_lake_collateral import generate_collateral
+            collateral_path = str(app_dir / "bin" / "lake_collateral_mem.json")
+            generate_collateral(collateral_path)
+            print(f"[aha map] Lake collateral written to {collateral_path}")
         env["LAKE_COLLATERAL_JSON_MEM"] = collateral_path
-        print(f"[aha map] Lake collateral written to {collateral_path}")
 
         if run_sim:
             subprocess_call_log(
