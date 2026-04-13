@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 # Timing
-echo "BEGIN $(date)"
+echo "fast-submod-init.sh BEGIN $(date)"
 t_begin=$(date +%s)  # 1664872377
 
 # How to test this script locally
@@ -61,7 +61,7 @@ function get_submod {
 
     function DBG { false; }
     function DBG { true; }
-    set -x
+
     s=$1  # E.g. 'Buffermapping'
     c=$2  # E.g. '8ef41175ab512bf0938283beb65d099935522990'
     c8=$(echo $c | cut -b 1-8)  # E.g. '8ef41175'
