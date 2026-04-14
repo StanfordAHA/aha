@@ -53,6 +53,7 @@ class Tests:
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
                 "apps/tanh_fp_RV_E64_MB",
+                "apps/rope_fp_RV_E64_MB",
     ]
 
     def configs_template():
