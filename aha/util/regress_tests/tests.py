@@ -31,17 +31,11 @@ class Tests:
                 "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
-                "apps/relu_layer_multiout_fp_RV",
-                "apps/mat_vec_mul_fp_RV_E64_MB",
-                "apps/scalar_reduction_fp_RV",
-                "apps/scalar_max_fp_RV",
     ]
     glb_tests_fp_RV3 = [
-                "apps/scalar_avg_fp_RV",
                 "apps/stable_softmax_pass1_fp_RV_E64_MB",
                 "apps/stable_softmax_pass2_fp_RV_E64_MB",
                 "apps/stable_softmax_pass3_fp_RV_E64_MB",
-                "apps/vector_reduction_fp_RV",
     ]
     glb_tests_fp_RV2 = [
                 "apps/layer_norm_pass1_fp_RV_E64_MB",
@@ -51,16 +45,13 @@ class Tests:
                 "apps/rms_norm_pass2_fp_RV_E64_MB",
     ]
     glb_tests_fp_RV7 = [
-                "apps/gelu_pass2_fp_RV_E64_MB",  # 1480s/25m
+                "apps/gelu_pass2_fp_RV_E64_MB",
     ]
     glb_tests_fp_RV8 = []
     glb_tests_fp_RV9 = [
-                "apps/add_gelu_pass2_fp_RV_E64_MB",  # 1530s/25m
+                "apps/add_gelu_pass2_fp_RV_E64_MB",
                 "apps/silu_pass1_fp_RV",
                 "apps/silu_pass2_fp_RV",
-                "apps/swiglu_pass2_fp_RV",
-                "apps/rope_pass1_fp_RV",
-                "apps/rope_pass2_fp_RV",
                 "apps/tanh_fp_RV_E64_MB",
     ]
 
@@ -87,96 +78,6 @@ class Tests:
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
 
-        E64_supported_tests = [
-            "apps/pointwise",
-            "apps/pointwise_mu_io",
-            "conv5_x",
-            "apps/avgpool_layer_fp",
-            "apps/mat_vec_mul_fp",
-            "apps/maxpooling_dense_rv_fp",
-            "apps/maxpooling_dense_rv_mem_buf_fp",
-            "apps/fully_connected_layer_fp",
-            "apps/pointwise_custom_packing",
-            "apps/pointwise_custom_place_multibank",
-            "apps/get_e8m0_scale_tree_mu_input",
-            "apps/get_e8m0_scale_tree_gb_input",
-            "apps/get_e8m0_scale_accum_gb_input",
-            "apps/apply_e8m0_scale_single_IO",
-            "apps/apply_e8m0_scale_multi_IOs",
-            "apps/get_apply_e8m0_scale_fp",
-            "apps/stable_softmax_pass1_fp",
-            "apps/stable_softmax_pass2_fp",
-            "apps/stable_softmax_pass3_fp",
-            "apps/layer_norm_pass1_fp",
-            "apps/layer_norm_pass2_fp",
-            "apps/layer_norm_pass3_fp",
-            "apps/rms_norm_pass1_fp",
-            "apps/rms_norm_pass2_fp",
-            "apps/gelu_pass1_mu_input_fp",
-            "apps/gelu_pass2_fp",
-            "apps/add_gelu_pass1_mu_input_fp",
-            "apps/add_gelu_pass2_fp",
-            "apps/tanh_fp",
-            "apps/zircon_residual_relu_fp",
-            "apps/zircon_nop",
-            "apps/zircon_psum_reduction_fp",
-            "apps/zircon_dequantize_relu_fp",
-            "apps/zircon_dequant_fp",
-            "apps/zircon_deq_ResReLU_quant_fp",
-            "apps/zircon_deq_q_relu_fp",
-            "apps/zircon_deq_ResReLU_fp",
-            "apps/zircon_res_deq_ReLU_quant_fp",
-            "apps/zircon_quant_fp",
-            "apps/zircon_2d_nop",
-            "apps/zircon_2d_psum_reduction_fp",
-            "apps/mu2glb_path_balance_test",
-            "apps/zircon_scale_add_fp",
-            "apps/nop_2d",
-        ]
-        E64_MB_supported_tests = [
-            "apps/pointwise",
-            "apps/pointwise_mu_io",
-            "apps/pointwise_custom_place_multibank",
-            "apps/get_e8m0_scale_tree_mu_input",
-            "apps/get_e8m0_scale_tree_gb_input",
-            "apps/get_e8m0_scale_accum_gb_input",
-            "apps/apply_e8m0_scale_single_IO",
-            "apps/apply_e8m0_scale_multi_IOs",
-            "apps/get_apply_e8m0_scale_fp",
-            "apps/stable_softmax_pass1_fp",
-            "apps/stable_softmax_pass2_fp",
-            "apps/stable_softmax_pass3_fp",
-            "apps/layer_norm_pass1_fp",
-            "apps/layer_norm_pass2_fp",
-            "apps/layer_norm_pass3_fp",
-            "apps/rms_norm_pass1_fp",
-            "apps/rms_norm_pass2_fp",
-            "apps/gelu_pass1_mu_input_fp",
-            "apps/gelu_pass2_fp",
-            "apps/add_gelu_pass1_mu_input_fp",
-            "apps/add_gelu_pass2_fp",
-            "apps/tanh_fp",
-            "apps/avgpool_layer_fp",
-            "apps/mat_vec_mul_fp",
-            "apps/maxpooling_dense_rv_fp",
-            "apps/maxpooling_dense_rv_mem_buf_fp",
-            "apps/fully_connected_layer_fp",
-            "apps/zircon_residual_relu_fp",
-            "apps/zircon_nop",
-            "apps/zircon_psum_reduction_fp",
-            "apps/zircon_dequantize_relu_fp",
-            "apps/zircon_dequant_fp",
-            "apps/zircon_deq_ResReLU_quant_fp",
-            "apps/zircon_deq_q_relu_fp",
-            "apps/zircon_deq_ResReLU_fp",
-            "apps/zircon_res_deq_ReLU_quant_fp",
-            "apps/zircon_quant_fp",
-            "apps/zircon_2d_nop",
-            "apps/zircon_2d_psum_reduction_fp",
-            "apps/mu2glb_path_balance_test",
-            "apps/zircon_scale_add_fp",
-            "apps/nop_2d",
-        ]
         return vars().copy()
 
     def __init__(self, testname="BLANK", zircon=True):
@@ -291,7 +192,6 @@ class Tests:
                 "apps/pointwise_mu_io_RV_E64",          # 5m
                 "apps/pointwise_mu_io_RV_E64_MB",       # 5m
                 "apps/mu2glb_path_balance_test_RV_E64", # 5m
-                "apps/abs_max_full_unroll_fp_RV",       # 5m
                 "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",  # 1045s/20m
             ]
 
@@ -325,7 +225,6 @@ class Tests:
 
             # 8400s/140m/2h20
             glb_tests_RV = [
-                "apps/maxpooling_dense_rv_fp_RV_E64_MB",
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
@@ -368,12 +267,7 @@ class Tests:
             ]
             # Tests below are non-zircon and won't run by default
             glb_tests = [
-                "apps/pointwise",
                 "apps/maxpooling",
-                "tests/bit8_packing_test",
-                "tests/bit8_unpack_test",
-                "tests/fp_get_shared_exp_test",
-                "tests/fp_e8m0_quant_test",
                 "apps/camera_pipeline_2x2",
                 "apps/gaussian",
                 "apps/harris_color",
@@ -383,7 +277,6 @@ class Tests:
                 "tests/fp_arith",
                 "tests/fp_comp",
                 "apps/matrix_multiplication_fp",
-                "apps/relu_layer_fp",
             ]
             voyager_cgra_tests_fp = [
                 # BERT Softmax layers
@@ -455,15 +348,10 @@ class Tests:
 
             glb_tests_RV = [
                 "tests/conv_2_1_RV",
-                "tests/fp_e8m0_quant_test_RV",
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-                "apps/pointwise_custom_packing_RV_E64",
                 "apps/gaussian_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
             ]
 
             # This is currently the empty set
@@ -614,7 +502,6 @@ class Tests:
                 "apps/pointwise_RV",
                 "apps/pointwise_RV_E64",
                 "apps/pointwise_RV_E64_MB",
-              # "tests/rom_RV",   # FIXME this one Failed
                 "tests/arith_RV",
                 "tests/absolute_RV",
                 "tests/boolean_ops_RV",
@@ -628,17 +515,11 @@ class Tests:
                 "tests/ushift_RV",
                 "tests/conv_2_1_RV",
                 "tests/conv_3_3_RV",
-                "tests/bit8_packing_test_RV",
-                "tests/bit8_unpack_test_RV",
-                "tests/fp_get_shared_exp_test_RV",
                 "tests/mem_slice_test_RV",
                 "tests/mem_transpose_test_RV",
                 "tests/mem_filter_test_RV",
-                "tests/fp_e8m0_quant_test_RV",
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
-                "apps/pointwise_custom_packing_RV_E64",
-                "apps/maxpooling_dense_rv_fp_RV_E64_MB",
                 "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",

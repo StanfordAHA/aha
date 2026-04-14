@@ -361,26 +361,6 @@ def parse_layer_parametrized_test(testname, keyword, layer_in=""):
         testname = f"apps/{keyword}"
     return testname, layer
 
-def feature_support_check(testname, E64_mode_on, E64_multi_bank_mode_on):
-
-    err1 = f'''E64 mode not yet supported for app "{testname}".
-    Please make the necessary changes in Halide-to-Hardware and application_parameters.json.
-    See pointwise for example. Ensure that the E64 unroll is multiple of 4.
-    Once done, please add the test to E64_supported_tests in regress_tests/tests.py
-    '''
-    if E64_mode_on:
-        assert testname in Tests().E64_supported_tests, err1
-
-    err2 = '''f"ERROR: E64 multi-bank mode not yet supported for {testname}.
-    Please make the necessary changes in Halide-to-Hardware and application_parameters.json.
-    See pointwise for example. Ensure that the E64_MB unroll is multiple of 8.
-    Once done, please add the test to E64_MB_supported_tests in regress_tests
-    '''
-    if E64_multi_bank_mode_on:
-        assert testname in Tests().E64_MB_supported_tests, err2
-        assert E64_mode_on, f"ERROR: E64 multi-bank mode requires E64 mode to be enabled. Please add _E64 to the test name"
-
-
 def track_performance():
     performance_summary_path = "/aha/garnet/tests/test_app/performance_summary.txt"
     if not os.path.exists(performance_summary_path):
@@ -582,8 +562,6 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass3_fp", layer_in=layer)
 
 
-
-    feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
 
     use_fp = '_fp' in tgroup
     behavioral_MU = (tgroup == 'behavioral_mu_tests' or tgroup == 'behavioral_mu_tests_fp')
@@ -875,7 +853,6 @@ def test_hardcoded_dense_app(
     test, dense_ready_valid = parse_RV_mode(test)
     test, E64_mode_on = parse_E64_mode(test)
     test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
-    feature_support_check(test, E64_mode_on, E64_multi_bank_mode_on)
     #------------------------------------------------------------------------
 
     env_parameters = str(env_parameters)

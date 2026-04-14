@@ -99,9 +99,6 @@ def dispatch(args, extra_args=None):
     dense_ml_unit_tests = imported_tests.dense_ml_unit_tests
     no_zircon_sparse_tests = imported_tests.no_zircon_sparse_tests
 
-#     E64_supported_tests = imported_tests.E64_supported_tests
-#     E64_MB_supported_tests = imported_tests.E64_MB_supported_tests
-
     # No zircon flag (generate default layout)
     if args.no_zircon:
         print(f"\n\n---- NO-ZIRCON 1 ----\n\n")
