@@ -187,9 +187,9 @@ else
                 RSTEP=$i  # Never used? Right???
                 \$BUILD_DOCKER
                 cd .
-                \$REGRESS_METAHOOKS --pre-command
+                CONFIG="$CONFIG" \$REGRESS_METAHOOKS --pre-command
             pre-exit: |
-                \$REGRESS_METAHOOKS --pre-exit
+                CONFIG="$CONFIG" \$REGRESS_METAHOOKS --pre-exit
 EOF
 
     [ "$MAX_AGENTS" ] || MAX_AGENTS=4
