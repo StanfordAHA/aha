@@ -176,6 +176,7 @@ def dispatch(args, extra_args=None):
             info.append(["*** FAIL ***"])
             info.append(["*** FAIL " + model + "_voyager_full_model"])
             info.append(["*** FAIL ***"])
+            raise
 
     data_tile_pairs = []
     kernel_name = ""

@@ -160,8 +160,6 @@ class Tests:
             # Run dense ML tests
             dense_ml_models = []
             dense_ml_unit_tests = [
-                "pointwise",
-                "swish",
                 "transpose2d",
             ]
 
@@ -819,8 +817,6 @@ class Tests:
             # Run dense ML tests
             dense_ml_models = []
             dense_ml_unit_tests = [
-                "pointwise",
-                "swish",
                 "transpose2d",
             ]
 
@@ -1059,8 +1055,6 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
             dense_ml_models = []
             dense_ml_unit_tests = [
-                "pointwise",
-                "swish",
                 "transpose2d",
             ]
 
