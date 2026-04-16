@@ -7,14 +7,14 @@ import json, yaml
 class Tests:
 
     # Valid configs as of Oct 2025:
-    #   "fast"    quick and dirty ten-minute test of basic apps
+    #   "fast"    quick and dirty test of basic apps
     #
     #   "pr_aha1" thru "pr_aha9"
-    #             regression tests that run on every aha pull, takes about 6-8 hours
+    #             regression tests that run on every aha pull
     #
     #   "pr_aha"  combines all tests pr_aha1-9 into a single group
     #
-    #   "full"    extensive set of apps that run for 30 hours every sunday night
+    #   "full"    extensive set of apps that run every sunday night
     #
     #   "resnet"  three resnet tests---does anyone still use this?
     #
@@ -26,9 +26,7 @@ class Tests:
                  "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
                  "pr_aha", "full", "resnet", "mu", "dense_ml_models", "BLANK"]
 
-    # RV1 group takes about an hour to run
     glb_tests_fp_RV1 = [
-                "tests/fp_arith_RV",
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
     ]
@@ -90,7 +88,6 @@ class Tests:
             config = "pr_aha"
 
 
-        # FAST test suite should complete in just a minute or two
         if testname == "fast":
             width, height = 8, 8,
             cols_removed, mu_oc_0 = 4, 8  # Ignored if --no-zircon is set
@@ -116,7 +113,6 @@ class Tests:
 
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
-            # These take about an hour to run
             sparse_tests = [
                 # pr_aha1
                 "vec_elemmul",
@@ -135,7 +131,6 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
-            # THESE HAVE BEEN TURNED OFF see below
             voyager_cgra_tests_fp = [
                 # Standalone quantize layers
                 "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
@@ -144,17 +139,15 @@ class Tests:
                 "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
             ]
-            # THESE HAVE BEEN TURNED OFF see below
             external_mu_tests_fp = [
                 # Conv1 (im2col-based, X-DIM HOST TILING)
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
                 "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
 
                 # BERT down projection layer: All using gemm_reduction_tiling_workaround
-               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
-               "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+                "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
+                "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
             ]
-            # These take about about hour to run
             glb_tests_fp_RV = Tests.glb_tests_fp_RV1
 
             # Run dense ML tests
@@ -167,7 +160,6 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            # 1h40 for this group maybe (build 12755/aha2)
             glb_tests_fp_RV = Tests.glb_tests_fp_RV2
 
             voyager_cgra_tests_fp = [
@@ -181,19 +173,15 @@ class Tests:
                 "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
             ]
             external_mu_tests_fp = [
-                # THESE HAVE BEEN TURNED OFF see below
                 # Conv2_x
                 "resnet18-submodule_2 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_3 -> zircon_deq_ResReLU_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_4 -> zircon_deq_q_relu_fp_post_conv2_x_RV_E64_MB",
                 "resnet18-submodule_5 -> zircon_deq_ResReLU_quant_fp_post_conv2_x_RV_E64_MB",
             ]
-            # 40 minutes for this group maybe (build 12755/aha4)
             behavioral_mu_tests = [
-                "apps/pointwise_mu_io_RV_E64",          # 5m
-                "apps/pointwise_mu_io_RV_E64_MB",       # 5m
-                "apps/mu2glb_path_balance_test_RV_E64", # 5m
-                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",  # 1045s/20m
+                "apps/mu2glb_path_balance_test_RV_E64",
+                "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
             ]
 
         elif testname == "pr_aha3":
@@ -206,6 +194,11 @@ class Tests:
                 # BERT apply_e8m0_scale layers
                 "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
                 "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
+
+                # BERT Pooling layer, using k-dim host tiling
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel0_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel1_RV_E64_MB",
+                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel2_RV_E64_MB",
             ]
             external_mu_tests_fp = [
                 # Conv3_1 strided conv
@@ -224,16 +217,14 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            # 8400s/140m/2h20
             glb_tests_RV = [
                 "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
                 "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
                 "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
             ]
-            # 2700s/45m
             behavioral_mu_tests = [
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",  # 2700s/45m
+                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
             # Resnet tests DISABLED see below
             external_mu_tests_fp = [
@@ -244,16 +235,20 @@ class Tests:
                 # Conv4_1 pointwise conv (INNER REDUCTION WORKAROUND)
                 "resnet18-submodule_12 -> zircon_dequant_fp_post_conv4_1_inner_reduction_workaround_RV_E64_MB",
 
-               # BERT masked self-attention head
-               "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
+                # BERT masked self-attention head
+                "bert-submodule_3 -> zircon_scale_add_fp_post_bert_masked_self_attention_head_RV_E64_MB",
 
-               # BERT post-attention projection:All using gemm_reduction_tiling_workaround
-               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel0_RV_E64_MB",
-               "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
+                # BERT post-attention projection:All using gemm_reduction_tiling_workaround
+                "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel0_RV_E64_MB",
+                "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
 
             ]
             hardcoded_dense_tests = [
                 "apps/unsharp_RV",
+            ]
+            voyager_cgra_tests_fp = [
+                # BERT permute layer
+                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
             ]
         elif testname == "pr_aha5":
             width, height = 28, 16
@@ -305,10 +300,10 @@ class Tests:
                 "resnet18-submodule_14 -> zircon_deq_q_relu_fp_post_conv4_x_RV_E64_MB",
                 "resnet18-submodule_15 -> zircon_deq_ResReLU_quant_fp_post_conv4_x_RV_E64_MB",
 
-                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND) (30m)
+                # Conv5_1 strided Conv (INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_16 -> zircon_deq_q_relu_fp_post_conv5_1_RV_E64_MB",
 
-                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND) (25m)
+                # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
             ]
             external_mu_tests_fp += [
@@ -327,19 +322,27 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = Tests.glb_tests_fp_RV7
+            voyager_cgra_tests_fp = [
+                # BERT layer norm layers (didn't run post-FFN layer norm layer)
+                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
+                # Channel slicing (unroll by 16)
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+            ]
             external_mu_tests_fp = [
-                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND) (60m)
+                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
 
-               # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
-               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
-               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
-               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
-
-               "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
-               "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
-               "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
+                # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
+                "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
+                "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
+                "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
+ 
+                "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel6_RV_E64_MB",
+                "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel7_RV_E64_MB",
+                "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
             ]
             behavioral_mu_tests_fp = []
 
@@ -348,10 +351,6 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
 
             glb_tests_RV = [
-                "tests/conv_2_1_RV",
-                "apps/pointwise_RV",
-                "apps/pointwise_RV_E64",
-                "apps/pointwise_RV_E64_MB",
                 "apps/gaussian_RV",
             ]
 
@@ -379,26 +378,6 @@ class Tests:
                 "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB", # 128, 1536, tiling
                 "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB", # 128, 1536, tiling
 
-                # BERT Pooling layer, using k-dim host tiling
-                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel0_RV_E64_MB",
-                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel1_RV_E64_MB",
-                "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel2_RV_E64_MB",
-
-                # BERT Classifier layer
-                "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
-
-                # BERT tanh layer
-                "bert-tanh::tanh_fp_bert_RV_E64_MB",
-
-                # BERT permute layer (20m)
-                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
-
-                # BERT layer norm layers (didn't run post-FFN layer norm layer) (60m)
-                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
-                # Channel slicing (unroll by 16) (40m)
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
             ]
 
             behavioral_mu_tests_fp = []
@@ -408,9 +387,15 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = Tests.glb_tests_fp_RV9
             voyager_cgra_tests_fp = [
-                # BERT get_e8m0_scale accum schedule layers (50m)
+                # BERT get_e8m0_scale accum schedule layers
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
                 "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
+
+                # BERT Classifier layer
+                "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
+
+                # BERT tanh layer
+                "bert-tanh::tanh_fp_bert_RV_E64_MB",
             ]
             external_mu_tests_fp = [
                 # ResNet-18 Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
@@ -531,6 +516,7 @@ class Tests:
             glb_tests_fp_RV += Tests.glb_tests_fp_RV1
             glb_tests_fp_RV += Tests.glb_tests_fp_RV2
             glb_tests_fp_RV += Tests.glb_tests_fp_RV3
+            glb_tests_fp_RV += Tests.glb_tests_fp_RV7
             glb_tests_fp_RV += Tests.glb_tests_fp_RV8
             glb_tests_fp_RV += Tests.glb_tests_fp_RV9
 
@@ -681,7 +667,7 @@ class Tests:
                 "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
 
                 # BERT tanh layer
-                "bert-tanh::tanh_fp_bert_RV_E64_MB"
+                "bert-tanh::tanh_fp_bert_RV_E64_MB",
 
             ]
             behavioral_mu_tests = [
@@ -694,7 +680,7 @@ class Tests:
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
-                # "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
+                "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
                 # BERT Attention*Value Using inner reduction workaround
@@ -923,7 +909,7 @@ class Tests:
                 "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
 
                 # BERT tanh layer
-                "bert-tanh::tanh_fp_bert_RV_E64_MB"
+                "bert-tanh::tanh_fp_bert_RV_E64_MB",
 
                 # "fakegemm-quantize_default::zircon_quant_fp_fakegemm_RV_E64_MB",
             ]

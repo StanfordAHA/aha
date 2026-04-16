@@ -13,6 +13,17 @@ info = []
 
 
 
+def _set_deterministic_cpu_env():
+    # Pin CPU ISA and force single-threaded BLAS/OMP so bf16 reductions are
+    # bit-reproducible across x86 microarchitectures.
+    os.environ.setdefault("ATEN_CPU_CAPABILITY", "default")
+    os.environ.setdefault("ONEDNN_MAX_CPU_ISA", "SSE41")
+    os.environ.setdefault("DNNL_MAX_CPU_ISA", "SSE41")
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    os.environ.setdefault("MKL_NUM_THREADS", "1")
+    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+
+
 def buildkite_call(command, env={}, return_output=False, out_file=None):
     print("Command:",' '.join(command), flush=True)
     env = {**os.environ.copy(), **env}
@@ -384,6 +395,7 @@ def test_dense_app(
   using_matrix_unit=False, mu_datawidth=16, num_fabric_cols_removed=0, mu_oc_0=32):
 
     print(f"--- BEGIN test_dense_app {test}", flush=True)
+    _set_deterministic_cpu_env()
     test_orig = test
 
     # FIXME/TODO the skip_cgra* information below should probably be in tests.py instead of here...?
@@ -736,6 +748,7 @@ def test_dense_ml_model(
     aha_halide_benchmarks_path = "/aha/Halide-to-Hardware/apps/hardware_benchmarks"
 
     print(f"--- BEGIN test_dense_ml_model {model}", flush=True)
+    _set_deterministic_cpu_env()
 
     # ======================================
     # Run voyager and strait compilations.

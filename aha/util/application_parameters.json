@@ -4703,30 +4703,6 @@
             "PIPELINED":"0"
         }
     },
-    "apps/swiglu_pass2_fp":{
-        "default":{
-            "HALIDE_GEN_ARGS":"vec_len=512 glb_i=4 glb_o=4",
-            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
-            "DISABLE_GP":"1",
-            "PIPELINED":"0"
-        }
-    },
-    "apps/rope_pass1_fp":{
-        "default":{
-            "HALIDE_GEN_ARGS":"n_heads=8 seq_len=32 head_dim_half=64 glb_i=2 glb_o=2",
-            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
-            "DISABLE_GP":"1",
-            "PIPELINED":"1"
-        }
-    },
-    "apps/rope_pass2_fp":{
-        "default":{
-            "HALIDE_GEN_ARGS":"n_heads=8 seq_len=32 head_dim_half=64 glb_i=2 glb_o=2",
-            "HL_TARGET":"host-x86-64-enable_ponds-bfloat_hardware",
-            "DISABLE_GP":"1",
-            "PIPELINED":"1"
-        }
-    },
     "apps/rope_fp":{
         "default":{
             "HALIDE_GEN_ARGS":"head_dim_half=32 seq_len=512 n_heads=2 glb_i=16 glb_o=16",

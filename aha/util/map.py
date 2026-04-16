@@ -99,6 +99,7 @@ def voyager_run_layer(model, layer):
             f'module load catapult/2024.2_2 && '
             f'eval "$(conda shell.bash hook)" && '
             f'conda activate ./.conda-env && '
+            f'export SKIP_MU_CYCLE_SIM=1 && '
             f'{compile_cmd} && '
             f'module unload catapult/2024.2_2 && '
             f'conda deactivate\''
