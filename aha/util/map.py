@@ -344,6 +344,15 @@ def dispatch(args, extra_args=None):
                 app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
             )
 
+        elif env.get("USE_STRAIT_COREIR") == "1":
+            # Strait flow only needs design_meta_halide.json and input/output .raw files.
+            subprocess_call_log(
+                cmd=["make", "-C", str(app_dir), "strait-run-clockwork"],
+                cwd=args.aha_dir / "Halide-to-Hardware",
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
         else:
             # Raw Images
             subprocess_call_log(
