@@ -387,6 +387,25 @@ def track_performance():
 
     return active_app_cycles, total_config_cycles, total_write_data_cycles
 
+def track_ml_model_performance():
+    # For multi-kernel sims, sum per-kernel active times from run.log since
+    # performance_summary.txt is overwritten by each kernel.
+    _, total_config_cycles, total_write_data_cycles = track_performance()
+    performance_summary_path = "/aha/garnet/tests/test_app/performance_summary.txt"
+    with open(performance_summary_path) as f:
+        clock_period = int(float(f.readlines()[1].split(": ")[1].split(' ns')[0]))
+
+    total_ns = 0.0
+    run_log_path = "/aha/garnet/tests/test_app/run.log"
+    if os.path.exists(run_log_path):
+        with open(run_log_path) as f:
+            for line in f:
+                m = re.search(r"It takes\s+([\d.]+)\s*ns\s+total time to run kernel", line)
+                if m:
+                    total_ns += float(m.group(1))
+    active_app_cycles = int(total_ns / clock_period)
+    return active_app_cycles, total_config_cycles, total_write_data_cycles
+
 ########################################################################
 # app tests
 
@@ -754,6 +773,7 @@ def test_dense_ml_model(
     # Run voyager and strait compilations.
     # ======================================
     print(f"--- Running voyager+strait compilation of full model {model}...", flush=True)
+    start = time.time()
     strait_cmd = [
         "aha",
         "strait",
@@ -764,6 +784,7 @@ def test_dense_ml_model(
     if is_unit_test:
         strait_cmd.append("--unit-test")
     buildkite_call(strait_cmd)
+    time_compile = time.time() - start
 
     # Get all kernels for CGRA backend.
     coreir_dir = os.path.join(strait_path, "_generated_coreirs", model, gemm_datatype)
@@ -879,6 +900,7 @@ def test_dense_ml_model(
     # ==============================================
     # Create symlinks and run PnR for all kernels.
     # ==============================================
+    start = time.time()
     for kernel_name in kernel_names:
         kernel_dir = os.path.abspath(os.path.join(coreir_dir, kernel_name))
         app_name = pass_metadata[kernel_name]["app_name"]
@@ -902,12 +924,17 @@ def test_dense_ml_model(
             "--height", str(height),
             "--env-parameters", env_parameters,
         ] + pnr_mu_extra_args + use_daemon, env=env_vars)
+    time_map = time.time() - start
 
     # =============================================================================
     # Run RTL simulation testing grouped by op decomposition.
     # Decomposed multi-pass ops run as one aha test invocation so that
     # GLB state written by pass N is available to pass N+1 in the same sim session.
     # =============================================================================
+    start = time.time()
+    active_app_cycles = 0
+    total_config_cycles = 0
+    total_write_data_cycles = 0
     for group in kernel_groups:
         app_names = [pass_metadata[k]["app_name"] for k in group]
         print(f"--- {app_names} - glb testing", flush=True)
@@ -917,6 +944,13 @@ def test_dense_ml_model(
         if kernel_fp_map.get(group[-1], False):
             test_cmd.append("--dense-fp")
         buildkite_call(test_cmd, env=env_vars)
+        a, c, w = track_ml_model_performance()
+        active_app_cycles += a
+        total_config_cycles += c
+        total_write_data_cycles += w
+    time_test = time.time() - start
+
+    return time_compile, time_map, time_test, active_app_cycles, total_config_cycles, total_write_data_cycles
 
 def test_hardcoded_dense_app(
         test, width, height, env_parameters, extra_args,

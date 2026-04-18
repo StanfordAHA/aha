@@ -160,15 +160,14 @@ def dispatch(args, extra_args=None):
             else:
                 is_unit_test = False
 
-            # TODO: Add timing info for test_dense_ml_model.
-            test_dense_ml_model(
+            t0, t1, t2, t3, t4, t5 = test_dense_ml_model(
                 model, width, height, args.env_parameters, extra_args,
                 mu_datawidth=mu_datawidth,
                 num_fabric_cols_removed=num_fabric_cols_removed,
                 mu_oc_0=mu_oc_0,
                 is_unit_test=is_unit_test,
             )
-            info.append([model + "_voyager_full_model", 0, 0, 0, 0, 0, 0, 0])
+            info.append([model + "_voyager_full_model", t0 + t1 + t2, t0, t1, t2, t3, t4, t5])
         except Exception as e:
             print(f"--- FAILED DENSE ML MODEL {model}:\n{e}")
             failed_tests += [model]
