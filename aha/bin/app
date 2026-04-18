@@ -114,8 +114,8 @@ while [ $# -gt 0 ] ; do
         # aha-test.sh 8x8 --removed 4 --mu 8 apps/pointwise
         --*) echo "$HELP"; echo "ERROR: Unknown flag '$1'"; exit 13 ;;
 
-        # E.g. "8x8 apps/pointwise"
-        *x*) size=$1; appname=$2; shift; ;;
+        # E.g. "8x8 apps/pointwise" - only match pure <digits>x<digits>
+        [0-9]*x[0-9]*) size=$1; appname=$2; shift; ;;
         *)
             if [ -z "$appname" ]; then
                 appname=$1

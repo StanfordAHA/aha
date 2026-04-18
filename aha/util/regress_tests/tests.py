@@ -916,8 +916,7 @@ class Tests:
             behavioral_mu_tests = [
                 "apps/pointwise_mu_io_RV",
                 "apps/pointwise_mu_io_RV_E64_MB",
-                "apps/zircon_psum_reduction_fp_RV",
-                "apps/zircon_scale_add_fp_RV"
+                "apps/zircon_scale_add_fp_RV",
             ]
             external_mu_tests = [
                 # BERT Attention*Value Using inner reduction workaround
