@@ -152,10 +152,10 @@ else
         label="Fast"; export CONFIG=fast
 
     elif [ "$CONFIG" == "pr_aha" ]; then
-        label="Regress $i"; export CONFIG="pr_aha${i} --include-no-zircon-tests"
+        label="Regress $i"; export CONFIG="pr_aha${i}"
 
     elif [ "$CONFIG" == "full" ]; then
-        label="Full Regressions"; export CONFIG="full --include-no-zircon-test" 
+        label="Full Regressions"; export CONFIG="full --include-no-zircon-tests"
 
     else
         label="$CONFIG"
