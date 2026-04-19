@@ -143,6 +143,17 @@ class Tests:
                 # BERT down projection layer: All using gemm_reduction_tiling_workaround
                 "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
                 "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
+
+                # BERT Query projection: All using gemm_reduction_tiling_workaround
+                "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
+                "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
+                "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
+
+                # BERT Key projection: All using gemm_reduction_tiling_workaround
+                "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
+
+                # BERT Value projection: All using gemm_reduction_tiling_workaround
+                "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
             ]
             glb_tests_fp_RV = Tests.glb_tests_fp_RV1
 
@@ -295,18 +306,6 @@ class Tests:
 
                 # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
-            ]
-            external_mu_tests_fp += [
-               # BERT Query projection: All using gemm_reduction_tiling_workaround
-               "bert-submodule_2 -> zircon_2d_nop_post_bert_query_projection_kernel0_RV_E64_MB",
-               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
-               "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
-
-               # BERT Key projection: All using gemm_reduction_tiling_workaround
-               "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
-
-               # BERT Value projection: All using gemm_reduction_tiling_workaround
-               "bert-submodule_1 -> zircon_2d_nop_post_bert_value_projection_kernel0_RV_E64_MB",
             ]
         elif testname == "pr_aha7":
             width, height = 28, 16
