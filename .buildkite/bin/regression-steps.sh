@@ -287,7 +287,7 @@ exit
 #             mkdir -p $$COMMON
 #             echo BUILDKITE_BUILD_CHECKOUT_PATH=$$BUILDKITE_BUILD_CHECKOUT_PATH=$BUILDKITE_BUILD_CHECKOUT_PATH
 #             echo COMMON=$$COMMON=$COMMON
-#             cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
+#             # Do NOT cp regress-metahooks.sh from local clone here: clone is stale at this point; earlier curl already fetched the fresh copy.
 #             ls -l $$COMMON || echo okay
 #             grep Full $$COMMON/regress-metahooks.sh || echo okay
 #     set +x
