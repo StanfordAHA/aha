@@ -45,6 +45,7 @@
             "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "VOYAGER_GOLD": "1",
+            "USE_STRAIT_COREIR": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_SIZE": "1",
             "ZIRCON_INPUT_ACT_PADDING_WORKAROUND_STRIDE": "1"
@@ -66,7 +67,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "0",
-            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil"
+            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "fully_connected_layer_fp_resnet18_kernel1": {
@@ -85,7 +87,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "2",
             "K_DIM_HOST_TILING_IDX": "1",
-            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil"
+            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "fully_connected_layer_fp_bert_pooling_kernel0": {
@@ -104,7 +107,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "3",
             "K_DIM_HOST_TILING_IDX": "0",
-            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil"
+            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "fully_connected_layer_fp_bert_pooling_kernel1": {
@@ -123,7 +127,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "3",
             "K_DIM_HOST_TILING_IDX": "1",
-            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil"
+            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "fully_connected_layer_fp_bert_pooling_kernel2": {
@@ -142,7 +147,8 @@
             "K_DIM_HOST_TILING": "1",
             "NUM_K_HOST_TILING_KERNELS": "3",
             "K_DIM_HOST_TILING_IDX": "2",
-            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil"
+            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "fully_connected_layer_fp_bert_classifier": {
@@ -158,7 +164,8 @@
             "HW_OUTPUT_PACKED": "0",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "VOYAGER_GOLD": "1",
-            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil"
+            "NO_K_TILING_ADDR_OFFSET": "vector_host_stencil matrix_host_stencil bias_host_stencil",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "zircon_nop_post_fakeconv2d": {
@@ -617,6 +624,8 @@
             "HALIDE_GEN_ARGS": "vec_width=1536 vec_height=128 mu_i=32 n_oc=3072",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
+            "USE_VOYAGER_PSUM": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "MU_INPUT_HOST_STENCIL_POS": "12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27",
             "INPUT_PSUM0_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
@@ -647,6 +656,8 @@
             "HALIDE_GEN_ARGS": "vec_width=1536 vec_height=128 mu_i=32 n_oc=3072",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
+            "USE_VOYAGER_PSUM": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "MU_INPUT_HOST_STENCIL_POS": "12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27",
             "INPUT_PSUM0_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
@@ -1597,7 +1608,8 @@
             "MATRIX_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13",
             "VECTOR_HOST_STENCIL_POS": "14,14,14,14,15,15,15,15",
             "HW_OUTPUT_POS": "16",
-            "HW_OUTPUT_PACKED": "0"
+            "HW_OUTPUT_PACKED": "0",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/fully_connected_layer_fp": {
@@ -1611,7 +1623,8 @@
             "HW_OUTPUT_POS": "9",
             "BIAS_HOST_STENCIL_PACKED": "0",
             "HW_OUTPUT_PACKED": "0",
-            "VOYAGER_STANDALONE_CGRA_APP": "1"
+            "VOYAGER_STANDALONE_CGRA_APP": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/maxpooling": {
@@ -1656,32 +1669,12 @@
             "POND_PATH_BALANCING": "1"
         }
     },
-    "apps/scalar_reduction": {
-        "default": {
-            "HALIDE_GEN_ARGS": "vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
-            "HL_TARGET": "host-x86-64-enable_ponds",
-            "PIPELINED": "0"
-        }
-    },
-    "apps/scalar_reduction_fp": {
-        "default": {
-            "HALIDE_GEN_ARGS": "vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
-            "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
-            "PIPELINED": "0"
-        }
-    },
     "apps/vector_reduction_fp": {
         "default": {
             "HALIDE_GEN_ARGS": "vec_width=512 vec_height=4 glb_i=8 glb_o=1 tree_stages=3",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
-            "PIPELINED": "0"
-        }
-    },
-    "apps/scalar_max_fp": {
-        "default": {
-            "HALIDE_GEN_ARGS": "vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
-            "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
-            "PIPELINED": "0"
+            "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/stable_softmax_pass1_fp": {
@@ -1693,7 +1686,8 @@
             "INPUT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "HW_OUTPUT_POS": "10",
             "HW_OUTPUT_PACKED": "0",
-            "VOYAGER_STANDALONE_CGRA_APP": "1"
+            "VOYAGER_STANDALONE_CGRA_APP": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "stable_softmax_pass1_fp_bert": {
@@ -1707,7 +1701,8 @@
             "HW_OUTPUT_PACKED": "0",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "USE_REAL_INPUT": "1",
-            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/bert-softmax_1_pass1_gold/stable_softmax_pass1_gold.txt"
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/bert-softmax_1_pass1_gold/stable_softmax_pass1_gold.txt",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/stable_softmax_pass2_fp": {
@@ -1721,7 +1716,8 @@
             "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "VEC_MAX_HOST_STENCIL_PACKED": "0",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
-            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1"
+            "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "stable_softmax_pass2_fp_bert": {
@@ -1738,7 +1734,8 @@
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
             "USE_REAL_INPUT": "1",
             "PASS1_OUTPUT_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/bert-softmax_1_pass1_gold/stable_softmax_pass1_gold.raw",
-            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/bert-softmax_1_pass2_gold/stable_softmax_pass2_gold.txt"
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/bert-softmax_1_pass2_gold/stable_softmax_pass2_gold.txt",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/stable_softmax_pass3_fp": {
@@ -1752,7 +1749,8 @@
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING": "1"
+            "POND_PATH_BALANCING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "stable_softmax_pass3_fp_bert": {
@@ -1767,15 +1765,10 @@
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
             "USE_REAL_INPUT": "1",
             "PASS2_OUTPUT_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/bert-softmax_1_pass2_gold/stable_softmax_pass2_gold.raw",
-            "VOYAGER_GOLD": "1"
-        }
-    },
-    "apps/scalar_avg_fp": {
-        "default": {
-            "HALIDE_GEN_ARGS": "vec_width=256 vec_height=2 glb_i=8 glb_o=1 tree_stages=3",
-            "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
-            "PIPELINED": "0",
-            "PNR_PLACER_EXP": "1"
+            "VOYAGER_GOLD": "1",
+            "MANUAL_PATH_BALANCE_PLACER": "1",
+            "POND_PATH_BALANCING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/layer_norm_pass1_fp": {
@@ -1789,7 +1782,8 @@
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING": "1"
+            "POND_PATH_BALANCING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/layer_norm_pass2_fp": {
@@ -1803,7 +1797,8 @@
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING": "1"
+            "POND_PATH_BALANCING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/rms_norm_pass1_fp": {
@@ -1811,6 +1806,7 @@
             "HALIDE_GEN_ARGS": "vec_width=2048 vec_height=64 glb_i=32 tree_stages=5 vec_width_fake=2048 vec_height_fake=4",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
@@ -1826,6 +1822,7 @@
             "HALIDE_GEN_ARGS": "vec_width=1024 vec_height=64 glb_i=16",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "WEIGHT_HOST_STENCIL_POS": "4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7",
@@ -1844,10 +1841,11 @@
             "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
+            "USE_REAL_INPUT": "1",
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass2_fp/bert-layer_norm_pass1_gold/layer_norm_pass1_gold.txt",
             "MANUAL_PATH_BALANCE_PLACER": "1",
             "POND_PATH_BALANCING": "1",
-            "USE_REAL_INPUT": "1",
-            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass2_fp/bert-layer_norm_pass1_gold/layer_norm_pass1_gold.txt"
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "layer_norm_pass2_fp_bert_post_attn": {
@@ -1865,7 +1863,8 @@
             "USE_REAL_INPUT": "1",
             "VOYAGER_GOLD": "1",
             "PASS1_OUTPUT_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass2_fp/bert-layer_norm_pass1_gold/layer_norm_pass1_gold.raw",
-            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_pass2_gold/layer_norm_pass2_gold.txt"
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_pass2_gold/layer_norm_pass2_gold.txt",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "layer_norm_pass2_fp_bert_post_proj": {
@@ -1883,7 +1882,8 @@
             "USE_REAL_INPUT": "1",
             "VOYAGER_GOLD": "1",
             "PASS1_OUTPUT_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass2_fp/bert-layer_norm_1_pass1_gold/layer_norm_pass1_gold.raw",
-            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_1_pass2_gold/layer_norm_pass2_gold.txt"
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/layer_norm_pass3_fp/bert-layer_norm_1_pass2_gold/layer_norm_pass2_gold.txt",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/layer_norm_pass3_fp": {
@@ -1891,6 +1891,7 @@
             "HALIDE_GEN_ARGS": "vec_width=384 vec_height=128 glb_i=16",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
             "WEIGHT_HOST_STENCIL_POS": "24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
@@ -1905,6 +1906,7 @@
             "HALIDE_GEN_ARGS": "vec_width=384 vec_height=128 glb_i=16",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
             "WEIGHT_HOST_STENCIL_POS": "24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
@@ -1925,6 +1927,7 @@
             "HALIDE_GEN_ARGS": "vec_width=384 vec_height=128 glb_i=16",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "WEIGHT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
@@ -1945,6 +1948,7 @@
             "HALIDE_GEN_ARGS": "vec_width=384 vec_height=128 glb_i=16",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
             "WEIGHT_HOST_STENCIL_POS": "24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
@@ -1965,6 +1969,7 @@
             "HALIDE_GEN_ARGS": "vec_width=384 vec_height=128 glb_i=16",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "WEIGHT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15",
@@ -2000,6 +2005,7 @@
             "HALIDE_GEN_ARGS": "vec_width=3072 vec_height=64 mu_i=32 swish_beta=1.702",
             "HL_TARGET": "host-x86-64-enable_ponds-bfloat_hardware",
             "PIPELINED": "0",
+            "USE_STRAIT_COREIR": "1",
             "USE_GLB_BANK_CONFIG": "1",
             "MU_INPUT_HOST_STENCIL_POS": "12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27",
             "INPUT_PSUM0_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
@@ -2146,7 +2152,8 @@
             "PIPELINED": "0",
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
-            "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27"
+            "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "tests/mem_transpose_test": {
@@ -2180,7 +2187,8 @@
             "MU_INPUT_HOST_STENCIL_POS": "12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27",
             "HW_SCALE_OUTPUT_STENCIL_POS": "12",
             "UNQUANTIZED_OUTPUT_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
-            "HW_SCALE_OUTPUT_STENCIL_PACKED": "0"
+            "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/get_e8m0_scale_tree_gb_input": {
@@ -2192,7 +2200,8 @@
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_SCALE_OUTPUT_STENCIL_POS": "12",
-            "HW_SCALE_OUTPUT_STENCIL_PACKED": "0"
+            "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "get_e8m0_scale_tree_gb_input_bert_shape0": {
@@ -2205,6 +2214,7 @@
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_SCALE_OUTPUT_STENCIL_POS": "12",
             "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
+            "USE_STRAIT_COREIR": "1",
             "VOYAGER_GOLD": "1",
             "USE_REAL_INPUT": "1",
             "SOFT_INTEGER_COMPARISON": "1"
@@ -2220,6 +2230,7 @@
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_SCALE_OUTPUT_STENCIL_POS": "12",
             "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
+            "USE_STRAIT_COREIR": "1",
             "VOYAGER_GOLD": "1",
             "USE_REAL_INPUT": "1",
             "SOFT_INTEGER_COMPARISON": "1"
@@ -2235,6 +2246,7 @@
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_SCALE_OUTPUT_STENCIL_POS": "12",
             "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
+            "USE_STRAIT_COREIR": "1",
             "VOYAGER_GOLD": "1",
             "USE_REAL_INPUT": "1",
             "SOFT_INTEGER_COMPARISON": "1"
@@ -2250,6 +2262,7 @@
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_SCALE_OUTPUT_STENCIL_POS": "12",
             "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
+            "USE_STRAIT_COREIR": "1",
             "VOYAGER_GOLD": "1",
             "USE_REAL_INPUT": "1",
             "SOFT_INTEGER_COMPARISON": "1",
@@ -2269,6 +2282,7 @@
             "INPUT_HOST_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_SCALE_OUTPUT_STENCIL_POS": "12",
             "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
+            "USE_STRAIT_COREIR": "1",
             "VOYAGER_GOLD": "1",
             "USE_REAL_INPUT": "1",
             "SOFT_INTEGER_COMPARISON": "1",
@@ -2287,7 +2301,8 @@
             "USE_GLB_BANK_CONFIG": "1",
             "INPUT_HOST_STENCIL_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
-            "VOYAGER_STANDALONE_CGRA_APP": "1"
+            "VOYAGER_STANDALONE_CGRA_APP": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "get_e8m0_scale_accum_gb_input_bert": {
@@ -2301,6 +2316,7 @@
             "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "VOYAGER_GOLD": "1",
+            "USE_STRAIT_COREIR": "1",
             "SOFT_INTEGER_COMPARISON": "1",
             "PACKED_OUTPUTS": "1"
         }
@@ -2316,6 +2332,7 @@
             "HW_OUTPUT_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "VOYAGER_GOLD": "1",
+            "USE_STRAIT_COREIR": "1",
             "SOFT_INTEGER_COMPARISON": "1",
             "PACKED_OUTPUTS": "1"
         }
@@ -2334,6 +2351,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1"
         }
@@ -2352,6 +2371,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1",
             "VOYAGER_GOLD": "1",
@@ -2375,6 +2396,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1",
             "VOYAGER_GOLD": "1",
@@ -2398,6 +2421,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1",
             "VOYAGER_GOLD": "1",
@@ -2421,6 +2446,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1",
             "VOYAGER_GOLD": "1",
@@ -2444,6 +2471,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1",
             "VOYAGER_GOLD": "1",
@@ -2467,6 +2496,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1",
             "VOYAGER_GOLD": "1",
@@ -2494,6 +2525,8 @@
             "INPUT_SCALE_HOST_PACKED": "0",
             "HW_SCALE_PACKED_OUTPUT_PACKED": "0,0",
             "HW_SCALE_PACKED_OUTPUT_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1",
+            "PNR_PLACER_EXP": "6",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "MANUAL_PLACER": "1",
             "VOYAGER_GOLD": "1",
@@ -2517,7 +2550,8 @@
             "INPUT_BF_ACT_HOST_POS": "12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19",
             "INPUT_SCALE_HOST_POS": "20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_OUTPUT_MXINT8_ACT_POS": "24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
-            "VOYAGER_STANDALONE_CGRA_APP": "1"
+            "VOYAGER_STANDALONE_CGRA_APP": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apply_e8m0_scale_multi_IOs_bert": {
@@ -2532,6 +2566,7 @@
             "HW_OUTPUT_MXINT8_ACT_POS": "24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "VOYAGER_GOLD": "1",
+            "USE_STRAIT_COREIR": "1",
             "SOFT_INTEGER_COMPARISON": "1",
             "PACKED_OUTPUTS": "1",
             "USE_REAL_INPUT": "1"
@@ -2549,6 +2584,7 @@
             "HW_OUTPUT_MXINT8_ACT_POS": "24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "VOYAGER_GOLD": "1",
+            "USE_STRAIT_COREIR": "1",
             "SOFT_INTEGER_COMPARISON": "1",
             "PACKED_OUTPUTS": "1",
             "USE_REAL_INPUT": "1"

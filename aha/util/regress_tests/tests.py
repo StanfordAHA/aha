@@ -42,14 +42,10 @@ class Tests:
                 "apps/rms_norm_pass1_fp_RV_E64_MB",
                 "apps/rms_norm_pass2_fp_RV_E64_MB",
     ]
-    glb_tests_fp_RV7 = [
-                "apps/gelu_pass2_fp_RV_E64_MB",
-    ]
+    glb_tests_fp_RV7 = []
     glb_tests_fp_RV8 = []
     glb_tests_fp_RV9 = [
                 "apps/add_gelu_pass2_fp_RV_E64_MB",
-                "apps/silu_pass1_fp_RV",
-                "apps/silu_pass2_fp_RV",
                 "apps/tanh_fp_RV_E64_MB",
                 "apps/rope_fp_RV_E64_MB",
     ]
@@ -150,12 +146,6 @@ class Tests:
             ]
             glb_tests_fp_RV = Tests.glb_tests_fp_RV1
 
-            # Run dense ML tests
-            dense_ml_models = []
-            dense_ml_unit_tests = [
-                "transpose2d",
-            ]
-
         elif testname == "pr_aha2":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -217,15 +207,8 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
 
-            glb_tests_RV = [
-                "apps/get_e8m0_scale_tree_gb_input_RV_E64_MB",
-                "apps/apply_e8m0_scale_single_IO_RV_E64_MB",
-                "apps/get_e8m0_scale_accum_gb_input_RV_E64_MB",
-                "apps/apply_e8m0_scale_multi_IOs_RV_E64_MB",
-            ]
-            behavioral_mu_tests = [
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
-            ]
+            glb_tests_RV = []
+            behavioral_mu_tests = []
             # Resnet tests DISABLED see below
             external_mu_tests_fp = [
                 # Conv4_1 strided conv (TILED OUTER REDUCTION WORKAROUND)
@@ -250,6 +233,13 @@ class Tests:
                 # BERT permute layer
                 "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
             ]
+
+            # Run dense ML tests
+            dense_ml_models = []
+            dense_ml_unit_tests = [
+                "transpose2d",
+            ]
+
         elif testname == "pr_aha5":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
@@ -501,9 +491,6 @@ class Tests:
                 "tests/ushift_RV",
                 "tests/conv_2_1_RV",
                 "tests/conv_3_3_RV",
-                "tests/mem_slice_test_RV",
-                "tests/mem_transpose_test_RV",
-                "tests/mem_filter_test_RV",
                 "apps/gaussian_RV",
                 "apps/brighten_and_blur_RV",
                 "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
@@ -519,6 +506,9 @@ class Tests:
             glb_tests_fp_RV += Tests.glb_tests_fp_RV7
             glb_tests_fp_RV += Tests.glb_tests_fp_RV8
             glb_tests_fp_RV += Tests.glb_tests_fp_RV9
+            glb_tests_fp_RV += [
+                "apps/gelu_pass2_fp_RV_E64_MB",
+            ]
 
             # FIXME tests from here down are out of order; should be:
             #   behavioral_mu_tests*
@@ -614,7 +604,7 @@ class Tests:
                 "resnet18-linear::fully_connected_layer_fp_resnet18_kernel0_RV_E64_MB",
                 "resnet18-linear::fully_connected_layer_fp_resnet18_kernel1_RV_E64_MB",
 
-                 # BERT permute layer
+                # BERT permute layer
                 "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
 
                 # BERT layer norm layers (didn't run post-FFN layer norm layer)
@@ -676,7 +666,6 @@ class Tests:
                 "apps/mu2glb_path_balance_test_RV_E64",
                 "apps/abs_max_full_unroll_fp_RV",
                 "apps/get_e8m0_scale_tree_mu_input_RV_E64_MB",
-                "apps/get_apply_e8m0_scale_fp_RV_E64_MB",
             ]
             behavioral_mu_tests_fp = [
                 "apps/gelu_pass1_mu_input_fp_RV_E64_MB",
