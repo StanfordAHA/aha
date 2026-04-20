@@ -30,23 +30,14 @@ class Tests:
                 "tests/fp_comp_RV",
                 "apps/relu_layer_fp_RV",
     ]
-    glb_tests_fp_RV3 = [
-                "apps/stable_softmax_pass1_fp_RV_E64_MB",
-                "apps/stable_softmax_pass2_fp_RV_E64_MB",
-                "apps/stable_softmax_pass3_fp_RV_E64_MB",
-    ]
+    glb_tests_fp_RV3 = []
     glb_tests_fp_RV2 = [
-                "apps/layer_norm_pass1_fp_RV_E64_MB",
-                "apps/layer_norm_pass2_fp_RV_E64_MB",
-                "apps/layer_norm_pass3_fp_RV_E64_MB",
                 "apps/rms_norm_pass1_fp_RV_E64_MB",
                 "apps/rms_norm_pass2_fp_RV_E64_MB",
     ]
     glb_tests_fp_RV7 = []
     glb_tests_fp_RV8 = []
     glb_tests_fp_RV9 = [
-                "apps/add_gelu_pass2_fp_RV_E64_MB",
-                "apps/tanh_fp_RV_E64_MB",
                 "apps/rope_fp_RV_E64_MB",
     ]
 
@@ -127,19 +118,7 @@ class Tests:
                 "tensor3_mttkrp",
                 "tensor3_ttv",
             ]
-            voyager_cgra_tests_fp = [
-                # Standalone quantize layers
-                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
-                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
-                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
-                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
-            ]
             external_mu_tests_fp = [
-                # Conv1 (im2col-based, X-DIM HOST TILING)
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
-                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
-
                 # BERT down projection layer: All using gemm_reduction_tiling_workaround
                 "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0_RV_E64_MB",
                 "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel1_RV_E64_MB",
@@ -237,13 +216,6 @@ class Tests:
                 "bert-submodule_15 -> zircon_2d_psum_reduction_fp_post_bert_pre_layernorm_projection_kernel1_RV_E64_MB",
 
             ]
-            hardcoded_dense_tests = [
-                "apps/unsharp_RV",
-            ]
-            voyager_cgra_tests_fp = [
-                # BERT permute layer
-                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
-            ]
 
             # Run dense ML tests
             dense_ml_models = []
@@ -276,10 +248,28 @@ class Tests:
                 "apps/matrix_multiplication_fp",
             ]
             voyager_cgra_tests_fp = [
+                # Standalone quantize layers
+                "resnet18-quantize_default_1::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_3::zircon_quant_fp_post_conv2x_RV_E64_MB",
+                "resnet18-quantize_default_7::zircon_quant_fp_post_conv3x_RV_E64_MB",
+                "resnet18-quantize_default_11::zircon_quant_fp_post_conv4x_RV_E64_MB",
+                "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
+
+                # BERT permute layer
+                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+
                 # BERT Softmax layers
                 "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",
                 "bert-softmax_1::stable_softmax_pass2_fp_bert_RV_E64_MB",
                 "bert-softmax_1::stable_softmax_pass3_fp_bert_RV_E64_MB",
+            ]
+            external_mu_tests_fp = [
+                # Conv1 (im2col-based, X-DIM HOST TILING)
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel0_RV_E64_MB",
+                "resnet18-submodule -> zircon_dequantize_relu_fp_post_conv1_kernel1_RV_E64_MB",
+            ]
+            hardcoded_dense_tests = [
+                "apps/unsharp_RV",
             ]
         elif testname == "pr_aha6":
             width, height = 28, 16
@@ -311,14 +301,6 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = Tests.glb_tests_fp_RV7
-            voyager_cgra_tests_fp = [
-                # BERT layer norm layers (didn't run post-FFN layer norm layer)
-                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
-                # Channel slicing (unroll by 16)
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
-                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
-            ]
             external_mu_tests_fp = [
                 # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
@@ -376,6 +358,13 @@ class Tests:
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = Tests.glb_tests_fp_RV9
             voyager_cgra_tests_fp = [
+                # BERT layer norm layers (didn't run post-FFN layer norm layer)
+                "bert-layer_norm::layer_norm_pass1_fp_bert_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass2_fp_bert_post_attn_RV_E64_MB",
+                # Channel slicing (unroll by 16)
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
+                "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+
                 # BERT get_e8m0_scale accum schedule layers
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
                 "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
@@ -507,6 +496,14 @@ class Tests:
             glb_tests_fp_RV += Tests.glb_tests_fp_RV9
             glb_tests_fp_RV += [
                 "apps/gelu_pass2_fp_RV_E64_MB",
+                "apps/layer_norm_pass1_fp_RV_E64_MB",
+                "apps/layer_norm_pass2_fp_RV_E64_MB",
+                "apps/layer_norm_pass3_fp_RV_E64_MB",
+                "apps/stable_softmax_pass1_fp_RV_E64_MB",
+                "apps/stable_softmax_pass2_fp_RV_E64_MB",
+                "apps/stable_softmax_pass3_fp_RV_E64_MB",
+                "apps/add_gelu_pass2_fp_RV_E64_MB",
+                "apps/tanh_fp_RV_E64_MB",
             ]
 
             # FIXME tests from here down are out of order; should be:
