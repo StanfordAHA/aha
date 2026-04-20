@@ -192,7 +192,7 @@ else
                 CONFIG="$CONFIG" \$REGRESS_METAHOOKS --pre-exit
 EOF
 
-    [ "$MAX_AGENTS" ] || MAX_AGENTS=4
+    [ "$MAX_AGENTS" ] || MAX_AGENTS=5
     [ "$i" != 0 ] && echo "
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
   concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
