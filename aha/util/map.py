@@ -99,6 +99,7 @@ def voyager_run_layer(model, layer):
             f'module load catapult/2024.2_2 && '
             f'eval "$(conda shell.bash hook)" && '
             f'conda activate ./.conda-env && '
+            f'export SKIP_MU_CYCLE_SIM=1 && '
             f'{compile_cmd} && '
             f'module unload catapult/2024.2_2 && '
             f'conda deactivate\''
@@ -343,6 +344,15 @@ def dispatch(args, extra_args=None):
                 app_dir / "bin/output_cpu.raw", app_dir / "bin/gold.raw",
             )
 
+        elif env.get("USE_STRAIT_COREIR") == "1":
+            # Strait flow only needs design_meta_halide.json and input/output .raw files.
+            subprocess_call_log(
+                cmd=["make", "-C", str(app_dir), "strait-run-clockwork"],
+                cwd=args.aha_dir / "Halide-to-Hardware",
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
         else:
             # Raw Images
             subprocess_call_log(
@@ -398,6 +408,15 @@ def dispatch(args, extra_args=None):
         if run_sim:
             subprocess_call_log(
                 cmd=["make", "-C", str(app_dir), "test-mem"],
+                cwd=args.aha_dir / "Halide-to-Hardware",
+                env=env,
+                log=args.log,
+                log_file_path=log_file_path
+            )
+        elif env.get("USE_STRAIT_COREIR") == "1":
+            print(f"\033[94m[INFO] Using strait-map for {app_name} (skipping clockwork_codegen)\033[0m")
+            subprocess_call_log(
+                cmd=["make", "-C", str(app_dir), "strait-map"],
                 cwd=args.aha_dir / "Halide-to-Hardware",
                 env=env,
                 log=args.log,

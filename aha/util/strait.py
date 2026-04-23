@@ -168,17 +168,15 @@ def _voyager_compile_full_model(
                 [voyager_python, "-m", "pip", "install", voyager_compiler_install_path],
                 env=sanitized_env,
             )
+            # Pin numpy to a version compatible with voyager-compiler.
+            subprocess.check_call(
+                [voyager_python, "-m", "pip", "install", "-U", "numpy==2.2.6"],
+                env=sanitized_env,
+            )
         else:
             raise RuntimeError(
                 f"[ERROR] voyager-compiler not installed and path not found: {voyager_compiler_install_path}"
             )
-
-    # FIXME this is clearly not the right place for this
-    print(f"\n[INFO] Hacking in a numpy fix until yuchen or somebody can do a better fix...\n", flush=True)
-    subprocess.check_call(
-        [voyager_python, "-m", "pip", "install", "-U", "numpy==2.2.6"],
-        env=sanitized_env,
-    )
 
     # ===============================
     # Run voyager compiler codegen.
