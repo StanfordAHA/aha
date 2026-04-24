@@ -152,10 +152,10 @@ else
         label="Fast"; export CONFIG=fast
 
     elif [ "$CONFIG" == "pr_aha" ]; then
-        label="Regress $i"; export CONFIG="pr_aha${i} --include-no-zircon-tests"
+        label="Regress $i"; export CONFIG="pr_aha${i}"
 
     elif [ "$CONFIG" == "full" ]; then
-        label="Full Regressions"; export CONFIG="full --include-no-zircon-test" 
+        label="Full Regressions"; export CONFIG="full --include-no-zircon-tests"
 
     else
         label="$CONFIG"
@@ -192,7 +192,7 @@ else
                 CONFIG="$CONFIG" \$REGRESS_METAHOOKS --pre-exit
 EOF
 
-    [ "$MAX_AGENTS" ] || MAX_AGENTS=4
+    [ "$MAX_AGENTS" ] || MAX_AGENTS=5
     [ "$i" != 0 ] && echo "
   concurrency: $MAX_AGENTS  # Limit long-running jobs to at most <MAX> at a time.
   concurrency_group: "aha-flow-${BUILDKITE_BUILD_ID}"
@@ -287,7 +287,7 @@ exit
 #             mkdir -p $$COMMON
 #             echo BUILDKITE_BUILD_CHECKOUT_PATH=$$BUILDKITE_BUILD_CHECKOUT_PATH=$BUILDKITE_BUILD_CHECKOUT_PATH
 #             echo COMMON=$$COMMON=$COMMON
-#             cp $$BUILDKITE_BUILD_CHECKOUT_PATH/.buildkite/bin/regress-metahooks.sh $$COMMON
+#             # Do NOT cp regress-metahooks.sh from local clone here: clone is stale at this point; earlier curl already fetched the fresh copy.
 #             ls -l $$COMMON || echo okay
 #             grep Full $$COMMON/regress-metahooks.sh || echo okay
 #     set +x

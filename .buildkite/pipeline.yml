@@ -16,7 +16,7 @@ env:
   # RSTEPS: "gold 0 1 2 3"  # gold + fast + regress 1-3
   RSTEPS: ${RSTEPS:-gold 0 1 2 3 4 5 6 7 8 9}
 
-  MAX_AGENTS: 4  # How many agents do we get to use for regression steps?
+  MAX_AGENTS: 5  # How many agents do we get to use for regression steps?
 
   # "COMMON" is a dir where we can pass information from one step to another
   # FIXME or could use 'set-metadata --build', right?
