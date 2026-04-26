@@ -249,7 +249,7 @@ fi
 ########################################################################
 # Find file tests.py and copy to /tmp
 tests_py=aha/util/regress_tests/tests.py
-local_tests_py=/tmp/tests.py
+local_tests_py=$(mktemp /tmp/app_tests_XXXXX.py)
 
 if test -e /aha/$tests_py; then
     repo=/aha
@@ -268,6 +268,9 @@ fi
 ########################################################################
 # Parse 'tests.py' to find suite names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
+ls -l $local_tests_py; head $local_tests_py
+python3 --version; which python3
+
 TEST_SUITES=$(python3 $local_tests_py --exec "print(*Tests.configs_list)") || exit 13
 TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
 [ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n$TEST_SUITES\n\n"

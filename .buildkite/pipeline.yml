@@ -3,6 +3,7 @@ agents: { docker: true }
 
 env:
   # Default config is "pr_aha"
+  # CONFIG: full  # Use this one to test weekly/full config
   CONFIG: ${CONFIG:-pr_aha}
 
   # Analysis indicates that, given these times for the nine regressions
