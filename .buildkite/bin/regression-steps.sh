@@ -1,10 +1,8 @@
 #!/bin/bash
-# export CONFIG=full  # Uncomment to test full regressions maybe
+# This script is designed to be called from pipeline.yml
 
-# This is designed to be called from pipeline.yml
 set -x
-
-# Uncomment for debugging maybe; e.g. uncomment and then run "$0 build gold 0 1 2" etc.
+# Uncomment below for local debugging maybe; e.g. uncomment and then LOCALLY run "$0 build gold 0 1 2" etc.
 # function buildkite-agent { [ "$2" == "upload" ] && cat; }
 # function bkmsg { echo "$1"; }
 

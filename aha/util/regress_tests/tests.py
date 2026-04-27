@@ -1,7 +1,12 @@
 # Find and/or install pyyaml
 from subprocess import run, DEVNULL
-run('python3 -m pip install pyyaml', shell=True, stdout = DEVNULL, stderr = DEVNULL)
-import json, yaml
+import json
+
+# yaml occasionally causes problems here :(
+p=run('python3 -m ensurepip --default-pip', shell=True)  # stdout = DEVNULL, stderr = DEVNULL)
+p=run('python3 -m pip install pyyaml', shell=True)       # stdout = DEVNULL, stderr = DEVNULL)
+assert p.returncode == 0, "Could not install pyyaml, sorry!"
+import yaml
 
 ########################################################################
 class Tests:
@@ -63,7 +68,6 @@ class Tests:
 
         # Zircon specific parms; 'regress.py --no-zircon' ignores these
         cols_removed, mu_oc_0 = 12, 32
-
         return vars().copy()
 
     def __init__(self, testname="BLANK", zircon=True):
@@ -1073,7 +1077,8 @@ class Tests:
             config_dict = yaml.safe_load(config)
             assert type(config_dict) == dict
         except: return False
-        print(f'{config_dict=}')
+        # print(f'{config_dict=}')  # Oops this is not supported by python3.7 (works with e.g. 3.11)
+        print(f'config_dict={config_dict}')
         print(f"Found yaml string:\n{Tests.prefix_lines(config, '    ')}\n")
         self.__dict__.update(config_dict)
         return True

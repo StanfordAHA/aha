@@ -3,6 +3,7 @@ agents: { docker: true }
 
 env:
   # Default config is "pr_aha"
+  # CONFIG: full  # Use this one to test weekly/full config
   CONFIG: ${CONFIG:-pr_aha}
 
   # Analysis indicates that, given these times for the nine regressions
@@ -28,7 +29,34 @@ env:
 
 steps:
 
+# To test weekly/full config see top of "regression-steps.sh"
+# Weekly "full" config uses this launch step, loads `weekly.yml` instead of normal aha9 regressions
+- label: "Launch Weekly Run"
+  if: build.env("CONFIG") == "full"
+
+  # "Run-without-clone" lets us (later) manually clone aha repo WITHOUT initializing submodules
+  plugins:
+  - uber-workflow/run-without-clone:
+  - improbable-eng/metahook:
+      pre-checkout: |
+        set -x && pwd && echo DONE
+
+  # UPLOAD
+  #   (Note cannot use BUILDKITE_BUILD_CHECKOUT_PATH for clone checkout b/c it is unreliable
+  #   ... e.g. might be set in $COMMON in a previous step by a different agent resulting
+  #   in e.g. pwd below contains "r8cad-docker-3" while BUILDKITE_BUILD_CHECKOUT_PATH has "khaki-2")
+  command: |
+        set -x && pwd
+        aha_clone=$(pwd)
+        cd .. && /bin/rm -rf $$aha_clone
+        git clone https://github.com/StanfordAHA/aha $$aha_clone && cd $$aha_clone
+        git pull && git checkout $$BUILDKITE_COMMIT
+        buildkite-agent pipeline upload .buildkite/weekly.yml --replace
+
+- wait: ~
+
 - label: "Launch"
+  if: build.env("CONFIG") != "full"
   plugins:
   # Override standard checkout procedure with custom checkout script
   - uber-workflow/run-without-clone:
