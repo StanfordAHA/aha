@@ -158,7 +158,7 @@ elif [ "$1" == '--commands' ]; then
       # If REGSTEP exists, run the indicated pr_aha subset; e.g. if REGSTEP=1 we run pr_aha1 etc.
       # Note REGSTEP 0 uses config "fast" instead of e.g. "regress0"
       if [ "$REGSTEP" ]; then
-          export CONFIG="pr_aha${REGSTEP} --include-no-zircon-tests"
+          export CONFIG="pr_aha${REGSTEP}"
           [ "$REGSTEP" == 0 ] && export CONFIG="fast"
           echo "Trigger came from aha-flow step '$REGSTEP', so now CONFIG=$CONFIG";
       fi
@@ -169,7 +169,6 @@ elif [ "$1" == '--commands' ]; then
 #         echo "Full regressions only run as 'Regress 1'"
 #         DO_AR=False
 #       fi
-      CONFIG="$CONFIG --include-no-zircon-tests"
       echo "Trigger came from OTHER, config='$CONFIG'"
     fi
 
@@ -178,7 +177,7 @@ elif [ "$1" == '--commands' ]; then
       # aha regress pr_aha1 --daemon auto --include-dense-only-tests || exit 13
 
       # For fast prototyping: ECHO ONLY and/or try config 'fast'
-      # We always include no-zircon-tests and the no-zircon test suite has been divided for pr_aha
+      # CONFIG (including any --include-no-zircon-tests flag) is set upstream by regression-steps.sh
       set -x
       echo "aha regress $CONFIG"
       # aha regress $CONFIG --daemon auto --include-no-zircon-tests || exit 13
@@ -194,12 +193,15 @@ elif [ "$1" == '--commands' ]; then
 EOF
     # Now execute the above script, which was copied to tmp$$
     # '-e' means 'set environment variable'
+    # echo false > tmp$$  # Uncomment to test failure mode
     docker exec \
            -e CONFIG="$CONFIG" \
            "$CONTAINER" /bin/bash -c "$(cat tmp$$)" \
-        || exit 13
-    docker kill "$CONTAINER" || echo okay; rm -f tmp$$  # Cleanup on aisle FOO
+        && result=PASS || result=FAIL
+    docker kill "$CONTAINER" && echo Killed "$CONTAINER" || echo okay
+    rm -f tmp$$  # Cleanup on aisle tmp
     echo "--- END regress-metahooks.sh --commands"
+    if test "$result" == "FAIL"; then exit 13; fi
 
 elif [ "$1" == '--pre-exit' ]; then
 

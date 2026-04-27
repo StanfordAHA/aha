@@ -29,15 +29,16 @@ HELP="
     --ver          # Use verilator for RTL simulation
     --waveform     # Generate a waveform for the app test run
     --no-zircon    # Test old (non-zircon) version of CGRA
+    --no-clean     # Skip 'make clean' in garnet (reuse existing garnet.v)
 
-    --removed <n>  # Same as --num-fabric-cols-removed
-    --mu <n>       # Same as --mu_oc_0
+    --removed <n>  # Same as --num-fabric-cols-removed [DEFAULT: 12]
+    --mu <n>       # Same as --mu_oc_0                 [DEFAULT: 32]
 
   EXAMPLE(S):
     $bn --run-suite fast  # Run the entire 'fast' suite of apps
+    $bn apps/rope_fp_RV_E64_MB --no-clean  # Run single app, reuse garnet.v
     $bn 4x2 apps/pointwise --no-zircon
-    $bn 8x8 tests/fp_pointwise
-    $bn 8x8 tests/fp_pointwise --cols-removed 4 --mu 8  # (same as above)
+    $bn 8x8 tests/fp_pointwise --removed 4 --mu 8
     $bn 8x8 tests/fp_pointwise --waveform
     $bn --verilator 8x8 apps/pointwise
     $bn --compare master c3392a
@@ -67,7 +68,9 @@ SIM=VCS
 LIST_SUITES=
 RUN_SUITE=
 ZIRCON=
-FCR=4; MU=8  # (fabric_)cols_removed, mu_oc_0 = 4, 8
+FCR=12; MU=32  # (fabric_)cols_removed, mu_oc_0 = 12, 32
+size=28x16
+NO_CLEAN=
 UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
 CONTAINER=
@@ -95,6 +98,7 @@ while [ $# -gt 0 ] ; do
         --ver*)       SIM=VERILATOR       ;;
         --vcs)        SIM=VCS             ;;
         --wave*)      export WAVEFORM=1   ;;
+        --no-clean)   NO_CLEAN=1          ;;
         --help)       echo "$HELP";  exit ;;
         --debug)      DBG=1;              ;;
 
@@ -110,13 +114,17 @@ while [ $# -gt 0 ] ; do
         # aha-test.sh 8x8 --removed 4 --mu 8 apps/pointwise
         --*) echo "$HELP"; echo "ERROR: Unknown flag '$1'"; exit 13 ;;
 
-        # E.g. "8x8 apps/pointwise"
-        *x*) size=$1; appname=$2; shift; ;;
+        # E.g. "8x8 apps/pointwise" - only match pure <digits>x<digits>
+        [0-9]*x[0-9]*) size=$1; appname=$2; shift; ;;
         *)
-            printf "\n***ERROR*** Unknown command-line arg '$1'\n"
-            echo "$HELP"
-            printf "\n***ERROR*** Unknown command-line arg '$1'\n"
-            exit ;;
+            if [ -z "$appname" ]; then
+                appname=$1
+            else
+                printf "\n***ERROR*** Unknown command-line arg '$1'\n"
+                echo "$HELP"
+                printf "\n***ERROR*** Unknown command-line arg '$1'\n"
+                exit
+            fi ;;
     esac
     shift
 done
@@ -510,7 +518,11 @@ fi
 # echo "pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe"
 # pip install pyyaml  # Temp hack b/c docker not caught up yet; can remove after next pull maybe
 
-rm -f garnet/garnet.v       # Get rid of old verilog if it exists
+if [ "$NO_CLEAN" ]; then
+    echo "Keeping existing garnet/garnet.v (--no-clean)"
+else
+    rm -f garnet/garnet.v       # Get rid of old verilog if it exists
+fi
 # source /aha/bin/activate  # Note we already did this, for importlib way up above...
 
 echo "# Set up access to requested RTL simulator vcs or verilator"
@@ -526,7 +538,11 @@ fi
 ########################################################################
 # Clean up from possible previous run(s) e.g. in case of CONTAINER_REUSE
 # (which no longer exists maybe) and/or maybe just plain old paranoia...
-(cd /aha/garnet; make clean)
+if [ "$NO_CLEAN" ]; then
+    echo "Skipping 'make clean' (--no-clean)"
+else
+    (cd /aha/garnet; make clean)
+fi
 
 ########################################################################
 # Finally: run it!!

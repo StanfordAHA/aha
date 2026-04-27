@@ -121,14 +121,25 @@ def unpack_output(arr):
 
 
 # Helper function to load hex txt files into uint16 arrays
-def _load_hex_txt(txt_path: str):
+# When multiple apps run back-to-back, the output file contains one block per app
+# separated by blank lines. block_index selects which block to load.
+def _load_hex_txt(txt_path: str, block_index: int = 0):
     assert os.path.exists(txt_path), f"The RTL sim output file {txt_path} does not exist."
-    vals = []
+    blocks = []
+    current_block = []
     with open(txt_path, "r") as f:
         for line in f:
             if line.strip():
-                vals.extend(int(v, 16) for v in line.split())
-    return numpy.array(vals, dtype=numpy.uint16)
+                current_block.extend(int(v, 16) for v in line.split())
+            else:
+                if current_block:
+                    blocks.append(current_block)
+                    current_block = []
+    if current_block:
+        blocks.append(current_block)
+    assert block_index < len(blocks), \
+        f"Block index {block_index} out of range (file has {len(blocks)} blocks): {txt_path}"
+    return numpy.array(blocks[block_index], dtype=numpy.uint16)
 
 
 def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post_silicon_full_app_name=""):
@@ -138,8 +149,8 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
             # Build a list of (app, mu_test, output_file_name, gold_array, sim_array, app_dir)
             comparisons = []
 
-            for app in args.app:
-                mu_test = args.mu_test[args.app.index(app)] if args.mu_test is not None else "inactive"
+            for app_idx, app in enumerate(args.app):
+                mu_test = args.mu_test[app_idx] if args.mu_test is not None else "inactive"
                 voyager_cgra_test = args.voyager_cgra_test
                 if post_silicon_check:
                     app_dir = Path(f"{post_silicon_base_dir}/aha/Halide-to-Hardware/apps/hardware_benchmarks/{app}")
@@ -169,15 +180,14 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                 assert os.path.exists(design_meta_path), f"Missing meta file: {design_meta_path}"
                 with open(design_meta_path) as design_meta_file:
                     design_meta = json.load(design_meta_file)
+
+                if design_meta.get("is_last_pass", 1) == 0:
+                    print(f"[INFO] Skipping gold check for app {app}: non-final decomposed pass.")
+                    continue
+
                 outputs = design_meta.get("IOs", {}).get("outputs", [])
                 assert len(outputs) >= 1, "There should be at least one output."
                 golds_by_name = {}
-
-                # # FIXME: Here temporarily for mapping
-                # psum_idx = int(os.environ.get("PSUM_IDX", 1))
-                # # slice_idx = int(os.environ.get("NON_UNIFORM_SLICE_IDX", 1))
-                # os.system(f"cp /aha/garnet/tests/test_app/hw_output.txt /aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/{voyager_test_fullname}_gold/kernel_{psum_idx}_output.txt")
-                # # os.system(f"cp /aha/garnet/tests/test_app/hw_output.txt /aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/zircon_2d_psum_reduction_fp/{voyager_test_fullname}_slice_{slice_idx}_gold/kernel_{psum_idx}_output.txt")
 
                 if use_psum_workaround_gold:
                     psum_idx = int(os.environ.get("PSUM_IDX", 1))
@@ -296,9 +306,9 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                     else:
                         sim_txt_path = f"{args.aha_dir}/garnet/tests/test_app/{output_file_name}.txt"
                     if packed_outputs:
-                        sim_array = unpack_output(_load_hex_txt(sim_txt_path))
+                        sim_array = unpack_output(_load_hex_txt(sim_txt_path, block_index=app_idx))
                     else:
-                        sim_array = _load_hex_txt(sim_txt_path)
+                        sim_array = _load_hex_txt(sim_txt_path, block_index=app_idx)
                     assert output_file_name in golds_by_name, f"Missing gold for output '{output_file_name}'."
                     gold_array = golds_by_name[output_file_name]
 
@@ -440,8 +450,7 @@ def do_gold_check(args, post_silicon_check=False, post_silicon_base_dir="", post
                             print(f"\033[93m[{compare['app']}::{compare['name']}] Floating point comparison mostly passed with exceptions in {(mismatch_frac*100):.2f}% of all pixels.\033[0m")
                         else:
                             print(f"\033[91m[{compare['app']}::{compare['name']}] Floating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m")
-                            # return False # FIXME: temporary HACK for mapping
-                            return True
+                            return False
                             # assert False, f"\033[91m[{compare['app']}::{compare['name']}] Floating point comparison failed. Exceptions {(mismatch_frac*100):.2f}% are beyond {frac_tolerance*100}% of all pixels\033[0m"
 
                     print("Max absolute difference is:", max_diff)
