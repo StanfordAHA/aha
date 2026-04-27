@@ -6,6 +6,7 @@
 #   --copy          # Copy working script to docker as /aha/aha/bin/app
 #   --container C   # Use existing container "C" to run the app
 #   --get_apps <br> # Get list of apps for branch <br> e.g. "app --get_apps master
+#   --subgroup <config> <groups>  # E.g. app --subgroup fast sparse_tests
 
 # To test: see bottom of file, below
 
@@ -106,6 +107,7 @@ while [ $# -gt 0 ] ; do
         --copy*) COPY_SCRIPT=True ;;
         --update*) UPDATE_SRC=$2; UPDATE_DST=$3; shift 2 ;;
         --container) CONTAINER=$2; shift ;;
+        --subgroup*)  RUN_SUITE=$2; SUBGROUPS=$3; shift 2 ;;
 
         # TODO/FIXME Backward compatibility / DELETE after a couple months / TODAY is 08 April 2025 ish
         --fp) echo 'WARNING "--fp" deprecated/unnecessary, stop using it'; ;;
@@ -247,7 +249,7 @@ fi
 ########################################################################
 # Find file tests.py and copy to /tmp
 tests_py=aha/util/regress_tests/tests.py
-local_tests_py=/tmp/tests.py
+local_tests_py=$(mktemp /tmp/app_tests_XXXXX.py)
 
 if test -e /aha/$tests_py; then
     repo=/aha
@@ -266,6 +268,9 @@ fi
 ########################################################################
 # Parse 'tests.py' to find suite names e.g.
 # TEST_SUITES = "fast pr_aha pr_submod full resnet"
+ls -l $local_tests_py; head $local_tests_py
+python3 --version; which python3
+
 TEST_SUITES=$(python3 $local_tests_py --exec "print(*Tests.configs_list)") || exit 13
 TEST_SUITES=$(echo "$TEST_SUITES" | tail -1)
 [ "$DBG" ] && printf "\nScrubbed tests.py, found test suites:\n$TEST_SUITES\n\n"
@@ -444,7 +449,7 @@ if ! [ "$IN_DOCKER" ]; then
     fi
 
     # Run script in container now
-    echo "Run '$bn ${app_flags[@]}' in container"
+    echo "Run '$bn ${app_flags[@]}' in container '$container'"
     docker exec $container /aha/aha/bin/$bn "${app_flags[@]}" || exit 13
     exit
 fi
@@ -547,6 +552,14 @@ fi
 ########################################################################
 # Finally: run it!!
 
+# Early out for subgroups, i.e. if subgroup requested, run that subgroup and exit immediately
+if test -n "$SUBGROUPS"; then
+    echo aha regress $RUN_SUITE --group $SUBGROUPS
+    aha regress $RUN_SUITE --group $SUBGROUPS
+    exit
+fi
+
+# No subgroups requested, so continue on as before
 echo TOOL=$SIM aha regress "$config"$ZIRCON --include-no-zircon-tests
 TOOL=$SIM aha regress "$config"$ZIRCON --include-no-zircon-tests || exit 13
 
