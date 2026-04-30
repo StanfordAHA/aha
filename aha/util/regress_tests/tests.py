@@ -307,7 +307,7 @@ class Tests:
                 "resnet18-quantize_default_15::zircon_quant_fp_post_conv5x_RV_E64_MB",
 
                 # BERT permute layer
-                "bert-permute_3::nop_2d_mha_concat_RV_E64_MB",
+                "bert-permute_3::nop_2d_mha_concat_bert_RV_E64_MB",
 
                 # BERT Softmax layers
                 "bert-softmax_1::stable_softmax_pass1_fp_bert_RV_E64_MB",

@@ -261,51 +261,6 @@ def dispatch(args, extra_args=None):
                     attention_scale_value = f.readline().strip()
                     env['ATTN_SCALE'] = attention_scale_value
 
-        # if (model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh")) or (model == "fakegemm" and (layer == "linear_default_1")) or (model == "resnet18" and layer == "submodule") or (model == "llama_prefill" and (layer == "linear_mx_default_4" or layer == "silu")):
-        #     subprocess_call_log(
-        #         cmd=[sys.executable,
-        #                 f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",
-        #                 "--model", model,
-        #                 "--layer", layer,
-        #                 ],
-        #         cwd=args.aha_dir / "voyager",
-        #         log=args.log,
-        #         log_file_path=log_file_path,
-        #         env=env
-        #     )
-
-        # if not args.voyager_gold_model_only:
-        #     subprocess_call_log(
-        #         cmd=[sys.executable,
-        #                 f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
-        #                 "--input", f"/aha/voyager/gold_activation.txt",
-        #                 "--output", f"/aha/voyager/gold_activation.txt"
-        #                 ],
-        #         cwd=args.aha_dir / "voyager",
-        #         log=args.log,
-        #         log_file_path=log_file_path,
-        #         env=env
-        #     )
-
-            # # Adjust gold scale if it exists
-            # gold_scale_path = "/aha/voyager/gold_scale.txt"
-            # if os.path.exists(gold_scale_path):
-            #     subprocess_call_log(
-            #         cmd=[sys.executable,
-            #                 f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
-            #                 "--input", gold_scale_path,
-            #                 "--output", gold_scale_path,
-            #                 "--is-mx-scale",
-            #                 "--mx-block-size", str(env.get("MX_BLOCK_SIZE", "64"))
-            #                 ],
-            #         cwd=args.aha_dir / "voyager",
-            #         log=args.log,
-            #         log_file_path=log_file_path,
-            #         env=env
-            #     )
-
-
-
             # Move collateral to desired folders
             if is_mu_test:
                 subprocess.check_call(["mv", "/aha/voyager/serialized_matrix_params.txt", voyager_app_base_path])

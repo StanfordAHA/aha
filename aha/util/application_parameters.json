@@ -4517,7 +4517,9 @@
             "ZIRCON_HARDCODED_TILING": "1",
             "PACKED_OUTPUTS": "1",
             "SOFT_INTEGER_COMPARISON": "1",
-            "VOYAGER_GOLD": "1"
+            "VOYAGER_GOLD": "1",
+            "MANUAL_PATH_BALANCE_PLACER": "1",
+            "POND_PATH_BALANCING": "1"
         }
     },
     "zircon_deq_q_relu_fp_post_conv5_x_kernel0": {
@@ -6000,7 +6002,8 @@
             "IO_INNERMOST_DIM_TILING": "1",
             "IO_INNERMOST_DIM_TILING_IDX": "0",
             "NUM_IO_INNERMOST_DIM_TILING_KERNELS": "4",
-            "OUTPUT_TENSOR_IO_INNERMOST_DIM_TILING": "1"
+            "OUTPUT_TENSOR_IO_INNERMOST_DIM_TILING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "get_e8m0_scale_tree_gb_input_llama_prefill_shape1": {
@@ -6020,7 +6023,8 @@
             "IO_DIM1_TILING": "1",
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
-            "OUTPUT_TENSOR_IO_DIM1_TILING": "1"
+            "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "get_e8m0_scale_tree_gb_input_llama_prefill_shape2": {
@@ -6036,7 +6040,8 @@
             "HW_SCALE_OUTPUT_STENCIL_PACKED": "0",
             "VOYAGER_GOLD": "1",
             "USE_REAL_INPUT": "1",
-            "SOFT_INTEGER_COMPARISON": "1"
+            "SOFT_INTEGER_COMPARISON": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "get_e8m0_scale_tree_gb_input_llama_prefill_shape3": {
@@ -6056,7 +6061,8 @@
             "IO_INNERMOST_DIM_TILING": "1",
             "IO_INNERMOST_DIM_TILING_IDX": "0",
             "NUM_IO_INNERMOST_DIM_TILING_KERNELS": "16",
-            "OUTPUT_TENSOR_IO_INNERMOST_DIM_TILING": "1"
+            "OUTPUT_TENSOR_IO_INNERMOST_DIM_TILING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/get_e8m0_scale_accum_gb_input": {
@@ -6124,7 +6130,8 @@
             "IO_DIM1_TILING": "1",
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
-            "OUTPUT_TENSOR_IO_DIM1_TILING": "1"
+            "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "get_e8m0_scale_accum_gb_input_llama_prefill_post_transpose": {
@@ -6144,7 +6151,8 @@
             "IO_DIM1_TILING": "1",
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
-            "OUTPUT_TENSOR_IO_DIM1_TILING": "1"
+            "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/apply_e8m0_scale_single_IO": {
@@ -6375,7 +6383,8 @@
             "IO_INNERMOST_DIM_TILING_IDX": "0",
             "NUM_IO_INNERMOST_DIM_TILING_KERNELS": "4",
             "OUTPUT_TENSOR_IO_INNERMOST_DIM_TILING": "1",
-            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_scale.raw"
+            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_scale.raw",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_1": {
@@ -6403,7 +6412,8 @@
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
             "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
-            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_1_scale.raw"
+            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_1_scale.raw",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_7": {
@@ -6427,7 +6437,8 @@
             "USE_REAL_INPUT": "1",
             "SOFT_INTEGER_COMPARISON": "1",
             "PACKED_OUTPUTS": "1",
-            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_7_scale.raw"
+            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_7_scale.raw",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_5": {
@@ -6455,7 +6466,8 @@
             "IO_INNERMOST_DIM_TILING_IDX": "0",
             "NUM_IO_INNERMOST_DIM_TILING_KERNELS": "16",
             "OUTPUT_TENSOR_IO_INNERMOST_DIM_TILING": "1",
-            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_5_scale.raw"
+            "CALCULATED_SCALE_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/apply_e8m0_scale_single_IO/get_scale_e8m0_tree_gb_input_intermediate_outputs/llama_prefill-quantize_mx_default_5_scale.raw",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/apply_e8m0_scale_multi_IOs": {
@@ -6530,7 +6542,8 @@
             "IO_DIM1_TILING": "1",
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
-            "OUTPUT_TENSOR_IO_DIM1_TILING": "1"
+            "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apply_e8m0_scale_multi_IOs_llama_prefill_post_transpose": {
@@ -6552,7 +6565,8 @@
             "IO_DIM1_TILING": "1",
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
-            "OUTPUT_TENSOR_IO_DIM1_TILING": "1"
+            "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/get_apply_e8m0_scale_fp": {
@@ -6568,7 +6582,8 @@
             "QUANTIZED_OUTPUT_STENCIL_POS": "16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23",
             "HW_SCALE_OUTPUT_STENCIL_PACKED": "0,0",
             "QUANTIZED_OUTPUT_STENCIL_PACKED": "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1",
-            "HW_SCALE_OUTPUT_STENCIL_BANK_TOGGLE_MODE": "1,1"
+            "HW_SCALE_OUTPUT_STENCIL_BANK_TOGGLE_MODE": "1,1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/tanh_fp": {
