@@ -75,8 +75,8 @@ class Tests:
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
         if testname in ["daily", "pr", "pr_submod"]:
-            print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead')
-            config = "pr_aha"
+            print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead', flush=True)
+            testname = "pr_aha"
 
 
         if testname == "fast":
@@ -1049,7 +1049,7 @@ class Tests:
 
         # Export everything named in template
         vdic = vars().copy()
-        for key in Tests.configs_template():
+        for key in Tests.configs_template():  # Use template to tell what keys are wanted
             if key in vdic:
                 self.__dict__[key] = vdic[key]
 
