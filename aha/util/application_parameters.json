@@ -2084,8 +2084,7 @@
             "PSUM_IDX": "8",
             "INTERMEDIATE_GOLD_IDX": "8",
             "USE_REAL_INPUT": "1",
-            "HARDCODED_TENSOR_METADATA": "1",
-            "USE_STRAIT_COREIR": "1"
+            "HARDCODED_TENSOR_METADATA": "1"
         }
     },
     "elemwise_mul_fp_llama_prefill_swish_kernel1": {
@@ -2117,8 +2116,7 @@
             "PSUM_IDX": "8",
             "INTERMEDIATE_GOLD_IDX": "8",
             "USE_REAL_INPUT": "1",
-            "HARDCODED_TENSOR_METADATA": "1",
-            "USE_STRAIT_COREIR": "1"
+            "HARDCODED_TENSOR_METADATA": "1"
         }
     },
     "zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel0": {
@@ -3969,7 +3967,7 @@
             "GOLD_CHANNEL_TRIMMING_WORKAROUND": "1",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS": "2",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX": "0",
-            "PSUM_1_LOWER_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/hw_psum1_lower_output_k_tiling_kernel0.txt"
+            "PSUM_1_LOWER_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/add_gelu_pass1_psums/bert-gelu/hw_psum1_lower_output_k_tiling_kernel0.txt"
         }
     },
     "add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11": {
@@ -4001,7 +3999,7 @@
             "GOLD_CHANNEL_TRIMMING_WORKAROUND": "1",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS": "2",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX": "0",
-            "PSUM_1_LOWER_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/hw_psum1_lower_output_k_tiling_kernel1.txt"
+            "PSUM_1_LOWER_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/add_gelu_pass1_psums/bert-gelu/hw_psum1_lower_output_k_tiling_kernel1.txt"
         }
     },
     "zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel0": {
@@ -5080,7 +5078,8 @@
             "HW_OUTPUT_PACKED": "0",
             "VOYAGER_STANDALONE_CGRA_APP": "1",
             "USE_REAL_INPUT": "1",
-            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/llama_prefill-softmax_1_pass1_gold/stable_softmax_pass1_gold.txt"
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/llama_prefill-softmax_1_pass1_gold/stable_softmax_pass1_gold.txt",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/stable_softmax_pass2_fp": {
@@ -5133,7 +5132,8 @@
             "SKIP_GLB_DMA_STRIDE_ADJUSTMENT": "1",
             "USE_REAL_INPUT": "1",
             "PASS1_OUTPUT_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass2_fp/llama_prefill-softmax_1_pass1_gold/stable_softmax_pass1_gold.raw",
-            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/llama_prefill-softmax_1_pass2_gold/stable_softmax_pass2_gold.txt"
+            "CUSTOM_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/llama_prefill-softmax_1_pass2_gold/stable_softmax_pass2_gold.txt",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/stable_softmax_pass3_fp": {
@@ -5184,7 +5184,8 @@
             "PASS2_OUTPUT_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/stable_softmax_pass3_fp/llama_prefill-softmax_1_pass2_gold/stable_softmax_pass2_gold.raw",
             "VOYAGER_GOLD": "1",
             "MANUAL_PATH_BALANCE_PLACER": "1",
-            "POND_PATH_BALANCING": "1"
+            "POND_PATH_BALANCING": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/scalar_avg_fp": {
@@ -5732,7 +5733,8 @@
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "16",
             "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
-            "HARDCODED_TENSOR_METADATA": "1"
+            "HARDCODED_TENSOR_METADATA": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "rope_fp_llama_prefill_query_kernel1": {
@@ -5758,7 +5760,8 @@
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "16",
             "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
-            "HARDCODED_TENSOR_METADATA": "1"
+            "HARDCODED_TENSOR_METADATA": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "rope_fp_llama_prefill_key_kernel0": {
@@ -5784,7 +5787,8 @@
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
             "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
-            "HARDCODED_TENSOR_METADATA": "1"
+            "HARDCODED_TENSOR_METADATA": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "rope_fp_llama_prefill_key_kernel1": {
@@ -5810,7 +5814,8 @@
             "IO_DIM1_TILING_IDX": "0",
             "NUM_IO_DIM1_TILING_KERNELS": "4",
             "OUTPUT_TENSOR_IO_DIM1_TILING": "1",
-            "HARDCODED_TENSOR_METADATA": "1"
+            "HARDCODED_TENSOR_METADATA": "1",
+            "USE_STRAIT_COREIR": "1"
         }
     },
     "apps/abs_max_full_unroll_fp": {
