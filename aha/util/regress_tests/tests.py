@@ -1,3 +1,8 @@
+# Note, for testing purposes, can do things like:
+#   python3 tests.py --exec 'check_for_dupes(1)'
+#   python3 tests.py --exec "print(*Tests.configs_list)"
+#   python3 tests.py --exec "Tests.show_config('full')" |& less
+
 # Find and/or install pyyaml
 from subprocess import run, DEVNULL
 import json
