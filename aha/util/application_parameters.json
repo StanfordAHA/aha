@@ -1846,7 +1846,9 @@
             "GOLD_CHANNEL_TRIMMING_WORKAROUND": "1",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_NUM_KERNELS": "2",
             "GOLD_CHANNEL_TRIMMING_WORKAROUND_KERNEL_IDX": "0",
-            "PSUM_1_LOWER_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/add_gelu_pass1_psums/llama_prefill-silu/hw_psum1_lower_output_k_tiling_kernel0.txt"
+            "PSUM_1_LOWER_GOLD_PATH": "/aha/Halide-to-Hardware/apps/hardware_benchmarks/apps/add_gelu_pass2_fp/add_gelu_pass1_psums/llama_prefill-silu/hw_psum1_lower_output_k_tiling_kernel0.txt",
+            "USE_STRAIT_COREIR": "1",
+            "USE_VOYAGER_PSUM": "1"
         }
     },
     "zircon_2d_nop_post_llama_prefill_up_projection_mul_path_kernel0": {
