@@ -137,16 +137,6 @@ class Tests:
                 "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel1_RV_E64_MB",
                 "bert-submodule_2 -> zircon_2d_psum_reduction_fp_post_bert_query_projection_kernel2_RV_E64_MB",
 
-                # LLaMA Prefill Query projection
-                "llama_prefill-submodule -> zircon_2d_nop_post_llama_prefill_query_projection_kernel0_RV_E64_MB",
-                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel1_RV_E64_MB",
-                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel2_RV_E64_MB",
-                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel3_RV_E64_MB",
-                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel4_RV_E64_MB",
-                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel5_RV_E64_MB",
-                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel6_RV_E64_MB",
-                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel7_RV_E64_MB",
-
                 # BERT Key projection: All using gemm_reduction_tiling_workaround
                 "bert-submodule -> zircon_2d_nop_post_bert_key_projection_kernel0_RV_E64_MB",
 
@@ -192,10 +182,6 @@ class Tests:
                 "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel1_125_RV_E64_MB",
                 "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel2_125_RV_E64_MB",
 
-                # Run 1 time on k dimension
-                "llama_prefill-linear_mx_default_7 -> zircon_2d_nop_post_llama_prefill_final_output_projection_kernel0_1_RV_E64_MB",
-                "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel1_1_RV_E64_MB",
-                "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel2_1_RV_E64_MB",
             ]
             behavioral_mu_tests = [
                 "apps/mu2glb_path_balance_test_RV_E64",
@@ -234,6 +220,10 @@ class Tests:
                 "resnet18-submodule_8 -> zircon_deq_ResReLU_fp_post_conv3_x_RV_E64_MB",
                 "resnet18-submodule_9 -> zircon_deq_q_relu_fp_post_conv3_x_RV_E64_MB",
                 "resnet18-submodule_10 -> zircon_deq_ResReLU_quant_fp_post_conv3_x_RV_E64_MB",
+                
+                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
+                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
             ]
 
         elif testname == "pr_aha4":
@@ -365,16 +355,23 @@ class Tests:
 
                 # Conv5_1 pointwise conv (INNER REDUCTION WORKAROUND, INPUT ACTIVATION PADDING WORKAROUND)
                 "resnet18-submodule_17 -> zircon_dequant_fp_post_conv5_1_inner_reduction_workaround_RV_E64_MB",
+
+                # LLaMA Prefill Query projection
+                "llama_prefill-submodule -> zircon_2d_nop_post_llama_prefill_query_projection_kernel0_RV_E64_MB",
+                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel1_RV_E64_MB",
+                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel2_RV_E64_MB",
+                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel3_RV_E64_MB",
+                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel4_RV_E64_MB",
+                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel5_RV_E64_MB",
+                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel6_RV_E64_MB",
+                "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel7_RV_E64_MB",
+
             ]
         elif testname == "pr_aha7":
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             glb_tests_fp_RV = Tests.glb_tests_fp_RV7
             external_mu_tests_fp = [
-                # Conv5_x (K-DIM HOST TILING, INPUT ACTIVATION PADDING WORKAROUND)
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel0_RV_E64_MB",
-                "resnet18-submodule_18 -> zircon_deq_ResReLU_fp_post_conv5_x_kernel1_RV_E64_MB",
-
                 # BERT up projection layer + GELU pass 1: All using gemm_reduction_tiling_workaround; also with K-DIM HOST TILING for output tensor
                 "bert-linear_mx_default_4 -> zircon_2d_nop_post_bert_up_projection_kernel0_RV_E64_MB",
                 "bert-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_bert_up_projection_kernel1_RV_E64_MB",
@@ -450,6 +447,13 @@ class Tests:
             ]
 
             behavioral_mu_tests_fp = []
+            external_mu_tests_fp = [
+                # LLaMA prefill, final output projection
+                # Run 1 time on k dimension
+                "llama_prefill-linear_mx_default_7 -> zircon_2d_nop_post_llama_prefill_final_output_projection_kernel0_1_RV_E64_MB",
+                "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel1_1_RV_E64_MB",
+                "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel2_1_RV_E64_MB",
+            ]
 
         elif testname == "pr_aha9":
             width, height = 28, 16
