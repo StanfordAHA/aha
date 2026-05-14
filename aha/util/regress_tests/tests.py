@@ -1592,19 +1592,23 @@ class Tests:
         if zircon: parms = size + zparms
         else:      parms = size + ',--no-zircon'
 
+        applist = []
         not_groups = ("width", "height", "cols_removed", "mu_oc_0")
         for group in d:
             if not d[group]:               continue  # Dont care about empty sets
             if group in not_groups:        continue  # Not a group
-            if "supported_tests" in group: continue  # Also not a group
             for app in d[group]:
-                # fmt = "%-12s %-16s %-32s %-s"
                 fmt = "%s,%s,%s,%-s"
-                print(fmt % (config_name, group, app, parms))
-                # rval += (fmt % (config_name, group, app, d["app_parms"]))
+                appstring = fmt % (config_name, group, app, parms)
+                applist.append(appstring)
+                print(appstring)
+        return applist
 
     def show_configs(zircon=True):
-        for c in Tests.configs_list: Tests.show_config(c)
+        applist = []
+        for c in Tests.configs_list: applist += Tests.show_config(c)
+        return applist
+
 
 # Every time someone tries to import this class, it triggers this quick
 # to make sure that no configs have redundant apps e.g. if someone accidentally
