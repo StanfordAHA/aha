@@ -198,7 +198,14 @@ def dispatch(args, extra_args=None):
         os.environ["CODEGEN_DIR"] = "test/compiler"
 
         # Run voyager compiler for the specified layer
-        voyager_run_layer(model, layer)
+        hardcoded_tensor_metadata = env.get("HARDCODED_TENSOR_METADATA", "0") == "1"
+        if hardcoded_tensor_metadata:
+            print(f"\033[93mWARNING: Using hardcoded tensor metadata for {layer} of {model} instead of running voyager compiler, as per settings in application_parameters.json.\033[0m")
+            hardcoded_tensor_metadata_path = f"{args.aha_dir}/voyager/hardcoded_tensor_metadata/{model}-{layer}_tensor_metadata.json"
+            assert os.path.exists(hardcoded_tensor_metadata_path), f"ERROR: {hardcoded_tensor_metadata_path} not found, cannot use hardcoded tensor metadata for {layer} of {model}"
+            shutil.copyfile(hardcoded_tensor_metadata_path, "/aha/voyager/tensor_metadata.json")
+        else:
+            voyager_run_layer(model, layer)
 
         if not args.voyager_gold_model_only:
             # Parse the dnnLayer tensors and write them to tensor_files directory
@@ -253,59 +260,6 @@ def dispatch(args, extra_args=None):
                 with open(attention_scale_file, 'r') as f:
                     attention_scale_value = f.readline().strip()
                     env['ATTN_SCALE'] = attention_scale_value
-
-        # For conv1, we want the gold-check to be done using submodule_1's gold
-        # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module
-        if model == "resnet18" and layer == "submodule_1":
-            subprocess.check_call(["mv", "/aha/voyager/gold_activation.txt", "/aha/voyager/gold_activation_submodule_1.txt"])
-
-        if model == "resnet18" and layer == "submodule":
-            subprocess.check_call(["mv", "/aha/voyager/gold_activation_submodule_1.txt", "/aha/voyager/gold_activation.txt"])
-
-        if (model == "bert" and (layer == "linear_mx_default_4" or layer == "gelu" or layer == "tanh")) or (model == "fakegemm" and (layer == "linear_default_1")):
-            subprocess_call_log(
-                cmd=[sys.executable,
-                        f"{args.aha_dir}/voyager/scripts/aha_flow/custom_validation.py",
-                        "--model", model,
-                        "--layer", layer,
-                        ],
-                cwd=args.aha_dir / "voyager",
-                log=args.log,
-                log_file_path=log_file_path,
-                env=env
-            )
-
-        if not args.voyager_gold_model_only:
-            subprocess_call_log(
-                cmd=[sys.executable,
-                        f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
-                        "--input", f"/aha/voyager/gold_activation.txt",
-                        "--output", f"/aha/voyager/gold_activation.txt"
-                        ],
-                cwd=args.aha_dir / "voyager",
-                log=args.log,
-                log_file_path=log_file_path,
-                env=env
-            )
-
-            # Adjust gold scale if it exists
-            gold_scale_path = "/aha/voyager/gold_scale.txt"
-            if os.path.exists(gold_scale_path):
-                subprocess_call_log(
-                    cmd=[sys.executable,
-                            f"{args.aha_dir}/voyager/scripts/aha_flow/adjust_voyager_gold.py",
-                            "--input", gold_scale_path,
-                            "--output", gold_scale_path,
-                            "--is-mx-scale",
-                            "--mx-block-size", str(env.get("MX_BLOCK_SIZE", "64"))
-                            ],
-                    cwd=args.aha_dir / "voyager",
-                    log=args.log,
-                    log_file_path=log_file_path,
-                    env=env
-                )
-
-
 
             # Move collateral to desired folders
             if is_mu_test:
@@ -376,11 +330,17 @@ def dispatch(args, extra_args=None):
             layer_path_balance_folder = f"{app_dir}/path_balancing_configs"
             assert os.path.exists(layer_path_balance_folder), f"ERROR: path_balancing_configs folder does not exist in {app_dir}, cannot copy path_balance.json"
 
-            if mu_test is None or mu_test == "":
+            if not(is_voyager_app):
                 layer_path_balance_json = os.path.join(layer_path_balance_folder, "path_balancing.json")
                 assert os.path.exists(layer_path_balance_json), f"ERROR: path_balancing.json not found in {layer_path_balance_folder}."
             else:
-                layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
+                non_uniform_slicing = "NON_UNIFORM_SLICING" in env and env["NON_UNIFORM_SLICING"] == "1"
+                if non_uniform_slicing:
+                    # Try naming convention with slice idx first
+                    slice_idx = int(env.get("NON_UNIFORM_SLICE_IDX", 1))
+                    layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_slice_{slice_idx}_path_balancing.json")
+                else:
+                    layer_path_balance_json = os.path.join(layer_path_balance_folder, f"{model}-{layer}_path_balancing.json")
 
                 path_balance_json_exists = False
 

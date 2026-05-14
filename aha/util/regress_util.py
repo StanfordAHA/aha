@@ -467,6 +467,112 @@ def test_dense_app(
         "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel9_RV_E64_MB",
         "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel10_RV_E64_MB",
         "bert-submodule_16 -> zircon_2d_psum_reduction_fp_post_bert_down_projection_kernel11_RV_E64_MB",
+
+        "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel2_RV_E64_MB",
+        "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel3_RV_E64_MB",
+        "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel4_RV_E64_MB",
+        "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel5_RV_E64_MB",
+        "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel6_RV_E64_MB",
+        "llama_prefill-submodule -> zircon_2d_psum_reduction_fp_post_llama_prefill_query_projection_kernel7_RV_E64_MB",
+
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel7_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel8_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel9_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel10_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel11_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel12_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel13_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel14_RV_E64_MB",
+        "llama_prefill-submodule_1 -> zircon_2d_psum_reduction_fp_post_llama_prefill_key_projection_kernel15_RV_E64_MB",
+
+        "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel2_RV_E64_MB",
+        "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel3_RV_E64_MB",
+        "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel4_RV_E64_MB",
+        "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel5_RV_E64_MB",
+        "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel6_RV_E64_MB",
+        "llama_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_kernel7_RV_E64_MB",
+
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel1_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel7_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel8_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel9_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel10_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel11_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel12_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel13_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel14_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel15_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel16_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel17_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel18_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel19_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel20_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel21_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel22_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel23_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel24_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel25_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel26_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel27_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel28_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel29_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel30_RV_E64_MB",
+        "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel31_RV_E64_MB",
+
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel2_125_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel3_125_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel4_125_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel5_125_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel6_125_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel7_125_RV_E64_MB",
+
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel2_1_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel3_1_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel4_1_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel5_1_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel6_1_RV_E64_MB",
+        "llama_prefill-linear_mx_default_7 -> zircon_2d_psum_reduction_fp_post_llama_prefill_final_output_projection_kernel7_1_RV_E64_MB",
+
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_40 -> zircon_2d_psum_reduction_fp_post_llama_prefill_up_projection_mul_path_kernel7_RV_E64_MB",
+
+        "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel1_RV_E64_MB",
+        "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_39 -> zircon_2d_psum_reduction_fp_post_llama_prefill_post_attn_projection_kernel7_RV_E64_MB",
+
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel1_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel2_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel3_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel4_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel5_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel6_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel7_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel8_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel9_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel10_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel11_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel12_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel13_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel14_RV_E64_MB",
+        "llama_prefill-submodule_2 -> zircon_2d_psum_reduction_fp_post_llama_prefill_value_projection_kernel15_RV_E64_MB",
     ]
     skip_cgra_pnr_list = copy.deepcopy(skip_cgra_map_list)
 
@@ -524,8 +630,9 @@ def test_dense_app(
         "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel5_RV_E64_MB",
         "bert-linear_mx_default_4 -> add_gelu_pass1_mu_input_fp_post_bert_up_projection_kernel11_RV_E64_MB",
         "apps/add_gelu_pass2_fp_RV_E64_MB",
-        "bert-gelu::add_gelu_pass2_fp_voyager_kernel0_RV_E64_MB",
-        "bert-gelu::add_gelu_pass2_fp_voyager_kernel1_RV_E64_MB",
+        "bert-gelu::add_gelu_pass2_fp_bert_kernel0_RV_E64_MB",
+        "bert-gelu::add_gelu_pass2_fp_bert_kernel1_RV_E64_MB",
+        "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
         "apps/tanh_fp_RV_E64_MB",
         "bert-tanh::tanh_fp_bert_RV_E64_MB",
         "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",
@@ -536,6 +643,17 @@ def test_dense_app(
         "bert-quantize_mx_default_6::apply_e8m0_scale_single_IO_bert_quantize_mx_default_6_RV_E64_MB",
         "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB",
         "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB",
+        "llama_prefill-quantize_mx_default::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_RV_E64_MB", # 512, 2048
+        "llama_prefill-quantize_mx_default_1::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_1_RV_E64_MB", # 32, 512, 64
+        "llama_prefill-quantize_mx_default_7::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_7_RV_E64_MB", # 512, 512
+        "llama_prefill-quantize_mx_default_5::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_5_RV_E64_MB", # 512, 8192
+        # "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
+        # "llama_prefill-softmax_1::stable_softmax_pass2_fp_llama_prefill_RV_E64_MB",
+        "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB",
+        "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
+        "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
+        "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+
     ]
 
     #------------------------------------------------------------------------
@@ -549,6 +667,7 @@ def test_dense_app(
     else:
         voyager_cgra_test = ""
 
+    orig_test = test
     test, dense_ready_valid = parse_RV_mode(test)
     test, E64_mode_on = parse_E64_mode(test)
     test, E64_multi_bank_mode_on = parse_E64_MB_mode(test)
@@ -594,6 +713,10 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass2_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "stable_softmax_pass3_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "rms_norm_pass1_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "rms_norm_pass2_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "elemwise_mul_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "rope_fp", layer_in=layer)
 
 
 
@@ -639,11 +762,6 @@ def test_dense_app(
 
     global info  # HA!
     start = time.time()
-
-    # For conv1, we want the gold-check to be done using submodule_1's gold
-    # Submodule 1 and submodule of resnet18 should really be fused but cannot be due to complications in the quantized-training module
-    if mu_test == "resnet18-submodule":
-        buildkite_call(["aha", "map", test, "--chain", "--env-parameters", "", "--mu-test", "resnet18-submodule_1", "--skip-cgra-map", "--voyager-gold-model-only" ,"--skip-env-vars"] + layer_array)
 
     if skip_cgra_map:
         print(f"--- {testname} - SKIP CGRA MAP", flush=True)
