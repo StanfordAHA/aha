@@ -3,8 +3,8 @@ from subprocess import run, DEVNULL
 import json
 
 # yaml occasionally causes problems here :(
-p=run('python3 -m ensurepip --default-pip', shell=True)  # stdout = DEVNULL, stderr = DEVNULL)
-p=run('python3 -m pip install pyyaml', shell=True)       # stdout = DEVNULL, stderr = DEVNULL)
+p=run('python3 -m ensurepip --default-pip', shell=True, stdout = DEVNULL) #, stderr = DEVNULL)
+p=run('python3 -m pip install pyyaml',      shell=True, stdout = DEVNULL) #, stderr = DEVNULL)
 assert p.returncode == 0, "Could not install pyyaml, sorry!"
 import yaml
 
@@ -1568,8 +1568,8 @@ class Tests:
         self.__dict__.update(config_dict)
         return True
 
-    # Support function for app util
-    def show_config(config_name='', zircon=True):
+    # Return a csv list of all apps in all config c
+    def get_config(config_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_config('fast'):
         #
         # fast    sparse_tests   vec_identity             8x8 --removed 4 --mu 8
@@ -1601,14 +1601,20 @@ class Tests:
                 fmt = "%s,%s,%s,%-s"
                 appstring = fmt % (config_name, group, app, parms)
                 applist.append(appstring)
-                print(appstring)
         return applist
 
+    # Return a csv list of all apps in all configs
+    def get_configs(zircon=True):
+        applist = [ Tests.get_config(c) for c in Tests.configs_list ]
+        return sum(applist, [])  # E.g. [[1,2],[3,4]] => [1,2,3,4]
+
+    # Print to stdout, a csv list of all apps in config c
+    def show_config(config_name='', zircon=True):
+        for app in Tests.get_config(config_name, zircon): print(app)
+
+    # Print to stdout, a csv list of all apps in all configs
     def show_configs(zircon=True):
-        applist = []
-        for c in Tests.configs_list: applist += Tests.show_config(c)
-        return applist
-
+        for c in Tests.configs_list: Tests.show_config(c)
 
 # Every time someone tries to import this class, it triggers this quick
 # to make sure that no configs have redundant apps e.g. if someone accidentally
