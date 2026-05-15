@@ -1610,23 +1610,6 @@ class Tests:
 
         return skiplist
 
-
-
-
-# >>> Tests("pr_aha6").__dict__[group]
-#         applist = [ Tests.get_config(c) for c in Tests.configs_list ]
-
-
-#         applist = [ Tests.get_config(c) for c in Tests.configs_list ]
-#         return sum(applist, [])  # E.g. [[1,2],[3,4]] => [1,2,3,4]
-
-#         for config_name in configs:
-#             d.update(
-#                 Tests(config_name).__dict__[group]
-#             group = 
-
-
-
     # Return a csv list of all apps in all config c
     def get_config(config_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_config('fast'):
