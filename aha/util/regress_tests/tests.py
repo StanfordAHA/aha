@@ -8,8 +8,8 @@ from subprocess import run, DEVNULL
 import json
 
 # yaml occasionally causes problems here :(
-p=run('python3 -m ensurepip --default-pip', shell=True, stdout = DEVNULL) #, stderr = DEVNULL)
-p=run('python3 -m pip install pyyaml',      shell=True, stdout = DEVNULL) #, stderr = DEVNULL)
+p=run('python3 -m ensurepip --default-pip', shell=True)  # stdout = DEVNULL, stderr = DEVNULL)
+p=run('python3 -m pip install pyyaml', shell=True)       # stdout = DEVNULL, stderr = DEVNULL)
 assert p.returncode == 0, "Could not install pyyaml, sorry!"
 import yaml
 
