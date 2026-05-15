@@ -76,7 +76,14 @@ UPDATE_SRC=; UPDATE_DST=;
 COPY_SCRIPT=
 CONTAINER=
 BRANCH=
-function not_suite { echo "X$1" | egrep ^X- > /dev/null; }
+
+# A valid suite name is anything that
+#   1) does not start with a '-' character' AND
+#   2) is not an empty string
+# I.e. not_suite("") returns FALSE as does e.g. not_suite("--list")
+function is_switch { echo "X$1" | egrep ^X- > /dev/null; }
+function not_suite { test -z "$1" || is_switch "$1"; }
+
 while [ $# -gt 0 ] ; do
     case "$1" in
         --show*)
