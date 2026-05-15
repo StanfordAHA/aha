@@ -1568,6 +1568,65 @@ class Tests:
         self.__dict__.update(config_dict)
         return True
 
+    # Get candidates for skip_cgra_map list.
+    # At present, it does NOT look at apps in the "full" config list,
+    # even though there are many candidates there. As a result, the "full"
+    # config unnecessarily runs mapping on apps that could be skipped, right?
+    def get_skip_candidates():
+        # Get list of configs EXCEPT FULL
+        configs = Tests.configs_list.copy()
+        print(configs)
+        configs.remove("full")
+
+        # Only interested in "external_mu_tests_fp" group
+        group = "external_mu_tests_fp"
+
+        sclist = [ Tests(config_name).__dict__[group] for config_name in configs ]
+        return sum(sclist, [])    # E.g. [[1,2],[3,4]] => [1,2,3,4]
+
+    # skip() == True for an app IF it immediately follows an app whose
+    # name is identical except w different kernel number e.g.
+    #
+    #  zircon_2d_psum_projection_kernel1_E64   # => NOT SKIP
+    #  zircon_2d_psum_projection_kernel2_E64   # => SKIP
+    #  zircon_2d_psum_projection_kernel3_E64   # => SKIP
+    def build_skip_cgra_map_list(DBG=False):
+        skiplist = []
+        prev_root = ""
+        for appname in Tests.get_skip_candidates():
+            print(appname) if DBG else True       # E.g. "zircon_2d_psum_projection_kernel1_E64"
+            kstart = appname.find("_kernel")
+            if kstart > 0:
+                rootname = appname[0:kstart]    
+                print(rootname) if DBG else True  # E.g. "zircon_2d_psum_projection"
+                if rootname == prev_root:
+                    skiplist.append(appname)
+                    print("==> SKIP!") if DBG else True
+                else:
+                    # roots_found.append(rootname)
+                    prev_root = rootname
+                    print("==> FIRST!") if DBG else True
+                print("-------------------------") if DBG else True
+
+        return skiplist
+
+
+
+
+# >>> Tests("pr_aha6").__dict__[group]
+#         applist = [ Tests.get_config(c) for c in Tests.configs_list ]
+
+
+#         applist = [ Tests.get_config(c) for c in Tests.configs_list ]
+#         return sum(applist, [])  # E.g. [[1,2],[3,4]] => [1,2,3,4]
+
+#         for config_name in configs:
+#             d.update(
+#                 Tests(config_name).__dict__[group]
+#             group = 
+
+
+
     # Return a csv list of all apps in all config c
     def get_config(config_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_config('fast'):
