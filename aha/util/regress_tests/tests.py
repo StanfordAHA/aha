@@ -803,7 +803,7 @@ class Tests:
                 # LLaMA Prefill Softmax layers
                 "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
                 "llama_prefill-softmax_1::stable_softmax_pass2_fp_llama_prefill_RV_E64_MB",
-                "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB"
+                "llama_prefill-softmax_1::stable_softmax_pass3_fp_llama_prefill_RV_E64_MB",
 
                 # LLaMA Prefill SiLU
                 "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
