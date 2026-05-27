@@ -1,10 +1,15 @@
+# Note, for testing purposes, can do things like:
+#   python3 tests.py --exec 'check_for_dupes(1)'
+#   python3 tests.py --exec "print(*Tests.configs_list)"
+#   python3 tests.py --exec "Tests.show_config('full')" |& less
+
 # Find and/or install pyyaml
 from subprocess import run, DEVNULL
 import json
 
 # yaml occasionally causes problems here :(
-p=run('python3 -m ensurepip --default-pip', shell=True)  # stdout = DEVNULL, stderr = DEVNULL)
-p=run('python3 -m pip install pyyaml', shell=True)       # stdout = DEVNULL, stderr = DEVNULL)
+p=run('python3 -m ensurepip --default-pip', shell=True, stdout = DEVNULL) #, stderr = DEVNULL)
+p=run('python3 -m pip install pyyaml',      shell=True, stdout = DEVNULL) #, stderr = DEVNULL)
 assert p.returncode == 0, "Could not install pyyaml, sorry!"
 import yaml
 
@@ -75,8 +80,8 @@ class Tests:
 
         # Simplify: use pr_aha instead of "pr", "daily", or "pr_submod"
         if testname in ["daily", "pr", "pr_submod"]:
-            print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead')
-            config = "pr_aha"
+            print(f'WARNING "{testname}" config no longer exists, using "pr_aha" instead', flush=True)
+            testname = "pr_aha"
 
 
         if testname == "fast":
@@ -1534,7 +1539,7 @@ class Tests:
 
         # Export everything named in template
         vdic = vars().copy()
-        for key in Tests.configs_template():
+        for key in Tests.configs_template():  # Use template to tell what keys are wanted
             if key in vdic:
                 self.__dict__[key] = vdic[key]
 
@@ -1568,8 +1573,50 @@ class Tests:
         self.__dict__.update(config_dict)
         return True
 
-    # Support function for app util
-    def show_config(config_name='', zircon=True):
+    # Get candidates for skip_cgra_map list.
+    # At present, it does NOT look at apps in the "full" config list,
+    # even though there are many candidates there. As a result, the "full"
+    # config unnecessarily runs mapping on apps that could be skipped, right?
+    def get_skip_candidates():
+        # Get list of configs EXCEPT FULL
+        configs = Tests.configs_list.copy()
+        print(configs)
+        configs.remove("full")
+
+        # Only interested in "external_mu_tests_fp" group
+        group = "external_mu_tests_fp"
+
+        sclist = [ Tests(config_name).__dict__[group] for config_name in configs ]
+        return sum(sclist, [])    # E.g. [[1,2],[3,4]] => [1,2,3,4]
+
+    # skip() == True for an app IF it immediately follows an app whose
+    # name is identical except w different kernel number e.g.
+    #
+    #  zircon_2d_psum_projection_kernel1_E64   # => NOT SKIP
+    #  zircon_2d_psum_projection_kernel2_E64   # => SKIP
+    #  zircon_2d_psum_projection_kernel3_E64   # => SKIP
+    def build_skip_cgra_map_list(DBG=False):
+        skiplist = []
+        prev_root = ""
+        for appname in Tests.get_skip_candidates():
+            print(appname) if DBG else True       # E.g. "zircon_2d_psum_projection_kernel1_E64"
+            kstart = appname.find("_kernel")
+            if kstart > 0:
+                rootname = appname[0:kstart]    
+                print(rootname) if DBG else True  # E.g. "zircon_2d_psum_projection"
+                if rootname == prev_root:
+                    skiplist.append(appname)
+                    print("==> SKIP!") if DBG else True
+                else:
+                    # roots_found.append(rootname)
+                    prev_root = rootname
+                    print("==> FIRST!") if DBG else True
+                print("-------------------------") if DBG else True
+
+        return skiplist
+
+    # Return a csv list of all apps in all config c
+    def get_config(config_name='', zircon=True):
         # Dump regression suite contents in compact form e.g. show_config('fast'):
         #
         # fast    sparse_tests   vec_identity             8x8 --removed 4 --mu 8
@@ -1592,17 +1639,27 @@ class Tests:
         if zircon: parms = size + zparms
         else:      parms = size + ',--no-zircon'
 
+        applist = []
         not_groups = ("width", "height", "cols_removed", "mu_oc_0")
         for group in d:
             if not d[group]:               continue  # Dont care about empty sets
             if group in not_groups:        continue  # Not a group
-            if "supported_tests" in group: continue  # Also not a group
             for app in d[group]:
-                # fmt = "%-12s %-16s %-32s %-s"
                 fmt = "%s,%s,%s,%-s"
-                print(fmt % (config_name, group, app, parms))
-                # rval += (fmt % (config_name, group, app, d["app_parms"]))
+                appstring = fmt % (config_name, group, app, parms)
+                applist.append(appstring)
+        return applist
 
+    # Return a csv list of all apps in all configs
+    def get_configs(zircon=True):
+        applist = [ Tests.get_config(c) for c in Tests.configs_list ]
+        return sum(applist, [])  # E.g. [[1,2],[3,4]] => [1,2,3,4]
+
+    # Print to stdout, a csv list of all apps in config c
+    def show_config(config_name='', zircon=True):
+        for app in Tests.get_config(config_name, zircon): print(app)
+
+    # Print to stdout, a csv list of all apps in all configs
     def show_configs(zircon=True):
         for c in Tests.configs_list: Tests.show_config(c)
 
