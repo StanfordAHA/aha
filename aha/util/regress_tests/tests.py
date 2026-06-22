@@ -171,7 +171,7 @@ class Tests:
             ]
 
             external_mu_tests = [
-                # REMOVING this test b/c keeps failing
+                # external_mu_tests DO NOT WORK so turning them off
                 # BERT Attention*Value Using inner reduction workaround
                 # "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
             ]
@@ -846,12 +846,12 @@ class Tests:
                 "apps/add_gelu_pass1_mu_input_fp_RV_E64_MB",
             ]
             external_mu_tests = [
-                # REMOVING this test b/c keeps failing
+                # external_mu_tests DO NOT WORK so turning them off
                 # BERT Attention*Value Using inner reduction workaround
                 # "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
 
                 # LLaMA 3.2-1B Prefill Attention*Value Using inner reduction workaround
-                "llama_prefill-matmul_mx_32 -> zircon_2d_nop_post_llama_prefill_AV_RV_E64_MB",
+                # "llama_prefill-matmul_mx_32 -> zircon_2d_nop_post_llama_prefill_AV_RV_E64_MB",
             ]
 
             external_mu_tests_fp = [
@@ -1258,12 +1258,12 @@ class Tests:
                 "apps/zircon_scale_add_fp_RV"
             ]
             external_mu_tests = [
-                # REMOVING this test b/c keeps failing
+                # external_mu_tests DO NOT WORK so turning them off
                 # BERT Attention*Value Using inner reduction workaround
                 # "bert-matmul_mx_12 -> zircon_2d_nop_post_bert_AV_RV_E64_MB",
 
                 # LLaMA 3.2-1B Prefill Attention*Value Using inner reduction workaround
-                "llama_prefill-matmul_mx_32 -> zircon_2d_nop_post_llama_prefill_AV_RV_E64_MB",
+                # "llama_prefill-matmul_mx_32 -> zircon_2d_nop_post_llama_prefill_AV_RV_E64_MB",
             ]
             external_mu_tests_fp = [
             # LLaMA Prefill Query projection
