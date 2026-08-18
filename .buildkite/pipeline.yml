@@ -50,7 +50,8 @@ steps:
         aha_clone=$(pwd)
         cd .. && /bin/rm -rf $$aha_clone
         git clone https://github.com/StanfordAHA/aha $$aha_clone && cd $$aha_clone
-        git pull && git checkout $$BUILDKITE_COMMIT
+        # The extra BRANCH checkout fixes the case where commit=HEAD (I hope)
+        git pull && git checkout $$BUILDKITE_BRANCH && git checkout $$BUILDKITE_COMMIT
         buildkite-agent pipeline upload .buildkite/weekly.yml --replace
 
 - wait: ~

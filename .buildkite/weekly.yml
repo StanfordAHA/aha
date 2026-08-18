@@ -1,5 +1,6 @@
 # Initial version of this file was generated with extensive help from .buildkite/bin/generate-weekly-pipeline.sh
-# To test can do: buildkite => Settings => Run now
+# This file launches from "pipeline.yml" when CONFIG==full :(
+# To test can do: buildkite => Settings => Run now => Env var DEV_BRANCH=fix-weekly => !NOT!Clean checkout!NOT!
 
 agents: { docker: true }
 env:    { APP: "aha/bin/app --update . /aha/aha --subgroup full" }
