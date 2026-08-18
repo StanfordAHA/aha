@@ -1,6 +1,6 @@
 # Initial version of this file was generated with extensive help from .buildkite/bin/generate-weekly-pipeline.sh
 # This file launches from "pipeline.yml" when CONFIG==full :(
-# To test can do: buildkite => Settings => Run now => Env var DEV_BRANCH=fix-weekly => !NOT!Clean checkout!NOT!
+# To test can do: aha-flow => new build => CONFIG=full DEV_BRANCH=fix-weekly => !NOT!Clean checkout!NOT!
 
 agents: { docker: true }
 env:    { APP: "aha/bin/app --update . /aha/aha --subgroup full" }
@@ -21,7 +21,8 @@ definitions:
         aha_clone=$(pwd)
         cd .. && /bin/rm -rf $$aha_clone
         git clone https://github.com/StanfordAHA/aha $$aha_clone && cd $$aha_clone
-        git pull && git checkout $$BUILDKITE_COMMIT
+        # The extra BRANCH checkout fixes the case where commit=HEAD (I hope)
+        git pull && git checkout $$BUILDKITE_BRANCH && git checkout $$BUILDKITE_COMMIT
 
 steps: [
   {plugins: *NO_CLONE, label: external_mu_tests,      command: [*CLONE, $APP external_mu_tests]},      {wait: *WAIT},
