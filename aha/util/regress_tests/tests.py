@@ -50,6 +50,10 @@ class Tests:
     glb_tests_fp_RV9 = [
                 "apps/rope_fp_RV_E64_MB",
     ]
+    dense_ml_unit_tests = [
+        # "transpose2d",  # This one stopped working 08/2026
+    ]
+
 
     def configs_template():
         # Defaults
@@ -266,9 +270,7 @@ class Tests:
 
             # Run dense ML tests
             dense_ml_models = []
-            dense_ml_unit_tests = [
-                # "transpose2d",  # This one stopped working 08/2026
-            ]
+            dense_ml_unit_tests = Tests.dense_ml_unit_tests  # SSOT!
 
         elif testname == "pr_aha5":
             width, height = 28, 16
@@ -1084,9 +1086,7 @@ class Tests:
 
             # Run dense ML tests
             dense_ml_models = []
-            dense_ml_unit_tests = [
-                "transpose2d",
-            ]
+            dense_ml_unit_tests = Tests.dense_ml_unit_tests  # SSOT!
 
             # For sparse tests, we cherry pick some representative tests to run
             no_zircon_sparse_tests = [
@@ -1520,9 +1520,7 @@ class Tests:
             width, height = 28, 16
             cols_removed, mu_oc_0 = 12, 32
             dense_ml_models = []
-            dense_ml_unit_tests = [
-                # "transpose2d",  # This one stopped working 08/2026
-            ]
+            dense_ml_unit_tests = Tests.dense_ml_unit_tests  # SSOT!
 
         # BLANK can be used to return default height, width, and blank test lists
         elif testname == "BLANK":
