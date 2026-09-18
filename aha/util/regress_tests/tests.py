@@ -42,6 +42,7 @@ class Tests:
     ]
     glb_tests_fp_RV3 = []
     glb_tests_fp_RV2 = [
+                "apps/rms_norm_fp_RV_E64_MB",
                 "apps/rms_norm_pass1_fp_RV_E64_MB",
                 "apps/rms_norm_pass2_fp_RV_E64_MB",
     ]
@@ -478,6 +479,7 @@ class Tests:
                 # Channel slicing (unroll by 16)
                 "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel0_RV_E64_MB",
                 "bert-layer_norm::layer_norm_pass3_fp_bert_post_attn_kernel1_RV_E64_MB",
+                "bert-layer_norm::layer_norm_fp_bert_RV_E64_MB",
 
                 # BERT get_e8m0_scale accum schedule layers
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
@@ -494,6 +496,7 @@ class Tests:
                 "bert-tanh::tanh_fp_bert_RV_E64_MB",
 
                 # LLaMA Prefill RMS Norm
+                "llama_prefill-layer_norm_default::rms_norm_fp_llama_prefill_RV_E64_MB",
                 "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
 
                 "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",

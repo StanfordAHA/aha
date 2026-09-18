@@ -13,7 +13,7 @@
 [submodule "Halide-to-Hardware"]
     path = Halide-to-Hardware
 	url = https://github.com/stanfordaha/Halide-to-Hardware.git
-    branch = master
+	branch = yuchen_jssc_patch
 [submodule "BufferMapping"]
     path = BufferMapping
     url = https://github.com/joyliu37/BufferMapping
@@ -72,7 +72,7 @@
 [submodule "lake"]
     path = lake
     url = https://github.com/StanfordAHA/lake
-    branch = master
+	branch = yuchen_jssc_patch
 [submodule "mflowgen"]
 	path = mflowgen
 	url = https://github.com/mflowgen/mflowgen.git
@@ -106,4 +106,4 @@
 [submodule "strait"]
 	path = strait
 	url = https://github.com/yuchen-mei/strait.git
-	branch = master
+	branch = yuchen_jssc_patch
