@@ -72,7 +72,7 @@
 [submodule "lake"]
     path = lake
     url = https://github.com/StanfordAHA/lake
-    branch = master
+	branch = THESIS
 [submodule "mflowgen"]
 	path = mflowgen
 	url = https://github.com/mflowgen/mflowgen.git
