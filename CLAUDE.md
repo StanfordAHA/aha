@@ -41,6 +41,7 @@ When adding a subrepo `CLAUDE.md`, add its row here. Never create a `README.md` 
   - `--stop-after-clockwork` — stops after `make compile_mem` (skips CGRA placement). Local addition; see `aha/util/map.py`.
 - `aha sweep_conv_block_sizes` — sweep driver for conv_3_3 across schedule variants (local addition; see `aha/util/sweep_conv_block_sizes.py`).
 - `aha sweep_tile_memcore_pnr` — mflowgen driver for per-spec MemCore RTL through PnR (local addition).
+- `aha map/halide --pond-collateral <json>` — PE-tile pond's lake collateral for clockwork's `regfile` level (`LAKE_COLLATERAL_JSON_REGFILE`, next to `--collateral` for MEM); auto-generated from `LAKE_POND_SPEC_CONFIG` when set. Local addition (clockwork side: `clockwork/CLAUDE.md` "Pond (regfile level)").
 
 ## Uncommitted state to be aware of
 

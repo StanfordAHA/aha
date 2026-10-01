@@ -23,6 +23,7 @@ def add_subparser(subparser):
     parser.add_argument("--voyager-gold-model-only", action="store_true", help="Only run voyager for the purpose of generating gold data.")
     parser.add_argument("--skip-env-vars", action="store_true", help="Skips loading environmental variables from application_parameters.json")
     parser.add_argument("--collateral", type=str, help="Path to a lake collateral JSON file to use for clockwork compilation instead of generating the default ONYX collateral")
+    parser.add_argument("--pond-collateral", type=str, help="Path to the PE-tile pond's lake collateral JSON (lake.utils.pond_collateral) for clockwork's regfile level (LAKE_COLLATERAL_JSON_REGFILE). Default: generated from LAKE_POND_SPEC_CONFIG when that is set (RV pond iff LAKE_SPEC_MODE=rv), else clockwork's built-in pond preset.")
     parser.set_defaults(dispatch=dispatch)
 
 
@@ -350,6 +351,22 @@ def dispatch(args, extra_args=None):
             generate_collateral(collateral_path)
             print(f"[aha map] Lake collateral written to {collateral_path}")
         env["LAKE_COLLATERAL_JSON_MEM"] = collateral_path
+
+        # PE-tile pond: one collateral per memory-hierarchy level, so clockwork's
+        # regfile level gets the pond spec's own collateral (same lake factory
+        # garnet builds the pond from).
+        pond_collateral_path = None
+        if getattr(args, "pond_collateral", None):
+            pond_collateral_path = os.path.realpath(args.pond_collateral)
+            print(f"[aha map] Using provided pond collateral: {pond_collateral_path}")
+        elif env.get("LAKE_POND_SPEC_CONFIG"):
+            from lake.utils.pond_collateral import generate as generate_pond_collateral
+            pond_collateral_path = str(app_dir / "bin" / "lake_collateral_regfile.json")
+            generate_pond_collateral(pond_collateral_path, env["LAKE_POND_SPEC_CONFIG"],
+                                     rv=env.get("LAKE_SPEC_MODE") == "rv")
+            print(f"[aha map] Pond collateral written to {pond_collateral_path}")
+        if pond_collateral_path:
+            env["LAKE_COLLATERAL_JSON_REGFILE"] = pond_collateral_path
 
         if run_sim:
             subprocess_call_log(
