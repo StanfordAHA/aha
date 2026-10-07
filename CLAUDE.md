@@ -8,6 +8,7 @@ Before touching code, orient by reading — in this order:
 
 1. **This file** — you're doing that now.
 2. **The `CLAUDE.md` of any subrepo you're about to work in.** These hold notes from prior Claude sessions that survived beyond one conversation: file maps, build recipes, root causes of bugs, uncommitted-state checklists, "why-this-hack-exists" context.
+3. **The tail of `/aha/SESSION_LOG.md`** (`tail -n 80`). It shows what other sessions did recently and what they're working on now. Several sessions often run at once on this machine, so check it before you edit shared files.
 
 Do NOT read or edit child subrepo `README.md` files unless the user explicitly asks. Upstream READMEs are for humans and should be left alone.
 
@@ -60,3 +61,22 @@ If any subrepo's `git status` is unexpectedly clean, prior session's work has be
 ## Memory system
 
 Claude's cross-session memory lives at `/root/.claude/projects/-aha/memory/`. Read `MEMORY.md` there for what's tracked. Repo-specific notes go in the subrepo's CLAUDE.md; user-preference and project-wide notes go in memory. Don't duplicate.
+
+## Session log (REQUIRED for every session)
+
+`/aha/SESSION_LOG.md` is the shared, append-only record of what each Claude session did. It is the one place both the user and other sessions can see all recent work. (User rule, 2026-10-01.)
+
+- **When to write:** add an entry when you start non-trivial work that touches shared files (mark it `in progress` and list the files you're editing). Add another entry when you finish, hand off, or stop with work partly done. Also add one after any commit or push. Read-only Q&A sessions don't need an entry.
+- **How to write:** only APPEND with a shell heredoc (`cat >> /aha/SESSION_LOG.md <<'EOF' … EOF`). Never use Write or Edit on this file, and never rewrite or reorder past entries. Concurrent sessions append to it, so a read-modify-write can wipe out someone else's entry. To correct an old entry, append a new one that says what changed.
+- **Entry format** (keep each one short, ~5–15 lines):
+  ```
+  ## <YYYY-MM-DD HH:MM> · <session id, first 8 chars> · <topic> · <in progress|done|handed off|blocked>
+  - Repos/files: <subrepo: files touched>
+  - Did: <what changed + what it was verified against>
+  - Commits/pushes: <repo@sha, branch, pushed?> (or "none")
+  - Uncommitted: <what's left dirty and where>
+  - Details: <pointer to the subrepo CLAUDE.md section / memory file / scratchpad that holds the real notes>
+  ```
+  Your session id is the UUID in your scratchpad path (`/tmp/claude-0/-aha/<uuid>/scratchpad`).
+- **What goes where:** the log records *what happened and when* and points elsewhere. Root causes, recipes and file maps still go in the subrepo `CLAUDE.md` or in memory. Don't copy them into the log.
+- The file is local-only. It is listed in `.git/info/exclude`, so don't commit it.
