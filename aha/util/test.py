@@ -120,6 +120,102 @@ def unpack_output(arr):
     return result
 
 
+def stream_gold_to_tb_layout(app_dir, output, gold):
+    """Reorder a clockwork gold (bin/<out>.raw) from program order into the layout the testbench reads back.
+
+    The clockwork testscript dumps the output in the order the program writes it. The testbench
+    reads each output IO tile's GLB block back in address order, where that tile's in2glb pattern
+    (write_data_stride over extent) stored its k-th token, and interleaves the tiles (element
+    j + N*addr for tile j of N). The two agree when every tile stores its tokens sequentially and
+    the program writes the tiles round-robin. Tiled outputs (a matmul output tile held in a pond)
+    store with a scatter pattern, and outputs written by sequential per-tile loop nests (resnet's
+    unrolled w) are tile-major in program order. The prog clockwork compiles (bin/*_memory.cpp)
+    gives the program order of every output store, and an IO tile's name gives the op feeding it.
+    Returns the reordered gold, or None when the layouts already agree or can't be resolved.
+    """
+    import glob
+    import re
+
+    tiles = output.get("io_tiles", [])
+    if not tiles or any(t.get("E64_packed") or t.get("bank_toggle_mode") or t.get("extent_multiplier", 1) != 1
+                        or t["addr"].get("E64_packed") or t["addr"].get("bank_toggle_mode")
+                        or t["addr"].get("extent_multiplier", 1) != 1 for t in tiles):
+        return None
+
+    loops, ops, children, stores = {}, {}, {"prg": []}, {}
+    add_output = f'prg.add_output("{output["name"]}");'
+    for path in glob.glob(f"{app_dir}/bin/*_memory.cpp"):
+        with open(path) as f:
+            lines = f.read().splitlines()
+        if not any(line.strip() == add_output for line in lines):
+            continue
+        for line in lines:
+            m = re.match(r'\s*auto (\w+) = (\w+)(?:->|\.)add_loop\("\w+", (-?\d+), (-?\d+)\);', line)
+            if m:
+                var, parent, lo, hi = m.groups()
+                loops[var] = int(hi) - int(lo)
+                children.setdefault(parent, []).append(var)
+                continue
+            m = re.match(r'\s*auto (\w+) = (\w+)(?:->|\.)add_op\("(\w+)"\);', line)
+            if m:
+                ops[m.group(1)] = m.group(3)
+                children.setdefault(m.group(2), []).append(m.group(1))
+                continue
+            m = re.match(r'\s*(\w+)->add_store\("' + re.escape(output["name"]) + r'",', line)
+            if m:
+                stores[m.group(1)] = stores.get(m.group(1), 0) + 1
+        break
+    if not stores:
+        return None
+
+    # Program order: a token's key is (position under parent, iteration) per enclosing loop, then the
+    # op's position and the store's position inside the op. Its place in the testbench readback comes
+    # from the IO tile fed by that store: the k-th token goes to sum(idx_d(k) * write_data_stride_d).
+    n_tiles = len(tiles)
+    keys, places = [], []
+    def walk(var, path):
+        for pos, child in enumerate(children.get(var, [])):
+            if child in loops:
+                walk(child, path + [(pos, loops[child])])
+                continue
+            for s in range(stores.get(child, 0)):
+                j = [i for i, t in enumerate(tiles) if t["name"].endswith(f"_{ops[child]}_write_{s}")]
+                if len(j) != 1:
+                    raise ValueError(f"no IO tile for {ops[child]} store {s}")
+                addr = tiles[j[0]]["addr"]
+                dims = addr["dimensionality"]
+                extent, stride = addr["extent"][:dims], addr["write_data_stride"][:dims]
+                n = int(numpy.prod([e for _, e in path]))
+                if int(numpy.prod(extent)) != n:
+                    raise ValueError(f"IO tile extent {extent} != {n} tokens")
+                k, a = numpy.arange(n), numpy.zeros(n, dtype=numpy.int64)
+                for e, st in zip(extent, stride):
+                    a += (k % e) * st
+                    k = k // e
+                places.append(a if n_tiles == 1 else j[0] + n_tiles * a)
+                grids = numpy.meshgrid(*[numpy.arange(e) for _, e in path], indexing="ij")
+                key = [c for (p, _), g in zip(path, grids) for c in (numpy.full(g.shape, p), g)]
+                keys.append(numpy.stack([c.ravel() for c in key] + [numpy.full(n, pos), numpy.full(n, s)], axis=1))
+    try:
+        walk("prg", [])
+    except (ValueError, KeyError):
+        return None
+    if not keys:
+        return None
+
+    width = max(k.shape[1] for k in keys)
+    keys = numpy.concatenate([numpy.pad(k, ((0, 0), (0, width - k.shape[1])), constant_values=-1) for k in keys])
+    place = numpy.concatenate(places)[numpy.lexsort(keys.T[::-1])]
+    if len(place) != len(gold) or place.min() < 0 or place.max() >= len(gold) \
+            or not numpy.all(numpy.bincount(place, minlength=len(gold)) == 1):
+        return None
+    if numpy.array_equal(place, numpy.arange(len(gold))):
+        return None
+    reordered = numpy.empty_like(gold)
+    reordered[place] = gold
+    return reordered
+
+
 def dispatch(args, extra_args=None):
     assert len(args.app) > 0
     if args.mu_test is not None and len(args.mu_test) > 0:
@@ -374,6 +470,12 @@ def dispatch(args, extra_args=None):
                         golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
                     else:
                         golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
+                        # A gold already rewritten into the testbench layout by a pre-PnR hook carries this marker.
+                        if not os.path.exists(f"{app_dir}/bin/.{datafile}.gold_interleaved"):
+                            reordered = stream_gold_to_tb_layout(app_dir, out, golds_by_name[output_file_name])
+                            if reordered is not None:
+                                print(f"[{app}::{output_file_name}] Gold reordered from clockwork program order to the GLB readback layout")
+                                golds_by_name[output_file_name] = reordered
 
             for out in outputs:
                 datafile = out["datafile"]
