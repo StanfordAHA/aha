@@ -316,6 +316,19 @@ def dispatch(args, extra_args=None):
             os.rename(
                 app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
             )
+            # `make compare` converts only the first input to .raw. Multi-input apps (resnet:
+            # input + kernel) need every IO's .raw for the testbench: hw_support's `rawio`, as
+            # its aha-halide target runs. Non-fatal: single-input apps already have theirs.
+            try:
+                subprocess_call_log(
+                    cmd=["make", "-C", str(app_dir), "rawio"],
+                    cwd=args.aha_dir / "Halide-to-Hardware",
+                    env=env,
+                    log=args.log,
+                    log_file_path=log_file_path
+                )
+            except subprocess.CalledProcessError:
+                print(f"\033[93mWARNING: `make rawio` failed for {app_name}; only the first input's .raw exists.\033[0m")
 
 
         # Copy path_balance.json if using POND_PATH_BALANCING
