@@ -376,7 +376,12 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path
             )
 
-        # Helper function to load hex txt files into uint16 arrays
+        # One CGRA data word per value: the fabric's data width (the lake spec's data_width),
+        # read from the GLB header garnet generated for this build, as the testbench is.
+        from aha.util.data_width import fabric_data_width
+        cgra_data_width = fabric_data_width(args.aha_dir / "garnet")
+
+        # Helper function to load hex txt files into arrays of CGRA data words
         def _load_hex_txt(txt_path: str):
             assert os.path.exists(txt_path), f"The RTL sim output file {txt_path} does not exist."
             vals = []
@@ -384,7 +389,7 @@ def dispatch(args, extra_args=None):
                 for line in f:
                     if line.strip():
                         vals.extend(int(v, 16) for v in line.split())
-            return numpy.array(vals, dtype=numpy.uint16)
+            return numpy.array(vals, dtype=f"uint{cgra_data_width}")
 
         # Build a list of (app, mu_test, output_file_name, gold_array, sim_array, app_dir)
         comparisons = []
@@ -467,9 +472,9 @@ def dispatch(args, extra_args=None):
                     gold_output_path = f"{app_dir}/bin/{datafile}"
                     assert os.path.exists(gold_output_path), f"The gold output file {gold_output_path} does not exist."
                     if packed_outputs:
-                        golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=">u2"))
+                        golds_by_name[output_file_name] = unpack_output(numpy.fromfile(gold_output_path, dtype=f">u{cgra_data_width // 8}"))
                     else:
-                        golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=">u2")
+                        golds_by_name[output_file_name] = numpy.fromfile(gold_output_path, dtype=f">u{cgra_data_width // 8}")
                         # A gold already rewritten into the testbench layout by a pre-PnR hook carries this marker.
                         if not os.path.exists(f"{app_dir}/bin/.{datafile}.gold_interleaved"):
                             reordered = stream_gold_to_tb_layout(app_dir, out, golds_by_name[output_file_name])

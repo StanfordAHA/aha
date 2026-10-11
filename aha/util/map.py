@@ -114,6 +114,63 @@ def voyager_run_layer(model, layer):
         # sys.exit(exit_code)
 
 
+def set_lake_collaterals(args, env, app_dir):
+    """Point clockwork at the lake collateral of each memory level (LAKE_COLLATERAL_JSON_MEM,
+    _REGFILE). The MEM collateral also carries the CGRA data width (data_width), which Halide,
+    clockwork and MetaMapper read, so this runs before the first make of the app."""
+    os.makedirs(app_dir / "bin", exist_ok=True)
+    # Set lake collateral JSON so clockwork uses actual hardware
+    # parameters instead of the hardcoded defaults in options.h.
+    if hasattr(args, 'collateral') and args.collateral:
+        collateral_path = os.path.realpath(args.collateral)
+        print(f"[aha map] Using provided collateral: {collateral_path}")
+    elif env.get("LAKE_SPEC_CONFIG"):
+        # The MEM tile garnet builds from this spec (as the pond below does from its own).
+        from lake.utils.spec_config_to_collateral import generate as generate_spec_collateral
+        collateral_path = str(app_dir / "bin" / "lake_collateral_mem.json")
+        generate_spec_collateral(env["LAKE_SPEC_CONFIG"], collateral_path)
+        print(f"[aha map] Lake collateral written to {collateral_path} from LAKE_SPEC_CONFIG")
+    else:
+        from aha.util.generate_lake_collateral import generate_collateral
+        collateral_path = str(app_dir / "bin" / "lake_collateral_mem.json")
+        generate_collateral(collateral_path)
+        print(f"[aha map] Lake collateral written to {collateral_path}")
+    env["LAKE_COLLATERAL_JSON_MEM"] = collateral_path
+
+    # The CGRA data width comes from the collateral's data_width (Halide, clockwork and
+    # MetaMapper read it there). It must be the width garnet builds the fabric at, i.e.
+    # the lake spec's data_width.
+    from aha.util.data_width import collateral_data_width, spec_data_width
+    data_width = collateral_data_width(collateral_path)
+    if env.get("LAKE_SPEC_CONFIG"):
+        spec_width = spec_data_width(env["LAKE_SPEC_CONFIG"])
+        if spec_width != data_width:
+            raise SystemExit(f"[aha map] ERROR: collateral {collateral_path} has data_width "
+                             f"{data_width}, but LAKE_SPEC_CONFIG={env['LAKE_SPEC_CONFIG']} "
+                             f"(the fabric) has data_width {spec_width}")
+    print(f"[aha map] CGRA data width: {data_width} bits (collateral data_width)")
+
+    # PE-tile pond: one collateral per memory-hierarchy level, so clockwork's
+    # regfile level gets the pond spec's own collateral (same lake factory
+    # garnet builds the pond from).
+    pond_collateral_path = None
+    if getattr(args, "pond_collateral", None):
+        pond_collateral_path = os.path.realpath(args.pond_collateral)
+        print(f"[aha map] Using provided pond collateral: {pond_collateral_path}")
+    elif env.get("LAKE_POND_SPEC_CONFIG"):
+        from lake.utils.pond_collateral import generate as generate_pond_collateral
+        pond_collateral_path = str(app_dir / "bin" / "lake_collateral_regfile.json")
+        generate_pond_collateral(pond_collateral_path, env["LAKE_POND_SPEC_CONFIG"],
+                                 rv=env.get("LAKE_SPEC_MODE") == "rv")
+        print(f"[aha map] Pond collateral written to {pond_collateral_path}")
+    if pond_collateral_path:
+        env["LAKE_COLLATERAL_JSON_REGFILE"] = pond_collateral_path
+        pond_width = collateral_data_width(pond_collateral_path)
+        if pond_width != data_width:
+            raise SystemExit(f"[aha map] ERROR: pond collateral {pond_collateral_path} has "
+                             f"data_width {pond_width}, the MEM collateral {data_width}")
+
+
 def dispatch(args, extra_args=None):
     args.app = Path(args.app)
     env = copy.deepcopy(os.environ)
@@ -286,6 +343,7 @@ def dispatch(args, extra_args=None):
         print(f"\033[93mINFO: Skipping CGRA mapping for {app_name} as per settings in regress.py. Assuming mapping collateral has previously been generated...\033[0m")
     else:
         print(f"\033[92mMapping {app_name} to CGRA...\033[0m")
+        set_lake_collaterals(args, env, app_dir)
         if "handcrafted" in str(args.app):
             # Generate pgm Images
             subprocess_call_log(
@@ -353,33 +411,6 @@ def dispatch(args, extra_args=None):
                 log_file_path=log_file_path
             )
 
-        # Set lake collateral JSON so clockwork uses actual hardware
-        # parameters instead of the hardcoded defaults in options.h.
-        if hasattr(args, 'collateral') and args.collateral:
-            collateral_path = os.path.realpath(args.collateral)
-            print(f"[aha map] Using provided collateral: {collateral_path}")
-        else:
-            from aha.util.generate_lake_collateral import generate_collateral
-            collateral_path = str(app_dir / "bin" / "lake_collateral_mem.json")
-            generate_collateral(collateral_path)
-            print(f"[aha map] Lake collateral written to {collateral_path}")
-        env["LAKE_COLLATERAL_JSON_MEM"] = collateral_path
-
-        # PE-tile pond: one collateral per memory-hierarchy level, so clockwork's
-        # regfile level gets the pond spec's own collateral (same lake factory
-        # garnet builds the pond from).
-        pond_collateral_path = None
-        if getattr(args, "pond_collateral", None):
-            pond_collateral_path = os.path.realpath(args.pond_collateral)
-            print(f"[aha map] Using provided pond collateral: {pond_collateral_path}")
-        elif env.get("LAKE_POND_SPEC_CONFIG"):
-            from lake.utils.pond_collateral import generate as generate_pond_collateral
-            pond_collateral_path = str(app_dir / "bin" / "lake_collateral_regfile.json")
-            generate_pond_collateral(pond_collateral_path, env["LAKE_POND_SPEC_CONFIG"],
-                                     rv=env.get("LAKE_SPEC_MODE") == "rv")
-            print(f"[aha map] Pond collateral written to {pond_collateral_path}")
-        if pond_collateral_path:
-            env["LAKE_COLLATERAL_JSON_REGFILE"] = pond_collateral_path
 
         if run_sim:
             subprocess_call_log(

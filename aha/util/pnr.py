@@ -4,6 +4,7 @@ import subprocess
 import sys
 import copy
 import json
+from aha.util.data_width import fabric_data_width
 
 
 def add_subparser(subparser):
@@ -238,6 +239,7 @@ def dispatch(args, extra_args=None):
                      "--top", "bin/design_top.json",
                      "--place", "bin/design.place",
                      "--mu_tiling", voyager_tiling_path,
+                     "--data-width", str(fabric_data_width(args.aha_dir / "garnet")),
                      ],
                 cwd=arg_path,
                 log=args.log,
