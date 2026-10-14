@@ -375,18 +375,27 @@ def dispatch(args, extra_args=None):
                 app_dir / "bin/output_cgra_comparison.pgm", app_dir / "bin/gold.pgm",
             )
             # `make compare` converts only the first input to .raw. Multi-input apps (resnet:
-            # input + kernel) need every IO's .raw for the testbench: hw_support's `rawio`, as
-            # its aha-halide target runs. Non-fatal: single-input apps already have theirs.
-            try:
-                subprocess_call_log(
-                    cmd=["make", "-C", str(app_dir), "rawio"],
-                    cwd=args.aha_dir / "Halide-to-Hardware",
-                    env=env,
-                    log=args.log,
-                    log_file_path=log_file_path
-                )
-            except subprocess.CalledProcessError:
-                print(f"\033[93mWARNING: `make rawio` failed for {app_name}; only the first input's .raw exists.\033[0m")
+            # input + kernel) need every IO's .raw for the testbench, so make the MISSING ones
+            # (hw_support's `rawio` would also remake an existing .raw from a newer .leraw =
+            # Halide's hw_input, clobbering inputs process.cpp presets as raw bits next to its
+            # gold: the fp apps' bf16(input) converts the bit patterns). Non-fatal.
+            meta_path = app_dir / "bin/design_meta_halide.json"
+            missing_raws = []
+            if meta_path.exists():
+                with open(meta_path) as f:
+                    missing_raws = [f"bin/{io['name']}.raw" for io in json.load(f)["IOs"]["inputs"]
+                                    if not (app_dir / f"bin/{io['name']}.raw").exists()]
+            if missing_raws:
+                try:
+                    subprocess_call_log(
+                        cmd=["make", "-C", str(app_dir)] + missing_raws,
+                        cwd=args.aha_dir / "Halide-to-Hardware",
+                        env=env,
+                        log=args.log,
+                        log_file_path=log_file_path
+                    )
+                except subprocess.CalledProcessError:
+                    print(f"\033[93mWARNING: making {missing_raws} failed for {app_name}.\033[0m")
 
 
         # Copy path_balance.json if using POND_PATH_BALANCING
