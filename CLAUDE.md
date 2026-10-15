@@ -44,6 +44,28 @@ When adding a subrepo `CLAUDE.md`, add its row here. Never create a `README.md` 
 - `aha sweep_tile_memcore_pnr` — mflowgen driver for per-spec MemCore RTL through PnR (local addition).
 - `aha map/halide --pond-collateral <json>` — PE-tile pond's lake collateral for clockwork's `regfile` level (`LAKE_COLLATERAL_JSON_REGFILE`, next to `--collateral` for MEM); auto-generated from `LAKE_POND_SPEC_CONFIG` when set. Local addition (clockwork side: `clockwork/CLAUDE.md` "Pond (regfile level)").
 
+## CI on `mek` (2026-10-15, session 352df910)
+
+- Every push to aha `mek` runs Buildkite `aha-flow` with mek's submodule pins: the agents
+  build this repo's Dockerfile, then run `.buildkite/pipeline.yml`'s RSTEPS, which on mek is
+  `gold 0`: the 8x2 Zircon RTL against `.buildkite/bin/ref/zircon-4x2.v.gz`, then
+  `aha regress fast` (vec_identity, conv_2_1_RV, pointwise_RV_E64(_MB), fp_pointwise_RV,
+  pointwise, fp_pointwise). First green build: 13327 (f539d74). The full `pr_aha` (regress
+  1-9, hours on 4 shared agents) is not run per push; start it by hand with env
+  `RSTEPS="gold 0 1 2 3 4 6 5 8 7 9"`.
+- A change to garnet's RTL fails gold until the reference is rebuilt from mek's pins:
+  `garnet.py` with `rtl-goldcheck.sh`'s zircon flags and `WHICH_SOC=zircon` in a private
+  garnet at the pinned commit, then gzip `garnet.v` into the ref and commit it with
+  `git add -f` (`.buildkite/bin` is gitignored).
+- GitHub "Docker Image CI" (`dockerimage.yml`) publishes `stanfordaha/garnet:mek` from mek,
+  never `:latest`.
+- What made it build (a5fa4ba, f539d74): `aha/util` imports lake lazily (the image runs
+  `aha deps install`, which installs lake, before lake exists); `fast-submod-init.sh` only
+  reuses a cached submodule together with its `.git/modules` (agents passed around a partial
+  Halide-to-Hardware); `setuptools_scm<8` before `aha deps install` (10.x needs a newer
+  setuptools than the venv's 44).
+- Docs-only commits: put `[skip ci]` in the message. Logs: memory `reference_garnet_ci`.
+
 ## Uncommitted state to be aware of
 
 Several subrepos carry uncommitted changes across sessions. Before assuming baseline behavior, run `git status` in the subrepo you're about to touch. Known live changes (as of session cluster around 2026-05):
