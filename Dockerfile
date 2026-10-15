@@ -379,9 +379,12 @@ RUN \
    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9
 
+# setuptools_scm<8: mflowgen's setup_requires otherwise fetches the newest one
+# (10.x needs setuptools.sic, which this venv's setuptools 44 lacks)
 RUN \
   source bin/activate && \
   echo "--- ..Final aha deps install" && \
+  pip install "setuptools_scm<8" && \
   pip install -e . && \
   aha deps install
 
