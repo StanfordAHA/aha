@@ -102,20 +102,19 @@ function get_submod {
         DBG && echo "  - $cached"
         if test "$cached" = "$c"; then
 
-            # Copy submodule contents
+            # Use the cache only together with its metadata: without it nothing says
+            # the cached tree really is commit $c (mek 2026-10: agents passed around a
+            # partial Halide-to-Hardware, no src/ImageParam.cpp, and every build failed)
+            if ! test -e $d/.git/modules/$s; then
+                echo "  - cannot find .git/modules/$s, not trusting this cached $s"
+                continue
+            fi
+
+            # Copy submodule contents and metadata
             dtrunc=$(echo $d | sed 's/.stanford.*//')
             printf " - Copying %-27s from $dtrunc\n" "$c8 $s"
             cp -rp $d/$s .
-
-            # Copy submodule metadata if it exists
-            if test -e $d/.git/modules/$s; then
-                cp -rp $d/.git/modules/$s .git/modules
-            else
-                # Things break w/o the dummy
-                echo "  - cannot find .git/modules/$s"
-                echo "  - creating dummy .git/modules/$s, this might be terrible"
-                mkdir -p .git/modules/$s
-            fi
+            cp -rp $d/.git/modules/$s .git/modules
             return
         fi
     done
@@ -123,8 +122,10 @@ function get_submod {
 
     # Slow-initialize recalcitrant submodules
     printf "\n\nCannot find cache for $s $c, must use backup/slow method\n"
-    echo "... git submodule update --init --recursive --force $s ..."
-    git submodule update --init --recursive --force $s
+    # Shallow first (GitHub serves the pinned commit directly), else the full history
+    echo "... git submodule update --init --recursive --force --depth 1 $s ..."
+    git submodule update --init --recursive --force --depth 1 $s || \
+        git submodule update --init --recursive --force $s
     (cd $s; git clean -ffxdq; git submodule foreach --recursive "git clean -ffxdq")
     git submodule sync --recursive $s
     echo "... git reset --hard $s recursively ..."

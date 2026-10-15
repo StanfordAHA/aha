@@ -20,21 +20,34 @@ import shutil
 import subprocess
 import sys
 
-from lake.spec.spec import Spec
-from lake.spec.port import Port
-from lake.spec.storage import SingleBankStorage
-from lake.spec.memory_port import MemoryPort
-from lake.spec.iteration_domain import IterationDomain
-from lake.spec.address_generator import AddressGenerator
-from lake.spec.schedule_generator import ScheduleGenerator, ReadyValidScheduleGenerator
-from lake.utils.spec_enum import Runtime, Direction, MemoryPortType
-
-
+# lake is imported lazily: `aha` imports every aha.util module at startup, and
+# the docker image runs `aha deps install` (which installs lake) before lake exists.
 # build_spec / build_spec_rv now live in lake, so that garnet's
 # cgra/util_onyx.py can import them inside the rtl docker container
-# (which ships lake but not this package). Re-exported here to keep
-# existing callers working and to avoid a second copy drifting.
-from lake.spec.spec_memory_controller import build_spec, build_spec_rv  # noqa: F401
+# (which ships lake but not this package). Re-exported here (module __getattr__)
+# to keep existing callers working and to avoid a second copy drifting.
+_LAKE_NAMES = {
+    "Spec": "lake.spec.spec",
+    "Port": "lake.spec.port",
+    "SingleBankStorage": "lake.spec.storage",
+    "MemoryPort": "lake.spec.memory_port",
+    "IterationDomain": "lake.spec.iteration_domain",
+    "AddressGenerator": "lake.spec.address_generator",
+    "ScheduleGenerator": "lake.spec.schedule_generator",
+    "ReadyValidScheduleGenerator": "lake.spec.schedule_generator",
+    "Runtime": "lake.utils.spec_enum",
+    "Direction": "lake.utils.spec_enum",
+    "MemoryPortType": "lake.utils.spec_enum",
+    "build_spec": "lake.spec.spec_memory_controller",
+    "build_spec_rv": "lake.spec.spec_memory_controller",
+}
+
+
+def __getattr__(name):
+    if name in _LAKE_NAMES:
+        import importlib
+        return getattr(importlib.import_module(_LAKE_NAMES[name]), name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 
@@ -228,6 +241,7 @@ def generate_all_collateral(output_dir, configs):
         os.makedirs(cfg_dir, exist_ok=True)
         path = os.path.join(cfg_dir, "lake_collateral.json")
 
+        from lake.spec.spec_memory_controller import build_spec
         spec = build_spec(**cfg)
         collateral = spec.extract_compiler_information()
         spec.save_compiler_information(path)

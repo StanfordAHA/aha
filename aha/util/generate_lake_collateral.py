@@ -8,8 +8,6 @@ load via the LAKE_COLLATERAL_JSON_<LEVEL> environment variable.
 import argparse
 import os
 
-from lake.spec.spec_memory_controller import build_four_port_wide_fetch_rv
-
 # Default parameters matching garnet/cgra/util_onyx.py
 DEFAULT_STORAGE_CAPACITY = 4096
 DEFAULT_DATA_WIDTH = 16
@@ -31,6 +29,8 @@ def generate_collateral(output_path,
     Returns:
         The collateral dict that was written.
     """
+    # lazy: `aha` imports aha.util modules at startup, before `aha deps install` adds lake
+    from lake.spec.spec_memory_controller import build_four_port_wide_fetch_rv
     spec = build_four_port_wide_fetch_rv(
         storage_capacity=storage_capacity,
         data_width=data_width,

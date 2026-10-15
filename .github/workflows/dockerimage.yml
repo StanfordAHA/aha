@@ -35,7 +35,11 @@ jobs:
     - name: Build and Publish Docker Image
       run: |
         echo "${{ github.token }}" > my_secret.txt
+        # The mek branch (personal thesis pins) publishes its own tag and must never
+        # overwrite the shared stanfordaha/garnet:latest image
+        tag=latest
+        if [ "${{ github.ref_name }}" = "mek" ]; then tag=mek; fi
         docker buildx build \
           --secret id=gtoken,src=my_secret.txt \
-          --tag stanfordaha/garnet:latest \
+          --tag stanfordaha/garnet:$tag \
           --push .
