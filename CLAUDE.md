@@ -33,6 +33,25 @@ Current state (as of this file's creation):
 
 When adding a subrepo `CLAUDE.md`, add its row here. Never create a `README.md` yourself.
 
+## Style and tests before every push (user rule, 2026-10-16)
+
+The user gets an email for every failing CI run, so check locally before pushing:
+
+- **pycodestyle with the repo's `setup.cfg`, from the repo root; fix every finding.** `pycodestyle`
+  2.12.1 is in the /aha venv (the version CI gets on Python 3.8). Each command must print nothing:
+  - garnet: `python -m pycodestyle $(git ls-files '*.py')` (also `tests/test_style` in pytest CI)
+  - lake: `python -m pycodestyle lake/ tests/`
+  - canal: `python -m pycodestyle canal tests *.py`
+- **Run the tests your change touches**, the way CI runs them: lake CI is `pytest -v tests/` from
+  the repo root, so new tests must also collect from there (not only from their own directory).
+  garnet CI runs `pytest tests` (style + mflowgen graphs + the rest).
+- Repos without a style config or CI (lassen, MetaMapper, archipelago, Halide-to-Hardware,
+  clockwork, coreir): add no new pycodestyle findings to the Python files you change.
+- Docs-only commits: put `[skip ci]` in the message.
+- CI per branch: garnet `modern_gf` GitHub pytest + verilator; lake `THESIS` and canal `thesis`
+  GitHub "CI Test"; aha `mek` Buildkite aha-flow + Docker Image CI. See "CI on `mek`" below and
+  memory `reference_garnet_ci` for reading CI logs.
+
 ## The main `aha` CLI driver
 
 `aha` is a Python package under `/aha/aha/` that orchestrates the full flow. Key commands:
