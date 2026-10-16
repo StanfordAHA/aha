@@ -24,7 +24,7 @@ Current state (as of this file's creation):
 | `clockwork/` | Polyhedral compiler that lowers Halide-emitted IR to controller configs and CoreIR | **yes** |
 | `garnet/` | CGRA fabric generator (produces the tile RTL + lake collateral) | **`mflowgen/CLAUDE.md`** (lake-spec MemCore PnR sweep) |
 | `lake/` | MEM tile generator (SRAM + agg + tb + controllers) — where fetch_width comes from | **yes** |
-| `canal/` | Interconnect generator | no |
+| `canal/` | Interconnect generator | **yes** (CI, style) |
 | `mflowgen/` | Backend physical-design flow (PnR, mflowgen graphs) | no |
 | `coreir/` | HW IR + code generation library | no |
 | `Lego_v0/` | Newer app framework | no |
