@@ -14,9 +14,10 @@ env:
   #
   # RSTEPS: "gold 0 1 2 3 4 5 6 7 8 9"  # gold + fast + regress 1-9
   # RSTEPS: "gold 0 1 2 3"  # gold + fast + regress 1-3
-  # mek (personal thesis branches): gold + fast only, every push would otherwise run
-  # the nine full regressions on the shared agents
-  RSTEPS: ${RSTEPS:-gold 0}
+  # mek (personal thesis branches): no steps, so no docker image build on the shared
+  # agents (their docker disk filled up, 2026-10-16). Launch and Cleanup still run and
+  # pass. To run gold + fast (or more), start a build with env RSTEPS="gold 0".
+  RSTEPS: "${RSTEPS:-}"
 
   MAX_AGENTS: 4  # How many agents do we get to use for regression steps?
 

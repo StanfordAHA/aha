@@ -65,12 +65,16 @@ The user gets an email for every failing CI run, so check locally before pushing
 
 ## CI on `mek` (2026-10-15, session 352df910)
 
-- Every push to aha `mek` runs Buildkite `aha-flow` with mek's submodule pins: the agents
-  build this repo's Dockerfile, then run `.buildkite/pipeline.yml`'s RSTEPS, which on mek is
-  `gold 0`: the 8x2 Zircon RTL against `.buildkite/bin/ref/zircon-4x2.v.gz`, then
-  `aha regress fast` (vec_identity, conv_2_1_RV, pointwise_RV_E64(_MB), fp_pointwise_RV,
-  pointwise, fp_pointwise). First green build: 13327 (f539d74). The full `pr_aha` (regress
-  1-9, hours on 4 shared agents) is not run per push; start it by hand with env
+- Pushes to aha `mek` run Buildkite `aha-flow` with no regression steps (user decision
+  2026-10-17): `.buildkite/pipeline.yml`'s RSTEPS defaults to empty, so the agents build no
+  image, and Launch + Cleanup pass. The agents' shared docker disk (/sim/docker on
+  r8cad-docker) was full from build 13330 on; see `/aha/OPEN_ISSUES.md`
+  cross-repo/buildkite-agent-disk-full.
+- To test mek, start an aha-flow build of mek by hand with env `RSTEPS="gold 0"`: the agents
+  build this repo's Dockerfile with mek's submodule pins, then gold (the 8x2 Zircon RTL
+  against `.buildkite/bin/ref/zircon-4x2.v.gz`) and `aha regress fast` (vec_identity,
+  conv_2_1_RV, pointwise_RV_E64(_MB), fp_pointwise_RV, pointwise, fp_pointwise). Green
+  13327-13329 (f539d74). The full `pr_aha` (regress 1-9, hours on 4 shared agents):
   `RSTEPS="gold 0 1 2 3 4 6 5 8 7 9"`.
 - A change to garnet's RTL fails gold until the reference is rebuilt from mek's pins:
   `garnet.py` with `rtl-goldcheck.sh`'s zircon flags and `WHICH_SOC=zircon` in a private

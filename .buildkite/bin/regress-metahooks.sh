@@ -206,9 +206,8 @@ elif [ "$1" == '--pre-exit' ]; then
     echo "+++ [pre-exit] KILL CONTAINER $CONTAINER"
     set -x; docker kill "$CONTAINER" || echo okay; set +x
 
-    # mek: also remove this build's image (each step builds its own; ~5 GB per mek push
-    # stayed on the agent, 2026-10-16 agents ran out of disk). Refused, harmlessly,
-    # while another step's container still uses it; a retry rebuilds it.
+    # mek: also remove this build's image (~9 GB; each build makes its own). Refused,
+    # harmlessly, while a container still uses it; a retry rebuilds it.
     echo "+++ [pre-exit] REMOVE IMAGE $IMAGE"
     set -x; docker image rm "$IMAGE" || echo okay; set +x
 
