@@ -40,7 +40,7 @@ def main():
     # Automatically create a command named after each submodule in our
     # `aha.util` module
     for importer, modname, ispkg in pkgutil.iter_modules(aha.util.__path__):
-        if modname in ('regress_util', 'generate_lake_collateral', 'sweep_thesis_collateral', 'data_width'): continue  # Skip helper modules!
+        if modname in ('regress_util', 'generate_lake_collateral', 'sweep_thesis_collateral', 'data_width', 'rv_balance'): continue  # Skip helper modules!
         getattr(aha.util, modname).add_subparser(subparser)
 
     args, extra_args = parser.parse_known_args()
