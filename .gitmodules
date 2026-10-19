@@ -65,6 +65,7 @@
 [submodule "cgra_pnr"]
     path = cgra_pnr
 	url = https://github.com/stanfordaha/cgra_pnr.git
+	branch = thesis
 [submodule "ast_tools"]
     path = ast_tools
     url = https://github.com/leonardt/ast_tools
