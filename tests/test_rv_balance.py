@@ -1,6 +1,6 @@
-"""`aha pnr --rv-balance N` (aha/util/rv_balance.py): the environment it refuses, the
-restore of an earlier run's padded netlist, and one balancing round on a toy routed
-design with garnet's model and padding hook (PnR stubbed)."""
+"""`aha pnr --rv-balance N` (aha/util/rv_balance.py): when it is on by default, the
+environment it refuses, the restore of an earlier run's padded netlist, and one balancing
+round on a toy routed design with garnet's model and padding hook (PnR stubbed)."""
 import json
 from pathlib import Path
 
@@ -22,6 +22,23 @@ def test_check_env():
             rv_balance.check_env(env, extra)
 
 
+def test_rounds_default():
+    """On by default for dense RV without PnR pipelining or --daemon; an explicit N is
+    checked; 0 turns it off."""
+    drv = {"DENSE_READY_VALID": "1"}
+    assert rv_balance.rounds(None, drv, []) == rv_balance.DEFAULT_ROUNDS
+    assert rv_balance.rounds(None, dict(drv, EXHAUSTIVE_PIPE="0"), []) == rv_balance.DEFAULT_ROUNDS
+    for env, extra in (({}, []),                                  # static
+                       (dict(drv, EXHAUSTIVE_PIPE="1"), []),      # aha regress RV
+                       (dict(drv, POST_PNR_ITR="max"), []),
+                       (drv, ["--daemon", "use"])):
+        assert rv_balance.rounds(None, env, extra) == 0
+    assert rv_balance.rounds(0, drv, []) == 0
+    assert rv_balance.rounds(2, drv, []) == 2
+    with pytest.raises(SystemExit):
+        rv_balance.rounds(2, dict(drv, EXHAUSTIVE_PIPE="1"), [])
+
+
 def _top(instances, connections, metadata=None):
     mod = {"instances": instances, "connections": connections}
     if metadata:
@@ -36,9 +53,17 @@ def test_restore(tmp_path):
     (b / "design_top.pre_rv_balance.json").write_text(json.dumps(_top({"x": {}}, [])))
     for p in (tmp_path / "manual.place", b / "manual.place"):
         p.write_text("p0 1 1\n")
+    for f in ("rv_balance_plan.json", "rv_balance_log.json"):
+        (b / f).write_text("{}")
+    assert rv_balance.balanced(tmp_path)
     rv_balance.restore(tmp_path)
     assert json.loads((b / "design_top.json").read_text()) == _top({"x": {}}, [])
     assert not (tmp_path / "manual.place").exists() and not (b / "manual.place").exists()
+    assert not rv_balance.balanced(tmp_path) and not (b / "rv_balance_plan.json").exists()
+    # a PnR that does not balance keeps a user's manual.place
+    (tmp_path / "manual.place").write_text("p0 1 1\n")
+    rv_balance.restore(tmp_path, unpin=False)
+    assert (tmp_path / "manual.place").exists()
     # an unpadded netlist (a new map) is left alone
     (b / "design_top.json").write_text(json.dumps(_top({"y": {}}, [])))
     rv_balance.restore(tmp_path)

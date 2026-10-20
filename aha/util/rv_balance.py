@@ -1,4 +1,5 @@
-"""`aha pnr --rv-balance N`: latency matching for dense ready-valid apps.
+"""`aha pnr --rv-balance N`: latency matching for dense ready-valid apps (on by default
+for dense RV without PnR pipelining; see rounds()).
 
 In dense RV every register is a 2-deep FIFO and a fanout is a lazy fork (a token
 leaves only when every branch takes it). When a fork's branches rejoin at a PE with
@@ -28,6 +29,7 @@ import time
 from pathlib import Path
 
 MARK = "rv_balance"   # design_top metadata key the hook writes
+DEFAULT_ROUNDS = 3    # `aha pnr` without --rv-balance (conv..harris converge in 1)
 
 
 def _balanced(top_json):
@@ -44,6 +46,26 @@ def _padding_registers(bin_dir):
     return meta.get("registers", 0)
 
 
+def rounds(requested, env, extra_args):
+    """Rounds for `aha pnr --rv-balance` (requested: N, or None without the flag). An
+    explicit N > 0 must suit the environment (check_env exits otherwise); without the
+    flag it is DEFAULT_ROUNDS for dense RV without PnR pipelining or --daemon, else 0."""
+    if requested is not None:
+        if requested:
+            check_env(env, extra_args)
+        return requested
+    if env.get("DENSE_READY_VALID") != "1":
+        return 0
+    pipelined = [v for v in ("EXHAUSTIVE_PIPE", "POST_PNR_ITR") if env.get(v, "0") not in ("", "0")]
+    if pipelined or "--daemon" in extra_args:
+        why = ", ".join(pipelined) or "--daemon"
+        print(f"--- rv-balance: off ({why}); branch latency is not matched", flush=True)
+        return 0
+    print(f"--- rv-balance: on by default for dense RV without PnR pipelining, at most "
+          f"{DEFAULT_ROUNDS} rounds (--rv-balance 0 turns it off)", flush=True)
+    return DEFAULT_ROUNDS
+
+
 def check_env(env, extra_args):
     """Refuse the combinations the plan does not model."""
     if env.get("DENSE_READY_VALID") != "1":
@@ -55,16 +77,26 @@ def check_env(env, extra_args):
         sys.exit("*** --rv-balance runs PnR more than once: not with --daemon")
 
 
-def restore(app_dir):
+def restore(app_dir, unpin=True):
     """Start from the app's own netlist: a design_top.json an earlier --rv-balance run
-    padded goes back to the hook's saved input, and no stale manual.place pins it."""
+    padded goes back to the hook's saved input, and that run's plan and log go (aha test
+    reads the log to pick the RV start). unpin: also remove manual.place (balancing
+    writes its own; left alone when this PnR does not balance)."""
     bin_dir = app_dir / "bin"
     top, orig = bin_dir / "design_top.json", bin_dir / "design_top.pre_rv_balance.json"
     if orig.exists() and _balanced(top):
         shutil.copy(orig, top)
         print(f"--- rv-balance: restored {top} from {orig.name}")
-    for p in (app_dir / "manual.place", bin_dir / "manual.place"):
+    stale = [bin_dir / "rv_balance_plan.json", bin_dir / "rv_balance_log.json"]
+    if unpin:
+        stale += [app_dir / "manual.place", bin_dir / "manual.place"]
+    for p in stale:
         p.unlink(missing_ok=True)
+
+
+def balanced(app_dir):
+    """Was the app's last PnR balanced (bin/rv_balance_log.json)?"""
+    return (Path(app_dir) / "bin" / "rv_balance_log.json").exists()
 
 
 def balance(app_dir, garnet_dir, rounds, run_pnr, env):

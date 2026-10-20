@@ -4,6 +4,7 @@ import sys
 import os
 import numpy
 import json
+from aha.util import rv_balance
 
 
 def add_subparser(subparser):
@@ -246,6 +247,13 @@ def dispatch(args, extra_args=None):
 
     app_args = " ".join(app_args)
     env["APP_ARGS"] = app_args
+    # A balanced dense RV app (aha pnr --rv-balance) starts by flushing the stalled array,
+    # then unstalling (garnet tests/test_app RV_FLUSH_FIRST): with the stock order some
+    # MEM read ports emit tokens before the flush lands (unsharp). Set it to 0 to opt out.
+    if "RV_FLUSH_FIRST" not in env and not args.sparse and any(
+            rv_balance.balanced(f"{args.aha_dir}/Halide-to-Hardware/apps/hardware_benchmarks/{a}") for a in args.app):
+        print("--- aha test: RV_FLUSH_FIRST=1 (balanced ready-valid app)", flush=True)
+        env["RV_FLUSH_FIRST"] = "1"
     if args.waveform:
         env["WAVEFORM"] = "1"
     elif args.waveform_glb:
