@@ -28,6 +28,8 @@ import sys
 import time
 from pathlib import Path
 
+from aha.util.data_width import fabric_data_width
+
 MARK = "rv_balance"   # design_top metadata key the hook writes
 DEFAULT_ROUNDS = 3    # `aha pnr` without --rv-balance (conv..harris converge in 1)
 
@@ -130,8 +132,12 @@ def balance(app_dir, garnet_dir, rounds, run_pnr, env):
         for key, k in rt.plan_by_instance(m, more).items():
             plan[key] = plan.get(key, 0) + k
         plan_file.write_text(json.dumps(plan, indent=1, sort_keys=True))
+        # padding registers at the fabric's width: a PE -> PE edge has none of its own (an
+        # older hook takes the width of whatever netlist instance comes first)
+        width = (["--data-width", str(fabric_data_width(garnet_dir))]
+                 if "--data-width" in hook.read_text() else [])
         subprocess.check_call([sys.executable, str(hook), str(bin_dir), "--plan", str(plan_file),
-                               "--pe-stages", "0", "--margin", "0"] + (["--share"] if lp else []),
+                               "--pe-stages", "0", "--margin", "0"] + (["--share"] if lp else []) + width,
                               env=env)
         # every block and netlist register stays put; only the new padding registers move
         with open(app_dir / "manual.place", "w") as f:
