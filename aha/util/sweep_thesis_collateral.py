@@ -497,10 +497,9 @@ def build_runtime_env(base_env, mode, spec_config_path, collateral_path=None):
         env["LAKE_COLLATERAL_JSON_MEM"] = collateral_path
     else:
         env.pop("LAKE_COLLATERAL_JSON_MEM", None)
-    if mode == "rv":
-        env["EXHAUSTIVE_PIPE"] = "1"
-    else:
-        env.pop("EXHAUSTIVE_PIPE", None)
+    # RV runs balanced (user direction 2026-10-25): no PnR pipelining, so aha pnr
+    # latency-matches the branches (aha/util/rv_balance.py) in both modes.
+    env.pop("EXHAUSTIVE_PIPE", None)
     return env
 
 

@@ -13,8 +13,8 @@ Each case covers a piece of the width work (garnet mflowgen/CLAUDE.md "Fabric da
 width follows the spec"): the width comes only from the spec; the compiler reads it
 from the spec's lake collateral. The `thesis` cases build the thesis fabrics
 (`garnet.py --thesis static|rv`, garnet mflowgen/CLAUDE.md "Thesis fabrics"): dw-bit
-tracks with no end-of-stream bit, a spec pond at the fabric width, and RV placed and
-routed without EXHAUSTIVE_PIPE (aha pnr balances the branches).
+tracks with no end-of-stream bit and a spec pond at the fabric width. RV is placed and
+routed without EXHAUSTIVE_PIPE on both fabrics (aha pnr balances the branches).
 """
 import json
 import os
@@ -133,7 +133,7 @@ def test_app_bit_accurate(tmp_path, app, dw, mode, fw, width, height, fabric, gu
         run_env["LAKE_COLLATERAL_JSON_REGFILE"] = str(pond_coll)
     if mode == "rv":
         # The thesis RV flow places and routes without PnR pipelining (aha pnr balances)
-        run_env.update(DENSE_READY_VALID="1", **({} if fabric == "thesis" else {"EXHAUSTIVE_PIPE": "1"}))
+        run_env.update(DENSE_READY_VALID="1")   # no PnR pipelining: aha pnr balances (both fabrics)
     assert _bash(f"cd {AHA} && aha --dir {AHA} pnr {app} --width {width} --height {height} {flags}",
                  run_env, tmp_path / "pnr.log") == 0, (tmp_path / "pnr.log").read_text()[-3000:]
     rc = _bash(f"cd {AHA} && timeout 3600 aha --dir {AHA} test {app}", run_env, tmp_path / "test.log")
