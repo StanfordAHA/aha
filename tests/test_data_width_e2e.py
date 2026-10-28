@@ -62,12 +62,25 @@ def _bash(cmd, env, log):
         return subprocess.run(["bash", "-c", SHELL_SETUP + cmd], env=env, stdout=f, stderr=subprocess.STDOUT).returncode
 
 
+def _private_tree_guard():
+    """`make map` copies the app's *_header.json into $(CLOCKWORK_PATH)/ and
+    $(METAMAPPER_PATH)/../garnet/headers/. In a tree other than /aha both must be the tree's own
+    directories: through a symlink the copies land in the shared /aha (2026-10-22, 2026-10-28)."""
+    if AHA.resolve() == Path("/aha").resolve():
+        return
+    for repo in ("MetaMapper", "clockwork"):
+        assert not (AHA / repo).is_symlink(), \
+            f"{AHA / repo} is a symlink: make map would write its headers into the shared /aha"
+
+
 def _base_env(app, spec, mode, pond_spec=None):
     env = {k: v for k, v in os.environ.items()
            if k not in ("DENSE_READY_VALID", "PIPELINED", "MATCH_BRANCH_DELAY", "EXHAUSTIVE_PIPE",
                         "CGRA_DATA_WIDTH", "LAKE_COLLATERAL_JSON_MEM", "LAKE_COLLATERAL_JSON_REGFILE",
                         "LAKE_POND_SPEC_CONFIG", "USE_NON_SPLIT_FIFOS", "RV_FLUSH_FIRST")}
+    # METAMAPPER_PATH explicitly: hw_support's default comes from Halide-to-Hardware's own path
     env.update(GARNET_HOME=str(AHA / "garnet"), TOOL="XCELIUM", LAKE_SPEC_CONFIG=spec, LAKE_SPEC_MODE=mode,
+               METAMAPPER_PATH=str(AHA / "MetaMapper"),
                PYTHONPATH=":".join(str(AHA / p) for p in ("", "garnet", "MetaMapper", "archipelago", "lassen")))
     if pond_spec:
         # The thesis fabrics always build a spec pond; aha map makes its collateral from this
@@ -89,6 +102,7 @@ def _built(width, height, dw, fw, mode, fabric):
 @pytest.mark.parametrize("app,dw,mode,fw,width,height,fabric,guards", CASES,
                          ids=[f"{c[6]}-{c[0].split('/')[1]}-dw{c[1]}-{c[2]}-fw{c[3]}" for c in CASES])
 def test_app_bit_accurate(tmp_path, app, dw, mode, fw, width, height, fabric, guards):
+    _private_tree_guard()
     spec = tmp_path / "spec.json"
     spec.write_text(json.dumps(dict(data_width=dw, in_ports=2, out_ports=2, storage_capacity=8192,
                                     vec_width=fw)))
