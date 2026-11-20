@@ -484,6 +484,7 @@ def test_dense_app(
         "bert-gelu::add_gelu_pass2_fp_bert_kernel0_RV_E64_MB",
         "bert-gelu::add_gelu_pass2_fp_bert_kernel1_RV_E64_MB",
         "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
+        "mamba2_prefill-silu::add_gelu_pass2_fp_mamba2_prefill_RV_E64_MB",
         "apps/tanh_fp_RV_E64_MB",
         "bert-tanh::tanh_fp_bert_RV_E64_MB",
         "apps/maxpooling_dense_rv_mem_buf_fp_RV_E64_MB",

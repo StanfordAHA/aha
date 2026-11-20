@@ -1232,6 +1232,7 @@ class Tests:
 
                 # LLaMA Prefill SiLU
                 "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
+                "mamba2_prefill-silu::add_gelu_pass2_fp_mamba2_prefill_RV_E64_MB",
 
                 # LLaMA Prefill RMS Norm
                 "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
@@ -1394,6 +1395,70 @@ class Tests:
             "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel29_RV_E64_MB",
             "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel30_RV_E64_MB",
             "llama_prefill-submodule_41 -> zircon_2d_psum_reduction_fp_post_llama_prefill_down_projection_kernel31_RV_E64_MB",
+
+            # Mamba2-1.3B Prefill out_proj + residual add (submodule_9): all using gemm_reduction_tiling_workaround,
+            # 16 psums; the residual is kernel 0's starting partial sum. K/X host tile (0,0) only.
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel0_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel1_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel2_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel3_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel4_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel5_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel6_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel7_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel8_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel9_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel10_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel11_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel12_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel13_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel14_RV_E64_MB",
+            "mamba2_prefill-submodule_9 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_out_projection_kernel15_RV_E64_MB",
+
+            # Mamba2-1.3B Prefill C@B^T, chunk 0 (matmul_mx): one run, no psums, checked against voyager's gold
+            "mamba2_prefill-matmul_mx -> zircon_2d_nop_post_mamba2_prefill_CBt_RV_E64_MB",
+
+            # Mamba2-1.3B Prefill xBC_proj (linear_mx_default_1): gemm_reduction_tiling_workaround, 8 psums,
+            # kernel 0 has no starting partial sum (nop). K host tile 0 of 17 only.
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_nop_post_mamba2_prefill_xBC_projection_kernel0_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_xBC_projection_kernel1_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_xBC_projection_kernel2_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_xBC_projection_kernel3_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_xBC_projection_kernel4_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_xBC_projection_kernel5_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_xBC_projection_kernel6_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_1 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_xBC_projection_kernel7_RV_E64_MB",
+
+            # Mamba2-1.3B Prefill lm_head (linear_mx_default_4): two non-uniform K slices (50176 + 128 columns),
+            # 8 psums each, kernel 0 nop. K/X host tile (0,0) of each slice only.
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_nop_post_mamba2_prefill_lm_head_slice0_kernel0_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice0_kernel1_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice0_kernel2_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice0_kernel3_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice0_kernel4_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice0_kernel5_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice0_kernel6_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice0_kernel7_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_nop_post_mamba2_prefill_lm_head_slice1_kernel0_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice1_kernel1_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice1_kernel2_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice1_kernel3_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice1_kernel4_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice1_kernel5_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice1_kernel6_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_lm_head_slice1_kernel7_RV_E64_MB",
+
+            # Mamba2-1.3B Prefill z_proj (linear_mx_default) -> SiLU: 8 psums, kernel 0 nop, kernel 7 = SiLU pass 1
+            # (add + SiLU on MU lanes 0..15, raw slice-7 partial on lanes 16..31); pass 2 is the voyager_cgra test
+            # mamba2_prefill-silu::add_gelu_pass2_fp_mamba2_prefill. K/X host tile (0,0) only.
+            "mamba2_prefill-linear_mx_default -> zircon_2d_nop_post_mamba2_prefill_z_projection_kernel0_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_z_projection_kernel1_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_z_projection_kernel2_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_z_projection_kernel3_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_z_projection_kernel4_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_z_projection_kernel5_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_z_projection_kernel6_RV_E64_MB",
+            "mamba2_prefill-linear_mx_default -> add_gelu_pass1_mu_input_fp_post_mamba2_prefill_z_projection_kernel7_RV_E64_MB",
 
 
 
