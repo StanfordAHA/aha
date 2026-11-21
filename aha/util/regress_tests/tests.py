@@ -1234,6 +1234,10 @@ class Tests:
                 "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
                 "mamba2_prefill-silu::add_gelu_pass2_fp_mamba2_prefill_RV_E64_MB",
 
+                # Mamba2-1.3B Prefill quantize_mx_default (block-norm output, MX blocks along the 2048 channels) on
+                # fused_e8m0_quant_single_IO, X tile 0 of 16 (64 x 2048 = 4,096 passes per lane)
+                "mamba2_prefill-quantize_mx_default::fused_e8m0_quant_single_IO_mamba2_prefill_quantize_mx_default_kernel0_RV_E64_MB",
+
                 # LLaMA Prefill RMS Norm
                 "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
 

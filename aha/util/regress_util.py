@@ -570,6 +570,7 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "rms_norm_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass2_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "fused_e8m0_quant_single_IO", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "elemwise_mul_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rope_fp", layer_in=layer)
 
