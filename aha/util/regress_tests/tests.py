@@ -1472,6 +1472,14 @@ class Tests:
             "mamba2_prefill-matmul_mx_261 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_BtXend_state_kernel0_RV_E64_MB",
             "mamba2_prefill-matmul_mx_261 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_BtXend_state_kernel1_RV_E64_MB",
 
+            # Mamba2-1.3B Prefill score@x, chunk 1 head 0 (matmul_mx_68) + the Y_off * exp(a_cum) block (live C@states output)
+            "mamba2_prefill-matmul_mx_68 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_scorex_yoff_kernel0_RV_E64_MB",
+
+            # Mamba2-1.3B Prefill dt_proj + dt_bias (submodule_4): 4 psums; kernel 0 (nop) adds dt_bias in the MU
+            # (CONV1_BIAS_HACK); kernels 1-2 not run (kernel 3 reads the host running sum through slice 2)
+            "mamba2_prefill-submodule_4 -> zircon_2d_nop_post_mamba2_prefill_dt_projection_kernel0_RV_E64_MB",
+            "mamba2_prefill-submodule_4 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_dt_projection_kernel3_RV_E64_MB",
+
 
 
 
