@@ -34,7 +34,7 @@ class Tests:
 
     configs_list = ["fast", "pr_aha1", "pr_aha2", "pr_aha3", "pr_aha4",
                  "pr_aha5", "pr_aha6", "pr_aha7", "pr_aha8", "pr_aha9",
-                 "pr_aha", "full", "resnet", "mu", "dense_ml_models", "gin_mu", "BLANK"]
+                 "pr_aha", "full", "resnet", "mu", "dense_ml_models", "gin_mu", "sparse_cnn_mu", "BLANK"]
 
     glb_tests_fp_RV1 = [
                 "tests/fp_comp_RV",
@@ -1521,6 +1521,13 @@ class Tests:
                 "gin_pred2-submodule -> zircon_dequant_fp_post_gin_pred2_RV_E64_MB",
                 "gin_pred3-submodule -> zircon_dequant_fp_post_gin_pred3_RV_E64_MB",
                 "gin_pred4-submodule -> zircon_dequant_fp_post_gin_pred4_RV_E64_MB",
+            ]
+
+        # Sparse CNN (ResNet-20 CIFAR-10, batch 32) fc 32x64 @ 64x10: INT8 per-tensor GEMM on the matrix unit,
+        # BF16 dequantize on the CGRA (M = 32 rows = out_img 8 x out_img_y 4)
+        elif testname == "sparse_cnn_mu":
+            external_mu_tests_fp = [
+                "cnn_fc-submodule -> zircon_dequant_fp_post_cnn_fc_RV_E64_MB",
             ]
 
         elif testname == "dense_ml_models":

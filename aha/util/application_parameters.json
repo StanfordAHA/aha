@@ -4382,6 +4382,17 @@
             "VOYAGER_GOLD": "1"
         }
     },
+    "zircon_dequant_fp_post_cnn_fc": {
+        "default": {
+            "HALIDE_GEN_ARGS": "myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=8 out_img_y=4 n_oc=32",
+            "HL_TARGET": "host-x86-64",
+            "USE_STRAIT_COREIR": "1",
+            "MB_IO_OFFSET": "12",
+            "MU_GLB_BASE_ADDR": "0",
+            "PER_TENSOR_SCALING": "1",
+            "VOYAGER_GOLD": "1"
+        }
+    },
     "zircon_dequant_fp_post_conv3_1": {
         "default": {
             "HALIDE_GEN_ARGS": "myunroll=1 myunroll_E64=16 myunroll_E64_MB=32 out_img=28 n_oc=128",
