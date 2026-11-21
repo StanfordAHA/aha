@@ -1460,6 +1460,18 @@ class Tests:
             "mamba2_prefill-linear_mx_default -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_z_projection_kernel6_RV_E64_MB",
             "mamba2_prefill-linear_mx_default -> add_gelu_pass1_mu_input_fp_post_mamba2_prefill_z_projection_kernel7_RV_E64_MB",
 
+            # Mamba2-1.3B Prefill C@states, chunk 0 (matmul_mx_264), GEMM only: 4 K kernels of 1024 columns, K tile 0
+            "mamba2_prefill-matmul_mx_264 -> zircon_2d_nop_post_mamba2_prefill_Cstates_kernel0_RV_E64_MB",
+            # C@states x exp(a_cum) epilogue (zircon_2d_broadcast_mul_fp), chunk 1 (chunk 0 is all zeros): one unpacked broadcast IO; K tiles 0 and 1
+            "mamba2_prefill-matmul_mx_265 -> zircon_2d_broadcast_mul_fp_post_mamba2_prefill_Cstates_exp_kernel0_RV_E64_MB",
+            "mamba2_prefill-matmul_mx_265 -> zircon_2d_broadcast_mul_fp_post_mamba2_prefill_Cstates_exp_kernel1_RV_E64_MB",
+
+            # Mamba2-1.3B Prefill B^T@X_end, chunk 1 (matmul_mx_261): 2 K kernels of 2048 columns. GEMM only, K tile 1
+            "mamba2_prefill-matmul_mx_261 -> zircon_2d_nop_post_mamba2_prefill_BtXend_kernel1_RV_E64_MB",
+            # B^T@X_end + decayed entering state (mul_13) epilogue on the psum app; K tiles 0 and 1
+            "mamba2_prefill-matmul_mx_261 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_BtXend_state_kernel0_RV_E64_MB",
+            "mamba2_prefill-matmul_mx_261 -> zircon_2d_psum_reduction_fp_post_mamba2_prefill_BtXend_state_kernel1_RV_E64_MB",
+
 
 
 
