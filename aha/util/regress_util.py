@@ -505,6 +505,12 @@ def test_dense_app(
         "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
         "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
         "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+        "mamba2_prefill-submodule_8::rms_norm_pass1_fp_mamba2_prefill_gated_norm_RV_E64_MB",
+        "mamba2_prefill-submodule_8::rms_norm_pass2_fp_mamba2_prefill_gated_norm_kernel0_RV_E64_MB",
+        "mamba2_prefill-submodule_8::rms_norm_pass2_fp_mamba2_prefill_gated_norm_kernel1_RV_E64_MB",
+        "mamba2_prefill-mul_6::rms_norm_pass2_fp_mamba2_prefill_mul6_RV_E64_MB",
+        "mamba2_prefill-mul_10::rms_norm_pass2_fp_mamba2_prefill_mul10_k0_RV_E64_MB",
+        "mamba2_prefill-mul_10::rms_norm_pass2_fp_mamba2_prefill_mul10_k127_RV_E64_MB",
 
     ]
 
@@ -571,6 +577,18 @@ def test_dense_app(
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass1_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rms_norm_pass2_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "fused_e8m0_quant_single_IO", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "fused_e8m0_quant_multi_IOs", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "mamba_skip_gate_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "mamba_x_dt_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "mamba_x_end_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "mamba_state_decay_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "mamba_decay_chain_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "mamba_exp_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "transpose_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "depthwise_conv1d_silu_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "add_softplus_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "row_prefix_sum_fp", layer_in=layer)
+        test, layer = parse_layer_parametrized_test(test, "col_prefix_sum_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "elemwise_mul_fp", layer_in=layer)
         test, layer = parse_layer_parametrized_test(test, "rope_fp", layer_in=layer)
 

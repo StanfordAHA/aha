@@ -214,10 +214,9 @@ class Tests:
                 "bert-quantize_default::apply_e8m0_scale_multi_IOs_bert_RV_E64_MB",
                 "bert-quantize_default_1::apply_e8m0_scale_multi_IOs_bert_post_transpose_RV_E64_MB",
 
-                # LLaMA Prefill apply_e8m0_scale layers
-                "llama_prefill-quantize_default::apply_e8m0_scale_multi_IOs_llama_prefill_RV_E64_MB",
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                #"llama_prefill-quantize_default_1::apply_e8m0_scale_multi_IOs_llama_prefill_post_transpose_RV_E64_MB",
+                # LLaMA Prefill calculate_mx_qparam + quantize in one pass (fused_e8m0_quant_multi_IOs), tile 0 of 8 at 131,072 values
+                "llama_prefill-quantize_default::fused_e8m0_quant_multi_IOs_llama_prefill_quantize_default_kernel0_RV_E64_MB", # 32, 512, 64
+                "llama_prefill-quantize_default_1::fused_e8m0_quant_multi_IOs_llama_prefill_quantize_default_1_kernel0_RV_E64_MB", # 32, 64, 512
 
                 # BERT Pooling layer, using k-dim host tiling
                 "bert-linear_6::fully_connected_layer_fp_bert_pooling_kernel0_RV_E64_MB",
@@ -442,20 +441,11 @@ class Tests:
                 "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel0_RV_E64_MB", # 128, 1536, tiling
                 "bert-quantize_mx_default_5::apply_e8m0_scale_single_IO_bert_quantize_mx_default_5_kernel1_RV_E64_MB", # 128, 1536, tiling
 
-                # LLaMA Prefill get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
-                "llama_prefill-quantize_mx_default::get_e8m0_scale_tree_gb_input_llama_prefill_shape0_RV_E64_MB", # 512, 2048 DONE
-                "llama_prefill-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_llama_prefill_shape1_RV_E64_MB", # 32, 512, 64
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_mx_default_7::get_e8m0_scale_tree_gb_input_llama_prefill_shape2_RV_E64_MB", # 512, 512
-                "llama_prefill-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_llama_prefill_shape3_RV_E64_MB", # 512, 8192
-
-                # LLaMA Prefill apply_e8m0_scale_single_IO layers
-                "llama_prefill-quantize_mx_default::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_RV_E64_MB", # 512, 2048
-                # Commenting out b/c of overflow issue (gold = 0, sim = 255)
-                # "llama_prefill-quantize_mx_default_1::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_1_RV_E64_MB", # 32, 512, 64
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_mx_default_7::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_7_RV_E64_MB", # 512, 512
-                # "llama_prefill-quantize_mx_default_5::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_5_RV_E64_MB", # 512, 8192
+                # LLaMA Prefill quantize_mx in one pass (fused_e8m0_quant_single_IO), tile 0 at 131,072 values
+                "llama_prefill-quantize_mx_default::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_kernel0_RV_E64_MB", # 512, 2048
+                "llama_prefill-quantize_mx_default_1::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_1_kernel0_RV_E64_MB", # 32, 512, 64
+                "llama_prefill-quantize_mx_default_5::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_5_kernel0_RV_E64_MB", # 512, 8192
+                "llama_prefill-quantize_mx_default_7::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_7_kernel0_RV_E64_MB", # 512, 512
 
             ]
 
@@ -485,22 +475,14 @@ class Tests:
                 "bert-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_bert_RV_E64_MB",
                 "bert-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_bert_post_transpose_RV_E64_MB",
 
-                # LLaMA prefill get_e8m0_scale accum schedule layers
-                "llama_prefill-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_llama_prefill_RV_E64_MB",
-                "llama_prefill-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_llama_prefill_post_transpose_RV_E64_MB",
-
                 # BERT Classifier layer
                 "bert-linear_7::fully_connected_layer_fp_bert_classifier_RV_E64_MB",
 
                 # BERT tanh layer
                 "bert-tanh::tanh_fp_bert_RV_E64_MB",
 
-                # LLaMA Prefill RMS Norm
-                "llama_prefill-layer_norm_default::rms_norm_fp_llama_prefill_RV_E64_MB",
-                "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
-
-                "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
-                "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+                # LLaMA Prefill RMS Norm in one pass (rms_norm_fp, host RMSNorm gold), X tile 0 of 8
+                "llama_prefill-layer_norm_default::rms_norm_fp_llama_prefill_kernel0_RV_E64_MB",
                 # LLaMA Prefill Swish Mul
                 "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel0_RV_E64_MB",
                 "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel1_RV_E64_MB",
@@ -791,29 +773,15 @@ class Tests:
                 # LLaMA permute layer
                 "llama_prefill-transpose_4::nop_2d_mha_concat_llama_prefill_RV_E64_MB",
 
-                # LLaMA prefill get_e8m0_scale accum schedule layers
-                "llama_prefill-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_llama_prefill_RV_E64_MB",
-                "llama_prefill-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_llama_prefill_post_transpose_RV_E64_MB",
+                # LLaMA Prefill calculate_mx_qparam + quantize in one pass (fused_e8m0_quant_multi_IOs), tile 0 of 8 at 131,072 values
+                "llama_prefill-quantize_default::fused_e8m0_quant_multi_IOs_llama_prefill_quantize_default_kernel0_RV_E64_MB", # 32, 512, 64
+                "llama_prefill-quantize_default_1::fused_e8m0_quant_multi_IOs_llama_prefill_quantize_default_1_kernel0_RV_E64_MB", # 32, 64, 512
 
-                # LLaMA Prefill apply_e8m0_scale layers
-                "llama_prefill-quantize_default::apply_e8m0_scale_multi_IOs_llama_prefill_RV_E64_MB",
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_default_1::apply_e8m0_scale_multi_IOs_llama_prefill_post_transpose_RV_E64_MB",
-
-                # LLaMA Prefill get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
-                "llama_prefill-quantize_mx_default::get_e8m0_scale_tree_gb_input_llama_prefill_shape0_RV_E64_MB", # 512, 2048 DONE
-                "llama_prefill-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_llama_prefill_shape1_RV_E64_MB", # 32, 512, 64
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_mx_default_7::get_e8m0_scale_tree_gb_input_llama_prefill_shape2_RV_E64_MB", # 512, 512
-                "llama_prefill-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_llama_prefill_shape3_RV_E64_MB", # 512, 8192
-
-                # LLaMA Prefill apply_e8m0_scale_single_IO layers
-                "llama_prefill-quantize_mx_default::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_RV_E64_MB", # 512, 2048
-                # Commenting out b/c of overflow issue (gold = 0, sim = 255)
-                # "llama_prefill-quantize_mx_default_1::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_1_RV_E64_MB", # 32, 512, 64
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_mx_default_7::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_7_RV_E64_MB", # 512, 512
-                # "llama_prefill-quantize_mx_default_5::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_5_RV_E64_MB", # 512, 8192
+                # LLaMA Prefill quantize_mx in one pass (fused_e8m0_quant_single_IO), tile 0 at 131,072 values
+                "llama_prefill-quantize_mx_default::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_kernel0_RV_E64_MB", # 512, 2048
+                "llama_prefill-quantize_mx_default_1::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_1_kernel0_RV_E64_MB", # 32, 512, 64
+                "llama_prefill-quantize_mx_default_5::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_5_kernel0_RV_E64_MB", # 512, 8192
+                "llama_prefill-quantize_mx_default_7::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_7_kernel0_RV_E64_MB", # 512, 512
 
                 # LLaMA Prefill Softmax layers
                 "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
@@ -823,11 +791,8 @@ class Tests:
                 # LLaMA Prefill SiLU
                 "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
 
-                # LLaMA Prefill RMS Norm
-                "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
-
-                "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
-                "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+                # LLaMA Prefill RMS Norm in one pass (rms_norm_fp, host RMSNorm gold), X tile 0 of 8
+                "llama_prefill-layer_norm_default::rms_norm_fp_llama_prefill_kernel0_RV_E64_MB",
                 # LLaMA Prefill Swish Mul
                 "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel0_RV_E64_MB",
                 "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel1_RV_E64_MB",
@@ -1201,29 +1166,15 @@ class Tests:
                 # LLaMA permute layer
                 "llama_prefill-transpose_4::nop_2d_mha_concat_llama_prefill_RV_E64_MB",
 
-                # LLaMA prefill get_e8m0_scale accum schedule layers
-                "llama_prefill-calculate_mx_qparam_default::get_e8m0_scale_accum_gb_input_llama_prefill_RV_E64_MB",
-                "llama_prefill-calculate_mx_qparam_default_1::get_e8m0_scale_accum_gb_input_llama_prefill_post_transpose_RV_E64_MB",
+                # LLaMA Prefill calculate_mx_qparam + quantize in one pass (fused_e8m0_quant_multi_IOs), tile 0 of 8 at 131,072 values
+                "llama_prefill-quantize_default::fused_e8m0_quant_multi_IOs_llama_prefill_quantize_default_kernel0_RV_E64_MB", # 32, 512, 64
+                "llama_prefill-quantize_default_1::fused_e8m0_quant_multi_IOs_llama_prefill_quantize_default_1_kernel0_RV_E64_MB", # 32, 64, 512
 
-                # LLaMA Prefill apply_e8m0_scale layers
-                "llama_prefill-quantize_default::apply_e8m0_scale_multi_IOs_llama_prefill_RV_E64_MB",
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_default_1::apply_e8m0_scale_multi_IOs_llama_prefill_post_transpose_RV_E64_MB",
-
-                # LLaMA Prefill get_e8m0_scale tree schedule and apply_e8m0_scale_single_IO layers
-                "llama_prefill-quantize_mx_default::get_e8m0_scale_tree_gb_input_llama_prefill_shape0_RV_E64_MB", # 512, 2048 DONE
-                "llama_prefill-quantize_mx_default_1::get_e8m0_scale_tree_gb_input_llama_prefill_shape1_RV_E64_MB", # 32, 512, 64
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_mx_default_7::get_e8m0_scale_tree_gb_input_llama_prefill_shape2_RV_E64_MB", # 512, 512
-                "llama_prefill-quantize_mx_default_5::get_e8m0_scale_tree_gb_input_llama_prefill_shape3_RV_E64_MB", # 512, 8192
-
-                # LLaMA Prefill apply_e8m0_scale_single_IO layers
-                "llama_prefill-quantize_mx_default::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_RV_E64_MB", # 512, 2048
-                # Commenting out b/c of overflow issue (gold = 0, sim = 255)
-                # "llama_prefill-quantize_mx_default_1::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_1_RV_E64_MB", # 32, 512, 64
-                # Commenting out b/c of overflow issue (gold = 0, sim = 127)
-                # "llama_prefill-quantize_mx_default_7::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_7_RV_E64_MB", # 512, 512
-                # "llama_prefill-quantize_mx_default_5::apply_e8m0_scale_single_IO_llama_prefill_quantize_mx_default_5_RV_E64_MB", # 512, 8192
+                # LLaMA Prefill quantize_mx in one pass (fused_e8m0_quant_single_IO), tile 0 at 131,072 values
+                "llama_prefill-quantize_mx_default::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_kernel0_RV_E64_MB", # 512, 2048
+                "llama_prefill-quantize_mx_default_1::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_1_kernel0_RV_E64_MB", # 32, 512, 64
+                "llama_prefill-quantize_mx_default_5::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_5_kernel0_RV_E64_MB", # 512, 8192
+                "llama_prefill-quantize_mx_default_7::fused_e8m0_quant_single_IO_llama_prefill_quantize_mx_default_7_kernel0_RV_E64_MB", # 512, 512
 
                 # LLaMA Prefill Softmax layers
                 "llama_prefill-softmax_1::stable_softmax_pass1_fp_llama_prefill_RV_E64_MB",
@@ -1234,15 +1185,109 @@ class Tests:
                 "llama_prefill-silu::add_gelu_pass2_fp_llama_prefill_RV_E64_MB",
                 "mamba2_prefill-silu::add_gelu_pass2_fp_mamba2_prefill_RV_E64_MB",
 
+                # Mamba2-1.3B Prefill RMSNorms on rms_norm_fp, X tile 0 each: block norm and norm_f (64 x 2048, 16 X tiles),
+                # gated norm in two passes (the 4096-wide rms_norm_fp hangs): pass 1 x * rstd (64 x 4096, 32 lanes, 16 X
+                # tiles), pass 2 * gamma on each 16-of-32 channel half (64 x 2048, 2 K tiles; gamma via CGRA_WEIGHT_NODE)
+                "mamba2_prefill-layer_norm_default::rms_norm_fp_mamba2_prefill_block_norm_kernel0_RV_E64_MB",
+                "mamba2_prefill-layer_norm_default_1::rms_norm_fp_mamba2_prefill_norm_f_kernel0_RV_E64_MB",
+                "mamba2_prefill-submodule_8::rms_norm_pass1_fp_mamba2_prefill_gated_norm_RV_E64_MB",
+                "mamba2_prefill-submodule_8::rms_norm_pass2_fp_mamba2_prefill_gated_norm_kernel0_RV_E64_MB",
+                "mamba2_prefill-submodule_8::rms_norm_pass2_fp_mamba2_prefill_gated_norm_kernel1_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill a = dt * A (mul_6) on rms_norm_pass2_fp (input x a per-head weight re-read every row),
+                # 16 lanes, the whole [1024 x 64] in one run
+                "mamba2_prefill-mul_6::rms_norm_pass2_fp_mamba2_prefill_mul6_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill g = (Y + D * x) * silu(z) (submodule_7 + mul_17 fused) on mamba_skip_gate_fp, 16 lanes:
+                # 32 runs of 2 heads x 1024 positions; Y read heads-first (the input DMA does permute_5), tiles 0 and 31
+                "mamba2_prefill-mul_17::mamba_skip_gate_fp_mamba2_prefill_k0_RV_E64_MB",
+                "mamba2_prefill-mul_17::mamba_skip_gate_fp_mamba2_prefill_k31_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill X = x * dt (mul_7, heads-first = permute_1) on mamba_x_dt_fp, 16 lanes: 64 runs of one lane
+                # half of 8 heads x one 256-row chunk; dt gathered by a get_interleave_mem tree, runs 0 and 63
+                "mamba2_prefill-permute_1::mamba_x_dt_fp_mamba2_prefill_k0_RV_E64_MB",
+                "mamba2_prefill-permute_1::mamba_x_dt_fp_mamba2_prefill_k63_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill W = scores * decay (mul_10) on rms_norm_pass2_fp (scores re-read per head), 16 lanes:
+                # 128 runs of one lane half of 4 heads x one chunk, runs 0 and 127
+                "mamba2_prefill-mul_10::rms_norm_pass2_fp_mamba2_prefill_mul10_k0_RV_E64_MB",
+                "mamba2_prefill-mul_10::rms_norm_pass2_fp_mamba2_prefill_mul10_k127_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill decayed state = state * chunk decay (mul_13, the kernel of mul_12 .. mul_14) on
+                # mamba_state_decay_fp, 16 lanes: 8 runs per chunk boundary (one lane half of 16 consecutive heads x 128
+                # rows); the decays read through one lane of exp_2's output GLB tile 3 (no gather tree), runs 0 and 7
+                "mamba2_prefill-mul_13::mamba_state_decay_fp_mamba2_prefill_mul13_lane_k0_RV_E64_MB",
+                "mamba2_prefill-mul_13::mamba_state_decay_fp_mamba2_prefill_mul13_lane_k7_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill X_end = (x * dt) * decay_to_end (mul_11) on mamba_x_end_fp, 16 lanes: 64 runs of one
+                # lane half of 8 heads x one 256-row chunk; dt and decay_to_end gathered by two trees, runs 0 and 63
+                "mamba2_prefill-mul_11::mamba_x_end_fp_mamba2_prefill_k0_RV_E64_MB",
+                "mamba2_prefill-mul_11::mamba_x_end_fp_mamba2_prefill_k63_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill decay = exp(cumsum(a * strict mask, dim -2)) * lower mask (mul_8 -> cumsum_1 -> exp ->
+                # mul_9 fused) on mamba_decay_chain_fp, 16 lanes: 128 runs of one lane half of 4 heads (one mul_6 lane) x one
+                # 256 x 256 chunk, runs 0 and 127
+                "mamba2_prefill-mul_9::mamba_decay_chain_fp_mamba2_prefill_k0_RV_E64_MB",
+                "mamba2_prefill-mul_9::mamba_decay_chain_fp_mamba2_prefill_k127_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill exp_2 = exp(a_cum) on mamba_exp_fp (elementwise_sub_exp_bf16 without the subtract,
+                # z clamped at -127), 32 lanes: the whole 256 x 256 a_cum in its producer's layout, one run per layer
+                # (submodule_5 = exp_2[..., 255] needs no kernel)
+                "mamba2_prefill-exp_2::mamba_exp_fp_mamba2_prefill_exp2_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill transpose (decay_to_end [4, 64, 256] -> [4, 256, 64]) on transpose_fp (strait
+                # transpose_bf16, batched): 32 passes, pass k reads input lane k and writes the output rows j = k mod 32;
+                # passes 0 and 31
+                "mamba2_prefill-transpose::transpose_fp_mamba2_prefill_transpose_k0_RV_E64_MB",
+                "mamba2_prefill-transpose::transpose_fp_mamba2_prefill_transpose_k31_RV_E64_MB",
+                # permute (a [4, 256, 64] -> [4, 64, 256], from #1's 16-lane layout): 16 passes, passes 0 and 15
+                "mamba2_prefill-permute::transpose_fp_mamba2_prefill_permute_k0_RV_E64_MB",
+                "mamba2_prefill-permute::transpose_fp_mamba2_prefill_permute_k15_RV_E64_MB",
+                # permute_2 (B [4, 256, 128] -> B^T [4, 128, 256], 4 channels per lane; permute_3 reads the same output):
+                # 32 passes, passes 0 and 31
+                "mamba2_prefill-permute_2::transpose_fp_mamba2_prefill_permute_2_k0_RV_E64_MB",
+                "mamba2_prefill-permute_2::transpose_fp_mamba2_prefill_permute_2_k31_RV_E64_MB",
+
                 # Mamba2-1.3B Prefill quantize_mx_default (block-norm output, MX blocks along the 2048 channels) on
                 # fused_e8m0_quant_single_IO, X tile 0 of 16 (64 x 2048 = 4,096 passes per lane)
                 "mamba2_prefill-quantize_mx_default::fused_e8m0_quant_single_IO_mamba2_prefill_quantize_mx_default_kernel0_RV_E64_MB",
+                # the other 5 quantize_mx layers, 131,072 values per run (tile 0 where tiled)
+                "mamba2_prefill-quantize_mx_default_1::fused_e8m0_quant_single_IO_mamba2_prefill_quantize_mx_default_1_RV_E64_MB",
+                "mamba2_prefill-quantize_mx_default_2::fused_e8m0_quant_single_IO_mamba2_prefill_quantize_mx_default_2_RV_E64_MB",
+                "mamba2_prefill-quantize_mx_default_3::fused_e8m0_quant_single_IO_mamba2_prefill_quantize_mx_default_3_kernel0_RV_E64_MB",
+                "mamba2_prefill-quantize_mx_default_4::fused_e8m0_quant_single_IO_mamba2_prefill_quantize_mx_default_4_kernel0_RV_E64_MB",
+                "mamba2_prefill-quantize_mx_default_5::fused_e8m0_quant_single_IO_mamba2_prefill_quantize_mx_default_5_kernel0_RV_E64_MB",
+                # the 4 calculate_mx_qparam + quantize pairs (MX blocks along dim -2) on fused_e8m0_quant_multi_IOs, run on the
+                # quantize layer: int8 gold = quantize, scale gold = its scale input (FUSED_SCALE_GOLD); 131,072 values per run
+                "mamba2_prefill-quantize_default::fused_e8m0_quant_multi_IOs_mamba2_prefill_quantize_default_kernel0_RV_E64_MB",
+                "mamba2_prefill-quantize_default_1::fused_e8m0_quant_multi_IOs_mamba2_prefill_quantize_default_1_RV_E64_MB",
+                "mamba2_prefill-quantize_default_2::fused_e8m0_quant_multi_IOs_mamba2_prefill_quantize_default_2_kernel0_RV_E64_MB",
+                "mamba2_prefill-quantize_default_3::fused_e8m0_quant_multi_IOs_mamba2_prefill_quantize_default_3_kernel0_RV_E64_MB",
 
-                # LLaMA Prefill RMS Norm
-                "llama_prefill-layer_norm_default::rms_norm_pass1_fp_llama_prefill_RV_E64_MB",
+                # Mamba2-1.3B Prefill causal depthwise conv1d (4 taps) + bias + SiLU (silu_1) on depthwise_conv1d_silu_fp:
+                # 8 channels x 1024 positions per run (544 channel tiles); tiles 0 and 543
+                "mamba2_prefill-silu_1::depthwise_conv1d_silu_fp_mamba2_prefill_k0_RV_E64_MB",
+                "mamba2_prefill-silu_1::depthwise_conv1d_silu_fp_mamba2_prefill_k543_RV_E64_MB",
 
-                "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel0_RV_E64_MB",
-                "llama_prefill-layer_norm_default::rms_norm_pass2_fp_llama_prefill_kernel1_RV_E64_MB",
+                # Mamba2-1.3B Prefill softplus(dt_proj + dt_bias) on add_softplus_fp with a zero bias (dt_bias is added in
+                # the MU): the 4 passes of the README, pass k = lanes 8k..8k+7 of dt's 32-lane layout (GLB tile 6+k -> 10+k)
+                "mamba2_prefill-softplus::add_softplus_fp_mamba2_prefill_pass0_RV_E64_MB",
+                "mamba2_prefill-softplus::add_softplus_fp_mamba2_prefill_pass1_RV_E64_MB",
+                "mamba2_prefill-softplus::add_softplus_fp_mamba2_prefill_pass2_RV_E64_MB",
+                "mamba2_prefill-softplus::add_softplus_fp_mamba2_prefill_pass3_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill a_cum = cumsum(a, dim -1) on row_prefix_sum_fp: the whole [256 rows x 256] in one run
+                "mamba2_prefill-cumsum::row_prefix_sum_fp_mamba2_prefill_RV_E64_MB",
+
+                # Mamba2-1.3B Prefill segment sum cumsum_1 = cumsum(mul_8, dim -2) on col_prefix_sum_fp, 4 column slices
+                # (COL_PREFIX_SUM_COL_SPLITS 4): 64 row tiles of 4 matrices of 256 x 256, tiles 0 and 63
+                "mamba2_prefill-cumsum_1::col_prefix_sum_fp_mamba2_prefill_k0_RV_E64_MB",
+                "mamba2_prefill-cumsum_1::col_prefix_sum_fp_mamba2_prefill_k63_RV_E64_MB",
+                # the same tile 0 without column slices (lake counts the 2,048-token matrices in chunks)
+                "mamba2_prefill-cumsum_1::col_prefix_sum_fp_mamba2_prefill_k0_unsplit_RV_E64_MB",
+
+                # LLaMA Prefill RMS Norm in one pass (rms_norm_fp, host RMSNorm gold), X tile 0 of 8
+                "llama_prefill-layer_norm_default::rms_norm_fp_llama_prefill_kernel0_RV_E64_MB",
                 # LLaMA Prefill Swish Mul
                 "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel0_RV_E64_MB",
                 "llama_prefill-mul_9::elemwise_mul_fp_llama_prefill_swish_kernel1_RV_E64_MB",
